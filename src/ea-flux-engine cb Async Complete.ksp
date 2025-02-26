@@ -1,0 +1,5 @@
+on async_complete
+    if (NI_ASYNC_ID = 0)
+        message("If statements can't be empty, so I exist.")
+    end if
+end on

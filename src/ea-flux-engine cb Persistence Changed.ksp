@@ -1,0 +1,47 @@
+on persistence_changed
+    message("PCCB")
+    import "ea-flux-engine UIIDs data.ksp"
+    import "ea-flux-engine data loading.ksp"
+    // import "ARP/__ARP 02 pc cb.ksp"
+
+    for b.i := 0 to 3
+        for s.i := 0 to 1
+            fn003.a.side        := s.i // __LEFT then __RIGHT
+            fn003.a.block_index := b.i
+            call fn003_set_block_step_count
+        end for
+    end for
+
+    message("ea-flux-engine loaded successfully")
+
+    // development ------------------------------------------------------------------------------- 
+    label_MAIN.SEQ.LEFT.linked        -> UI_HIDE
+    label_MAIN.SEQ.RIGHT.linked       -> UI_HIDE
+    label_MAIN.ARP.LEFT.linked        -> UI_HIDE
+    label_MAIN.ARP.RIGHT.linked       -> UI_HIDE
+    label_MAIN.ADSR.LEFT.linked       -> UI_HIDE
+    label_MAIN.ADSR.RIGHT.linked      -> UI_HIDE
+    label_MAIN.FX.LEFT.linked         -> UI_HIDE
+    label_MAIN.FX.RIGHT.linked        -> UI_HIDE
+    waveform_MAIN.2SEQ.LEFT.display   -> UI_HIDE
+    waveform_MAIN.2SEQ.RIGHT.display  -> UI_HIDE
+    // panel_MAIN.2SEQ.LEFT.fluxxArp     -> UI_HIDE
+    // panel_MAIN.2SEQ.RIGHT.fluxxArp    -> UI_HIDE
+    panel_MAIN.2SEQ.RIGHT.arpModes    -> UI_HIDE
+    panel_MAIN.2SEQ.LEFT.arpModes     -> UI_HIDE
+    panel_MAIN.2SEQ.LEFT.single.shot  -> UI_HIDE
+    panel_MAIN.2SEQ.RIGHT.single.shot -> UI_HIDE
+
+    label_MAIN.2SEQ.RIGHT.off -> UI_HIDE
+    label_MAIN.2SEQ.LEFT.off  -> UI_HIDE
+
+    panel_MAIN.FX.LEFT.reverb.menu   -> UI_HIDE
+    panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
+
+    { I may use this in the combined SEQ }
+    label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
+    label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+
+
+
+end on

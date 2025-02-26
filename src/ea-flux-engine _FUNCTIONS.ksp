@@ -1,0 +1,114 @@
+// import "ARP/__ARP 03 functions.ksp"
+
+function update_lfo_ms_rates
+    beat_rates [ 00 ] := (DURATION_SIXTEENTH/8)/1000
+    beat_rates [ 01 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
+    beat_rates [ 02 ] := (DURATION_SIXTEENTH/4)/1000
+    beat_rates [ 03 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
+    beat_rates [ 04 ] := (DURATION_SIXTEENTH/2)/1000
+    beat_rates [ 05 ] := (DURATION_SIXTEENTH_TRIPLET)/1000
+    beat_rates [ 06 ] := (DURATION_SIXTEENTH)/1000
+    beat_rates [ 07 ] := (DURATION_EIGHTH_TRIPLET)/1000
+    beat_rates [ 08 ] := (3*DURATION_SIXTEENTH/2)/1000
+    beat_rates [ 09 ] := (DURATION_EIGHTH)/1000
+    beat_rates [ 10 ] := (DURATION_QUARTER_TRIPLET)/1000
+    beat_rates [ 11 ] := (DURATION_SIXTEENTH* 3)/1000
+    beat_rates [ 12 ] := (DURATION_QUARTER)/1000
+    beat_rates [ 13 ] := (DURATION_QUARTER_TRIPLET * 2)/1000
+    beat_rates [ 14 ] := (DURATION_EIGHTH * 3)/1000
+    beat_rates [ 15 ] := (DURATION_QUARTER * 2)/1000
+    beat_rates [ 16 ] := (DURATION_QUARTER * 3)/1000
+    beat_rates [ 17 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
+    beat_rates [ 18 ] := (DURATION_QUARTER * 4)/1000
+    LFO_rate := beat_rates [ slider_MAIN.LFO.rate / __BEAT_RATE_DIVISOR ]
+    LFO_sine_step := (2.0 * NI_MATH_PI) / float(LFO_rate)
+end function
+
+function LCB_data_update
+    if __BPM # round((60000000.0 / float(DURATION_QUARTER)) * 100.0)/100.0
+        __BPM := round((60000000.0 / float(DURATION_QUARTER)) * 100.0)/100.0
+        message("BPM changed to " & __BPM)
+        call update_lfo_ms_rates
+        lcb_ms_counter := 0
+
+    end if 
+end function
+
+function fn001_get_seq_step_index
+    fn001.l.xy_x := get_control_par_real_arr(   ...
+        UIID_MAIN.SEQ.xypads [ fn001.a.side ], ...
+        CONTROL_PAR_VALUE,                     ...
+        0                                      ...
+    ) 
+    
+    fn001.l.xy_x.normalized := fn001.l.xy_x - 0.25 * float(fn001.a.block_index)
+
+    fn001.r.step_index := int(( fn001.l.xy_x.normalized )/ SEQ.step_width [ fn001.a.side, fn001.a.block_index ]) + ...
+        8 * fn001.a.block_index
+
+    if fn001.r.step_index = 32
+        fn001.r.step_index := 31
+    end if
+end function
+
+function fn002_set_seq_step_value
+    UIID_MAIN.seq.step [ fn002.a.side, fn002.a.step_index ] -> picture_state := ...
+        int(float(SEQ_XY_H-1) * fn002.a.value)
+end function
+
+function fn003_set_block_step_count
+    { needed for the seq xy }
+    SEQ.step_width [ fn003.a.side, fn003.a.block_index ] := ...
+        SEQ_XY_BLOCK_W / float(SEQ.MAIN.step_count [ fn003.a.side, fn003.a.block_index ] + 1)
+
+    UIID_MAIN.seq.leds [ fn003.a.side, fn003.a.block_index ] -> picture := ...
+        SEQ_step_led_pictures [ SEQ.MAIN.step_count [ fn003.a.side, fn003.a.block_index ] ]
+        
+    { update the number of step sliders and their pictures }
+    for i.i := 0 to 7
+        if i.i <= SEQ.MAIN.step_count [ fn003.a.side, fn003.a.block_index ]
+            UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> UI_SHOW
+            
+            UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> picture := ...
+                SEQ_step_pictures [ SEQ.MAIN.step_count [ fn003.a.side, fn003.a.block_index ] + ...
+                    SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
+
+            UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> pos_x := ...
+                SEQ_STEP_COORD [                                     ...
+                    fn003.a.side,                                          ...
+                    SEQ.MAIN.step_count [ fn003.a.side, fn003.a.block_index ], ...
+                    i.i                                              ...
+                ] + SEQ_XY_BLOCK_START_OFFSET [ fn003.a.block_index ]
+
+        else
+            UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> UI_HIDE
+        end if
+    end for
+end function
+
+function fn004_get_current_seq_block
+    if fn004.a.x_coord >= SEQ_XY_B1_START and fn004.a.x_coord <= SEQ_XY_B1_END
+        fn004.r.block_index := 0
+    end if
+    if fn004.a.x_coord >= SEQ_XY_B2_START and fn004.a.x_coord <= SEQ_XY_B2_END
+        fn004.r.block_index := 1
+    end if
+    if fn004.a.x_coord >= SEQ_XY_B3_START and fn004.a.x_coord <= SEQ_XY_B3_END
+        fn004.r.block_index := 2
+    end if
+    if fn004.a.x_coord >= SEQ_XY_B4_START and fn004.a.x_coord <= SEQ_XY_B4_END
+        fn004.r.block_index := 3
+    end if
+end function
+
+function get_seq_step_index
+    fn004.a.x_coord := get_control_par_real_arr(  ...
+        UIID_MAIN.SEQ.xypads [ uics_uiid_index ], ...
+        CONTROL_PAR_VALUE,                        ...
+        0                                         ...
+    ) 
+    call fn004_get_current_seq_block
+    fn001.a.block_index := fn004.r.block_index
+    fn001.a.side        := uics_uiid_index
+    call fn001_get_seq_step_index
+end function

@@ -1,0 +1,45 @@
+if (switch_ARP.power = 1)
+    ignore_event($EVENT_ID)
+
+    { make sure we only receive one event per key }
+    if (%ARP.note_ids[$EVENT_NOTE] > 0)
+        exit
+    else
+        %ARP.note_ids[$EVENT_NOTE] := $EVENT_ID
+    end if
+
+    select (switch_ARP.latch)
+        case 0
+            %ARP.note_buffer[$ARP.cursor] := $EVENT_NOTE
+            %ARP.vel_buffer[$ARP.cursor] := $EVENT_VELOCITY
+
+            inc($ARP.cursor)
+        case 1
+            if ($ENGINE_UPTIME - $ARP.old_latch_time > $ARP.LATCH_TIME)
+                $ARP.i := 0
+                while ($ARP.i < $ARP.cursor)
+                    %ARP.note_buffer[$ARP.i] := 0
+                    inc($ARP.i)
+                end while
+
+                $ARP.cursor := 0
+            end if
+
+            $ARP.old_latch_time := $ENGINE_UPTIME
+            %ARP.note_buffer[$ARP.cursor] := $EVENT_NOTE
+            %ARP.vel_buffer[$ARP.cursor] := $EVENT_VELOCITY
+
+            inc($ARP.cursor)
+    end select
+
+    { start arpegiator }
+    if ($ARP.cursor < 2 and $ARP.seq_running = 0)
+        if ($NI_TRANSPORT_RUNNING = 0)
+            wait($ARP.REC_TIME_TRANSPORT_STOPPED * 1000)
+        else
+            wait($ARP.REC_TIME_TRANSPORT_RUNNING * 1000)
+        end if
+
+        call ARP.StartSeq()
+    end if
+end if

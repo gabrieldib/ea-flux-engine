@@ -1,0 +1,9 @@
+	
+	// Variable declarations to be used with KGC library
+
+	declare KGC.i 		:= 0
+	declare KGC.j 		:= 0
+	declare KGC.key1 	:= 0
+	declare KGC.key2	:= 0
+	declare KGC.key3	:= 0
+

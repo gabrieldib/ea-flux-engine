@@ -1,0 +1,19 @@
+for i.i := 0 to 31
+    UIID_MAIN.seq.step [ __LEFT, i.i ]  := get_ui_id(label_MAIN.LEFT.seq.step.0) + i.i
+    UIID_MAIN.seq.step [ __RIGHT, i.i ] := get_ui_id(label_MAIN.RIGHT.seq.step.0) + i.i
+end for
+
+for i.i := 0 to 3
+    UIID_MAIN.seq.leds [ __LEFT,  i.i ] := get_ui_id(label_MAIN.SEQ.LEFT.led1)  + i.i
+    UIID_MAIN.seq.leds [ __RIGHT, i.i ] := get_ui_id(label_MAIN.SEQ.RIGHT.led1) + i.i
+end for
+
+for i.i := 0 to 3
+    UIID_MAIN.seq.block_steps [ __LEFT,  i.i ] := get_ui_id(slider_MAIN.SEQ.LEFT.block1.steps)  + i.i
+    UIID_MAIN.seq.block_steps [ __RIGHT, i.i ] := get_ui_id(slider_MAIN.SEQ.RIGHT.block1.steps) + i.i
+end for
+
+UIID_MAIN.SEQ.xypads [ 0 ] := get_ui_id(xypad_MAIN.SEQ.LEFT)
+UIID_MAIN.SEQ.xypads [ 1 ] := get_ui_id(xypad_MAIN.SEQ.RIGHT)
+UIID_MAIN.controls.draw [ 0 ]:= get_ui_id(button_MAIN.LEFT.controls.draw)
+UIID_MAIN.controls.draw [ 1 ]:= get_ui_id(button_MAIN.RIGHT.controls.draw)

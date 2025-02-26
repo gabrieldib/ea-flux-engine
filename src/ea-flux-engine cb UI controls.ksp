@@ -1,0 +1,16 @@
+// import "ARP/__ARP 04 ui cb.ksp"
+
+{{ LFO }}
+on ui_control (slider_MAIN.LFO.rate)
+    call update_lfo_ms_rates
+    label_MAIN.LFO.rate -> text := beat_rates_display [ slider_MAIN.LFO.rate / __BEAT_RATE_DIVISOR ]
+end on
+
+
+on ui_control (xypad_MAIN.SEQ.LEFT)
+    
+end on
+
+on ui_control (xypad_MAIN.SEQ.RIGHT)
+    
+end on

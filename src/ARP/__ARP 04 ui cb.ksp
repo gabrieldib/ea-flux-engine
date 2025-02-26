@@ -1,0 +1,87 @@
+on ui_control (switch_ARP.power)
+    if (switch_ARP.power = 0)
+        call ARP.ClearNoteBuffer()
+        call ARP.StopSeq()
+    end if
+
+    // set_text(switch_ARP.power, "Arp" & !ARP.state[switch_ARP.power])
+end on
+
+on ui_control (switch_ARP.latch)
+    if (switch_ARP.latch = 0)
+        call ARP.ClearNoteBuffer()
+        call ARP.StopSeq()
+    end if
+
+    // set_text(switch_ARP.latch, "Latch" & !ARP.state[switch_ARP.latch])
+end on
+
+on ui_control (slider_ARP.rate)
+    call ARP.ChangeRate()
+end on
+
+on ui_control (slider_ARP.octave)
+    slider_ARP.octave    -> text := slider_ARP.octave
+end on
+
+on ui_control (slider_ARP.steps)
+    label_ARP.steps.disp -> text := slider_ARP.steps
+
+    call ARP.set_velo_table_columns_state
+end on
+
+on ui_control (slider_ARP.swing)
+    label_ARP.swing.disp     -> text := slider_ARP.swing & "%"
+end on
+
+
+on ui_control (slider_ARP.duration)
+    label_ARP.duration.disp -> text := slider_ARP.duration & "%"
+end on
+
+on ui_control(slider_ARP.repeats)
+    label_ARP.repeats.disp   -> text := slider_ARP.repeats
+end on
+
+on ui_control(slider_ARP.octave)
+    label_ARP.octave.disp   -> text := slider_ARP.octave
+end on
+
+
+macro menu_note_order_uicb(#n#)
+    on ui_control(switch_ARP.note_dir.#n#)
+        $ARP.NoteOrder := #n#
+        call ARP.clear_note_order_btns
+        switch_ARP.note_dir.#n# := 1
+    end on
+end macro
+iterate_macro(menu_note_order_uicb) := 0 to 6
+
+macro menu_table_order_uicb(#n#)
+    on ui_control($switch_ARP.table_dir.#n#)
+        $ARP.TableOrder := #n#
+        call ARP.clear_table_order_btns
+        $switch_ARP.table_dir.#n# := 1
+    end on
+end macro
+iterate_macro(menu_table_order_uicb) := 0 to 5
+
+
+on ui_control (xypad_ARP.velo.columns)
+    if (NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG or NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN)
+       
+        if xypad_ARP.velo.columns[0] < 1.0
+            XY_ARP_COLUMN_INDEX := int(round(100.0*xypad_ARP.velo.columns[0] / XY_ARP_STEP_UNIT))/100
+            // message("X: " & 100.0*xypad_ARP.velo.columns[0] & "  | column is " & XY_ARP_COLUMN_INDEX & ...
+            //         " | Y: " & xypad_ARP.velo.columns[1] * 149.0 & "  | velocity: " & int(xypad_ARP.velo.columns[1] * 127.0) )
+            set_control_par( ...
+                            ARP.velo_amount.uiid[XY_ARP_COLUMN_INDEX], ...
+                            CONTROL_PAR_PICTURE_STATE, ...
+                            int(xypad_ARP.velo.columns[1] * 149.0) )
+
+            %ARP.Pattern      [ XY_ARP_COLUMN_INDEX ] := int(xypad_ARP.velo.columns[1] * 127.0)
+            ?ARP.Pattern_real [ XY_ARP_COLUMN_INDEX ] := xypad_ARP.velo.columns[1]
+        end if
+
+    end if 
+end on

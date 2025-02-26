@@ -1,0 +1,146 @@
+{ post import UI figma }
+declare $ARP.beat_grid := 16
+declare $ARP.check_id
+declare $ARP.chord_oct_counter
+declare $ARP.cursor
+declare $ARP.cursor_helper
+declare $ARP.grid_counter
+declare $ARP.i
+declare $ARP.j
+declare $ARP.k
+declare $ARP.o
+declare $ARP.p
+declare $ARP.temp1
+declare $ARP.temp2
+declare $ARP.temp3
+declare $ARP.last_random_note
+declare $ARP.oct_counter
+declare $ARP.old_latch_time
+declare $ARP.played_duration
+declare $ARP.played_note
+declare $ARP.played_velocity
+declare $ARP.play_counter
+declare $ARP.prev_arp_mode
+declare $ARP.seq_running
+declare $ARP.step_counter
+declare $ARP.step_direction
+declare $ARP.step_duration
+declare $ARP.steps_played
+declare $ARP.prev_step := -1
+declare $ARP.repeat_counter_note
+declare $ARP.repeat_counter_note_other
+declare $ARP.repeat_counter_table
+declare $ARP.ticks_per_step := 6
+declare $ARP.tick_counter
+declare $ARP.up_down_counter
+declare $ARP.up_down_direction
+declare $ARP.up_down_oct_counter
+declare $ARP.wait_time
+declare %ARP.note_buffer           [128] { all held notes in the played order }
+declare %ARP.note_ids              [128]
+declare %ARP.play_buffer           [128] { the actual notes to be played }
+declare %ARP.play_down_buffer      [128]
+declare %ARP.play_up_buffer        [128]
+declare %ARP.play_vel_buffer       [128] := (-1)
+declare %ARP.play_up_vel_buffer    [128] := (-1)
+declare %ARP.play_down_vel_buffer  [128] := (-1)
+declare %ARP.sorted_buffer         [128]
+declare %ARP.sorted_vel_buffer     [128]
+declare %ARP.vel_buffer            [128] := (-1)
+declare !ARP.state                 [2]
+!ARP.state[0] := " Off"
+!ARP.state[1] := " On"
+declare !ARP.rates[9]
+!ARP.rates[0] := " 1/64 T"
+!ARP.rates[1] := " 1/32 T"
+!ARP.rates[2] := " 1/32"
+!ARP.rates[3] := " 1/16 T"
+!ARP.rates[4] := " 1/16"
+!ARP.rates[5] := " 1/8 T"
+!ARP.rates[6] := " 1/8"
+!ARP.rates[7] := " 1/4 T"
+!ARP.rates[8] := " 1/4"
+
+declare ui_menu $ARP.NoteOrder
+    add_menu_item($ARP.NoteOrder, "As Played",  0)
+    add_menu_item($ARP.NoteOrder, "Up",         1)
+    add_menu_item($ARP.NoteOrder, "Down",       2)
+    add_menu_item($ARP.NoteOrder, "Up - Down",  3)
+    add_menu_item($ARP.NoteOrder, "Down - Up",  4)
+    add_menu_item($ARP.NoteOrder, "Random",     5)
+    add_menu_item($ARP.NoteOrder, "Chord",      6)
+
+    $ARP.NoteOrder -> hide := HIDE_WHOLE_CONTROL
+
+declare ui_menu $ARP.TableOrder
+    add_menu_item($ARP.TableOrder, ">>",        0)
+    add_menu_item($ARP.TableOrder, "<<",        1)
+    add_menu_item($ARP.TableOrder, ">> <<",     2)
+    add_menu_item($ARP.TableOrder, "<< >>",     3)
+    add_menu_item($ARP.TableOrder, "???",       4)
+    add_menu_item($ARP.TableOrder, "Host Sync", 5)
+
+    $ARP.TableOrder -> hide := HIDE_WHOLE_CONTROL
+
+
+{ these two tables will be hidden and will be used only for their values }
+declare read ui_table %ARP.Pattern [$ARP.MAX.STEPS] (4, 4, 127)
+    %ARP.Pattern -> hide := HIDE_WHOLE_CONTROL
+
+declare read ?ARP.Pattern_real [ $ARP.MAX.STEPS ]
+
+declare ui_table %ARP.Current [$ARP.MAX.STEPS] (4, 1, 1)
+    %ARP.Current -> hide := HIDE_WHOLE_CONTROL
+
+
+declare ARP.velo_amount.uiid [64]
+    ARP.velo_amount.uiid [ 0 ] := get_ui_id(label_ARP.velo_amount.0)
+    for i.i := 1 to 15
+        ARP.velo_amount.uiid [ i.i ] := ARP.velo_amount.uiid [ 0 ] + i.i
+    end for    
+
+declare ARP.current_step.uiid [64]
+    ARP.current_step.uiid [ 0 ] := get_ui_id(label_ARP.velo_led.0)
+    for i.i := 1 to 15
+        ARP.current_step.uiid [ i.i ] := ARP.current_step.uiid [ 0 ] + i.i
+    end for    
+
+declare ARP_note_order_btns_uiid [ 7 ]
+    ARP_note_order_btns_uiid [ 0 ] := get_ui_id($switch_ARP.note_dir.0)
+    for i.i := 1 to 6
+        ARP_note_order_btns_uiid [ i.i ] := ARP_note_order_btns_uiid [ 0 ] + i.i
+    end for
+
+declare ARP_table_order_btns_uiid [ 6 ]
+    ARP_table_order_btns_uiid [ 0 ] := get_ui_id($switch_ARP.table_dir.0)
+    for i.i := 1 to 5
+        ARP_table_order_btns_uiid [ i.i ] := ARP_table_order_btns_uiid [ 0 ] + i.i
+    end for
+
+{ pending DELETE }
+// declare ui_label $ARP.L1 (1, 1)
+// declare ui_label $ARP.L2 (1, 1)
+
+$ARP.i := 0
+while ($ARP.i < $ARP.MAX.STEPS)
+    %ARP.Pattern[$ARP.i] := 127
+    inc($ARP.i)
+end while
+
+
+set_control_help($ARP.NoteOrder,"Note Order: Selects the order in which the input notes are going to be arpeggiated.")
+set_control_help($ARP.TableOrder,"Velocity Pattern Order: Selects the order in which the velocities of generated MIDI notes are read from the <Velocity Pattern> table. When set to Host Sync, <Velocity Pattern> readout will be synchronized to the song position pointer when host's transport is running, ensuring identical playback throughout the song.")
+set_control_help(switch_ARP.ScaleByVel,"Scale By Velocity: When enabled, played velocities will be scaled by the columns of the rhythmic grid. When disabled, played velocities are ignored and taken from <Velocity Pattern> table.")
+set_control_help(slider_ARP.rate,"Rate: Adjusts the arpeggiator rate in rhythmical values, synced to the host clock. T stands for triplet.")
+set_control_help(slider_ARP.duration,"Duration: Adjusts the duration of the arpeggiated MIDI notes in percent (using the <Rate> note value as base). This will only change the length of generated MIDI notes, not the volume envelope.")
+set_control_help(slider_ARP.swing,"Swing: Pushes every other step forward by the specified amount in percent, in order to create a swing feel.")
+set_control_help(slider_ARP.octave,"Octave: Adjusts the distribution of the arpeggio pattern in various octaves. The arpeggio pattern cycles from the played octave to the octave set upwards (if positive) or downwards (if negative).")
+set_control_help(slider_ARP.repeats,"Repeats: Adjusts the number of repeats of each note in the arpeggiator pattern.")
+set_control_help(switch_ARP.power,"Arpeggiator Toggle: Enables or disables the arpeggiator.")
+set_control_help(switch_ARP.latch,"Latch Mode: When enabled, all played keys will be held indefinitely (or until <Latch> is disabled).")
+set_control_help(slider_ARP.steps,"Steps: Adjusts the number of steps in the velocity pattern.")
+set_control_help(%ARP.Pattern,"Velocity Pattern: Adjusts the velocity pattern of the arpeggiated notes. If a column is set to 0, the step will not be played. The actual velocity depends on <Scale by Velocity> button, the length of the pattern can be set with <Steps>.")
+
+{ currently played step is also sent through PGS, so it can be used in other script slots, if necessary }
+pgs_create_key(ARP_COUNTER, 1)
+pgs_set_key_val(ARP_COUNTER, 0, -1)

@@ -1,0 +1,3 @@
+if ($NI_SIGNAL_TYPE = $NI_SIGNAL_TIMER_BEAT and $ARP.seq_running = 1)
+    call ARP.TickReceived()
+end if

@@ -1,0 +1,45 @@
+on ui_controls
+    {{ MAIN SEQ Steps sliders }}
+    if in_range( NI_UI_ID, UIID_MAIN.seq.block_steps [ 0, 0 ], UIID_MAIN.seq.block_steps [ 1, 3 ])
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.block_steps [ 0, 0 ]
+        if uics_uiid_index < 4
+            uics_seq_side := __LEFT
+        else
+            uics_seq_side := __RIGHT
+            uics_uiid_index := uics_uiid_index - 4 
+        end if
+        SEQ.MAIN.step_count [ uics_seq_side, uics_uiid_index ] := UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index ] -> value
+
+        fn003.a.side        := uics_seq_side
+        fn003.a.block_index := uics_uiid_index
+        call fn003_set_block_step_count
+    end if
+
+    { SEQ Y PADS }
+    if NI_UI_ID = UIID_MAIN.SEQ.xypads [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.xypads [ 1 ]
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.SEQ.xypads [ 0 ]
+
+        if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN
+            { capture the step index on click }
+            call get_seq_step_index
+        end if
+
+        if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
+            {   if draw is off, we keep the step index recorded when we pressed the mouse button down 
+                if it is on, we update the step_index }
+            if UIID_MAIN.controls.draw [ uics_uiid_index ] -> value = __ON
+                call get_seq_step_index
+            end if
+        end if
+
+        fn002.a.step_index := fn001.r.step_index
+        fn002.a.side       := uics_uiid_index
+        fn002.a.value      := get_control_par_real_arr( ...
+            UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
+            CONTROL_PAR_VALUE,                          ...
+            1                                           ...
+        ) 
+        call fn002_set_seq_step_value
+    end if
+
+end on

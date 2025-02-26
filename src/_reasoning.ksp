@@ -1,0 +1,38 @@
+{{ XY PAD }}
+
+{ we will have 4 blocks that can have from 1 - 8 steps 
+                we are using 4 IFs instead of xy_x / 0.25 because we want 
+                to match the graphics which are not 100% perfect just
+                dividing by 4
+            }
+            { depending on where the user clicked in the block
+            we will capture the index of the current step }
+
+            {   REASONING
+                to get the index of the clicked step:
+                the space of block 1 (0.25) divided by number of steps in that 
+                block will give us the width of each step slice as
+                    (0.25 / slider_MAIN.SEQ.LEFT.block1.steps)
+                to find the index of the step clicked:
+                    xy_x / (0.25 / slider_MAIN.SEQ.LEFT.block1.steps)
+
+                this works for block 1, but for block 2, 3 and 4 that have
+                the same length, but an offset X, we have to:
+                step_index = ( xy_X - (block_index * 0.25) ) / block_steps -> block steps of the 
+                current block we want the index from
+
+                and for the blocks > 1, we also need to add an offset to the step index
+                when storing the data as
+                    step_index = step_index (calculated above) + block_index*8 (with block index 0 based index )
+            }
+            { Plan:
+                We need
+                    determine which block was clicked on
+                    can we get that without 4 ifs?
+                        yes, do xy_x / 0.25 BUT we may need to match the graphics
+                        with more precision, maybe 4 IFs will be more precise for that
+                
+                    determine the step clicked:
+                    xy_x / ((xy_x - (0.25 * block_index)) / block_steps)
+
+            }

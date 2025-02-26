@@ -1,0 +1,58 @@
+on listener
+
+    // import "ARP/__ARP 07 listener cb.ksp"
+
+    {{ SEQUENCER }}
+
+
+
+    if (NI_SIGNAL_TYPE = NI_SIGNAL_TIMER_MS)
+        select(LFO_data [ LFO_WAVESHAPE ])
+            case LFO_WAVESHAPE_TRI
+                LFO_emitted_value := ...
+                    4.0 * abs( float(lcb_ms_counter)/float(LFO_rate) - ...
+                        floor( float(lcb_ms_counter)/float(LFO_rate) + 0.5 ) ) - 1.0;
+
+            case LFO_WAVESHAPE_SIN to LFO_WAVESHAPE_SQR
+                LFO_emitted_value := ...
+                    sin( ...
+                        LFO_sine_step * (float(lcb_ms_counter) mod (float(LFO_rate)) ) ...
+                    ) {/ 2.0 + 0.5 } { the /2 + 0.5 is to adjust from -1 to 1 to return values from 0 to 1 }
+
+                if LFO_data [ LFO_WAVESHAPE ] = LFO_WAVESHAPE_SQR
+                    if LFO_emitted_value <= 0.0
+                        LFO_emitted_value := -1.0
+                    else
+                        LFO_emitted_value := 1.0
+                    end if
+                end if
+
+            case LFO_WAVESHAPE_SAW
+                LFO_emitted_value := 2.0 * float(lcb_ms_counter mod LFO_rate)/float(LFO_rate) - 1.0
+
+            case LFO_WAVESHAPE_RND
+                if lcb_ms_counter mod LFO_rate = 0
+                    LFO_emitted_value := float(random(-1000, 1000))/1000.0
+                end if
+        end select
+
+
+        // UIID_MAIN.LEFT.seq.step [ LFO_seq_step_count ] -> picture_state := ...
+        //     int( (1.0 - (LFO_emitted_value / 2.0 + 0.5)) * __SEQ_STEP_VALUE_FRAMES)
+
+        // UIID_MAIN.RIGHT.seq.step [ LFO_seq_step_count ] -> picture_state := ...
+        //     int((LFO_emitted_value / 2.0 + 0.5) * __SEQ_STEP_VALUE_FRAMES)
+
+        // inc(LFO_seq_step_count)
+        // if LFO_seq_step_count > 31
+        //     LFO_seq_step_count := 0
+        // end if
+
+        { updates BPM in case it is changed, and arrays using note duration constants }
+        if lcb_ms_counter mod 1000 = 0 and __BPM # 60000000.0 / float(DURATION_QUARTER)
+            call LCB_data_update
+        end if
+
+        inc(lcb_ms_counter)
+    end if
+end on

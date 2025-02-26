@@ -1,0 +1,540 @@
+function ARP.ChangeRate()
+    select (slider_ARP.rate)
+        case 0 { 1/64 T }
+            $ARP.ticks_per_step := 1
+            $ARP.beat_grid := 48
+        case 1 { 1/32 T }
+            $ARP.ticks_per_step := 2
+            $ARP.beat_grid := 48
+        case 2 { 1/32 }
+            $ARP.ticks_per_step := 3
+            $ARP.beat_grid := 32
+        case 3 { 1/16 T }
+            $ARP.ticks_per_step := 4
+            $ARP.beat_grid := 24
+        case 4 { 1/16 }
+            $ARP.ticks_per_step := 6
+            $ARP.beat_grid := 16
+        case 5 { 1/8 T }
+            $ARP.ticks_per_step := 8
+            $ARP.beat_grid := 12
+        case 6 { 1/8 }
+            $ARP.ticks_per_step := 12
+            $ARP.beat_grid := 8
+        case 7 { 1/4 T }
+            $ARP.ticks_per_step := 16
+            $ARP.beat_grid := 6
+        case 8 { 1/4 }
+            $ARP.ticks_per_step := 24
+            $ARP.beat_grid := 4
+    end select
+
+    label_ARP.rate.disp -> text := !ARP.rates[slider_ARP.rate]
+end function
+
+function ARP.ClearNoteBuffer()
+    $ARP.i := 0
+    while ($ARP.i < $ARP.cursor)
+        %ARP.note_buffer[$ARP.i] := 0
+
+        inc($ARP.i)
+    end while
+
+    $ARP.cursor := 0
+end function
+
+function ARP.StartSeq()
+    $ARP.seq_running := 1
+    $ARP.oct_counter := 0
+    $ARP.play_counter := 0
+    $ARP.up_down_direction := 0
+    $ARP.up_down_counter := 0
+    $ARP.up_down_oct_counter := 0
+    $ARP.chord_oct_counter := 0
+    $ARP.steps_played := 0
+
+    if ($ARP.TableOrder mod 2 = 0 and $ARP.TableOrder # 5)
+        if ($ARP.TableOrder = 4)
+            $ARP.step_counter := random(0, slider_ARP.steps - 1)
+        else
+            $ARP.step_counter := 0
+        end if
+
+        $ARP.step_direction := 0
+        $ARP.tick_counter := -1
+    else
+        if ($NI_TRANSPORT_RUNNING = 0)
+            $ARP.step_counter := slider_ARP.steps - 1
+            $ARP.step_direction := 1
+            $ARP.tick_counter := -1
+        end if
+    end if
+end function
+
+function ARP.StopSeq()
+    $ARP.seq_running := 0
+    $ARP.repeat_counter_note := 0
+    $ARP.repeat_counter_note_other := 0
+    $ARP.repeat_counter_table := 0
+    $ARP.prev_step := -1
+
+    $ARP.j := 0
+    while ($ARP.j < $ARP.MAX.STEPS)
+        %ARP.Current[$ARP.j] := 0
+
+        inc($ARP.j)
+    end while
+
+    pgs_set_key_val(ARP_COUNTER, 0, -1)
+end function
+
+function ARP.TickReceived()
+    { get step counter }
+    if ($ARP.TableOrder # 5)
+        inc($ARP.tick_counter)
+
+        if ($ARP.tick_counter >= $ARP.ticks_per_step)
+            select ($ARP.TableOrder)
+                case 0  { forward }
+                    inc($ARP.step_counter)
+
+                    if ($ARP.repeat_counter_table < slider_ARP.repeats - 1)
+                        dec($ARP.step_counter)
+                        inc($ARP.repeat_counter_table)
+                    else
+                        $ARP.repeat_counter_table := 0
+                    end if
+
+                    if ($ARP.step_counter >= slider_ARP.steps)
+                        $ARP.step_counter := 0
+                    end if
+                case 1  { backward }
+                    dec($ARP.step_counter)
+
+                    if ($ARP.repeat_counter_table < slider_ARP.repeats - 1)
+                        inc($ARP.step_counter)
+                        inc($ARP.repeat_counter_table)
+                    else
+                        $ARP.repeat_counter_table := 0
+                    end if
+
+                    if ($ARP.step_counter < 0)
+                        $ARP.step_counter := slider_ARP.steps - 1
+                    end if
+                case 2 to 3  { forward-backward, backward-forward }
+                    if ($ARP.step_direction = 0)
+                        if ($ARP.step_counter=(slider_ARP.steps - 1))
+                            $ARP.step_direction := 1
+                            dec($ARP.step_counter)
+
+                            if ($ARP.repeat_counter_table < slider_ARP.repeats - 1)
+                                inc($ARP.step_counter)
+                                inc($ARP.repeat_counter_table)
+                            else
+                                $ARP.repeat_counter_table := 0
+                            end if
+                        else
+                            inc($ARP.step_counter)
+
+                            if ($ARP.repeat_counter_table < slider_ARP.repeats - 1)
+                                dec($ARP.step_counter)
+                                inc($ARP.repeat_counter_table)
+                            else
+                                $ARP.repeat_counter_table := 0
+                            end if
+                        end if
+                    else
+                        if ($ARP.step_counter = 0)
+                            $ARP.step_direction := 0
+                            inc($ARP.step_counter)
+
+                            if ($ARP.repeat_counter_table < slider_ARP.repeats - 1)
+                                dec($ARP.step_counter)
+                                inc($ARP.repeat_counter_table)
+                            else
+                                $ARP.repeat_counter_table := 0
+                            end if
+                        else
+                            dec($ARP.step_counter)
+
+                            if ($ARP.repeat_counter_table < slider_ARP.repeats - 1)
+                                inc($ARP.step_counter)
+                                inc($ARP.repeat_counter_table)
+                            else
+                                $ARP.repeat_counter_table := 0
+                            end if
+                        end if
+                    end if
+                case 4  { non-repeating random }
+                    if ($ARP.repeat_counter_table < slider_ARP.repeats - 1)
+                        $ARP.step_counter := $ARP.step_counter
+                        inc($ARP.repeat_counter_table)
+                    else
+                        $ARP.step_counter := random(0, slider_ARP.steps - 1)
+
+                        if ($ARP.step_counter = $ARP.prev_step)
+                            while ($ARP.step_counter = $ARP.prev_step)
+                                $ARP.step_counter := random(0, slider_ARP.steps - 1)
+                            end while
+                        end if
+
+                        $ARP.prev_step := $ARP.step_counter
+                        $ARP.repeat_counter_table := 0
+                    end if
+            end select
+
+            $ARP.tick_counter := 0
+        end if
+    else
+        if ($NI_SONG_POSITION < 0)
+            exit
+        else
+            $ARP.tick_counter := ($NI_SONG_POSITION / 40) mod $ARP.ticks_per_step
+            $ARP.step_counter := ($NI_SONG_POSITION / (960*4 / $ARP.beat_grid)) mod slider_ARP.steps
+        end if
+    end if
+
+    { create sorted buffer for note order up and down }
+    $ARP.i := 0
+    while ($ARP.i <= 127)
+        if ($ARP.i < $ARP.cursor)
+            %ARP.sorted_buffer[$ARP.i] := %ARP.note_buffer[$ARP.i]
+            %ARP.sorted_vel_buffer[$ARP.i] := %ARP.vel_buffer[$ARP.i]
+        else
+            %ARP.sorted_buffer[$ARP.i] := 0
+            %ARP.sorted_vel_buffer[$ARP.i] := -1
+            %ARP.note_buffer[$ARP.i] := 0
+            %ARP.vel_buffer[$ARP.i] := -1
+        end if
+
+        inc($ARP.i)
+    end while
+
+    { using insertion sort here because the velocity buffer needs to follow the sorting of the note buffer }
+    $ARP.o := 1
+    while ($ARP.o < num_elements(%ARP.sorted_buffer))
+        $ARP.temp1 := %ARP.sorted_buffer[$ARP.o]
+        $ARP.temp2 := %ARP.sorted_vel_buffer[$ARP.o]
+
+        $ARP.p := $ARP.o - 1
+        while ($ARP.p >= 0 and (%ARP.sorted_buffer[$ARP.p] < $ARP.temp1))
+            %ARP.sorted_buffer[$ARP.p + 1] := %ARP.sorted_buffer[$ARP.p]
+            %ARP.sorted_vel_buffer[$ARP.p + 1] := %ARP.sorted_vel_buffer[$ARP.p]
+            dec($ARP.p)
+        end while
+
+        %ARP.sorted_buffer[$ARP.p + 1] := $ARP.temp1
+        %ARP.sorted_vel_buffer[$ARP.p + 1] := $ARP.temp2
+
+        inc($ARP.o)
+    end while
+
+    { create play buffers }
+    $ARP.i := 0
+    while ($ARP.i < $ARP.cursor)
+        %ARP.play_buffer[$ARP.i] := %ARP.note_buffer[$ARP.i]
+        %ARP.play_up_buffer[$ARP.i] := %ARP.sorted_buffer[$ARP.cursor - 1 - $ARP.i]
+        %ARP.play_down_buffer[$ARP.i] := %ARP.sorted_buffer[$ARP.i]
+        %ARP.play_vel_buffer[$ARP.i] := %ARP.vel_buffer[$ARP.i]
+        %ARP.play_up_vel_buffer[$ARP.i] := %ARP.sorted_vel_buffer[$ARP.cursor - 1 - $ARP.i]
+        %ARP.play_down_vel_buffer[$ARP.i] := %ARP.sorted_vel_buffer[$ARP.i]
+
+        inc($ARP.i)
+    end while
+
+    { we have reached a step }
+    if ($ARP.tick_counter = 0)
+        $ARP.step_duration := ($DURATION_QUARTER * 4) / $ARP.beat_grid
+
+        { current step display }
+        if ($ARP.seq_running = 1)
+            $ARP.j := 0
+            while ($ARP.j < $ARP.MAX.STEPS)
+                %ARP.Current[$ARP.j] := 0
+                set_control_par(ARP.current_step.uiid[$ARP.j], CONTROL_PAR_PICTURE_STATE, 0)
+                inc($ARP.j)
+            end while
+
+            %ARP.Current[$ARP.step_counter] := 1
+            set_control_par(ARP.current_step.uiid[$ARP.step_counter], CONTROL_PAR_PICTURE_STATE, 1)
+
+            pgs_set_key_val(ARP_COUNTER, 0, $ARP.step_counter)
+        end if
+
+        { create note }
+        if (%ARP.Pattern[$ARP.step_counter] > 0 and $ARP.cursor > 0 and $ARP.seq_running = 1)
+            $ARP.played_duration := ($ARP.step_duration / 100) * slider_ARP.duration
+            $ARP.played_velocity := %ARP.Pattern[$ARP.step_counter]
+
+            { swing implementation }
+            if ($ARP.steps_played mod 2 = 1 and slider_ARP.swing > 0)
+                $ARP.wait_time := ($ARP.step_duration * slider_ARP.swing) / 100
+
+                if ($ARP.wait_time > 0)
+                    wait($ARP.wait_time)
+                end if
+            end if
+
+            select ($ARP.NoteOrder)
+                case 0  { as played }
+                    $ARP.played_note := %ARP.play_buffer[$ARP.play_counter] + ($ARP.oct_counter * 12)
+
+                    if (switch_ARP.ScaleByVel = 1)
+                        $ARP.played_velocity := %ARP.play_vel_buffer[$ARP.play_counter] * %ARP.Pattern[$ARP.step_counter] / 127
+                    end if
+
+                    if (in_range($ARP.played_note, 0, 127))
+                        play_note($ARP.played_note, $ARP.played_velocity, 0, $ARP.played_duration)
+                    end if
+                case 1  { up }
+                    $ARP.played_note := %ARP.play_up_buffer[$ARP.play_counter] + ($ARP.oct_counter * 12)
+
+                    if (switch_ARP.ScaleByVel = 1)
+                        $ARP.played_velocity := %ARP.play_up_vel_buffer[$ARP.play_counter] * %ARP.Pattern[$ARP.step_counter] / 127
+                    end if
+
+                    if (in_range($ARP.played_note, 0, 127))
+                        play_note($ARP.played_note, $ARP.played_velocity, 0, $ARP.played_duration)
+                    end if
+                case 2  { down }
+                    $ARP.played_note := %ARP.play_down_buffer[$ARP.play_counter] + ($ARP.oct_counter * 12)
+
+                    if (switch_ARP.ScaleByVel = 1)
+                        $ARP.played_velocity := %ARP.play_down_vel_buffer[$ARP.play_counter] * %ARP.Pattern[$ARP.step_counter] / 127
+                    end if
+
+                    if (in_range($ARP.played_note, 0, 127))
+                        play_note($ARP.played_note, $ARP.played_velocity, 0, $ARP.played_duration)
+                    end if
+                case 3 to 4  { up-down, down-up }
+                    if ($ARP.NoteOrder = 3)
+                        $ARP.played_note := %ARP.play_up_buffer[$ARP.up_down_counter] + ($ARP.up_down_oct_counter * 12)
+
+                        if (switch_ARP.ScaleByVel = 1)
+                            $ARP.played_velocity := %ARP.play_up_vel_buffer[$ARP.play_counter] * %ARP.Pattern[$ARP.step_counter] / 127
+                        end if
+                    else
+                        $ARP.played_note := %ARP.play_down_buffer[$ARP.up_down_counter] + ($ARP.up_down_oct_counter * 12)
+
+                        if (switch_ARP.ScaleByVel = 1)
+                            $ARP.played_velocity := %ARP.play_down_vel_buffer[$ARP.play_counter] * %ARP.Pattern[$ARP.step_counter] / 127
+                        end if
+                    end if
+
+                    if (in_range($ARP.played_note, 0, 127))
+                        play_note($ARP.played_note, $ARP.played_velocity, 0, $ARP.played_duration)
+                    end if
+
+                    if ($ARP.cursor = 1)
+                        if ($ARP.repeat_counter_note_other < slider_ARP.repeats - 1)
+                            inc($ARP.repeat_counter_note_other)
+                        else
+                            $ARP.repeat_counter_note_other := 0
+                        end if
+
+                        if ($ARP.repeat_counter_note_other = 0)
+                            if (slider_ARP.octave > 0)
+                                inc($ARP.up_down_oct_counter)
+                            end if
+
+                            if (slider_ARP.octave < 0)
+                                dec($ARP.up_down_oct_counter)
+                            end if
+                        end if
+
+                        if (abs($ARP.up_down_oct_counter) > abs(slider_ARP.octave))
+                            $ARP.up_down_oct_counter := 0
+                        end if
+                    end if
+
+                    if ($ARP.cursor = 2)
+                        inc($ARP.up_down_counter)
+
+                        if ($ARP.repeat_counter_note_other < slider_ARP.repeats - 1)
+                            dec($ARP.up_down_counter)
+                            inc($ARP.repeat_counter_note_other)
+                        else
+                            $ARP.repeat_counter_note_other := 0
+                        end if
+
+                        if ($ARP.up_down_counter = 2)
+                            inc($ARP.up_down_oct_counter)
+
+                            if ($ARP.up_down_oct_counter > slider_ARP.octave)
+                                $ARP.up_down_oct_counter := 0
+                            end if
+
+                            $ARP.up_down_counter := 0
+                        end if
+                    end if
+
+                    if ($ARP.cursor > 2)
+                        if ($ARP.up_down_counter >= $ARP.cursor - 1)
+                            $ARP.up_down_direction := 1  { go down }
+                        end if
+
+                        if ($ARP.up_down_counter <= 0)
+                            $ARP.up_down_direction := 0  { go up }
+                        end if
+
+                        if ($ARP.up_down_direction = 1)
+                            dec($ARP.up_down_counter)
+
+                            if ($ARP.repeat_counter_note_other < slider_ARP.repeats - 1)
+                                inc($ARP.up_down_counter)
+                                inc($ARP.repeat_counter_note_other)
+                            else
+                                $ARP.repeat_counter_note_other := 0
+                            end if
+                        else
+                            inc($ARP.up_down_counter)
+
+                            if ($ARP.repeat_counter_note_other < slider_ARP.repeats - 1)
+                                dec($ARP.up_down_counter)
+                                inc($ARP.repeat_counter_note_other)
+                            else
+                                $ARP.repeat_counter_note_other := 0
+                            end if
+                        end if
+
+                        if ($ARP.up_down_counter = 0 and $ARP.up_down_direction = 1)
+                            if (slider_ARP.octave > 0)
+                                inc($ARP.up_down_oct_counter)
+                            end if
+
+                            if (slider_ARP.octave < 0)
+                                dec($ARP.up_down_oct_counter)
+                            end if
+
+                            if (abs($ARP.up_down_oct_counter) > abs(slider_ARP.octave))
+                                $ARP.up_down_oct_counter := 0
+                            end if
+                        end if
+                    end if
+                case 5  { random }
+                    if ($ARP.repeat_counter_note_other = 0)
+                        $ARP.temp3 := random(0, $ARP.cursor - 1)
+                        $ARP.played_note := %ARP.play_buffer[$ARP.temp3] + (random(0, slider_ARP.octave) * 12)
+
+                        { if three or more notes are played, no repetition of notes }
+                        if ($ARP.cursor * (slider_ARP.octave + 1) >= 3)
+                            while ($ARP.played_note = $ARP.last_random_note)
+                                $ARP.temp3 := random(0, $ARP.cursor - 1)
+                                $ARP.played_note := %ARP.play_buffer[$ARP.temp3] + (random(0, slider_ARP.octave) * 12)
+                            end while
+                        end if
+
+                        if (switch_ARP.ScaleByVel = 1)
+                            $ARP.played_velocity := %ARP.play_vel_buffer[$ARP.temp3] * %ARP.Pattern[$ARP.step_counter] / 127
+                        end if
+                    end if
+
+                    if (in_range($ARP.played_note, 0, 127))
+                        play_note($ARP.played_note, $ARP.played_velocity, 0, $ARP.played_duration)
+                        $ARP.last_random_note := $ARP.played_note
+                    end if
+
+                    if ($ARP.repeat_counter_note_other < slider_ARP.repeats - 1)
+                        inc($ARP.repeat_counter_note_other)
+                    else
+                        $ARP.repeat_counter_note_other := 0
+                    end if
+                case 6  { chord }
+                    $ARP.i := 0
+                    while ($ARP.i < $ARP.cursor)
+                        $ARP.played_note := %ARP.play_buffer[$ARP.i] + ($ARP.chord_oct_counter * 12)
+
+                        if (switch_ARP.ScaleByVel = 1)
+                            $ARP.played_velocity := %ARP.play_vel_buffer[$ARP.i] * %ARP.Pattern[$ARP.step_counter] / 127
+
+                            if ($ARP.played_velocity < 1 and (%ARP.Pattern[$ARP.step_counter] > 0))
+                                $ARP.played_velocity := 1
+                            end if
+                        end if
+
+                        if (in_range($ARP.played_note, 0, 127))
+                            play_note($ARP.played_note, $ARP.played_velocity, 0, $ARP.played_duration)
+                        end if
+
+                        inc($ARP.i)
+                    end while
+
+                    if ($ARP.repeat_counter_note_other < slider_ARP.repeats - 1)
+                        inc($ARP.repeat_counter_note_other)
+                    else
+                        if (slider_ARP.octave > 0)
+                            inc($ARP.chord_oct_counter)
+                        end if
+
+                        if (slider_ARP.octave < 0)
+                            dec($ARP.chord_oct_counter)
+                        end if
+
+                        if (abs($ARP.chord_oct_counter) > abs(slider_ARP.octave))
+                            $ARP.chord_oct_counter := 0
+                        end if
+
+                        $ARP.repeat_counter_note_other := 0
+                    end if
+            end select
+
+            { advance play counter }
+            inc($ARP.play_counter)
+
+            if ($ARP.repeat_counter_note < slider_ARP.repeats - 1)
+                dec($ARP.play_counter)
+                inc($ARP.repeat_counter_note)
+            else
+                $ARP.repeat_counter_note := 0
+            end if
+
+            { reset play counter and get octave counter }
+            if ($ARP.play_counter >= $ARP.cursor)  { we have finished a cycle }
+                $ARP.play_counter := 0
+
+                if (slider_ARP.octave > 0)
+                    inc($ARP.oct_counter)
+                end if
+
+                if (slider_ARP.octave < 0)
+                    dec($ARP.oct_counter)
+                end if
+
+                if (abs($ARP.oct_counter) > abs(slider_ARP.octave))
+                    $ARP.oct_counter := 0
+                end if
+            end if
+        end if
+
+        inc($ARP.steps_played)
+    end if
+end function
+
+function ARP.set_velo_table_columns_state
+    for i.i := 1 to 15
+        if i.i < slider_ARP.steps
+            set_control_par_str(ARP.velo_amount.uiid[i.i], CONTROL_PAR_PICTURE, "label_ARP.velo_amount")
+        else
+            set_control_par_str(ARP.velo_amount.uiid[i.i], CONTROL_PAR_PICTURE, "label_ARP.velo_amount.disabled")
+        end if
+    end for
+    for i.i := 0 to slider_ARP.steps-1
+        set_control_par( ...
+                        ARP.velo_amount.uiid[i.i], ...
+                        CONTROL_PAR_PICTURE_STATE, ...
+                        int(?ARP.Pattern_real[i.i] * 127.0) )
+    end for
+end function
+
+function ARP.clear_note_order_btns
+    for i.i := 0 to 6
+        set_control_par(ARP_note_order_btns_uiid [ i.i ], $CONTROL_PAR_VALUE, 0)
+    end for
+end function
+
+function ARP.clear_table_order_btns
+    for i.i := 0 to 5
+        set_control_par(ARP_table_order_btns_uiid [ i.i ], $CONTROL_PAR_VALUE, 0)
+    end for
+end function
+

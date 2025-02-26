@@ -1,0 +1,251 @@
+{ DEFINES   _____________________________________________________________________________________ }
+    define __OFF   := 0
+    define __ON    := 1
+    define __LEFT  := 0
+    define __RIGHT := 1
+
+    define LFO_RATE_MODE      := 0
+    define LFO_RATE           := 1
+    define LFO_DEPTH          := 2
+    define LFO_WAVESHAPE      := 3
+
+    define LFO_WAVESHAPE_SIN  := 0
+    define LFO_WAVESHAPE_TRI  := 1
+    define LFO_WAVESHAPE_SQR  := 2
+    define LFO_WAVESHAPE_SAW  := 3
+    define LFO_WAVESHAPE_RND  := 4
+
+    define SEQ_TYPE_UNIPOLAR  := 0
+    define SEQ_TYPE_BIPOLAR   := 1
+
+    define SEQ_TARGET_VELO    := 0
+    define SEQ_TARGET_PITCH   := 1
+    define SEQ_TARGET_OCTAVE  := 2
+    define SEQ_TARGET_PAN     := 3
+    define SEQ_TARGET_FILTER  := 4
+
+
+{ CONSTANTS _____________________________________________________________________________________ }
+    {{ SEQ }}
+        declare const SEQ_XY_W                := 366
+        declare const SEQ_XY_H                :=  95
+        declare const SEQ_XY_BLOCK_WIDTH_PX   :=  90
+
+        declare SEQ_XY_BLOCK_START_OFFSET [ 4 ]
+            SEQ_XY_BLOCK_START_OFFSET [ 0 ]   :=   0
+            SEQ_XY_BLOCK_START_OFFSET [ 1 ]   :=  92
+            SEQ_XY_BLOCK_START_OFFSET [ 2 ]   := 184
+            SEQ_XY_BLOCK_START_OFFSET [ 3 ]   := 276
+
+        declare const SEQ_RIGHT_X_OFFSET      := 138
+
+        declare      ~SEQ_XY_BLOCK_PX_W       := 1.0 / float(SEQ_XY_W)
+        declare      ~SEQ_XY_BLOCK_W          := float(SEQ_XY_BLOCK_WIDTH_PX)/float(SEQ_XY_W)
+        declare const SEQ_LEFT_START_PX       := 4
+        declare const SEQ_STEP2_WIDTH         := 40
+        declare const SEQ_STEP3_WIDTH         := 26
+        declare const SEQ_STEP4_WIDTH         := 19
+        declare const SEQ_STEP5_WIDTH         := 16
+        declare const SEQ_STEP6_WIDTH         := 13
+        declare const SEQ_STEP7_WIDTH         := 10
+        declare const SEQ_STEP8_WIDTH         :=  9
+
+        declare const SEQ_STEP2_GAP           := 2
+        declare const SEQ_STEP3_GAP           := 2
+        declare const SEQ_STEP4_GAP           := 2
+        declare const SEQ_STEP5_GAP           := 1
+        declare const SEQ_STEP6_GAP           := 2
+        declare const SEQ_STEP7_GAP           := 2
+        declare const SEQ_STEP8_GAP           := 2
+
+        { 90 is the width of each block }
+        declare const ~SEQ_XY_B1_START := 0.0
+        declare const ~SEQ_XY_B1_END   := 0.245901 // (1 / 366) * 90
+        declare const ~SEQ_XY_B2_START := 0.251366 // B2 px start * BPxW
+        declare const ~SEQ_XY_B2_END   := 0.497267 // start + block width (b1 end)
+        declare const ~SEQ_XY_B3_START := 0.502732 // B3 px start * BPxW
+        declare const ~SEQ_XY_B3_END   := 0.748632 // etc
+        declare const ~SEQ_XY_B4_START := 0.754098
+        declare const ~SEQ_XY_B4_END   := 0.999999
+
+        declare const ~__SEQ_XY_PX_STEP := 1.0 / 366.0
+
+        declare !SEQ_step_pictures     [ 16 ] // first 8 are unipolar, last 8 bipolar
+        declare !SEQ_step_led_pictures [ 16 ]
+
+        declare SEQ_STEP_COORD [ 2, 8, 32 ] // 2 sides, step count, x coord 
+
+        declare SEQ.target_type [ 5 ]
+            SEQ.target_type [ SEQ_TARGET_VELO   ] := SEQ_TYPE_UNIPOLAR
+            SEQ.target_type [ SEQ_TARGET_PITCH  ] := SEQ_TYPE_BIPOLAR
+            SEQ.target_type [ SEQ_TARGET_OCTAVE ] := SEQ_TYPE_BIPOLAR
+            SEQ.target_type [ SEQ_TARGET_PAN    ] := SEQ_TYPE_BIPOLAR
+            SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_UNIPOLAR
+
+    {{ LFO }}
+        declare !beat_rates_display [ 19 ]
+            beat_rates_display [ 00 ] := "1/128"  { 128               }
+            beat_rates_display [ 01 ] := "1/64 T" { 64th  triplet     }
+            beat_rates_display [ 02 ] := "1/64"   { 64th              }
+            beat_rates_display [ 03 ] := "1/32 T" { 32nd  triplet     }
+            beat_rates_display [ 04 ] := "1/32"   { 32nd              }
+            beat_rates_display [ 05 ] := "1/16 T" { sixteenth triplet }
+            beat_rates_display [ 06 ] := "1/16"   { sixteenth         }
+            beat_rates_display [ 07 ] := "1/8 T"  { eighth triplet    }
+            beat_rates_display [ 08 ] := "1/16 D" { sixteenth dotted  }
+            beat_rates_display [ 09 ] := "1/8"    { eighth            }
+            beat_rates_display [ 10 ] := "1/4 T"  { quarter triplet   }
+            beat_rates_display [ 11 ] := "1/8 D"  { eight dotted      }
+            beat_rates_display [ 12 ] := "1/4"    { quarter           }
+            beat_rates_display [ 13 ] := "1/2 T"  { half triplet      }
+            beat_rates_display [ 14 ] := "1/4 D"  { quarter dotted    }
+            beat_rates_display [ 15 ] := "1/2"    { half              }
+            beat_rates_display [ 16 ] := "1/2 D"  { half dotted       }
+            beat_rates_display [ 17 ] := "1 T"    { whole triplet     }
+            beat_rates_display [ 18 ] := "1"      { whole             }
+
+        declare beat_rates [ 19 ]
+            beat_rates [ 00 ] := (DURATION_SIXTEENTH/8)/1000
+            beat_rates [ 01 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
+            beat_rates [ 02 ] := (DURATION_SIXTEENTH/4)/1000
+            beat_rates [ 03 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
+            beat_rates [ 04 ] := (DURATION_SIXTEENTH/2)/1000
+            beat_rates [ 05 ] := (DURATION_SIXTEENTH_TRIPLET)/1000
+            beat_rates [ 06 ] := (DURATION_SIXTEENTH)/1000
+            beat_rates [ 07 ] := (DURATION_EIGHTH_TRIPLET)/1000
+            beat_rates [ 08 ] := (3*DURATION_SIXTEENTH/2)/1000
+            beat_rates [ 09 ] := (DURATION_EIGHTH)/1000
+            beat_rates [ 10 ] := (DURATION_QUARTER_TRIPLET)/1000
+            beat_rates [ 11 ] := (DURATION_SIXTEENTH* 3)/1000
+            beat_rates [ 12 ] := (DURATION_QUARTER)/1000
+            beat_rates [ 13 ] := (DURATION_QUARTER_TRIPLET * 2)/1000
+            beat_rates [ 14 ] := (DURATION_EIGHTH * 3)/1000
+            beat_rates [ 15 ] := (DURATION_QUARTER * 2)/1000
+            beat_rates [ 16 ] := (DURATION_QUARTER * 3)/1000
+            beat_rates [ 17 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
+            beat_rates [ 18 ] := (DURATION_QUARTER * 4)/1000
+
+        declare const __BEAT_RATE_DIVISOR := 1000000 / 18
+
+        declare !rate_mode_sync_ms.text [2]
+            !rate_mode_sync_ms.text [0] := "sync"
+            !rate_mode_sync_ms.text [1] := "ms"
+
+        declare !rate_mode_sync_hz.text [2]
+            !rate_mode_sync_hz.text [0] := "sync"
+            !rate_mode_sync_hz.text [1] := "hz"
+
+        declare !seq_polarity [2]
+            seq_polarity [0] := "unipolar"
+            seq_polarity [1] := "bipolar"
+
+        declare const ~__SEQ_STEP_VALUE_FRAMES := 94.0
+
+{ VARIABLES _____________________________________________________________________________________ }
+    { sketch ___________________________________________________________________________________ }
+        declare a.i
+        declare b.i
+        declare c.i
+        declare d.i
+        declare e.i
+        declare f.i
+        declare g.i
+        declare h.i
+        declare i.i
+        declare j.i
+        declare k.i
+        declare l.i
+        declare m.i
+        declare n.i
+        declare o.i
+        declare p.i
+        declare q.i
+        declare r.i
+        declare s.i
+        declare t.i
+        declare u.i
+        declare v.i
+        declare w.i
+        declare x.i
+        declare y.i
+        declare z.i
+
+        declare ~a.r
+        declare ~b.r
+        declare ~c.r
+        declare ~d.r
+        declare ~e.r
+        declare ~f.r
+        declare ~g.r
+        declare ~h.r
+        declare ~i.r
+        declare ~j.r
+        declare ~k.r
+        declare ~l.r
+        declare ~m.r
+        declare ~n.r
+        declare ~o.r
+        declare ~p.r
+        declare ~q.r
+        declare ~r.r
+        declare ~s.r
+        declare ~t.r
+        declare ~u.r
+        declare ~v.r
+        declare ~w.r
+        declare ~x.r
+        declare ~y.r
+        declare ~z.r
+
+    {{ SEQ }}
+        declare SEQ.LEFT.step_index
+        declare read SEQ.MAIN.step_count  [ 2, 4 ] // side, step count
+
+        declare read ?SEQ.step_width [ 2, 4 ] // side, step witdh
+        declare ~SEQ.l.block_index
+
+        declare read SEQ.showing_target [ 2 ] // 2 sides, indices of the showing target
+
+    {{ LCB }}
+        declare read ~__BPM
+        declare lcb_ms_counter
+
+    {{ LFO }}
+        declare read LFO_data [ 4 ]
+            LFO_data [ LFO_WAVESHAPE ] := LFO_WAVESHAPE_SIN
+
+        declare read LFO_rate
+        declare read ~LFO_sine_step
+        declare ~LFO_emitted_value
+
+        { temp }
+        declare LFO_seq_step_count
+
+{ CB SPECIFIC ___________________________________________________________________________________ }
+    declare uics_uiid_index
+    declare uics_seq_side
+
+    {{ xypad_MAIN.SEQ.LEFT }}
+        declare seq_xy_left_click_step_index
+        declare seq_xy_block_index
+
+{ FUNCTIONS   ___________________________________________________________________________________ }
+    //fn001_get_seq_step_index
+    declare fn001.a.side // 0 left 1 right
+    declare fn001.a.block_index
+    declare ~fn001.l.xy_x
+    declare ~fn001.l.xy_x.normalized // to fit in the 0:0.25 range
+    declare fn001.r.step_index
+
+    //fn002_update_seq_step_value
+    declare fn002.a.side
+    declare fn002.a.step_index
+    declare ~fn002.a.value
+
+    //fn003_set_block_step_count
+    declare fn003.a.side
+    declare fn003.a.block_index
+
+    //fn004_get_current_seq_block
+    declare ~fn004.a.x_coord
+    declare fn004.r.block_index

@@ -1,0 +1,53 @@
+{
+    Kontakt General Code
+    Library Index
+
+    function InsertionSortArray(arraySorting,arrayDependant1,arrayDependant2)
+
+        arraySorting    : array to be sorted, ascending order 
+        arrayDependant1 : array to be sorted according to arraySorting
+        arrayDependant2 : array to be sorted according to arraySorting
+
+}
+
+
+{
+    Insert sort function that sorts 2 arrays, one ascending and another one
+    to have its values tied to the first array's values
+    example use: in Note Buffers + Note Age arrays that have to follow the note buffer sorting
+
+    changing the arraySorting[j] > KGC.key1 to arraySorting[j] < KGC.key1 shifts the sorting from ascending to descending
+}
+
+function InsertionSortArray(arraySorting,arrayDependant1,arrayDependant2)
+    for KGC.i := 1 to num_elements(arraySorting)-1
+        KGC.key1 := arraySorting    [KGC.i]
+        KGC.key2 := arrayDependant1 [KGC.i]
+        KGC.key3 := arrayDependant2 [KGC.i]
+        KGC.j := KGC.i - 1
+        while (KGC.j >= 0 and arraySorting[KGC.j] > KGC.key1)
+            arraySorting    [KGC.j + 1] := arraySorting     [KGC.j]
+            arrayDependant1 [KGC.j + 1] := arrayDependant1  [KGC.j]
+            arrayDependant2 [KGC.j + 1] := arrayDependant2  [KGC.j]
+            dec(KGC.j)
+        end while
+        arraySorting    [KGC.j + 1] := KGC.key1
+        arrayDependant1 [KGC.j + 1] := KGC.key2
+        arrayDependant2 [KGC.j + 1] := KGC.key3
+    end for
+end function
+
+function InsertionSortArrayOneDependant(arraySorting,arrayDependant1)
+    for KGC.i := 1 to num_elements(arraySorting)-1
+        KGC.key1 := arraySorting    [KGC.i]
+        KGC.key2 := arrayDependant1 [KGC.i]
+        KGC.j := KGC.i - 1
+        while (KGC.j >= 0 and arraySorting[KGC.j] > KGC.key1)
+            arraySorting    [KGC.j + 1] := arraySorting     [KGC.j]
+            arrayDependant1 [KGC.j + 1] := arrayDependant1  [KGC.j]
+            dec(KGC.j)
+        end while
+        arraySorting    [KGC.j + 1] := KGC.key1
+        arrayDependant1 [KGC.j + 1] := KGC.key2
+    end for
+end function

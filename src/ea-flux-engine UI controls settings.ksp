@@ -1,0 +1,7 @@
+xypad_MAIN.SEQ.LEFT  -> mouse_mode := 2
+xypad_MAIN.SEQ.RIGHT -> mouse_mode := 2
+
+xypad_MAIN.SEQ.LEFT  -> cursor_picture := "label_xy.cursor"
+xypad_MAIN.SEQ.RIGHT -> cursor_picture := "label_xy.cursor"
+
+

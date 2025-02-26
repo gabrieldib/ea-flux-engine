@@ -1,0 +1,28 @@
+if (get_event_par($EVENT_ID, $EVENT_PAR_SOURCE) # $CURRENT_SCRIPT_SLOT)
+    { make sure we only receive one event per key }
+    if (%ARP.note_ids[$EVENT_NOTE] = 0)
+        exit
+    else
+        %ARP.note_ids[$EVENT_NOTE] := 0
+    end if
+
+    if ($ARP.seq_running = 1 and switch_ARP.latch = 0)
+        $ARP.cursor_helper := 0
+
+        $ARP.i := 0
+        while ($ARP.i < $ARP.cursor)
+            if ($EVENT_NOTE # %ARP.note_buffer[$ARP.i])
+                %ARP.note_buffer[$ARP.cursor_helper] := %ARP.note_buffer[$ARP.i]
+                inc($ARP.cursor_helper)
+            end if
+
+            inc($ARP.i)
+        end while
+
+        $ARP.cursor := $ARP.cursor_helper
+
+        if ($ARP.seq_running = 1 and $ARP.cursor = 0)
+            call ARP.StopSeq()
+        end if
+    end if
+end if

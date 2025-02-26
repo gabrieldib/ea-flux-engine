@@ -1,0 +1,44 @@
+    // set_table_steps_shown(%ARP.Pattern, slider_ARP.steps)
+    // set_table_steps_shown(%ARP.Current, slider_ARP.steps)
+
+    ~XY_ARP_STEP_UNIT := 1.0 / int_to_real($ARP.MAX.STEPS)
+
+    label_ARP.steps.disp    -> text := slider_ARP.steps
+    label_ARP.rate.disp     -> text := !ARP.rates[slider_ARP.rate]
+    label_ARP.duration.disp -> text := slider_ARP.duration & "%"
+    label_ARP.swing.disp    -> text := slider_ARP.swing & "%"
+    label_ARP.octave.disp   -> text := slider_ARP.octave
+    label_ARP.repeats.disp  -> text := slider_ARP.repeats  
+
+    { populate teh UI table with data from pattern table }
+    for i.i := 0 to slider_ARP.steps-1
+        set_control_par( ...
+                        ARP.velo_amount.uiid[i.i], ...
+                        CONTROL_PAR_PICTURE_STATE, ...
+                        int(?ARP.Pattern_real[i.i] * 149.0) )
+    end for
+
+    { populate the velocity table with values stored from the UI }
+    for i.i := 0 to 15  { will go up to 63 later }
+        %ARP.Pattern[i.i] := int(?ARP.Pattern_real[i.i] * 127.0)
+    end for
+
+    { read which buttons are pressed and set the according menus with that value }
+    for i.i := 0 to 5
+        if get_control_par(ARP_table_order_btns_uiid[i.i], CONTROL_PAR_VALUE) = 1
+            v.i := i.i
+        end if
+    end for
+    $ARP.TableOrder := v.i
+
+    for i.i := 0 to 6
+        if get_control_par(ARP_note_order_btns_uiid[i.i], CONTROL_PAR_VALUE) = 1
+            v.i := i.i
+        end if
+    end for
+    $ARP.NoteOrder := v.i
+
+    call ARP.set_velo_table_columns_state
+
+    { this info will be use for variable columns later }
+    message("ARP Steps = " &$slider_ARP.steps& " | XY_ARP_STEP_UNIT is " & XY_ARP_STEP_UNIT)

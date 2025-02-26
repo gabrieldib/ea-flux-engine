@@ -1,0 +1,96 @@
+{ Various arpeggiator parameters can be accessed through PGS by declaring PGS keys listed below,
+then setting them to appropriate values from another script slot.
+If an out of range value is received, the parameter will remain at last valid value. }
+if (pgs_key_exists(ARP) and pgs_get_key_val(ARP, 0) # $ARP.prev_arp_mode)
+    select (pgs_get_key_val(ARP, 0))
+        case 0
+            switch_ARP.power := 0
+            switch_ARP.latch := 0
+        case 1
+            switch_ARP.power := 1
+            switch_ARP.latch := 0
+        case 2
+            switch_ARP.power := 1
+            switch_ARP.latch := 1
+    end select
+
+    $ARP.prev_arp_mode := pgs_get_key_val(ARP, 0)
+
+    // set_text(switch_ARP.power, "Arp" & !ARP.state[switch_ARP.power])
+    // set_text($ARP.Latch, "Latch" & !ARP.state[$ARP.Latch])
+
+    if ((switch_ARP.power = 0 or (switch_ARP.power = 1 and switch_ARP.latch = 0)) and $ARP.seq_running = 1)
+        call ARP.ClearNoteBuffer()
+        call ARP.StopSeq()
+    end if
+end if
+
+if (pgs_key_exists(ARP_ORDER) and pgs_get_key_val(ARP_ORDER, 0) # $ARP.NoteOrder)
+    if (in_range(pgs_get_key_val(ARP_ORDER, 0), 0, 6))
+        $ARP.NoteOrder := pgs_get_key_val(ARP_ORDER, 0)
+    end if
+end if
+
+if (pgs_key_exists(ARP_TABLE_ORDER) and pgs_get_key_val(ARP_TABLE_ORDER, 0) # $ARP.TableOrder)
+    if (in_range(pgs_get_key_val(ARP_TABLE_ORDER, 0), 0, 5))
+        $ARP.TableOrder := pgs_get_key_val(ARP_TABLE_ORDER, 0)
+    end if
+end if
+
+if (pgs_key_exists(ARP_GATE) and pgs_get_key_val(ARP_GATE, 0) # slider_ARP.duration)
+    if (in_range(pgs_get_key_val(ARP_GATE, 0), 1, 200))
+        slider_ARP.duration := pgs_get_key_val(ARP_GATE, 0)
+    end if
+end if
+
+if (pgs_key_exists(ARP_RATE) and pgs_get_key_val(ARP_RATE, 0) # slider_ARP.rate)
+    if (in_range(pgs_get_key_val(ARP_RATE, 0), 0, 8))
+        slider_ARP.rate := pgs_get_key_val(ARP_RATE, 0)
+        call ARP.ChangeRate()
+    end if
+end if
+
+if (pgs_key_exists(ARP_SWING) and pgs_get_key_val(ARP_SWING, 0) # slider_ARP.swing)
+    if (in_range(pgs_get_key_val(ARP_SWING, 0), 0, 50))
+        slider_ARP.swing := pgs_get_key_val(ARP_SWING, 0)
+    end if
+end if
+
+if (pgs_key_exists(ARP_OCTAVE) and pgs_get_key_val(ARP_OCTAVE, 0) # slider_ARP.octave)
+    if (in_range(pgs_get_key_val(ARP_OCTAVE, 0), -$ARP.MAX.OCTAVE.RANGE, $ARP.MAX.OCTAVE.RANGE))
+        slider_ARP.octave := pgs_get_key_val(ARP_OCTAVE, 0)
+        // set_knob_label(slider_ARP.octave, "    " & slider_ARP.octave)
+    end if
+end if
+
+if (pgs_key_exists(ARP_REPEATS) and pgs_get_key_val(ARP_REPEATS, 0) # slider_ARP.repeats)
+    if (in_range(pgs_get_key_val(ARP_REPEATS, 0), 0, $ARP.MAX.REPEATS))
+        slider_ARP.repeats := pgs_get_key_val(ARP_REPEATS, 0)
+    end if
+end if
+
+if (pgs_key_exists(ARP_STEPS) and pgs_get_key_val(ARP_STEPS, 0) # slider_ARP.steps)
+    if (in_range(pgs_get_key_val(ARP_REPEATS, 0), 2, $ARP.MAX.STEPS))
+        slider_ARP.steps := pgs_get_key_val(ARP_STEPS, 0)
+        // set_table_steps_shown(%ARP.Pattern, slider_ARP.steps)
+        // set_table_steps_shown(%ARP.Current, slider_ARP.steps)
+    end if
+end if
+
+{ ARP_VEL_TABLE PGS key needs to have MAX.STEPS + 1 entries, in order to first write all the
+  velocity table values, then trigger reading from PGS array by setting the MAX.STEPS-th
+  entry to 1 (remember, arrays and PGS keys in KSP are 0-based!).
+  This prevents updating the velocity table values on each velocity table entry update,
+  instead the update is done only after the whole velocity table is written into the PGS key. }
+if (pgs_key_exists(ARP_VEL_TABLE) and pgs_get_key_val(ARP_VEL_TABLE, $ARP.MAX.STEPS) = 1)
+    $ARP.k := 0
+    while ($ARP.k < $ARP.MAX.STEPS)
+        if (in_range(pgs_get_key_val(ARP_VEL_TABLE, $ARP.k), 0, 127))
+            %ARP.Pattern[$ARP.k] := pgs_get_key_val(ARP_VEL_TABLE, $ARP.k)
+        end if
+
+        inc($ARP.k)
+    end while
+
+    pgs_set_key_val(ARP_VEL_TABLE, $ARP.MAX.STEPS, 0)
+end if

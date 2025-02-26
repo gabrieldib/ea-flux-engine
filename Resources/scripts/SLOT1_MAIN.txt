@@ -1,0 +1,2014 @@
+{ Compiled on Wed Feb 26 09:41:12 2025 }
+on init
+  declare $sksp_dummy
+  declare $concat_it
+  declare $concat_offset
+  declare $string_it
+  declare $list_it
+  declare $preproc_i
+  message("")
+  set_script_title("Gablux K Template")
+  set_ui_color(14277081)
+  set_control_par_str($INST_ICON_ID,$CONTROL_PAR_PICTURE,"icon")
+  set_control_par_str($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"ui_background")
+  set_listener($NI_SIGNAL_TIMER_BEAT,24)
+  set_listener($NI_SIGNAL_TIMER_MS,1000)
+  make_perfview
+  set_ui_width_px(1000)
+  set_ui_height_px(750)
+  set_control_par_str($INST_ICON_ID,$CONTROL_PAR_PICTURE,"ui_icon")
+  set_control_par_str($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"ui_background")
+  declare $figma_counter
+  declare $figma_counter_multi_line_labels
+  declare %UI_x[404] := (0, 0, 490, 676, 65, 676, 65, 20, 47, 585, 68, 571, 78, 582, 45, 549, 547, 41, 0, 0, 345, 67, 306, 911, 682, 675, 708, 741, 774, 807, 840, 873, 906, 801, 899, 854, 187, 71, 124, 67, 68, ...
+  64, 97, 130, 163, 196, 229, 262, 295, 4, -1, 482, 125, 32, 32, 32, 32, 32, 32, 139, 139, 139, 139, 139, 139, 124, 32, 32, 32, 32, 32, 32, 139, 139, 139, 139, 139, 139, 51, 51, 51, ...
+  124, 124, 124, 111, 111, 111, 184, 184, 184, 107, 123, 139, 155, -1, -1, 65, 159, 175, 191, 207, 304, 304, 191, -1, -1, 101, 101, 203, 203, 316, -1, -1, 101, 101, 203, 203, 316, 436, 436, 436, ...
+  436, 436, 420, 420, 420, 420, 420, 506, 506, 506, 506, 506, 524, 524, 524, 524, 524, 452, 452, 452, 452, 452, 524, 424, 937, -1, -2, 163, 202, 237, 317, 352, -1, 36, 355, 108, 143, 178, 909, 876, ...
+  843, 810, 777, 744, 711, 678, 298, 265, 232, 199, 166, 133, 100, 712, 745, 778, 811, 844, 877, 910, 101, 134, 167, 200, 233, 266, 299, 679, 80, 137, 56, 96, 136, 176, 216, 199, 19, 957, 767, 752, ...
+  235, 220, 49, 783, 10, 949, 416, 101, 830, 342, 342, 342, 342, 281, 660, 342, 61, 565, 61, 565, 61, 791, 61, 672, 0, 0, 0, 155, 155, 155, 155, 155, 155, 156, 156, 156, 0, 66, 66, 66, ...
+  66, 66, 66, 67, 67, 67, 41, 31, 151, -6, -6, 0, 1, 93, 185, 277, 2, 13, 24, 35, 46, 57, 68, 79, 94, 105, 116, 127, 138, 149, 160, 171, 186, 197, 208, 219, 230, 241, 252, 263, ...
+  278, 289, 300, 311, 322, 333, 344, 355, 0, 1, 93, 185, 277, 2, 13, 24, 35, 46, 57, 68, 79, 94, 105, 116, 127, 138, 149, 160, 171, 186, 197, 208, 219, 230, 241, 252, 263, 278, 289, 300, ...
+  311, 322, 333, 344, 355, 27, 29, 428, 428, 669, 165, 1, 939, 0, 270, 43, 206, 138, 207, 69, 14, 952, 177, 874, 808, 144, 111, 841, 907, 78, 87, 87, 87, 160, 160, 160, 71, 71, 71, 147, ...
+  147, 147, 184, 184, 0, 0, 0, 58, 116, 174, 232, 290, 0, 58, 116, 174, 232, 290, 1, 93, 185, 277, 1, 93, 185, 277, 116, 226, 5, 943, 70, 212, 342, 0, 0, 46, 550, 35, 77, 266, ...
+  309, 280, 71)
+  declare %UI_y[404] := (0, 0, 292, 567, 567, 567, 567, 43, 172, 172, 176, 176, 175, 175, 30, 30, -1, 1, 0, 0, 496, 569, 573, 569, 573, 492, 492, 492, 492, 492, 492, 492, 492, 288, 284, 455, 288, 284, 455, 514, 536, ...
+  492, 492, 492, 492, 492, 492, 492, 492, -1, 148, 46, 9, 14, 34, 54, 74, 94, 114, 14, 34, 54, 74, 94, 114, 9, 14, 34, 54, 74, 94, 114, 14, 34, 54, 74, 94, 114, 20, 60, 100, ...
+  20, 60, 100, 20, 60, 100, 20, 60, 100, -1, -1, -1, -1, 3, 31, 34, -1, -1, -1, -1, 3, 31, 34, 3, 26, 3, 26, 3, 26, -1, 3, 26, 3, 26, 3, 26, -1, 46, 68, 90, ...
+  112, 134, 46, 68, 90, 112, 134, 46, 68, 90, 112, 134, 46, 68, 90, 112, 134, 44, 66, 88, 110, 132, 23, 23, 191, 191, 2, 3, 3, 3, -1, 0, 0, -1, 2, 3, 3, 3, 514, 514, ...
+  514, 514, 514, 514, 514, 514, 514, 514, 514, 514, 514, 514, 514, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 536, 0, 89, 157, 157, 157, 157, 157, -1, 16, 17, 19, 19, ...
+  19, 19, 19, 19, 410, 410, -2, 287, 287, 279, 279, 279, 279, 279, 279, 279, 66, 66, 207, 207, 277, 277, 563, 563, 0, 0, 0, 12, 52, 92, 12, 52, 92, 13, 53, 93, 0, 12, 52, 92, ...
+  12, 52, 92, 13, 53, 93, 23, 1, 1, 33, 34, 17, 119, 119, 119, 119, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, ...
+  19, 19, 19, 19, 19, 19, 19, 19, 17, 119, 119, 119, 119, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, ...
+  19, 19, 19, 19, 19, 4, 4, 175, 193, 86, 86, 170, 170, 18, 18, 123, 123, 123, 58, 58, 355, 355, 313, 313, 313, 313, 313, 313, 313, 313, 17, 57, 97, 17, 57, 97, 17, 57, 97, 17, ...
+  57, 97, 6, 33, 6, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 23, 23, 87, 87, 279, 19, 19, 28, 28, 3, 3, 3, ...
+  3, -2, -2)
+  declare %UI_width[404] := (1000, 1000, 20, 259, 259, 259, 259, 959, 328, 327, 321, 321, 326, 326, 366, 366, 374, 374, 1000, 1000, 310, 21, 11, 21, 11, 28, 28, 28, 28, 28, 28, 28, 28, 11, 29, 22, 11, 29, 22, 23, 22, ...
+  28, 28, 28, 28, 28, 28, 28, 28, 11, 21, 35, 10, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 10, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 23, 23, 23, ...
+  23, 23, 23, 23, 23, 23, 23, 23, 23, 13, 13, 13, 13, 23, 23, 71, 13, 13, 13, 13, 23, 23, 71, 88, 88, 88, 88, 88, 88, 10, 88, 88, 88, 88, 88, 88, 10, 17, 17, 17, ...
+  17, 17, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 15, 15, 15, 15, 15, 55, 55, 55, 55, 55, 11, 11, 22, 22, 22, 33, 29, 29, 21, 23, 23, 21, 22, 29, 29, 33, 23, 23, ...
+  23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 35, 35, 34, 34, 34, 34, 34, 22, 23, 23, 15, 15, ...
+  15, 15, 166, 166, 42, 42, 184, 70, 70, 316, 316, 316, 316, 59, 60, 316, 374, 374, 374, 374, 148, 148, 267, 267, 259, 259, 259, 36, 36, 36, 36, 36, 36, 34, 34, 34, 259, 36, 36, 36, ...
+  36, 36, 36, 34, 34, 34, 878, 146, 146, 330, 330, 366, 88, 88, 88, 88, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, ...
+  9, 9, 9, 9, 9, 9, 9, 9, 366, 88, 88, 88, 88, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, ...
+  9, 9, 9, 9, 9, 320, 320, 104, 104, 127, 127, 20, 20, 40, 40, 80, 42, 34, 38, 29, 34, 34, 15, 15, 15, 15, 15, 15, 15, 15, 26, 26, 26, 28, 28, 28, 28, 28, 28, 26, ...
+  26, 26, 144, 144, 144, 144, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 87, 87, 87, 87, 87, 87, 87, 87, 33, 33, 12, 12, 28, 28, 316, 366, 366, 364, 364, 32, 32, 32, ...
+  32, 23, 23)
+  declare %UI_height[404] := (750, 750, 169, 140, 140, 140, 140, 230, 51, 51, 45, 45, 42, 42, 126, 126, 20, 20, 750, 750, 189, 21, 11, 21, 11, 20, 20, 20, 20, 20, 20, 20, 20, 11, 18, 15, 11, 18, 15, 20, 14, ...
+  20, 20, 20, 20, 20, 20, 20, 20, 11, 21, 17, 10, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 10, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 19, 19, 19, ...
+  20, 20, 20, 20, 20, 20, 19, 19, 19, 27, 27, 27, 27, 20, 20, 15, 27, 27, 27, 27, 20, 20, 15, 16, 16, 16, 16, 16, 16, 10, 16, 16, 16, 16, 16, 16, 10, 16, 16, 16, ...
+  16, 16, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 15, 15, 15, 15, 15, 26, 26, 26, 26, 26, 11, 11, 15, 15, 15, 13, 13, 13, 21, 20, 20, 21, 15, 13, 13, 13, 20, 20, ...
+  20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 31, 21, 28, 28, 28, 28, 28, 28, 18, 18, 15, 15, ...
+  15, 14, 16, 16, 14, 14, 45, 14, 14, 184, 184, 184, 184, 184, 184, 184, 137, 137, 66, 66, 204, 204, 148, 148, 140, 140, 140, 36, 36, 36, 36, 36, 36, 34, 34, 34, 140, 36, 36, 36, ...
+  36, 36, 36, 34, 34, 34, 207, 47, 47, 13, 13, 99, 6, 6, 6, 6, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, ...
+  95, 95, 95, 95, 95, 95, 95, 95, 99, 6, 6, 6, 6, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, ...
+  95, 95, 95, 95, 95, 13, 13, 12, 23, 15, 15, 15, 15, 171, 171, 15, 15, 14, 14, 14, 35, 35, 116, 116, 116, 116, 116, 116, 116, 116, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, ...
+  26, 26, 15, 15, 15, 15, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 133, 133, 26, 26, 184, 95, 95, 127, 127, 14, 14, 14, ...
+  14, 23, 23)
+  declare %UI_skin[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 4, 1, 3, 4, 5, 4, ...
+  2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, ...
+  5, 5, 5, 5, 5, 5, 9, 9, 9, 10, 11, 12, 13, 5, 5, 14, 10, 11, 12, 13, 5, 5, 14, 8, 8, 8, 8, 8, 8, 7, 8, 8, 8, 8, 8, 8, 7, 15, 15, 15, ...
+  15, 15, 16, 16, 16, 16, 16, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 2, 2, 2, 2, 2, 1, 1, 4, 4, 4, 18, 19, 20, 0, 5, 5, 0, 4, 19, 20, 18, 5, 5, ...
+  5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 21, 22, 23, 24, 25, 26, 27, 28, 5, 5, 17, 16, ...
+  17, 16, 2, 2, 2, 2, 29, 30, 30, 31, 32, 33, 34, 35, 36, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42, 43, 44, 45, 45, 45, 46, 46, 46, 47, 47, 48, 49, 45, 45, 45, ...
+  46, 46, 46, 47, 47, 48, 50, 51, 52, 53, 53, 54, 55, 55, 55, 55, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, ...
+  56, 56, 56, 56, 56, 56, 56, 56, 54, 55, 55, 55, 55, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, ...
+  56, 56, 56, 56, 56, 57, 58, 2, 2, 59, 59, 60, 60, 61, 61, 2, 2, 2, 2, 2, 62, 62, 63, 63, 63, 63, 63, 63, 63, 63, 64, 64, 64, 64, 65, 66, 64, 65, 66, 64, ...
+  64, 64, 67, 67, 67, 67, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 68, 68, 68, 68, 68, 68, 68, 68, 69, 69, 70, 70, 64, 64, 71, 2, 2, -1, -1, 2, 2, 2, ...
+  2, 72, 72)
+  declare %UI_font[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare %UI_label_text[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare %UI_default_value[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare %UI_text_alignment[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare %UI_text_y_pos[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare %UI_mouse_behaviour[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, -2000, ...
+  -2000, -2000, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2200, 2200, 2200, 2200, 2200, 2200, 2200, 2200, -1, -1, -2000, -2000, -2000, -2000, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare %UI_mouse_behaviour_x[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1000, 1000, -1, -1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare %UI_mouse_behaviour_y[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1000, 1000, -1, -1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare %UI_z_layer[404] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, ...
+  1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, -1, -1, -1, ...
+  -1, -1, -1)
+  declare !skin_picture[73]
+  !skin_picture[0] := "button_randomize"
+  !skin_picture[1] := "button_expand"
+  !skin_picture[2] := "label_transparent"
+  !skin_picture[3] := "button_switch_small"
+  !skin_picture[4] := "button_link"
+  !skin_picture[5] := "button_power_medium"
+  !skin_picture[6] := "button_seq_combine"
+  !skin_picture[7] := "button_close"
+  !skin_picture[8] := "button_reverb_menu"
+  !skin_picture[9] := "button_phase"
+  !skin_picture[10] := "button_fluxx_block_1"
+  !skin_picture[11] := "button_fluxx_block_2"
+  !skin_picture[12] := "button_fluxx_block_3"
+  !skin_picture[13] := "button_fluxx_block_4"
+  !skin_picture[14] := "switch_arp.menu.L"
+  !skin_picture[15] := "button_power_small"
+  !skin_picture[16] := "button_nav_small_prev"
+  !skin_picture[17] := "button_nav_small_next"
+  !skin_picture[18] := "button_seq_fwbw"
+  !skin_picture[19] := "button_seq_fw"
+  !skin_picture[20] := "button_seq_bw"
+  !skin_picture[21] := "button_power_large"
+  !skin_picture[22] := "button_switch_large"
+  !skin_picture[23] := "switch_MAIN.LFO.waveform_select.sine"
+  !skin_picture[24] := "switch_MAIN.LFO.waveform_select.tri"
+  !skin_picture[25] := "switch_MAIN.LFO.waveform_select.saw"
+  !skin_picture[26] := "switch_MAIN.LFO.waveform_select.rect"
+  !skin_picture[27] := "switch_MAIN.LFO.waveform_select.rand"
+  !skin_picture[28] := "switch_MAIN.LFO.lock"
+  !skin_picture[29] := "label_MAIN.title"
+  !skin_picture[30] := "label_MAIN.ADSR.target_2"
+  !skin_picture[31] := "label_MAIN.matrix.centerRL_256"
+  !skin_picture[32] := "label_MAIN.matrix.centerLR_256"
+  !skin_picture[33] := "label_MAIN.matrix.center.mod.RL_256"
+  !skin_picture[34] := "label_MAIN.matrix.center.mod.LR_256"
+  !skin_picture[35] := "slider_MAIN.matrix.left_256"
+  !skin_picture[36] := "slider_MAIN.matrix.right_256"
+  !skin_picture[37] := "label_MAIN.matrix.center"
+  !skin_picture[38] := "label_MAIN.SEQ.linked_2"
+  !skin_picture[39] := "label_MAIN.ARP.linked_2"
+  !skin_picture[40] := "label_MAIN.ADSR.linked_2"
+  !skin_picture[41] := "label_MAIN.FX.linked_2"
+  !skin_picture[42] := "label_MAIN.FX.RIGHT.reverb.menu.background"
+  !skin_picture[43] := "label_MAIN.FX.LEFT.reverb.menu.background"
+  !skin_picture[44] := "label_MAIN.FX.RIGHT.layer.background"
+  !skin_picture[45] := "label_LFO.modulationEnd.main09"
+  !skin_picture[46] := "label_LFO.modulationStart.main09"
+  !skin_picture[47] := "label_LFO.indicator"
+  !skin_picture[48] := "label_LFO.indicator.width"
+  !skin_picture[49] := "label_MAIN.FX.LEFT.layer.background"
+  !skin_picture[50] := "label_MAIN.2SEQ.background"
+  !skin_picture[51] := "label_MAIN.2SEQ.LEFT.fluxx.labels"
+  !skin_picture[52] := "label_MAIN.2SEQ.RIGHT.fluxx.labels"
+  !skin_picture[53] := "label_MAIN.2SEQ.LEFT.single.shot"
+  !skin_picture[54] := "label_MAIN.2SEQ.sliders.background"
+  !skin_picture[55] := "label_seqLed.4_4"
+  !skin_picture[56] := "label_MAIN.sequencer.blockSlider8.uni_95"
+  !skin_picture[57] := "label_MAIN.RIGHT.layer.controls.separators"
+  !skin_picture[58] := "label_MAIN.LEFT.layer.controls.separators"
+  !skin_picture[59] := "label_FX.off"
+  !skin_picture[60] := "label_MAIN.dyn"
+  !skin_picture[61] := "label_LFO.square_2112"
+  !skin_picture[62] := "slider_random.big_100"
+  !skin_picture[63] := "slider_MAIN.adsr_116"
+  !skin_picture[64] := "knob_unipolar"
+  !skin_picture[65] := "knob_pan"
+  !skin_picture[66] := "knob_width"
+  !skin_picture[67] := "slider_MAIN.randomizer.L"
+  !skin_picture[68] := "slider_MAIN.seq.blockSteps"
+  !skin_picture[69] := "slider_move.range"
+  !skin_picture[70] := "slider_MAIN.dynamics"
+  !skin_picture[71] := "xypad_MAIN.matrix.center"
+  !skin_picture[72] := "button_draw"
+  declare !_labels_text[2*10]
+  declare const $labels_text__SIZE_D1 := 2
+  declare const $labels_text__SIZE_D2 := 10
+  !_labels_text[10*0+0] := "1/4 T"
+  !_labels_text[10*1+0] := "100%"
+  declare %MULTI_LINE_DATA[2] := (1, 1)
+  declare ui_panel $panel_UI
+  declare ui_panel $panel_MAIN
+  declare ui_panel $panel_MAIN__matrix__controls
+  declare ui_panel $panel_MAIN__FX__RIGHT__reverb__menu
+  declare ui_panel $panel_MAIN__FX__LEFT__reverb__menu
+  declare ui_panel $panel_MAIN__FX__RIGHT__layer
+  declare ui_panel $panel_MAIN__FX__LEFT__layer
+  declare ui_panel $panel_MAIN__2SEQ
+  declare ui_panel $panel_MAIN__2SEQ__LEFT__fluxxArp
+  declare ui_panel $panel_MAIN__2SEQ__RIGHT__fluxxArp
+  declare ui_panel $panel_MAIN__2SEQ__LEFT__single__shot
+  declare ui_panel $panel_MAIN__2SEQ__RIGHT__single__shot
+  declare ui_panel $panel_MAIN__2SEQ__LEFT__arpModes
+  declare ui_panel $panel_MAIN__2SEQ__RIGHT__arpModes
+  declare ui_panel $panel_MAIN__2SEQ__LEFT__controls
+  declare ui_panel $panel_MAIN__2SEQ__RIGHT__controls
+  declare ui_panel $panel_layer__1__controls
+  declare ui_panel $panel_layer__0__controls
+  declare ui_panel $panel_POWER
+  declare ui_panel $panel_LINKS
+  declare ui_panel $panel_LFO__controls
+  declare ui_switch $switch_MAIN__FX__LEFT__randomize
+  make_persistent($switch_MAIN__FX__LEFT__randomize)
+  read_persistent_var($switch_MAIN__FX__LEFT__randomize)
+  declare ui_switch $switch_MAIN__FX__LEFT__expand
+  make_persistent($switch_MAIN__FX__LEFT__expand)
+  read_persistent_var($switch_MAIN__FX__LEFT__expand)
+  declare ui_switch $switch_MAIN__FX__RIGHT__randomize
+  make_persistent($switch_MAIN__FX__RIGHT__randomize)
+  read_persistent_var($switch_MAIN__FX__RIGHT__randomize)
+  declare ui_switch $switch_MAIN__FX__RIGHT__expand
+  make_persistent($switch_MAIN__FX__RIGHT__expand)
+  read_persistent_var($switch_MAIN__FX__RIGHT__expand)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__selection
+  make_persistent($switch_MAIN__FX__RIGHT__layer__selection)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__selection)
+  declare ui_switch $switch_MAIN__FX__RIGHT__saturation__selection
+  make_persistent($switch_MAIN__FX__RIGHT__saturation__selection)
+  read_persistent_var($switch_MAIN__FX__RIGHT__saturation__selection)
+  declare ui_switch $switch_MAIN__FX__RIGHT__distortion__selection
+  make_persistent($switch_MAIN__FX__RIGHT__distortion__selection)
+  read_persistent_var($switch_MAIN__FX__RIGHT__distortion__selection)
+  declare ui_switch $switch_MAIN__FX__RIGHT__lofi__selection
+  make_persistent($switch_MAIN__FX__RIGHT__lofi__selection)
+  read_persistent_var($switch_MAIN__FX__RIGHT__lofi__selection)
+  declare ui_switch $switch_MAIN__FX__RIGHT__tapeSaturation__selection
+  make_persistent($switch_MAIN__FX__RIGHT__tapeSaturation__selection)
+  read_persistent_var($switch_MAIN__FX__RIGHT__tapeSaturation__selection)
+  declare ui_switch $switch_MAIN__FX__RIGHT__delay__selection
+  make_persistent($switch_MAIN__FX__RIGHT__delay__selection)
+  read_persistent_var($switch_MAIN__FX__RIGHT__delay__selection)
+  declare ui_switch $switch_MAIN__FX__RIGHT__chorus__selection
+  make_persistent($switch_MAIN__FX__RIGHT__chorus__selection)
+  read_persistent_var($switch_MAIN__FX__RIGHT__chorus__selection)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__selection
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__selection)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__selection)
+  declare ui_switch $switch_MAIN__ADSR__RIGHT__expand
+  make_persistent($switch_MAIN__ADSR__RIGHT__expand)
+  read_persistent_var($switch_MAIN__ADSR__RIGHT__expand)
+  declare ui_switch $switch_MAIN__ADSR__RIGHT__mode
+  make_persistent($switch_MAIN__ADSR__RIGHT__mode)
+  read_persistent_var($switch_MAIN__ADSR__RIGHT__mode)
+  declare ui_switch $switch_MAIN__ADSR__RIGHT__link
+  make_persistent($switch_MAIN__ADSR__RIGHT__link)
+  read_persistent_var($switch_MAIN__ADSR__RIGHT__link)
+  declare ui_switch $switch_MAIN__ADSR__LEFT__expand
+  make_persistent($switch_MAIN__ADSR__LEFT__expand)
+  read_persistent_var($switch_MAIN__ADSR__LEFT__expand)
+  declare ui_switch $switch_MAIN__ADSR__LEFT__mode
+  make_persistent($switch_MAIN__ADSR__LEFT__mode)
+  read_persistent_var($switch_MAIN__ADSR__LEFT__mode)
+  declare ui_switch $switch_MAIN__ADSR__LEFT__link
+  make_persistent($switch_MAIN__ADSR__LEFT__link)
+  read_persistent_var($switch_MAIN__ADSR__LEFT__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__power
+  make_persistent($switch_MAIN__FX__LEFT__layer__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__link
+  make_persistent($switch_MAIN__FX__LEFT__layer__link)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__selection
+  make_persistent($switch_MAIN__FX__LEFT__layer__selection)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__selection)
+  declare ui_switch $switch_MAIN__FX__LEFT__saturation__selection
+  make_persistent($switch_MAIN__FX__LEFT__saturation__selection)
+  read_persistent_var($switch_MAIN__FX__LEFT__saturation__selection)
+  declare ui_switch $switch_MAIN__FX__LEFT__distortion__selection
+  make_persistent($switch_MAIN__FX__LEFT__distortion__selection)
+  read_persistent_var($switch_MAIN__FX__LEFT__distortion__selection)
+  declare ui_switch $switch_MAIN__FX__LEFT__lofi__selection
+  make_persistent($switch_MAIN__FX__LEFT__lofi__selection)
+  read_persistent_var($switch_MAIN__FX__LEFT__lofi__selection)
+  declare ui_switch $switch_MAIN__FX__LEFT__tapeSaturation__selection
+  make_persistent($switch_MAIN__FX__LEFT__tapeSaturation__selection)
+  read_persistent_var($switch_MAIN__FX__LEFT__tapeSaturation__selection)
+  declare ui_switch $switch_MAIN__FX__LEFT__delay__selection
+  make_persistent($switch_MAIN__FX__LEFT__delay__selection)
+  read_persistent_var($switch_MAIN__FX__LEFT__delay__selection)
+  declare ui_switch $switch_MAIN__FX__LEFT__chorus__selection
+  make_persistent($switch_MAIN__FX__LEFT__chorus__selection)
+  read_persistent_var($switch_MAIN__FX__LEFT__chorus__selection)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__selection
+  make_persistent($switch_MAIN__FX__LEFT__reverb__selection)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__selection)
+  declare ui_switch $switch_MAIN__MATRIX__expand
+  make_persistent($switch_MAIN__MATRIX__expand)
+  read_persistent_var($switch_MAIN__MATRIX__expand)
+  declare ui_switch $switch_MAIN__MATRIX__randomize
+  make_persistent($switch_MAIN__MATRIX__randomize)
+  read_persistent_var($switch_MAIN__MATRIX__randomize)
+  declare ui_switch $switch_MAIN__SEQ__combine
+  make_persistent($switch_MAIN__SEQ__combine)
+  read_persistent_var($switch_MAIN__SEQ__combine)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__close
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__close)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__close)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__0
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__0)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__0)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__1
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__1)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__1)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__2
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__2)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__2)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__3
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__3)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__3)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__4
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__4)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__4)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__5
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__5)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__5)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__6
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__6)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__6)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__7
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__7)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__7)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__8
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__8)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__8)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__9
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__9)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__9)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__10
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__10)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__10)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__menu__11
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__menu__11)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__menu__11)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__close
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__close)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__close)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__0
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__0)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__0)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__1
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__1)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__1)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__2
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__2)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__2)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__3
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__3)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__3)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__4
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__4)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__4)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__5
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__5)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__5)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__6
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__6)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__6)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__7
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__7)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__7)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__8
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__8)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__8)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__9
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__9)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__9)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__10
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__10)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__10)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__menu__11
+  make_persistent($switch_MAIN__FX__LEFT__reverb__menu__11)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__menu__11)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__volLFO__phase
+  make_persistent($switch_MAIN__FX__RIGHT__layer__volLFO__phase)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__volLFO__phase)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__panLFO__phase
+  make_persistent($switch_MAIN__FX__RIGHT__layer__panLFO__phase)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__panLFO__phase)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__widthLFO__phase
+  make_persistent($switch_MAIN__FX__RIGHT__layer__widthLFO__phase)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__widthLFO__phase)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__volLFO__power
+  make_persistent($switch_MAIN__FX__RIGHT__layer__volLFO__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__volLFO__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__panLFO__power
+  make_persistent($switch_MAIN__FX__RIGHT__layer__panLFO__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__panLFO__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__widthLFO__power
+  make_persistent($switch_MAIN__FX__RIGHT__layer__widthLFO__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__widthLFO__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__volLFO__power
+  make_persistent($switch_MAIN__FX__LEFT__layer__volLFO__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__volLFO__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__panLFO__power
+  make_persistent($switch_MAIN__FX__LEFT__layer__panLFO__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__panLFO__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__widthLFO__power
+  make_persistent($switch_MAIN__FX__LEFT__layer__widthLFO__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__widthLFO__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__volLFO__phase
+  make_persistent($switch_MAIN__FX__LEFT__layer__volLFO__phase)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__volLFO__phase)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__panLFO__phase
+  make_persistent($switch_MAIN__FX__LEFT__layer__panLFO__phase)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__panLFO__phase)
+  declare ui_switch $switch_MAIN__FX__LEFT__layer__widthLFO__phase
+  make_persistent($switch_MAIN__FX__LEFT__layer__widthLFO__phase)
+  read_persistent_var($switch_MAIN__FX__LEFT__layer__widthLFO__phase)
+  declare ui_switch $switch_MAIN__FLUXX__LEFT__block__1
+  make_persistent($switch_MAIN__FLUXX__LEFT__block__1)
+  read_persistent_var($switch_MAIN__FLUXX__LEFT__block__1)
+  declare ui_switch $switch_MAIN__FLUXX__LEFT__block__2
+  make_persistent($switch_MAIN__FLUXX__LEFT__block__2)
+  read_persistent_var($switch_MAIN__FLUXX__LEFT__block__2)
+  declare ui_switch $switch_MAIN__FLUXX__LEFT__block__3
+  make_persistent($switch_MAIN__FLUXX__LEFT__block__3)
+  read_persistent_var($switch_MAIN__FLUXX__LEFT__block__3)
+  declare ui_switch $switch_MAIN__FLUXX__LEFT__block__4
+  make_persistent($switch_MAIN__FLUXX__LEFT__block__4)
+  read_persistent_var($switch_MAIN__FLUXX__LEFT__block__4)
+  declare ui_switch $switch_MAIN__FLUXX__LEFT__randomPower
+  make_persistent($switch_MAIN__FLUXX__LEFT__randomPower)
+  read_persistent_var($switch_MAIN__FLUXX__LEFT__randomPower)
+  declare ui_switch $switch_MAIN__FLUXX__LEFT__arp__power
+  make_persistent($switch_MAIN__FLUXX__LEFT__arp__power)
+  read_persistent_var($switch_MAIN__FLUXX__LEFT__arp__power)
+  declare ui_switch $switch_MAIN__ARP__LEFT__modeMenu
+  make_persistent($switch_MAIN__ARP__LEFT__modeMenu)
+  read_persistent_var($switch_MAIN__ARP__LEFT__modeMenu)
+  declare ui_switch $switch_MAIN__FLUXX__RIGHT__block__1
+  make_persistent($switch_MAIN__FLUXX__RIGHT__block__1)
+  read_persistent_var($switch_MAIN__FLUXX__RIGHT__block__1)
+  declare ui_switch $switch_MAIN__FLUXX__RIGHT__block__2
+  make_persistent($switch_MAIN__FLUXX__RIGHT__block__2)
+  read_persistent_var($switch_MAIN__FLUXX__RIGHT__block__2)
+  declare ui_switch $switch_MAIN__FLUXX__RIGHT__block__3
+  make_persistent($switch_MAIN__FLUXX__RIGHT__block__3)
+  read_persistent_var($switch_MAIN__FLUXX__RIGHT__block__3)
+  declare ui_switch $switch_MAIN__FLUXX__RIGHT__block__4
+  make_persistent($switch_MAIN__FLUXX__RIGHT__block__4)
+  read_persistent_var($switch_MAIN__FLUXX__RIGHT__block__4)
+  declare ui_switch $switch_MAIN__FLUXX__RIGHT__randomPower
+  make_persistent($switch_MAIN__FLUXX__RIGHT__randomPower)
+  read_persistent_var($switch_MAIN__FLUXX__RIGHT__randomPower)
+  declare ui_switch $switch_MAIN__FLUXX__RIGHT__arp__power
+  make_persistent($switch_MAIN__FLUXX__RIGHT__arp__power)
+  read_persistent_var($switch_MAIN__FLUXX__RIGHT__arp__power)
+  declare ui_switch $switch_MAIN__ARP__RIGHT__modeMenu
+  make_persistent($switch_MAIN__ARP__RIGHT__modeMenu)
+  read_persistent_var($switch_MAIN__ARP__RIGHT__modeMenu)
+  declare ui_switch $switch_MAIN__FX__LEFT__arp__menu__0
+  make_persistent($switch_MAIN__FX__LEFT__arp__menu__0)
+  read_persistent_var($switch_MAIN__FX__LEFT__arp__menu__0)
+  declare ui_switch $switch_MAIN__FX__LEFT__arp__menu__1
+  make_persistent($switch_MAIN__FX__LEFT__arp__menu__1)
+  read_persistent_var($switch_MAIN__FX__LEFT__arp__menu__1)
+  declare ui_switch $switch_MAIN__FX__LEFT__arp__menu__2
+  make_persistent($switch_MAIN__FX__LEFT__arp__menu__2)
+  read_persistent_var($switch_MAIN__FX__LEFT__arp__menu__2)
+  declare ui_switch $switch_MAIN__FX__LEFT__arp__menu__3
+  make_persistent($switch_MAIN__FX__LEFT__arp__menu__3)
+  read_persistent_var($switch_MAIN__FX__LEFT__arp__menu__3)
+  declare ui_switch $switch_MAIN__FX__LEFT__arp__menu__4
+  make_persistent($switch_MAIN__FX__LEFT__arp__menu__4)
+  read_persistent_var($switch_MAIN__FX__LEFT__arp__menu__4)
+  declare ui_switch $switch_MAIN__FX__LEFT__arp__menu__5
+  make_persistent($switch_MAIN__FX__LEFT__arp__menu__5)
+  read_persistent_var($switch_MAIN__FX__LEFT__arp__menu__5)
+  declare ui_switch $switch_MAIN__FX__LEFT__arp__menu__close
+  make_persistent($switch_MAIN__FX__LEFT__arp__menu__close)
+  read_persistent_var($switch_MAIN__FX__LEFT__arp__menu__close)
+  declare ui_switch $switch_MAIN__FX__RIGHT__arp__menu__0
+  make_persistent($switch_MAIN__FX__RIGHT__arp__menu__0)
+  read_persistent_var($switch_MAIN__FX__RIGHT__arp__menu__0)
+  declare ui_switch $switch_MAIN__FX__RIGHT__arp__menu__1
+  make_persistent($switch_MAIN__FX__RIGHT__arp__menu__1)
+  read_persistent_var($switch_MAIN__FX__RIGHT__arp__menu__1)
+  declare ui_switch $switch_MAIN__FX__RIGHT__arp__menu__2
+  make_persistent($switch_MAIN__FX__RIGHT__arp__menu__2)
+  read_persistent_var($switch_MAIN__FX__RIGHT__arp__menu__2)
+  declare ui_switch $switch_MAIN__FX__RIGHT__arp__menu__3
+  make_persistent($switch_MAIN__FX__RIGHT__arp__menu__3)
+  read_persistent_var($switch_MAIN__FX__RIGHT__arp__menu__3)
+  declare ui_switch $switch_MAIN__FX__RIGHT__arp__menu__4
+  make_persistent($switch_MAIN__FX__RIGHT__arp__menu__4)
+  read_persistent_var($switch_MAIN__FX__RIGHT__arp__menu__4)
+  declare ui_switch $switch_MAIN__FX__RIGHT__arp__menu__5
+  make_persistent($switch_MAIN__FX__RIGHT__arp__menu__5)
+  read_persistent_var($switch_MAIN__FX__RIGHT__arp__menu__5)
+  declare ui_switch $switch_MAIN__FX__RIGHT__arp__menu__close
+  make_persistent($switch_MAIN__FX__RIGHT__arp__menu__close)
+  read_persistent_var($switch_MAIN__FX__RIGHT__arp__menu__close)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__velocity
+  make_persistent($switch_MAIN__SEQ__LEFT__power__velocity)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__velocity)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__pitch
+  make_persistent($switch_MAIN__SEQ__LEFT__power__pitch)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__pitch)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__octave
+  make_persistent($switch_MAIN__SEQ__LEFT__power__octave)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__octave)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__pan
+  make_persistent($switch_MAIN__SEQ__LEFT__power__pan)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__pan)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__lphp
+  make_persistent($switch_MAIN__SEQ__LEFT__power__lphp)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__lphp)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__select__velocity
+  make_persistent($switch_MAIN__SEQ__LEFT__select__velocity)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__select__velocity)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__select__pitch
+  make_persistent($switch_MAIN__SEQ__LEFT__select__pitch)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__select__pitch)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__select__octave
+  make_persistent($switch_MAIN__SEQ__LEFT__select__octave)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__select__octave)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__select__pan
+  make_persistent($switch_MAIN__SEQ__LEFT__select__pan)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__select__pan)
+  declare ui_switch $switch_MAIN__SEQ__LEFT____select__lphp
+  make_persistent($switch_MAIN__SEQ__LEFT____select__lphp)
+  read_persistent_var($switch_MAIN__SEQ__LEFT____select__lphp)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__velocity
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__velocity)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__velocity)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__pitch
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__pitch)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__pitch)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__octave
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__octave)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__octave)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__pan
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__pan)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__pan)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__lphp
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__lphp)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__lphp)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__select__velocity
+  make_persistent($switch_MAIN__SEQ__RIGHT__select__velocity)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__select__velocity)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__select__pitch
+  make_persistent($switch_MAIN__SEQ__RIGHT__select__pitch)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__select__pitch)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__select__octave
+  make_persistent($switch_MAIN__SEQ__RIGHT__select__octave)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__select__octave)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__select__pan
+  make_persistent($switch_MAIN__SEQ__RIGHT__select__pan)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__select__pan)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__select__lphp
+  make_persistent($switch_MAIN__SEQ__RIGHT__select__lphp)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__select__lphp)
+  declare ui_switch $switch_MAIN__SEQ__center__select__velocity
+  make_persistent($switch_MAIN__SEQ__center__select__velocity)
+  read_persistent_var($switch_MAIN__SEQ__center__select__velocity)
+  declare ui_switch $switch_MAIN__SEQ__center__select__pitch
+  make_persistent($switch_MAIN__SEQ__center__select__pitch)
+  read_persistent_var($switch_MAIN__SEQ__center__select__pitch)
+  declare ui_switch $switch_MAIN__SEQ__center__select__octave
+  make_persistent($switch_MAIN__SEQ__center__select__octave)
+  read_persistent_var($switch_MAIN__SEQ__center__select__octave)
+  declare ui_switch $switch_MAIN__SEQ__center__select__pan
+  make_persistent($switch_MAIN__SEQ__center__select__pan)
+  read_persistent_var($switch_MAIN__SEQ__center__select__pan)
+  declare ui_switch $switch_MAIN__SEQ__center__select__lphp
+  make_persistent($switch_MAIN__SEQ__center__select__lphp)
+  read_persistent_var($switch_MAIN__SEQ__center__select__lphp)
+  declare ui_switch $switch_MAIN__RIGHT__SEQ__expand
+  make_persistent($switch_MAIN__RIGHT__SEQ__expand)
+  read_persistent_var($switch_MAIN__RIGHT__SEQ__expand)
+  declare ui_switch $switch_MAIN__LEFT__SEQ__expand
+  make_persistent($switch_MAIN__LEFT__SEQ__expand)
+  read_persistent_var($switch_MAIN__LEFT__SEQ__expand)
+  declare ui_switch $switch_MAIN__DYN__RIGHT__link
+  make_persistent($switch_MAIN__DYN__RIGHT__link)
+  read_persistent_var($switch_MAIN__DYN__RIGHT__link)
+  declare ui_switch $switch_MAIN__DYN__LEFT__link
+  make_persistent($switch_MAIN__DYN__LEFT__link)
+  read_persistent_var($switch_MAIN__DYN__LEFT__link)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__link
+  make_persistent($switch_MAIN__SEQ__RIGHT__link)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__link)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__fwbw
+  make_persistent($switch_MAIN__SEQ__RIGHT__fwbw)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__fwbw)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__mode__forwards
+  make_persistent($switch_MAIN__SEQ__RIGHT__mode__forwards)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__mode__forwards)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__mode__backwards
+  make_persistent($switch_MAIN__SEQ__RIGHT__mode__backwards)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__mode__backwards)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__randomize
+  make_persistent($switch_MAIN__SEQ__RIGHT__randomize)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__randomize)
+  declare ui_switch $switch_MAIN__SEQ__RIGHT__power
+  make_persistent($switch_MAIN__SEQ__RIGHT__power)
+  read_persistent_var($switch_MAIN__SEQ__RIGHT__power)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power
+  make_persistent($switch_MAIN__SEQ__LEFT__power)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__randomize
+  make_persistent($switch_MAIN__SEQ__LEFT__randomize)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__randomize)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__link
+  make_persistent($switch_MAIN__SEQ__LEFT__link)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__link)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__mode__forwards
+  make_persistent($switch_MAIN__SEQ__LEFT__mode__forwards)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__mode__forwards)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__mode__backwards
+  make_persistent($switch_MAIN__SEQ__LEFT__mode__backwards)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__mode__backwards)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__fwbw
+  make_persistent($switch_MAIN__SEQ__LEFT__fwbw)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__fwbw)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__power
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__chorus__power
+  make_persistent($switch_MAIN__FX__RIGHT__chorus__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__chorus__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__delay__power
+  make_persistent($switch_MAIN__FX__RIGHT__delay__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__delay__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__tapeSaturation__power
+  make_persistent($switch_MAIN__FX__RIGHT__tapeSaturation__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__tapeSaturation__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__lofi__power
+  make_persistent($switch_MAIN__FX__RIGHT__lofi__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__lofi__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__distortion__power
+  make_persistent($switch_MAIN__FX__RIGHT__distortion__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__distortion__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__saturation__power
+  make_persistent($switch_MAIN__FX__RIGHT__saturation__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__saturation__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__power
+  make_persistent($switch_MAIN__FX__RIGHT__layer__power)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__power
+  make_persistent($switch_MAIN__FX__LEFT__reverb__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__chorus__power
+  make_persistent($switch_MAIN__FX__LEFT__chorus__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__chorus__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__delay__power
+  make_persistent($switch_MAIN__FX__LEFT__delay__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__delay__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__tapeSaturation__power
+  make_persistent($switch_MAIN__FX__LEFT__tapeSaturation__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__tapeSaturation__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__lofi__power
+  make_persistent($switch_MAIN__FX__LEFT__lofi__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__lofi__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__distortion__power
+  make_persistent($switch_MAIN__FX__LEFT__distortion__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__distortion__power)
+  declare ui_switch $switch_MAIN__FX__LEFT__saturation__power
+  make_persistent($switch_MAIN__FX__LEFT__saturation__power)
+  read_persistent_var($switch_MAIN__FX__LEFT__saturation__power)
+  declare ui_switch $switch_MAIN__FX__RIGHT__saturation__link
+  make_persistent($switch_MAIN__FX__RIGHT__saturation__link)
+  read_persistent_var($switch_MAIN__FX__RIGHT__saturation__link)
+  declare ui_switch $switch_MAIN__FX__RIGHT__distortion__link
+  make_persistent($switch_MAIN__FX__RIGHT__distortion__link)
+  read_persistent_var($switch_MAIN__FX__RIGHT__distortion__link)
+  declare ui_switch $switch_MAIN__FX__RIGHT__lofi__link
+  make_persistent($switch_MAIN__FX__RIGHT__lofi__link)
+  read_persistent_var($switch_MAIN__FX__RIGHT__lofi__link)
+  declare ui_switch $switch_MAIN__FX__RIGHT__tapeSaturation__link
+  make_persistent($switch_MAIN__FX__RIGHT__tapeSaturation__link)
+  read_persistent_var($switch_MAIN__FX__RIGHT__tapeSaturation__link)
+  declare ui_switch $switch_MAIN__FX__RIGHT__delay__link
+  make_persistent($switch_MAIN__FX__RIGHT__delay__link)
+  read_persistent_var($switch_MAIN__FX__RIGHT__delay__link)
+  declare ui_switch $switch_MAIN__FX__RIGHT__chorus__link
+  make_persistent($switch_MAIN__FX__RIGHT__chorus__link)
+  read_persistent_var($switch_MAIN__FX__RIGHT__chorus__link)
+  declare ui_switch $switch_MAIN__FX__RIGHT__reverb__link
+  make_persistent($switch_MAIN__FX__RIGHT__reverb__link)
+  read_persistent_var($switch_MAIN__FX__RIGHT__reverb__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__saturation__link
+  make_persistent($switch_MAIN__FX__LEFT__saturation__link)
+  read_persistent_var($switch_MAIN__FX__LEFT__saturation__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__distortion__link
+  make_persistent($switch_MAIN__FX__LEFT__distortion__link)
+  read_persistent_var($switch_MAIN__FX__LEFT__distortion__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__lofi__link
+  make_persistent($switch_MAIN__FX__LEFT__lofi__link)
+  read_persistent_var($switch_MAIN__FX__LEFT__lofi__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__tapeSaturation__link
+  make_persistent($switch_MAIN__FX__LEFT__tapeSaturation__link)
+  read_persistent_var($switch_MAIN__FX__LEFT__tapeSaturation__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__delay__link
+  make_persistent($switch_MAIN__FX__LEFT__delay__link)
+  read_persistent_var($switch_MAIN__FX__LEFT__delay__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__chorus__link
+  make_persistent($switch_MAIN__FX__LEFT__chorus__link)
+  read_persistent_var($switch_MAIN__FX__LEFT__chorus__link)
+  declare ui_switch $switch_MAIN__FX__LEFT__reverb__link
+  make_persistent($switch_MAIN__FX__LEFT__reverb__link)
+  read_persistent_var($switch_MAIN__FX__LEFT__reverb__link)
+  declare ui_switch $switch_MAIN__FX__RIGHT__layer__link
+  make_persistent($switch_MAIN__FX__RIGHT__layer__link)
+  read_persistent_var($switch_MAIN__FX__RIGHT__layer__link)
+  declare ui_switch $switch_MAIN__LFO__power
+  make_persistent($switch_MAIN__LFO__power)
+  read_persistent_var($switch_MAIN__LFO__power)
+  declare ui_switch $switch_MAIN__LFO__sync
+  make_persistent($switch_MAIN__LFO__sync)
+  read_persistent_var($switch_MAIN__LFO__sync)
+  declare ui_switch $switch_MAIN__LFO__waveform_select__sine
+  make_persistent($switch_MAIN__LFO__waveform_select__sine)
+  read_persistent_var($switch_MAIN__LFO__waveform_select__sine)
+  declare ui_switch $switch_MAIN__LFO__waveform_select__tri
+  make_persistent($switch_MAIN__LFO__waveform_select__tri)
+  read_persistent_var($switch_MAIN__LFO__waveform_select__tri)
+  declare ui_switch $switch_MAIN__LFO__waveform_select__saw
+  make_persistent($switch_MAIN__LFO__waveform_select__saw)
+  read_persistent_var($switch_MAIN__LFO__waveform_select__saw)
+  declare ui_switch $switch_MAIN__LFO__waveform_select__rect
+  make_persistent($switch_MAIN__LFO__waveform_select__rect)
+  read_persistent_var($switch_MAIN__LFO__waveform_select__rect)
+  declare ui_switch $switch_MAIN__LFO__waveform_select__rand
+  make_persistent($switch_MAIN__LFO__waveform_select__rand)
+  read_persistent_var($switch_MAIN__LFO__waveform_select__rand)
+  declare ui_switch $switch_MAIN__LFO__lock
+  make_persistent($switch_MAIN__LFO__lock)
+  read_persistent_var($switch_MAIN__LFO__lock)
+  declare ui_switch $switch_MAIN__SoundSource__LEFT__power
+  make_persistent($switch_MAIN__SoundSource__LEFT__power)
+  read_persistent_var($switch_MAIN__SoundSource__LEFT__power)
+  declare ui_switch $switch_MAIN__SoundSource__RIGHT__power
+  make_persistent($switch_MAIN__SoundSource__RIGHT__power)
+  read_persistent_var($switch_MAIN__SoundSource__RIGHT__power)
+  declare ui_switch $switch_MAIN__SoundSource__RIGHT__next
+  make_persistent($switch_MAIN__SoundSource__RIGHT__next)
+  read_persistent_var($switch_MAIN__SoundSource__RIGHT__next)
+  declare ui_switch $switch_MAIN__SoundSource__RIGHT__prev
+  make_persistent($switch_MAIN__SoundSource__RIGHT__prev)
+  read_persistent_var($switch_MAIN__SoundSource__RIGHT__prev)
+  declare ui_switch $switch_MAIN__SoundSource__LEFT__next
+  make_persistent($switch_MAIN__SoundSource__LEFT__next)
+  read_persistent_var($switch_MAIN__SoundSource__LEFT__next)
+  declare ui_switch $switch_MAIN__SoundSource__LEFT__prev
+  make_persistent($switch_MAIN__SoundSource__LEFT__prev)
+  read_persistent_var($switch_MAIN__SoundSource__LEFT__prev)
+  declare ui_switch $switch_MAIN__LEFT__soundSource
+  make_persistent($switch_MAIN__LEFT__soundSource)
+  read_persistent_var($switch_MAIN__LEFT__soundSource)
+  declare ui_switch $switch_MAIN__RIGHT__soundSource
+  make_persistent($switch_MAIN__RIGHT__soundSource)
+  read_persistent_var($switch_MAIN__RIGHT__soundSource)
+  declare ui_label $label_MAIN__LEFT__randomAmount(1,1)
+  make_persistent($label_MAIN__LEFT__randomAmount)
+  read_persistent_var($label_MAIN__LEFT__randomAmount)
+  declare ui_label $label_MAIN__RIGHT__randomAmount(1,1)
+  make_persistent($label_MAIN__RIGHT__randomAmount)
+  read_persistent_var($label_MAIN__RIGHT__randomAmount)
+  declare ui_label $label_MAIN__title(1,1)
+  make_persistent($label_MAIN__title)
+  read_persistent_var($label_MAIN__title)
+  declare ui_label $label_MAIN__ADSR__LEFT__target(1,1)
+  make_persistent($label_MAIN__ADSR__LEFT__target)
+  read_persistent_var($label_MAIN__ADSR__LEFT__target)
+  declare ui_label $label_MAIN__ADSR__RIGHT__target(1,1)
+  make_persistent($label_MAIN__ADSR__RIGHT__target)
+  read_persistent_var($label_MAIN__ADSR__RIGHT__target)
+  declare ui_label $label_MAIN__matrix__centerRL(1,1)
+  make_persistent($label_MAIN__matrix__centerRL)
+  read_persistent_var($label_MAIN__matrix__centerRL)
+  declare ui_label $label_MAIN__matrix__centerLR(1,1)
+  make_persistent($label_MAIN__matrix__centerLR)
+  read_persistent_var($label_MAIN__matrix__centerLR)
+  declare ui_label $label_MAIN__matrix__center__mod__RL(1,1)
+  make_persistent($label_MAIN__matrix__center__mod__RL)
+  read_persistent_var($label_MAIN__matrix__center__mod__RL)
+  declare ui_label $label_MAIN__matrix__center__mod__LR(1,1)
+  make_persistent($label_MAIN__matrix__center__mod__LR)
+  read_persistent_var($label_MAIN__matrix__center__mod__LR)
+  declare ui_label $label_MAIN__matrix__left(1,1)
+  make_persistent($label_MAIN__matrix__left)
+  read_persistent_var($label_MAIN__matrix__left)
+  declare ui_label $label_MAIN__matrix__right(1,1)
+  make_persistent($label_MAIN__matrix__right)
+  read_persistent_var($label_MAIN__matrix__right)
+  declare ui_label $label_MAIN__matrix__center(1,1)
+  make_persistent($label_MAIN__matrix__center)
+  read_persistent_var($label_MAIN__matrix__center)
+  declare ui_label $label_MAIN__SEQ__LEFT__linked(1,1)
+  make_persistent($label_MAIN__SEQ__LEFT__linked)
+  read_persistent_var($label_MAIN__SEQ__LEFT__linked)
+  declare ui_label $label_MAIN__SEQ__RIGHT__linked(1,1)
+  make_persistent($label_MAIN__SEQ__RIGHT__linked)
+  read_persistent_var($label_MAIN__SEQ__RIGHT__linked)
+  declare ui_label $label_MAIN__ARP__LEFT__linked(1,1)
+  make_persistent($label_MAIN__ARP__LEFT__linked)
+  read_persistent_var($label_MAIN__ARP__LEFT__linked)
+  declare ui_label $label_MAIN__ARP__RIGHT__linked(1,1)
+  make_persistent($label_MAIN__ARP__RIGHT__linked)
+  read_persistent_var($label_MAIN__ARP__RIGHT__linked)
+  declare ui_label $label_MAIN__ADSR__LEFT__linked(1,1)
+  make_persistent($label_MAIN__ADSR__LEFT__linked)
+  read_persistent_var($label_MAIN__ADSR__LEFT__linked)
+  declare ui_label $label_MAIN__ADSR__RIGHT__linked(1,1)
+  make_persistent($label_MAIN__ADSR__RIGHT__linked)
+  read_persistent_var($label_MAIN__ADSR__RIGHT__linked)
+  declare ui_label $label_MAIN__FX__LEFT__linked(1,1)
+  make_persistent($label_MAIN__FX__LEFT__linked)
+  read_persistent_var($label_MAIN__FX__LEFT__linked)
+  declare ui_label $label_MAIN__FX__RIGHT__linked(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__linked)
+  read_persistent_var($label_MAIN__FX__RIGHT__linked)
+  declare ui_label $label_MAIN__FX__RIGHT__reverb__menu__background(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__reverb__menu__background)
+  read_persistent_var($label_MAIN__FX__RIGHT__reverb__menu__background)
+  declare ui_label $label_MAIN__FX__LEFT__reverb__menu__background(1,1)
+  make_persistent($label_MAIN__FX__LEFT__reverb__menu__background)
+  read_persistent_var($label_MAIN__FX__LEFT__reverb__menu__background)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__background(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__background)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__background)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__volLFOmodEnd(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__volLFOmodEnd)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__volLFOmodEnd)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__panLFOmodEnd(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__panLFOmodEnd)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__panLFOmodEnd)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__widthLFOmodEnd(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__widthLFOmodEnd)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__widthLFOmodEnd)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__volLFOmodStart(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__volLFOmodStart)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__volLFOmodStart)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__panLFOmodStart(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__panLFOmodStart)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__panLFOmodStart)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__widthLFOmodStart(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__widthLFOmodStart)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__widthLFOmodStart)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__vol__LFOindicator(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__vol__LFOindicator)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__vol__LFOindicator)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__pan__LFOindicator(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__pan__LFOindicator)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__pan__LFOindicator)
+  declare ui_label $label_MAIN__FX__RIGHT__layer__width__LFOindicator(1,1)
+  make_persistent($label_MAIN__FX__RIGHT__layer__width__LFOindicator)
+  read_persistent_var($label_MAIN__FX__RIGHT__layer__width__LFOindicator)
+  declare ui_label $label_MAIN__FX__LEFT__layer__background(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__background)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__background)
+  declare ui_label $label_MAIN__FX__LEFT__layer__volLFOmodEnd(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__volLFOmodEnd)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__volLFOmodEnd)
+  declare ui_label $label_MAIN__FX__LEFT__layer__panLFOmodEnd(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__panLFOmodEnd)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__panLFOmodEnd)
+  declare ui_label $label_MAIN__FX__LEFT__layer__widthLFOmodEnd(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__widthLFOmodEnd)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__widthLFOmodEnd)
+  declare ui_label $label_MAIN__FX__LEFT__layer__volLFOmodStart(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__volLFOmodStart)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__volLFOmodStart)
+  declare ui_label $label_MAIN__FX__LEFT__layer__panLFOmodStart(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__panLFOmodStart)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__panLFOmodStart)
+  declare ui_label $label_MAIN__FX__LEFT__layer__widthLFOmodStart(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__widthLFOmodStart)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__widthLFOmodStart)
+  declare ui_label $label_MAIN__FX__LEFT__layer__vol__LFOindicator(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__vol__LFOindicator)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__vol__LFOindicator)
+  declare ui_label $label_MAIN__FX__LEFT__layer__pan__LFOindicator(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__pan__LFOindicator)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__pan__LFOindicator)
+  declare ui_label $label_MAIN__FX__LEFT__layer__width__LFOindicator(1,1)
+  make_persistent($label_MAIN__FX__LEFT__layer__width__LFOindicator)
+  read_persistent_var($label_MAIN__FX__LEFT__layer__width__LFOindicator)
+  declare ui_label $label_MAIN__2SEQ__background(1,1)
+  make_persistent($label_MAIN__2SEQ__background)
+  read_persistent_var($label_MAIN__2SEQ__background)
+  declare ui_label $label_MAIN__2SEQ__LEFT__fluxx__labels(1,1)
+  make_persistent($label_MAIN__2SEQ__LEFT__fluxx__labels)
+  read_persistent_var($label_MAIN__2SEQ__LEFT__fluxx__labels)
+  declare ui_label $label_MAIN__2SEQ__RIGHT__fluxx__labels(1,1)
+  make_persistent($label_MAIN__2SEQ__RIGHT__fluxx__labels)
+  read_persistent_var($label_MAIN__2SEQ__RIGHT__fluxx__labels)
+  declare ui_label $label_MAIN__2SEQ__LEFT__single__shot(1,1)
+  make_persistent($label_MAIN__2SEQ__LEFT__single__shot)
+  read_persistent_var($label_MAIN__2SEQ__LEFT__single__shot)
+  declare ui_label $label_MAIN__2SEQ__RIGHT__single__shot(1,1)
+  make_persistent($label_MAIN__2SEQ__RIGHT__single__shot)
+  read_persistent_var($label_MAIN__2SEQ__RIGHT__single__shot)
+  declare ui_label $label_MAIN__2SEQ__LEFT__sliders__background(1,1)
+  make_persistent($label_MAIN__2SEQ__LEFT__sliders__background)
+  read_persistent_var($label_MAIN__2SEQ__LEFT__sliders__background)
+  declare ui_label $label_MAIN__SEQ__LEFT__led1(1,1)
+  make_persistent($label_MAIN__SEQ__LEFT__led1)
+  read_persistent_var($label_MAIN__SEQ__LEFT__led1)
+  declare ui_label $label_MAIN__SEQ__LEFT__led2(1,1)
+  make_persistent($label_MAIN__SEQ__LEFT__led2)
+  read_persistent_var($label_MAIN__SEQ__LEFT__led2)
+  declare ui_label $label_MAIN__SEQ__LEFT__led3(1,1)
+  make_persistent($label_MAIN__SEQ__LEFT__led3)
+  read_persistent_var($label_MAIN__SEQ__LEFT__led3)
+  declare ui_label $label_MAIN__SEQ__LEFT__led4(1,1)
+  make_persistent($label_MAIN__SEQ__LEFT__led4)
+  read_persistent_var($label_MAIN__SEQ__LEFT__led4)
+  declare ui_label $label_MAIN__LEFT__seq__step__0(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__0)
+  read_persistent_var($label_MAIN__LEFT__seq__step__0)
+  declare ui_label $label_MAIN__LEFT__seq__step__1(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__1)
+  read_persistent_var($label_MAIN__LEFT__seq__step__1)
+  declare ui_label $label_MAIN__LEFT__seq__step__2(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__2)
+  read_persistent_var($label_MAIN__LEFT__seq__step__2)
+  declare ui_label $label_MAIN__LEFT__seq__step__3(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__3)
+  read_persistent_var($label_MAIN__LEFT__seq__step__3)
+  declare ui_label $label_MAIN__LEFT__seq__step__4(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__4)
+  read_persistent_var($label_MAIN__LEFT__seq__step__4)
+  declare ui_label $label_MAIN__LEFT__seq__step__5(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__5)
+  read_persistent_var($label_MAIN__LEFT__seq__step__5)
+  declare ui_label $label_MAIN__LEFT__seq__step__6(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__6)
+  read_persistent_var($label_MAIN__LEFT__seq__step__6)
+  declare ui_label $label_MAIN__LEFT__seq__step__7(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__7)
+  read_persistent_var($label_MAIN__LEFT__seq__step__7)
+  declare ui_label $label_MAIN__LEFT__seq__step__8(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__8)
+  read_persistent_var($label_MAIN__LEFT__seq__step__8)
+  declare ui_label $label_MAIN__LEFT__seq__step__9(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__9)
+  read_persistent_var($label_MAIN__LEFT__seq__step__9)
+  declare ui_label $label_MAIN__LEFT__seq__step__10(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__10)
+  read_persistent_var($label_MAIN__LEFT__seq__step__10)
+  declare ui_label $label_MAIN__LEFT__seq__step__11(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__11)
+  read_persistent_var($label_MAIN__LEFT__seq__step__11)
+  declare ui_label $label_MAIN__LEFT__seq__step__12(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__12)
+  read_persistent_var($label_MAIN__LEFT__seq__step__12)
+  declare ui_label $label_MAIN__LEFT__seq__step__13(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__13)
+  read_persistent_var($label_MAIN__LEFT__seq__step__13)
+  declare ui_label $label_MAIN__LEFT__seq__step__14(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__14)
+  read_persistent_var($label_MAIN__LEFT__seq__step__14)
+  declare ui_label $label_MAIN__LEFT__seq__step__15(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__15)
+  read_persistent_var($label_MAIN__LEFT__seq__step__15)
+  declare ui_label $label_MAIN__LEFT__seq__step__16(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__16)
+  read_persistent_var($label_MAIN__LEFT__seq__step__16)
+  declare ui_label $label_MAIN__LEFT__seq__step__17(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__17)
+  read_persistent_var($label_MAIN__LEFT__seq__step__17)
+  declare ui_label $label_MAIN__LEFT__seq__step__18(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__18)
+  read_persistent_var($label_MAIN__LEFT__seq__step__18)
+  declare ui_label $label_MAIN__LEFT__seq__step__19(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__19)
+  read_persistent_var($label_MAIN__LEFT__seq__step__19)
+  declare ui_label $label_MAIN__LEFT__seq__step__20(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__20)
+  read_persistent_var($label_MAIN__LEFT__seq__step__20)
+  declare ui_label $label_MAIN__LEFT__seq__step__21(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__21)
+  read_persistent_var($label_MAIN__LEFT__seq__step__21)
+  declare ui_label $label_MAIN__LEFT__seq__step__22(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__22)
+  read_persistent_var($label_MAIN__LEFT__seq__step__22)
+  declare ui_label $label_MAIN__LEFT__seq__step__23(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__23)
+  read_persistent_var($label_MAIN__LEFT__seq__step__23)
+  declare ui_label $label_MAIN__LEFT__seq__step__24(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__24)
+  read_persistent_var($label_MAIN__LEFT__seq__step__24)
+  declare ui_label $label_MAIN__LEFT__seq__step__25(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__25)
+  read_persistent_var($label_MAIN__LEFT__seq__step__25)
+  declare ui_label $label_MAIN__LEFT__seq__step__26(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__26)
+  read_persistent_var($label_MAIN__LEFT__seq__step__26)
+  declare ui_label $label_MAIN__LEFT__seq__step__27(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__27)
+  read_persistent_var($label_MAIN__LEFT__seq__step__27)
+  declare ui_label $label_MAIN__LEFT__seq__step__28(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__28)
+  read_persistent_var($label_MAIN__LEFT__seq__step__28)
+  declare ui_label $label_MAIN__LEFT__seq__step__29(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__29)
+  read_persistent_var($label_MAIN__LEFT__seq__step__29)
+  declare ui_label $label_MAIN__LEFT__seq__step__30(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__30)
+  read_persistent_var($label_MAIN__LEFT__seq__step__30)
+  declare ui_label $label_MAIN__LEFT__seq__step__31(1,1)
+  make_persistent($label_MAIN__LEFT__seq__step__31)
+  read_persistent_var($label_MAIN__LEFT__seq__step__31)
+  declare ui_label $label_MAIN__2SEQ__RIGHT__sliders__background(1,1)
+  make_persistent($label_MAIN__2SEQ__RIGHT__sliders__background)
+  read_persistent_var($label_MAIN__2SEQ__RIGHT__sliders__background)
+  declare ui_label $label_MAIN__SEQ__RIGHT__led1(1,1)
+  make_persistent($label_MAIN__SEQ__RIGHT__led1)
+  read_persistent_var($label_MAIN__SEQ__RIGHT__led1)
+  declare ui_label $label_MAIN__SEQ__RIGHT__led2(1,1)
+  make_persistent($label_MAIN__SEQ__RIGHT__led2)
+  read_persistent_var($label_MAIN__SEQ__RIGHT__led2)
+  declare ui_label $label_MAIN__SEQ__RIGHT__led3(1,1)
+  make_persistent($label_MAIN__SEQ__RIGHT__led3)
+  read_persistent_var($label_MAIN__SEQ__RIGHT__led3)
+  declare ui_label $label_MAIN__SEQ__RIGHT__led4(1,1)
+  make_persistent($label_MAIN__SEQ__RIGHT__led4)
+  read_persistent_var($label_MAIN__SEQ__RIGHT__led4)
+  declare ui_label $label_MAIN__RIGHT__seq__step__0(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__0)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__0)
+  declare ui_label $label_MAIN__RIGHT__seq__step__1(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__1)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__1)
+  declare ui_label $label_MAIN__RIGHT__seq__step__2(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__2)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__2)
+  declare ui_label $label_MAIN__RIGHT__seq__step__3(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__3)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__3)
+  declare ui_label $label_MAIN__RIGHT__seq__step__4(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__4)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__4)
+  declare ui_label $label_MAIN__RIGHT__seq__step__5(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__5)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__5)
+  declare ui_label $label_MAIN__RIGHT__seq__step__6(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__6)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__6)
+  declare ui_label $label_MAIN__RIGHT__seq__step__7(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__7)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__7)
+  declare ui_label $label_MAIN__RIGHT__seq__step__8(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__8)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__8)
+  declare ui_label $label_MAIN__RIGHT__seq__step__9(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__9)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__9)
+  declare ui_label $label_MAIN__RIGHT__seq__step__10(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__10)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__10)
+  declare ui_label $label_MAIN__RIGHT__seq__step__11(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__11)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__11)
+  declare ui_label $label_MAIN__RIGHT__seq__step__12(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__12)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__12)
+  declare ui_label $label_MAIN__RIGHT__seq__step__13(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__13)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__13)
+  declare ui_label $label_MAIN__RIGHT__seq__step__14(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__14)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__14)
+  declare ui_label $label_MAIN__RIGHT__seq__step__15(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__15)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__15)
+  declare ui_label $label_MAIN__RIGHT__seq__step__16(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__16)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__16)
+  declare ui_label $label_MAIN__RIGHT__seq__step__17(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__17)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__17)
+  declare ui_label $label_MAIN__RIGHT__seq__step__18(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__18)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__18)
+  declare ui_label $label_MAIN__RIGHT__seq__step__19(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__19)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__19)
+  declare ui_label $label_MAIN__RIGHT__seq__step__20(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__20)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__20)
+  declare ui_label $label_MAIN__RIGHT__seq__step__21(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__21)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__21)
+  declare ui_label $label_MAIN__RIGHT__seq__step__22(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__22)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__22)
+  declare ui_label $label_MAIN__RIGHT__seq__step__23(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__23)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__23)
+  declare ui_label $label_MAIN__RIGHT__seq__step__24(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__24)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__24)
+  declare ui_label $label_MAIN__RIGHT__seq__step__25(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__25)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__25)
+  declare ui_label $label_MAIN__RIGHT__seq__step__26(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__26)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__26)
+  declare ui_label $label_MAIN__RIGHT__seq__step__27(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__27)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__27)
+  declare ui_label $label_MAIN__RIGHT__seq__step__28(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__28)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__28)
+  declare ui_label $label_MAIN__RIGHT__seq__step__29(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__29)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__29)
+  declare ui_label $label_MAIN__RIGHT__seq__step__30(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__30)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__30)
+  declare ui_label $label_MAIN__RIGHT__seq__step__31(1,1)
+  make_persistent($label_MAIN__RIGHT__seq__step__31)
+  read_persistent_var($label_MAIN__RIGHT__seq__step__31)
+  declare ui_label $label_MAIN__RIGHT__layer__controls__separators(1,1)
+  make_persistent($label_MAIN__RIGHT__layer__controls__separators)
+  read_persistent_var($label_MAIN__RIGHT__layer__controls__separators)
+  declare ui_label $label_MAIN__LEFT__layer__controls__separators(1,1)
+  make_persistent($label_MAIN__LEFT__layer__controls__separators)
+  read_persistent_var($label_MAIN__LEFT__layer__controls__separators)
+  declare ui_label $label_MAIN__display__control(1,1)
+  make_persistent($label_MAIN__display__control)
+  read_persistent_var($label_MAIN__display__control)
+  declare ui_label $label_MAIN__display__value(1,1)
+  make_persistent($label_MAIN__display__value)
+  read_persistent_var($label_MAIN__display__value)
+  declare ui_label $label_MAIN__2SEQ__RIGHT__off(1,1)
+  make_persistent($label_MAIN__2SEQ__RIGHT__off)
+  read_persistent_var($label_MAIN__2SEQ__RIGHT__off)
+  declare ui_label $label_MAIN__2SEQ__LEFT__off(1,1)
+  make_persistent($label_MAIN__2SEQ__LEFT__off)
+  read_persistent_var($label_MAIN__2SEQ__LEFT__off)
+  declare ui_label $label_MAIN__2SEQ__LEFT__dyn(1,1)
+  make_persistent($label_MAIN__2SEQ__LEFT__dyn)
+  read_persistent_var($label_MAIN__2SEQ__LEFT__dyn)
+  declare ui_label $label_MAIN__2SEQ__RIGHT__dyn(1,1)
+  make_persistent($label_MAIN__2SEQ__RIGHT__dyn)
+  read_persistent_var($label_MAIN__2SEQ__RIGHT__dyn)
+  declare ui_label $label_MAIN__LFO__visualRate(1,1)
+  make_persistent($label_MAIN__LFO__visualRate)
+  read_persistent_var($label_MAIN__LFO__visualRate)
+  declare ui_label $label_MAIN__LFO__visualDepth(1,1)
+  make_persistent($label_MAIN__LFO__visualDepth)
+  read_persistent_var($label_MAIN__LFO__visualDepth)
+  declare ui_label $label_MAIN__LFO__rate(1,1)
+  make_persistent($label_MAIN__LFO__rate)
+  read_persistent_var($label_MAIN__LFO__rate)
+  declare ui_label $label_MAIN__LFO__depth(1,1)
+  make_persistent($label_MAIN__LFO__depth)
+  read_persistent_var($label_MAIN__LFO__depth)
+  declare ui_label $label_MAIN__LFO__sync__text(1,1)
+  make_persistent($label_MAIN__LFO__sync__text)
+  read_persistent_var($label_MAIN__LFO__sync__text)
+  declare ui_label $label_MAIN__LFO__depth__title(1,1)
+  make_persistent($label_MAIN__LFO__depth__title)
+  read_persistent_var($label_MAIN__LFO__depth__title)
+  declare ui_label $label_MAIN__LFO__rate__title(1,1)
+  make_persistent($label_MAIN__LFO__rate__title)
+  read_persistent_var($label_MAIN__LFO__rate__title)
+  declare ui_slider $slider_MAIN__LEFT__randomizer(0,1000000)
+  make_persistent($slider_MAIN__LEFT__randomizer)
+  read_persistent_var($slider_MAIN__LEFT__randomizer)
+  declare ui_slider $slider_MAIN__RIGHT__randomizer(0,1000000)
+  make_persistent($slider_MAIN__RIGHT__randomizer)
+  read_persistent_var($slider_MAIN__RIGHT__randomizer)
+  declare ui_slider $slider_MAIN__ADSR__LEFT__release(0,1000000)
+  make_persistent($slider_MAIN__ADSR__LEFT__release)
+  read_persistent_var($slider_MAIN__ADSR__LEFT__release)
+  declare ui_slider $slider_MAIN__ADSR__RIGHT__sustain(0,1000000)
+  make_persistent($slider_MAIN__ADSR__RIGHT__sustain)
+  read_persistent_var($slider_MAIN__ADSR__RIGHT__sustain)
+  declare ui_slider $slider_MAIN__ADSR__RIGHT__attack(0,1000000)
+  make_persistent($slider_MAIN__ADSR__RIGHT__attack)
+  read_persistent_var($slider_MAIN__ADSR__RIGHT__attack)
+  declare ui_slider $slider_MAIN__ADSR__LEFT__sustain(0,1000000)
+  make_persistent($slider_MAIN__ADSR__LEFT__sustain)
+  read_persistent_var($slider_MAIN__ADSR__LEFT__sustain)
+  declare ui_slider $slider_MAIN__ADSR__LEFT__decay(0,1000000)
+  make_persistent($slider_MAIN__ADSR__LEFT__decay)
+  read_persistent_var($slider_MAIN__ADSR__LEFT__decay)
+  declare ui_slider $slider_MAIN__ADSR__RIGHT__decay(0,1000000)
+  make_persistent($slider_MAIN__ADSR__RIGHT__decay)
+  read_persistent_var($slider_MAIN__ADSR__RIGHT__decay)
+  declare ui_slider $slider_MAIN__ADSR__RIGHT__release(0,1000000)
+  make_persistent($slider_MAIN__ADSR__RIGHT__release)
+  read_persistent_var($slider_MAIN__ADSR__RIGHT__release)
+  declare ui_slider $slider_MAIN__ADSR__LEFT__attack(0,1000000)
+  make_persistent($slider_MAIN__ADSR__LEFT__attack)
+  read_persistent_var($slider_MAIN__ADSR__LEFT__attack)
+  declare ui_slider $slider_MAIN__FX__RIGHT__layer__volLFO__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__layer__volLFO__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__layer__volLFO__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__layer__panLFO__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__layer__panLFO__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__layer__panLFO__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__layer__widthLFO__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__layer__widthLFO__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__layer__widthLFO__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__layer__volume(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__layer__volume)
+  read_persistent_var($slider_MAIN__FX__RIGHT__layer__volume)
+  declare ui_slider $slider_MAIN__FX__RIGHT__layer__pan(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__layer__pan)
+  read_persistent_var($slider_MAIN__FX__RIGHT__layer__pan)
+  declare ui_slider $slider_MAIN__FX__RIGHT__layer__width(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__layer__width)
+  read_persistent_var($slider_MAIN__FX__RIGHT__layer__width)
+  declare ui_slider $slider_MAIN__FX__LEFT__layer__volume(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__layer__volume)
+  read_persistent_var($slider_MAIN__FX__LEFT__layer__volume)
+  declare ui_slider $slider_MAIN__FX__LEFT__layer__pan(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__layer__pan)
+  read_persistent_var($slider_MAIN__FX__LEFT__layer__pan)
+  declare ui_slider $slider_MAIN__FX__LEFT__layer__width(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__layer__width)
+  read_persistent_var($slider_MAIN__FX__LEFT__layer__width)
+  declare ui_slider $slider_MAIN__FX__LEFT__layer__volLFO__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__layer__volLFO__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__layer__volLFO__amount)
+  declare ui_slider $slider_MAIN__FX__LEFT__layer__panLFO__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__layer__panLFO__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__layer__panLFO__amount)
+  declare ui_slider $slider_MAIN__FX__LEFT__layer__widthLFO__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__layer__widthLFO__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__layer__widthLFO__amount)
+  declare ui_slider $slider_MAIN__FLRND__LEFT__amount(0,1000000)
+  make_persistent($slider_MAIN__FLRND__LEFT__amount)
+  read_persistent_var($slider_MAIN__FLRND__LEFT__amount)
+  declare ui_slider $slider_MAIN__ARP__LEFT__rate(0,1000000)
+  make_persistent($slider_MAIN__ARP__LEFT__rate)
+  read_persistent_var($slider_MAIN__ARP__LEFT__rate)
+  declare ui_slider $slider_MAIN__FLRND__RIGHT__amount(0,1000000)
+  make_persistent($slider_MAIN__FLRND__RIGHT__amount)
+  read_persistent_var($slider_MAIN__FLRND__RIGHT__amount)
+  declare ui_slider $slider_MAIN__ARP__RIGHT__rate(0,1000000)
+  make_persistent($slider_MAIN__ARP__RIGHT__rate)
+  read_persistent_var($slider_MAIN__ARP__RIGHT__rate)
+  declare ui_slider $slider_MAIN__FX__LEFT__single__shot__start__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__single__shot__start__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__single__shot__start__amount)
+  declare ui_slider $slider_MAIN__FX__LEFT__single__shot__tune__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__single__shot__tune__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__single__shot__tune__amount)
+  declare ui_slider $slider_MAIN__FX__LEFT__single__shot__LPcut__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__single__shot__LPcut__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__single__shot__LPcut__amount)
+  declare ui_slider $slider_MAIN__FX__LEFT__single__shot__LPres__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__single__shot__LPres__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__single__shot__LPres__amount)
+  declare ui_slider $slider_MAIN__FX__LEFT__single__shot__HPcut__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__single__shot__HPcut__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__single__shot__HPcut__amount)
+  declare ui_slider $slider_MAIN__FX__LEFT__single__shot__HPres__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__LEFT__single__shot__HPres__amount)
+  read_persistent_var($slider_MAIN__FX__LEFT__single__shot__HPres__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__single__shot__start__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__single__shot__start__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__single__shot__start__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__single__shot__tune__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__single__shot__tune__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__single__shot__tune__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__single__shot__LPcut__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__single__shot__LPcut__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__single__shot__LPcut__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__single__shot__LPres__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__single__shot__LPres__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__single__shot__LPres__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__single__shot__HPcut__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__single__shot__HPcut__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__single__shot__HPcut__amount)
+  declare ui_slider $slider_MAIN__FX__RIGHT__single__shot__HPres__amount(0,1000000)
+  make_persistent($slider_MAIN__FX__RIGHT__single__shot__HPres__amount)
+  read_persistent_var($slider_MAIN__FX__RIGHT__single__shot__HPres__amount)
+  declare ui_slider $slider_MAIN__SEQ__LEFT__block1__steps(0,7)
+  make_persistent($slider_MAIN__SEQ__LEFT__block1__steps)
+  read_persistent_var($slider_MAIN__SEQ__LEFT__block1__steps)
+  declare ui_slider $slider_MAIN__SEQ__LEFT__block2__steps(0,7)
+  make_persistent($slider_MAIN__SEQ__LEFT__block2__steps)
+  read_persistent_var($slider_MAIN__SEQ__LEFT__block2__steps)
+  declare ui_slider $slider_MAIN__SEQ__LEFT__block3__steps(0,7)
+  make_persistent($slider_MAIN__SEQ__LEFT__block3__steps)
+  read_persistent_var($slider_MAIN__SEQ__LEFT__block3__steps)
+  declare ui_slider $slider_MAIN__SEQ__LEFT__block4__steps(0,7)
+  make_persistent($slider_MAIN__SEQ__LEFT__block4__steps)
+  read_persistent_var($slider_MAIN__SEQ__LEFT__block4__steps)
+  declare ui_slider $slider_MAIN__SEQ__RIGHT__block1__steps(0,7)
+  make_persistent($slider_MAIN__SEQ__RIGHT__block1__steps)
+  read_persistent_var($slider_MAIN__SEQ__RIGHT__block1__steps)
+  declare ui_slider $slider_MAIN__SEQ__RIGHT__block2__steps(0,7)
+  make_persistent($slider_MAIN__SEQ__RIGHT__block2__steps)
+  read_persistent_var($slider_MAIN__SEQ__RIGHT__block2__steps)
+  declare ui_slider $slider_MAIN__SEQ__RIGHT__block3__steps(0,7)
+  make_persistent($slider_MAIN__SEQ__RIGHT__block3__steps)
+  read_persistent_var($slider_MAIN__SEQ__RIGHT__block3__steps)
+  declare ui_slider $slider_MAIN__SEQ__RIGHT__block4__steps(0,7)
+  make_persistent($slider_MAIN__SEQ__RIGHT__block4__steps)
+  read_persistent_var($slider_MAIN__SEQ__RIGHT__block4__steps)
+  declare ui_slider $slider_MAIN__RIGHT__move__range(0,1000000)
+  make_persistent($slider_MAIN__RIGHT__move__range)
+  read_persistent_var($slider_MAIN__RIGHT__move__range)
+  declare ui_slider $slider_MAIN__LEFT__move__range(0,1000000)
+  make_persistent($slider_MAIN__LEFT__move__range)
+  read_persistent_var($slider_MAIN__LEFT__move__range)
+  declare ui_slider $slider_MAIN__LEFT__dynamics(0,1000000)
+  make_persistent($slider_MAIN__LEFT__dynamics)
+  read_persistent_var($slider_MAIN__LEFT__dynamics)
+  declare ui_slider $slider_MAIN__RIGHT__dynamics(0,1000000)
+  make_persistent($slider_MAIN__RIGHT__dynamics)
+  read_persistent_var($slider_MAIN__RIGHT__dynamics)
+  declare ui_slider $slider_MAIN__LFO__rate(0,1000000)
+  make_persistent($slider_MAIN__LFO__rate)
+  read_persistent_var($slider_MAIN__LFO__rate)
+  declare ui_slider $slider_MAIN__LFO__depth(0,1000000)
+  make_persistent($slider_MAIN__LFO__depth)
+  read_persistent_var($slider_MAIN__LFO__depth)
+  declare ui_xy ?xypad_MAIN__matrix__center[2]
+  make_persistent(?xypad_MAIN__matrix__center)
+  read_persistent_var(?xypad_MAIN__matrix__center)
+  declare ui_xy ?xypad_MAIN__SEQ__LEFT[2]
+  make_persistent(?xypad_MAIN__SEQ__LEFT)
+  read_persistent_var(?xypad_MAIN__SEQ__LEFT)
+  declare ui_xy ?xypad_MAIN__SEQ__RIGHT[2]
+  make_persistent(?xypad_MAIN__SEQ__RIGHT)
+  read_persistent_var(?xypad_MAIN__SEQ__RIGHT)
+  declare ui_waveform $waveform_MAIN__2SEQ__LEFT__display(1,1)
+  make_persistent($waveform_MAIN__2SEQ__LEFT__display)
+  read_persistent_var($waveform_MAIN__2SEQ__LEFT__display)
+  declare ui_waveform $waveform_MAIN__2SEQ__RIGHT__display(1,1)
+  make_persistent($waveform_MAIN__2SEQ__RIGHT__display)
+  read_persistent_var($waveform_MAIN__2SEQ__RIGHT__display)
+  declare ui_value_edit $valueedit_MAIN__RIGHT__low__range(1,64,1)
+  make_persistent($valueedit_MAIN__RIGHT__low__range)
+  read_persistent_var($valueedit_MAIN__RIGHT__low__range)
+  declare ui_value_edit $valueedit_MAIN__RIGHT__high__range(1,64,1)
+  make_persistent($valueedit_MAIN__RIGHT__high__range)
+  read_persistent_var($valueedit_MAIN__RIGHT__high__range)
+  declare ui_value_edit $valueedit_MAIN__LEFT__low__range(1,64,1)
+  make_persistent($valueedit_MAIN__LEFT__low__range)
+  read_persistent_var($valueedit_MAIN__LEFT__low__range)
+  declare ui_value_edit $valueedit_MAIN__LEFT__high__range(1,64,1)
+  make_persistent($valueedit_MAIN__LEFT__high__range)
+  read_persistent_var($valueedit_MAIN__LEFT__high__range)
+  declare ui_button $button_MAIN__RIGHT__controls__draw
+  make_persistent($button_MAIN__RIGHT__controls__draw)
+  read_persistent_var($button_MAIN__RIGHT__controls__draw)
+  declare ui_button $button_MAIN__LEFT__controls__draw
+  make_persistent($button_MAIN__LEFT__controls__draw)
+  read_persistent_var($button_MAIN__LEFT__controls__draw)
+  declare %UI_ID[10000] := (0)
+  %UI_ID[0] := get_ui_id($panel_UI)
+  $figma_counter := 1
+  while ($figma_counter<404)
+    %UI_ID[$figma_counter] := %UI_ID[0]+$figma_counter
+    inc($figma_counter)
+  end while
+  declare %panel_idx[404] := (0, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+  1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, ...
+  5, 5, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 7, 7, 7, 7, ...
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18, ...
+  18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 0, 0, 0, 0, 0, ...
+  0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, ...
+  6, 6, 6, 6, 6, 7, 8, 9, 10, 11, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, ...
+  14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, ...
+  15, 15, 15, 15, 16, 17, 7, 7, 7, 7, 7, 7, 20, 20, 20, 20, 20, 20, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, ...
+  6, 8, 8, 9, 9, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 14, 14, 14, 14, 15, 15, 15, 15, 16, 17, 7, 7, 20, 20, 1, 14, 15, 7, 7, 16, 16, 17, 17, ...
+  16, 17)
+  declare %element_idx[404] := (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, ...
+  42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, ...
+  82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, ...
+  122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, ...
+  162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, ...
+  202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, ...
+  242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, ...
+  282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, ...
+  322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, ...
+  362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, ...
+  402, 403)
+  $figma_counter := 1
+  while ($figma_counter<num_elements(%panel_idx))
+    if (%panel_idx[$figma_counter] # -1)
+      set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_PARENT_PANEL,%UI_ID[%panel_idx[$figma_counter-1]])
+    end if
+    inc($figma_counter)
+  end while
+  $figma_counter := 0
+  while ($figma_counter<404)
+    set_control_par_str(%UI_ID[$figma_counter],$CONTROL_PAR_TEXT,"")
+    set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_WIDTH,%UI_width[$figma_counter])
+    set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_HEIGHT,%UI_height[$figma_counter])
+    set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_POS_X,%UI_x[$figma_counter])
+    set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_POS_Y,%UI_y[$figma_counter])
+    set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_DEFAULT_VALUE,%UI_default_value[$figma_counter])
+    set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_Z_LAYER,%UI_z_layer[$figma_counter])
+    if (%UI_mouse_behaviour[$figma_counter] # -1)
+      set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_MOUSE_BEHAVIOUR,%UI_mouse_behaviour[$figma_counter])
+    end if
+    if (%UI_mouse_behaviour_x[$figma_counter] # -1)
+      set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_MOUSE_BEHAVIOUR_X,%UI_mouse_behaviour_x[$figma_counter])
+    end if
+    if (%UI_mouse_behaviour_y[$figma_counter] # -1)
+      set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_MOUSE_BEHAVIOUR_Y,%UI_mouse_behaviour[$figma_counter])
+    end if
+    if (%UI_skin[$figma_counter] # -1)
+      set_control_par_str(%UI_ID[$figma_counter],$CONTROL_PAR_PICTURE,!skin_picture[%UI_skin[$figma_counter]])
+    end if
+    if (%UI_text_alignment[$figma_counter] # -1)
+      set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_TEXT_ALIGNMENT,%UI_text_alignment[$figma_counter])
+    end if
+    if (%UI_text_y_pos[$figma_counter] # -1)
+      set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_TEXTPOS_Y,%UI_text_y_pos[$figma_counter])
+    end if
+    if (%UI_label_text[$figma_counter]>-1)
+      set_control_par_str(%UI_ID[$figma_counter],$CONTROL_PAR_TEXT,!_labels_text[10*%UI_label_text[$figma_counter]+0])
+      if (%MULTI_LINE_DATA[%UI_label_text[$figma_counter]]>1)
+        $figma_counter_multi_line_labels := 0
+        while ($figma_counter_multi_line_labels<(%MULTI_LINE_DATA[%UI_label_text[$figma_counter]]-1))
+          set_control_par_str(%UI_ID[$figma_counter],$CONTROL_PAR_TEXTLINE,!_labels_text[10*%UI_label_text[$figma_counter]+$figma_counter_multi_line_labels+1])
+          inc($figma_counter_multi_line_labels)
+        end while
+      end if
+    end if
+    set_control_par(%UI_ID[$figma_counter],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+    inc($figma_counter)
+  end while
+  declare const $SEQ_XY_W := 366
+  declare const $SEQ_XY_H := 95
+  declare const $SEQ_XY_BLOCK_WIDTH_PX := 90
+  declare %SEQ_XY_BLOCK_START_OFFSET[4]
+  %SEQ_XY_BLOCK_START_OFFSET[0] := 0
+  %SEQ_XY_BLOCK_START_OFFSET[1] := 92
+  %SEQ_XY_BLOCK_START_OFFSET[2] := 184
+  %SEQ_XY_BLOCK_START_OFFSET[3] := 276
+  declare const $SEQ_RIGHT_X_OFFSET := 138
+  declare ~SEQ_XY_BLOCK_PX_W
+  ~SEQ_XY_BLOCK_PX_W := 1.0/int_to_real($SEQ_XY_W)
+  declare ~SEQ_XY_BLOCK_W
+  ~SEQ_XY_BLOCK_W := int_to_real($SEQ_XY_BLOCK_WIDTH_PX)/int_to_real($SEQ_XY_W)
+  declare const $SEQ_LEFT_START_PX := 4
+  declare const $SEQ_STEP2_WIDTH := 40
+  declare const $SEQ_STEP3_WIDTH := 26
+  declare const $SEQ_STEP4_WIDTH := 19
+  declare const $SEQ_STEP5_WIDTH := 16
+  declare const $SEQ_STEP6_WIDTH := 13
+  declare const $SEQ_STEP7_WIDTH := 10
+  declare const $SEQ_STEP8_WIDTH := 9
+  declare const $SEQ_STEP2_GAP := 2
+  declare const $SEQ_STEP3_GAP := 2
+  declare const $SEQ_STEP4_GAP := 2
+  declare const $SEQ_STEP5_GAP := 1
+  declare const $SEQ_STEP6_GAP := 2
+  declare const $SEQ_STEP7_GAP := 2
+  declare const $SEQ_STEP8_GAP := 2
+  declare const ~SEQ_XY_B1_START := 0.0
+  declare const ~SEQ_XY_B1_END := 0.245901
+  declare const ~SEQ_XY_B2_START := 0.251366
+  declare const ~SEQ_XY_B2_END := 0.497267
+  declare const ~SEQ_XY_B3_START := 0.502732
+  declare const ~SEQ_XY_B3_END := 0.748632
+  declare const ~SEQ_XY_B4_START := 0.754098
+  declare const ~SEQ_XY_B4_END := 0.999999
+  declare const ~__SEQ_XY_PX_STEP := 1.0/366.0
+  declare !SEQ_step_pictures[16]
+  declare !SEQ_step_led_pictures[16]
+  declare %_SEQ_STEP_COORD[2*8*32]
+  declare const $SEQ_STEP_COORD__SIZE_D1 := 2
+  declare const $SEQ_STEP_COORD__SIZE_D2 := 8
+  declare const $SEQ_STEP_COORD__SIZE_D3 := 32
+  declare %SEQ__target_type[5]
+  %SEQ__target_type[0] := 0
+  %SEQ__target_type[1] := 1
+  %SEQ__target_type[2] := 1
+  %SEQ__target_type[3] := 1
+  %SEQ__target_type[4] := 0
+  declare !beat_rates_display[19]
+  !beat_rates_display[0] := "1/128"
+  !beat_rates_display[1] := "1/64 T"
+  !beat_rates_display[2] := "1/64"
+  !beat_rates_display[3] := "1/32 T"
+  !beat_rates_display[4] := "1/32"
+  !beat_rates_display[5] := "1/16 T"
+  !beat_rates_display[6] := "1/16"
+  !beat_rates_display[7] := "1/8 T"
+  !beat_rates_display[8] := "1/16 D"
+  !beat_rates_display[9] := "1/8"
+  !beat_rates_display[10] := "1/4 T"
+  !beat_rates_display[11] := "1/8 D"
+  !beat_rates_display[12] := "1/4"
+  !beat_rates_display[13] := "1/2 T"
+  !beat_rates_display[14] := "1/4 D"
+  !beat_rates_display[15] := "1/2"
+  !beat_rates_display[16] := "1/2 D"
+  !beat_rates_display[17] := "1 T"
+  !beat_rates_display[18] := "1"
+  declare %beat_rates[19]
+  %beat_rates[0] := $DURATION_SIXTEENTH/8/1000
+  %beat_rates[1] := $DURATION_SIXTEENTH_TRIPLET/2/1000
+  %beat_rates[2] := $DURATION_SIXTEENTH/4/1000
+  %beat_rates[3] := $DURATION_SIXTEENTH_TRIPLET/2/1000
+  %beat_rates[4] := $DURATION_SIXTEENTH/2/1000
+  %beat_rates[5] := $DURATION_SIXTEENTH_TRIPLET/1000
+  %beat_rates[6] := $DURATION_SIXTEENTH/1000
+  %beat_rates[7] := $DURATION_EIGHTH_TRIPLET/1000
+  %beat_rates[8] := 3*$DURATION_SIXTEENTH/2/1000
+  %beat_rates[9] := $DURATION_EIGHTH/1000
+  %beat_rates[10] := $DURATION_QUARTER_TRIPLET/1000
+  %beat_rates[11] := $DURATION_SIXTEENTH*3/1000
+  %beat_rates[12] := $DURATION_QUARTER/1000
+  %beat_rates[13] := $DURATION_QUARTER_TRIPLET*2/1000
+  %beat_rates[14] := $DURATION_EIGHTH*3/1000
+  %beat_rates[15] := $DURATION_QUARTER*2/1000
+  %beat_rates[16] := $DURATION_QUARTER*3/1000
+  %beat_rates[17] := $DURATION_QUARTER_TRIPLET*4/1000
+  %beat_rates[18] := $DURATION_QUARTER*4/1000
+  declare const $__BEAT_RATE_DIVISOR := 1000000/18
+  declare !rate_mode_sync_ms__text[2]
+  !rate_mode_sync_ms__text[0] := "sync"
+  !rate_mode_sync_ms__text[1] := "ms"
+  declare !rate_mode_sync_hz__text[2]
+  !rate_mode_sync_hz__text[0] := "sync"
+  !rate_mode_sync_hz__text[1] := "hz"
+  declare !seq_polarity[2]
+  !seq_polarity[0] := "unipolar"
+  !seq_polarity[1] := "bipolar"
+  declare const ~__SEQ_STEP_VALUE_FRAMES := 94.0
+  declare $a__i
+  declare $b__i
+  declare $c__i
+  declare $d__i
+  declare $e__i
+  declare $f__i
+  declare $g__i
+  declare $h__i
+  declare $i__i
+  declare $j__i
+  declare $k__i
+  declare $l__i
+  declare $m__i
+  declare $n__i
+  declare $o__i
+  declare $p__i
+  declare $q__i
+  declare $r__i
+  declare $s__i
+  declare $t__i
+  declare $u__i
+  declare $v__i
+  declare $w__i
+  declare $x__i
+  declare $y__i
+  declare $z__i
+  declare ~a__r
+  declare ~b__r
+  declare ~c__r
+  declare ~d__r
+  declare ~e__r
+  declare ~f__r
+  declare ~g__r
+  declare ~h__r
+  declare ~i__r
+  declare ~j__r
+  declare ~k__r
+  declare ~l__r
+  declare ~m__r
+  declare ~n__r
+  declare ~o__r
+  declare ~p__r
+  declare ~q__r
+  declare ~r__r
+  declare ~s__r
+  declare ~t__r
+  declare ~u__r
+  declare ~v__r
+  declare ~w__r
+  declare ~x__r
+  declare ~y__r
+  declare ~z__r
+  declare $SEQ__LEFT__step_index
+  declare %_SEQ__MAIN__step_count[2*4]
+  make_persistent(%_SEQ__MAIN__step_count)
+  read_persistent_var(%_SEQ__MAIN__step_count)
+  declare const $SEQ__MAIN__step_count__SIZE_D1 := 2
+  declare const $SEQ__MAIN__step_count__SIZE_D2 := 4
+  declare ?_SEQ__step_width[2*4]
+  make_persistent(?_SEQ__step_width)
+  read_persistent_var(?_SEQ__step_width)
+  declare const $SEQ__step_width__SIZE_D1 := 2
+  declare const $SEQ__step_width__SIZE_D2 := 4
+  declare ~SEQ__l__block_index
+  declare %SEQ__showing_target[2]
+  make_persistent(%SEQ__showing_target)
+  read_persistent_var(%SEQ__showing_target)
+  declare ~__BPM
+  make_persistent(~__BPM)
+  read_persistent_var(~__BPM)
+  declare $lcb_ms_counter
+  declare %LFO_data[4]
+  make_persistent(%LFO_data)
+  read_persistent_var(%LFO_data)
+  %LFO_data[3] := 0
+  declare $LFO_rate
+  make_persistent($LFO_rate)
+  read_persistent_var($LFO_rate)
+  declare ~LFO_sine_step
+  make_persistent(~LFO_sine_step)
+  read_persistent_var(~LFO_sine_step)
+  declare ~LFO_emitted_value
+  declare $LFO_seq_step_count
+  declare $uics_uiid_index
+  declare $uics_seq_side
+  declare $seq_xy_left_click_step_index
+  declare $seq_xy_block_index
+  declare $fn001__a__side
+  declare $fn001__a__block_index
+  declare ~fn001__l__xy_x
+  declare ~fn001__l__xy_x__normalized
+  declare $fn001__r__step_index
+  declare $fn002__a__side
+  declare $fn002__a__step_index
+  declare ~fn002__a__value
+  declare $fn003__a__side
+  declare $fn003__a__block_index
+  declare ~fn004__a__x_coord
+  declare $fn004__r__block_index
+  set_control_par(get_ui_id(?xypad_MAIN__SEQ__LEFT),$CONTROL_PAR_MOUSE_MODE,2)
+  set_control_par(get_ui_id(?xypad_MAIN__SEQ__RIGHT),$CONTROL_PAR_MOUSE_MODE,2)
+  set_control_par_str(get_ui_id(?xypad_MAIN__SEQ__LEFT),$CONTROL_PAR_CURSOR_PICTURE,"label_xy.cursor")
+  set_control_par_str(get_ui_id(?xypad_MAIN__SEQ__RIGHT),$CONTROL_PAR_CURSOR_PICTURE,"label_xy.cursor")
+  declare %_UIID_MAIN__seq__step[2*32]
+  declare const $UIID_MAIN__seq__step__SIZE_D1 := 2
+  declare const $UIID_MAIN__seq__step__SIZE_D2 := 32
+  declare %_UIID_MAIN__seq__leds[2*4]
+  declare const $UIID_MAIN__seq__leds__SIZE_D1 := 2
+  declare const $UIID_MAIN__seq__leds__SIZE_D2 := 4
+  declare %_UIID_MAIN__seq__block_steps[2*4]
+  declare const $UIID_MAIN__seq__block_steps__SIZE_D1 := 2
+  declare const $UIID_MAIN__seq__block_steps__SIZE_D2 := 4
+  declare %UIID_MAIN__SEQ__xypads[2]
+  declare %UIID_MAIN__controls__draw[2]
+end on
+
+function fn003_set_block_step_count
+  ?_SEQ__step_width[4*$fn003__a__side+$fn003__a__block_index] := ~SEQ_XY_BLOCK_W/int_to_real(%_SEQ__MAIN__step_count[4*$fn003__a__side+$fn003__a__block_index]+1)
+  set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+$fn003__a__block_index],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%_SEQ__MAIN__step_count[4*$fn003__a__side+$fn003__a__block_index]])
+  $i__i := 0
+  while ($i__i<=7)
+    if ($i__i<=%_SEQ__MAIN__step_count[4*$fn003__a__side+$fn003__a__block_index])
+      set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+      set_control_par_str(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_PICTURE,!SEQ_step_pictures[%_SEQ__MAIN__step_count[4*$fn003__a__side+$fn003__a__block_index]+(%SEQ__target_type[%SEQ__showing_target[$fn003__a__side]]*8)])
+      set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_POS_X,%_SEQ_STEP_COORD[32*8*$fn003__a__side+(32*%_SEQ__MAIN__step_count[4*$fn003__a__side+$fn003__a__block_index])+$i__i]+%SEQ_XY_BLOCK_START_OFFSET[$fn003__a__block_index])
+    else
+      set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+    end if
+    inc($i__i)
+  end while
+end function
+
+function fn004_get_current_seq_block
+  if (~fn004__a__x_coord>=~SEQ_XY_B1_START and (~fn004__a__x_coord<=~SEQ_XY_B1_END))
+    $fn004__r__block_index := 0
+  end if
+  if (~fn004__a__x_coord>=~SEQ_XY_B2_START and (~fn004__a__x_coord<=~SEQ_XY_B2_END))
+    $fn004__r__block_index := 1
+  end if
+  if (~fn004__a__x_coord>=~SEQ_XY_B3_START and (~fn004__a__x_coord<=~SEQ_XY_B3_END))
+    $fn004__r__block_index := 2
+  end if
+  if (~fn004__a__x_coord>=~SEQ_XY_B4_START and (~fn004__a__x_coord<=~SEQ_XY_B4_END))
+    $fn004__r__block_index := 3
+  end if
+end function
+
+function fn001_get_seq_step_index
+  ~fn001__l__xy_x := get_control_par_real_arr(%UIID_MAIN__SEQ__xypads[$fn001__a__side],$CONTROL_PAR_VALUE,0)
+  ~fn001__l__xy_x__normalized := ~fn001__l__xy_x-(0.25*int_to_real($fn001__a__block_index))
+  $fn001__r__step_index := real_to_int(~fn001__l__xy_x__normalized/?_SEQ__step_width[4*$fn001__a__side+$fn001__a__block_index])+(8*$fn001__a__block_index)
+  if ($fn001__r__step_index=32)
+    $fn001__r__step_index := 31
+  end if
+end function
+
+function get_seq_step_index
+  ~fn004__a__x_coord := get_control_par_real_arr(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_VALUE,0)
+  call fn004_get_current_seq_block
+  $fn001__a__block_index := $fn004__r__block_index
+  $fn001__a__side := $uics_uiid_index
+  call fn001_get_seq_step_index
+end function
+
+function fn002_set_seq_step_value
+  set_control_par(%_UIID_MAIN__seq__step[32*$fn002__a__side+$fn002__a__step_index],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn002__a__value))
+end function
+
+function update_lfo_ms_rates
+  %beat_rates[0] := $DURATION_SIXTEENTH/8/1000
+  %beat_rates[1] := $DURATION_SIXTEENTH_TRIPLET/2/1000
+  %beat_rates[2] := $DURATION_SIXTEENTH/4/1000
+  %beat_rates[3] := $DURATION_SIXTEENTH_TRIPLET/2/1000
+  %beat_rates[4] := $DURATION_SIXTEENTH/2/1000
+  %beat_rates[5] := $DURATION_SIXTEENTH_TRIPLET/1000
+  %beat_rates[6] := $DURATION_SIXTEENTH/1000
+  %beat_rates[7] := $DURATION_EIGHTH_TRIPLET/1000
+  %beat_rates[8] := 3*$DURATION_SIXTEENTH/2/1000
+  %beat_rates[9] := $DURATION_EIGHTH/1000
+  %beat_rates[10] := $DURATION_QUARTER_TRIPLET/1000
+  %beat_rates[11] := $DURATION_SIXTEENTH*3/1000
+  %beat_rates[12] := $DURATION_QUARTER/1000
+  %beat_rates[13] := $DURATION_QUARTER_TRIPLET*2/1000
+  %beat_rates[14] := $DURATION_EIGHTH*3/1000
+  %beat_rates[15] := $DURATION_QUARTER*2/1000
+  %beat_rates[16] := $DURATION_QUARTER*3/1000
+  %beat_rates[17] := $DURATION_QUARTER_TRIPLET*4/1000
+  %beat_rates[18] := $DURATION_QUARTER*4/1000
+  $LFO_rate := %beat_rates[$slider_MAIN__LFO__rate/$__BEAT_RATE_DIVISOR]
+  ~LFO_sine_step := 2.0*~NI_MATH_PI/int_to_real($LFO_rate)
+end function
+
+function LCB_data_update
+  if (~__BPM # (round(60000000.0/int_to_real($DURATION_QUARTER)*100.0)/100.0))
+    ~__BPM := round(60000000.0/int_to_real($DURATION_QUARTER)*100.0)/100.0
+    message("BPM changed to " & ~__BPM)
+    call update_lfo_ms_rates
+    $lcb_ms_counter := 0
+  end if
+end function
+
+on persistence_changed
+  message("PCCB")
+  $i__i := 0
+  while ($i__i<=31)
+    %_UIID_MAIN__seq__step[32*0+$i__i] := get_ui_id($label_MAIN__LEFT__seq__step__0)+$i__i
+    %_UIID_MAIN__seq__step[32*1+$i__i] := get_ui_id($label_MAIN__RIGHT__seq__step__0)+$i__i
+    inc($i__i)
+  end while
+  $i__i := 0
+  while ($i__i<=3)
+    %_UIID_MAIN__seq__leds[4*0+$i__i] := get_ui_id($label_MAIN__SEQ__LEFT__led1)+$i__i
+    %_UIID_MAIN__seq__leds[4*1+$i__i] := get_ui_id($label_MAIN__SEQ__RIGHT__led1)+$i__i
+    inc($i__i)
+  end while
+  $i__i := 0
+  while ($i__i<=3)
+    %_UIID_MAIN__seq__block_steps[4*0+$i__i] := get_ui_id($slider_MAIN__SEQ__LEFT__block1__steps)+$i__i
+    %_UIID_MAIN__seq__block_steps[4*1+$i__i] := get_ui_id($slider_MAIN__SEQ__RIGHT__block1__steps)+$i__i
+    inc($i__i)
+  end while
+  %UIID_MAIN__SEQ__xypads[0] := get_ui_id(?xypad_MAIN__SEQ__LEFT)
+  %UIID_MAIN__SEQ__xypads[1] := get_ui_id(?xypad_MAIN__SEQ__RIGHT)
+  %UIID_MAIN__controls__draw[0] := get_ui_id($button_MAIN__LEFT__controls__draw)
+  %UIID_MAIN__controls__draw[1] := get_ui_id($button_MAIN__RIGHT__controls__draw)
+  $i__i := 0
+  while ($i__i<=7)
+    !SEQ_step_pictures[$i__i] := "slider_MAIN.sequencer.block" & ($i__i+1) & ".uni_95"
+    !SEQ_step_pictures[$i__i+8] := "slider_MAIN.sequencer.block" & ($i__i+1) & ".bip_95"
+    inc($i__i)
+  end while
+  $i__i := 0
+  while ($i__i<=7)
+    !SEQ_step_led_pictures[$i__i] := "label_seqLed." & ($i__i+1) & "_" & ($i__i+1)
+    inc($i__i)
+  end while
+  %_SEQ_STEP_COORD[32*8*0+(32*0)+0] := $SEQ_LEFT_START_PX-2
+  %_SEQ_STEP_COORD[32*8*1+(32*0)+0] := %_SEQ_STEP_COORD[32*8*0+(32*0)+0]
+  %_SEQ_STEP_COORD[32*8*0+(32*0)+1] := $SEQ_LEFT_START_PX+($SEQ_STEP2_WIDTH*0)+($SEQ_STEP2_GAP*0)
+  %_SEQ_STEP_COORD[32*8*0+(32*1)+1] := $SEQ_LEFT_START_PX+($SEQ_STEP2_WIDTH*1)+($SEQ_STEP2_GAP*1)
+  %_SEQ_STEP_COORD[32*8*1+(32*0)+1] := %_SEQ_STEP_COORD[32*8*0+(32*0)+1]
+  %_SEQ_STEP_COORD[32*8*1+(32*1)+1] := %_SEQ_STEP_COORD[32*8*0+(32*1)+1]
+  %_SEQ_STEP_COORD[32*8*0+(32*2)+0] := $SEQ_LEFT_START_PX+($SEQ_STEP3_WIDTH*0)+($SEQ_STEP3_GAP*0)
+  %_SEQ_STEP_COORD[32*8*0+(32*2)+1] := $SEQ_LEFT_START_PX+($SEQ_STEP3_WIDTH*1)+($SEQ_STEP3_GAP*1)
+  %_SEQ_STEP_COORD[32*8*0+(32*2)+2] := $SEQ_LEFT_START_PX+($SEQ_STEP3_WIDTH*2)+($SEQ_STEP3_GAP*2)
+  %_SEQ_STEP_COORD[32*8*1+(32*2)+0] := %_SEQ_STEP_COORD[32*8*0+(32*2)+0]
+  %_SEQ_STEP_COORD[32*8*1+(32*2)+1] := %_SEQ_STEP_COORD[32*8*0+(32*2)+1]
+  %_SEQ_STEP_COORD[32*8*1+(32*2)+2] := %_SEQ_STEP_COORD[32*8*0+(32*2)+2]
+  %_SEQ_STEP_COORD[32*8*0+(32*3)+0] := $SEQ_LEFT_START_PX+($SEQ_STEP4_WIDTH*0)+($SEQ_STEP4_GAP*0)
+  %_SEQ_STEP_COORD[32*8*0+(32*3)+1] := $SEQ_LEFT_START_PX+($SEQ_STEP4_WIDTH*1)+($SEQ_STEP4_GAP*1)
+  %_SEQ_STEP_COORD[32*8*0+(32*3)+2] := $SEQ_LEFT_START_PX+($SEQ_STEP4_WIDTH*2)+($SEQ_STEP4_GAP*2)
+  %_SEQ_STEP_COORD[32*8*0+(32*3)+3] := $SEQ_LEFT_START_PX+($SEQ_STEP4_WIDTH*3)+($SEQ_STEP4_GAP*3)
+  %_SEQ_STEP_COORD[32*8*1+(32*3)+0] := %_SEQ_STEP_COORD[32*8*0+(32*3)+0]
+  %_SEQ_STEP_COORD[32*8*1+(32*3)+1] := %_SEQ_STEP_COORD[32*8*0+(32*3)+1]
+  %_SEQ_STEP_COORD[32*8*1+(32*3)+2] := %_SEQ_STEP_COORD[32*8*0+(32*3)+2]
+  %_SEQ_STEP_COORD[32*8*1+(32*3)+3] := %_SEQ_STEP_COORD[32*8*0+(32*3)+3]
+  %_SEQ_STEP_COORD[32*8*0+(32*4)+0] := $SEQ_LEFT_START_PX-1+($SEQ_STEP5_WIDTH*0)+($SEQ_STEP5_GAP*0)
+  %_SEQ_STEP_COORD[32*8*0+(32*4)+1] := $SEQ_LEFT_START_PX-1+($SEQ_STEP5_WIDTH*1)+($SEQ_STEP5_GAP*1)
+  %_SEQ_STEP_COORD[32*8*0+(32*4)+2] := $SEQ_LEFT_START_PX-1+($SEQ_STEP5_WIDTH*2)+($SEQ_STEP5_GAP*2)
+  %_SEQ_STEP_COORD[32*8*0+(32*4)+3] := $SEQ_LEFT_START_PX-1+($SEQ_STEP5_WIDTH*3)+($SEQ_STEP5_GAP*3)
+  %_SEQ_STEP_COORD[32*8*0+(32*4)+4] := $SEQ_LEFT_START_PX-1+($SEQ_STEP5_WIDTH*4)+($SEQ_STEP5_GAP*4)
+  %_SEQ_STEP_COORD[32*8*1+(32*4)+0] := %_SEQ_STEP_COORD[32*8*0+(32*4)+0]
+  %_SEQ_STEP_COORD[32*8*1+(32*4)+1] := %_SEQ_STEP_COORD[32*8*0+(32*4)+1]
+  %_SEQ_STEP_COORD[32*8*1+(32*4)+2] := %_SEQ_STEP_COORD[32*8*0+(32*4)+2]
+  %_SEQ_STEP_COORD[32*8*1+(32*4)+3] := %_SEQ_STEP_COORD[32*8*0+(32*4)+3]
+  %_SEQ_STEP_COORD[32*8*1+(32*4)+4] := %_SEQ_STEP_COORD[32*8*0+(32*4)+4]
+  %_SEQ_STEP_COORD[32*8*0+(32*5)+0] := $SEQ_LEFT_START_PX-2+($SEQ_STEP6_WIDTH*0)+($SEQ_STEP6_GAP*0)
+  %_SEQ_STEP_COORD[32*8*0+(32*5)+1] := $SEQ_LEFT_START_PX-2+($SEQ_STEP6_WIDTH*1)+($SEQ_STEP6_GAP*1)
+  %_SEQ_STEP_COORD[32*8*0+(32*5)+2] := $SEQ_LEFT_START_PX-2+($SEQ_STEP6_WIDTH*2)+($SEQ_STEP6_GAP*2)
+  %_SEQ_STEP_COORD[32*8*0+(32*5)+3] := $SEQ_LEFT_START_PX-2+($SEQ_STEP6_WIDTH*3)+($SEQ_STEP6_GAP*3)
+  %_SEQ_STEP_COORD[32*8*0+(32*5)+4] := $SEQ_LEFT_START_PX-2+($SEQ_STEP6_WIDTH*4)+($SEQ_STEP6_GAP*4)
+  %_SEQ_STEP_COORD[32*8*0+(32*5)+5] := $SEQ_LEFT_START_PX-2+($SEQ_STEP6_WIDTH*5)+($SEQ_STEP6_GAP*5)
+  %_SEQ_STEP_COORD[32*8*1+(32*5)+0] := %_SEQ_STEP_COORD[32*8*0+(32*5)+0]
+  %_SEQ_STEP_COORD[32*8*1+(32*5)+1] := %_SEQ_STEP_COORD[32*8*0+(32*5)+1]
+  %_SEQ_STEP_COORD[32*8*1+(32*5)+2] := %_SEQ_STEP_COORD[32*8*0+(32*5)+2]
+  %_SEQ_STEP_COORD[32*8*1+(32*5)+3] := %_SEQ_STEP_COORD[32*8*0+(32*5)+3]
+  %_SEQ_STEP_COORD[32*8*1+(32*5)+4] := %_SEQ_STEP_COORD[32*8*0+(32*5)+4]
+  %_SEQ_STEP_COORD[32*8*1+(32*5)+5] := %_SEQ_STEP_COORD[32*8*0+(32*5)+5]
+  %_SEQ_STEP_COORD[32*8*0+(32*6)+0] := $SEQ_LEFT_START_PX+($SEQ_STEP7_WIDTH*0)+($SEQ_STEP7_GAP*0)
+  %_SEQ_STEP_COORD[32*8*0+(32*6)+1] := $SEQ_LEFT_START_PX+($SEQ_STEP7_WIDTH*1)+($SEQ_STEP7_GAP*1)
+  %_SEQ_STEP_COORD[32*8*0+(32*6)+2] := $SEQ_LEFT_START_PX+($SEQ_STEP7_WIDTH*2)+($SEQ_STEP7_GAP*2)
+  %_SEQ_STEP_COORD[32*8*0+(32*6)+3] := $SEQ_LEFT_START_PX+($SEQ_STEP7_WIDTH*3)+($SEQ_STEP7_GAP*3)
+  %_SEQ_STEP_COORD[32*8*0+(32*6)+4] := $SEQ_LEFT_START_PX+($SEQ_STEP7_WIDTH*4)+($SEQ_STEP7_GAP*4)
+  %_SEQ_STEP_COORD[32*8*0+(32*6)+5] := $SEQ_LEFT_START_PX+($SEQ_STEP7_WIDTH*5)+($SEQ_STEP7_GAP*5)
+  %_SEQ_STEP_COORD[32*8*0+(32*6)+6] := $SEQ_LEFT_START_PX+($SEQ_STEP7_WIDTH*6)+($SEQ_STEP7_GAP*6)
+  %_SEQ_STEP_COORD[32*8*1+(32*6)+0] := %_SEQ_STEP_COORD[32*8*0+(32*6)+0]
+  %_SEQ_STEP_COORD[32*8*1+(32*6)+1] := %_SEQ_STEP_COORD[32*8*0+(32*6)+1]
+  %_SEQ_STEP_COORD[32*8*1+(32*6)+2] := %_SEQ_STEP_COORD[32*8*0+(32*6)+2]
+  %_SEQ_STEP_COORD[32*8*1+(32*6)+3] := %_SEQ_STEP_COORD[32*8*0+(32*6)+3]
+  %_SEQ_STEP_COORD[32*8*1+(32*6)+4] := %_SEQ_STEP_COORD[32*8*0+(32*6)+4]
+  %_SEQ_STEP_COORD[32*8*1+(32*6)+5] := %_SEQ_STEP_COORD[32*8*0+(32*6)+5]
+  %_SEQ_STEP_COORD[32*8*1+(32*6)+6] := %_SEQ_STEP_COORD[32*8*0+(32*6)+6]
+  %_SEQ_STEP_COORD[32*8*0+(32*7)+0] := $SEQ_LEFT_START_PX-2+($SEQ_STEP8_WIDTH*0)+($SEQ_STEP8_GAP*0)
+  %_SEQ_STEP_COORD[32*8*0+(32*7)+1] := $SEQ_LEFT_START_PX-2+($SEQ_STEP8_WIDTH*1)+($SEQ_STEP8_GAP*1)
+  %_SEQ_STEP_COORD[32*8*0+(32*7)+2] := $SEQ_LEFT_START_PX-2+($SEQ_STEP8_WIDTH*2)+($SEQ_STEP8_GAP*2)
+  %_SEQ_STEP_COORD[32*8*0+(32*7)+3] := $SEQ_LEFT_START_PX-2+($SEQ_STEP8_WIDTH*3)+($SEQ_STEP8_GAP*3)
+  %_SEQ_STEP_COORD[32*8*0+(32*7)+4] := $SEQ_LEFT_START_PX-2+($SEQ_STEP8_WIDTH*4)+($SEQ_STEP8_GAP*4)
+  %_SEQ_STEP_COORD[32*8*0+(32*7)+5] := $SEQ_LEFT_START_PX-2+($SEQ_STEP8_WIDTH*5)+($SEQ_STEP8_GAP*5)
+  %_SEQ_STEP_COORD[32*8*0+(32*7)+6] := $SEQ_LEFT_START_PX-2+($SEQ_STEP8_WIDTH*6)+($SEQ_STEP8_GAP*6)
+  %_SEQ_STEP_COORD[32*8*0+(32*7)+7] := $SEQ_LEFT_START_PX-2+($SEQ_STEP8_WIDTH*7)+($SEQ_STEP8_GAP*7)
+  %_SEQ_STEP_COORD[32*8*1+(32*7)+0] := %_SEQ_STEP_COORD[32*8*0+(32*7)+0]
+  %_SEQ_STEP_COORD[32*8*1+(32*7)+1] := %_SEQ_STEP_COORD[32*8*0+(32*7)+1]
+  %_SEQ_STEP_COORD[32*8*1+(32*7)+2] := %_SEQ_STEP_COORD[32*8*0+(32*7)+2]
+  %_SEQ_STEP_COORD[32*8*1+(32*7)+3] := %_SEQ_STEP_COORD[32*8*0+(32*7)+3]
+  %_SEQ_STEP_COORD[32*8*1+(32*7)+4] := %_SEQ_STEP_COORD[32*8*0+(32*7)+4]
+  %_SEQ_STEP_COORD[32*8*1+(32*7)+5] := %_SEQ_STEP_COORD[32*8*0+(32*7)+5]
+  %_SEQ_STEP_COORD[32*8*1+(32*7)+6] := %_SEQ_STEP_COORD[32*8*0+(32*7)+6]
+  %_SEQ_STEP_COORD[32*8*1+(32*7)+7] := %_SEQ_STEP_COORD[32*8*0+(32*7)+7]
+  $b__i := 0
+  while ($b__i<=3)
+    $s__i := 0
+    while ($s__i<=1)
+      $fn003__a__side := $s__i
+      $fn003__a__block_index := $b__i
+      call fn003_set_block_step_count
+      inc($s__i)
+    end while
+    inc($b__i)
+  end while
+  message("ea-flux-engine loaded successfully")
+  set_control_par(get_ui_id($label_MAIN__SEQ__LEFT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__SEQ__RIGHT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__ARP__LEFT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__ARP__RIGHT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__ADSR__LEFT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__ADSR__RIGHT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__FX__LEFT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__FX__RIGHT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($waveform_MAIN__2SEQ__LEFT__display),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($waveform_MAIN__2SEQ__RIGHT__display),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($panel_MAIN__2SEQ__RIGHT__arpModes),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($panel_MAIN__2SEQ__LEFT__arpModes),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($panel_MAIN__2SEQ__LEFT__single__shot),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($panel_MAIN__2SEQ__RIGHT__single__shot),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__2SEQ__RIGHT__off),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__2SEQ__LEFT__off),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($panel_MAIN__FX__LEFT__reverb__menu),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($panel_MAIN__FX__RIGHT__reverb__menu),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__2SEQ__LEFT__sliders__background),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__2SEQ__RIGHT__sliders__background),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+end on
+
+on async_complete
+  if ($NI_ASYNC_ID=0)
+    message("If statements can't be empty, so I exist.")
+  end if
+end on
+
+on ui_controls
+  if (in_range($NI_UI_ID,%_UIID_MAIN__seq__block_steps[4*0+0],%_UIID_MAIN__seq__block_steps[4*1+3]))
+    $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__block_steps[4*0+0]
+    if ($uics_uiid_index<4)
+      $uics_seq_side := 0
+    else
+      $uics_seq_side := 1
+      $uics_uiid_index := $uics_uiid_index-4
+    end if
+    %_SEQ__MAIN__step_count[4*$uics_seq_side+$uics_uiid_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$uics_uiid_index],$CONTROL_PAR_VALUE)
+    $fn003__a__side := $uics_seq_side
+    $fn003__a__block_index := $uics_uiid_index
+    call fn003_set_block_step_count
+  end if
+  if ($NI_UI_ID=%UIID_MAIN__SEQ__xypads[0] or ($NI_UI_ID=%UIID_MAIN__SEQ__xypads[1]))
+    $uics_uiid_index := $NI_UI_ID-%UIID_MAIN__SEQ__xypads[0]
+    if ($NI_MOUSE_EVENT_TYPE=$NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN)
+      call get_seq_step_index
+    end if
+    if ($NI_MOUSE_EVENT_TYPE=$NI_MOUSE_EVENT_TYPE_DRAG)
+      if (get_control_par(%UIID_MAIN__controls__draw[$uics_uiid_index],$CONTROL_PAR_VALUE)=1)
+        call get_seq_step_index
+      end if
+    end if
+    $fn002__a__step_index := $fn001__r__step_index
+    $fn002__a__side := $uics_uiid_index
+    ~fn002__a__value := get_control_par_real_arr(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_VALUE,1)
+    call fn002_set_seq_step_value
+  end if
+end on
+
+on ui_control($slider_MAIN__LFO__rate)
+  call update_lfo_ms_rates
+  set_control_par_str(get_ui_id($label_MAIN__LFO__rate),$CONTROL_PAR_TEXT,!beat_rates_display[$slider_MAIN__LFO__rate/$__BEAT_RATE_DIVISOR])
+end on
+
+on listener
+  if ($NI_SIGNAL_TYPE=$NI_SIGNAL_TIMER_MS)
+    select (%LFO_data[3])
+      case 1
+        ~LFO_emitted_value := 4.0*abs(int_to_real($lcb_ms_counter)/int_to_real($LFO_rate)-floor(int_to_real($lcb_ms_counter)/int_to_real($LFO_rate)+0.5))-1.0
+      case 0 to 2
+        ~LFO_emitted_value := sin(~LFO_sine_step*(int_to_real($lcb_ms_counter) mod int_to_real($LFO_rate)))
+        if (%LFO_data[3]=2)
+          if (~LFO_emitted_value<=0.0)
+            ~LFO_emitted_value := -1.0
+          else
+            ~LFO_emitted_value := 1.0
+          end if
+        end if
+      case 3
+        ~LFO_emitted_value := 2.0*int_to_real($lcb_ms_counter mod $LFO_rate)/int_to_real($LFO_rate)-1.0
+      case 4
+        if ($lcb_ms_counter mod $LFO_rate=0)
+          ~LFO_emitted_value := int_to_real(random(-1000,1000))/1000.0
+        end if
+    end select
+    if ($lcb_ms_counter mod 1000=0 and (~__BPM # (60000000.0/int_to_real($DURATION_QUARTER))))
+      call LCB_data_update
+    end if
+    inc($lcb_ms_counter)
+  end if
+end on
+

@@ -1,0 +1,24 @@
+declare const $ARP.REC_TIME_TRANSPORT_RUNNING := 10
+declare const $ARP.REC_TIME_TRANSPORT_STOPPED := 30
+declare const $ARP.LATCH_TIME := 300
+declare const $ARP.TICKS_PER_BEAT := 24
+declare const $ARP.MAX.OCTAVE.RANGE := 4
+declare const $ARP.MAX.REPEATS := 8
+declare const $ARP.MAX.STEPS := 16
+declare 	  ~XY_ARP_STEP_UNIT { to help identify which arp column the xy cursor is pointing at }
+declare       XY_ARP_COLUMN_INDEX
+ 
+// declare const ARP_NOTE_ASPLAYED  := 0
+// declare const ARP_NOTE_UP        := 1
+// declare const ARP_NOTE_DOWN      := 2
+// declare const ARP_NOTE_UP_DOWN   := 3
+// declare const ARP_NOTE_DOWN_UP   := 4
+// declare const ARP_NOTE_RANDOM    := 5
+// declare const ARP_NOTE_CHORD     := 6
+
+// declare const ARP_TABLE_FORW   := 0
+// declare const ARP_TABLE_BACK   := 1
+// declare const ARP_TABLE_FW_BW  := 2
+// declare const ARP_TABLE_BW_FW  := 3
+// declare const ARP_TABLE_RAND   := 4
+// declare const ARP_TABLE_HOST   := 5
