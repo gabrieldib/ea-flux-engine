@@ -1,12 +1,54 @@
 on listener
-
     // import "ARP/__ARP 07 listener cb.ksp"
 
-    {{ SEQUENCER }}
-
-
-
     if (NI_SIGNAL_TYPE = NI_SIGNAL_TIMER_MS)
+        {{ SEQUENCER }}
+        {
+            we will count the steps we are in
+            we will start by tracking the block we are in
+        }
+        if note_held_count > 0 
+            if lcb_ms_counter mod SEQ.rate [ __LEFT ] = 0
+                {
+                    update the currently playing block
+                    update timestamps for firing the steps
+                        we need to calculate the timestamps based on the 
+                        number of steps of each block.
+                        we will have the duration of the entire block
+                        the duration of each step is block_dur (which is the rate basically) / step_count
+                }
+                fn007.a.side := __LEFT
+                call fn007_update_block_and_steps_ts
+            end if
+            if lcb_ms_counter mod SEQ.rate [ __RIGHT ] = 0
+                fn007.a.side := __RIGHT
+                call fn007_update_block_and_steps_ts
+            end if
+
+            if SEQ.current_block [ __LEFT ] > -1 and note_held_count > 0
+                for SEQ.ts_counter := 0 to SEQ.MAIN.step_count [ __LEFT, SEQ.current_block [ __LEFT ] ]
+                    if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON and ...
+                        UIID_MAIN.layer.power [ __LEFT ] -> value = __ON
+                        p_lcb.a.side := __LEFT
+                        call PLAY_LCB
+                    end if
+                end for
+            end if
+
+            if SEQ.current_block [ __RIGHT ] > -1 and note_held_count > 0
+                for SEQ.ts_counter := 0 to SEQ.MAIN.step_count [ __RIGHT, SEQ.current_block [ __RIGHT ] ]
+                    if  UIID_MAIN.seq.power [ __RIGHT ] -> value = __ON and ...
+                        UIID_MAIN.layer.power [ __RIGHT ] -> value = __ON
+                        p_lcb.a.side := __RIGHT
+                        call PLAY_LCB
+                    end if
+                end for 
+            end if
+        end if
+
+
+
+        {{ LFO }}
         select(LFO_data [ LFO_WAVESHAPE ])
             case LFO_WAVESHAPE_TRI
                 LFO_emitted_value := ...
@@ -36,17 +78,18 @@ on listener
                 end if
         end select
 
+        {{ DEMO MODE }}
+        if lcb_ms_counter mod 41 = 0 and button_demo.mode = __ON
+            UIID_MAIN.seq.step [ __LEFT, LFO_seq_step_count ] -> picture_state := ...
+                int( (1.0 - (LFO_emitted_value / 2.0 + 0.5)) * __SEQ_STEP_VALUE_FRAMES)
+            UIID_MAIN.seq.step [ __RIGHT, 31 - LFO_seq_step_count ] -> picture_state := ...
+                int( (1.0 - (LFO_emitted_value / 2.0 + 0.5)) * __SEQ_STEP_VALUE_FRAMES)
 
-        // UIID_MAIN.LEFT.seq.step [ LFO_seq_step_count ] -> picture_state := ...
-        //     int( (1.0 - (LFO_emitted_value / 2.0 + 0.5)) * __SEQ_STEP_VALUE_FRAMES)
-
-        // UIID_MAIN.RIGHT.seq.step [ LFO_seq_step_count ] -> picture_state := ...
-        //     int((LFO_emitted_value / 2.0 + 0.5) * __SEQ_STEP_VALUE_FRAMES)
-
-        // inc(LFO_seq_step_count)
-        // if LFO_seq_step_count > 31
-        //     LFO_seq_step_count := 0
-        // end if
+            inc(LFO_seq_step_count)
+            if LFO_seq_step_count > 31
+                LFO_seq_step_count := 0
+            end if
+        end if
 
         { updates BPM in case it is changed, and arrays using note duration constants }
         if lcb_ms_counter mod 1000 = 0 and __BPM # 60000000.0 / float(DURATION_QUARTER)

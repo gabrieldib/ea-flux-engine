@@ -141,6 +141,14 @@
 
         declare const ~__SEQ_STEP_VALUE_FRAMES := 94.0
 
+    {{ ADSR }}
+        declare ADSR_engine_pars [ 4 ]
+            ADSR_engine_pars [ 0 ] := ENGINE_PAR_ATTACK
+            ADSR_engine_pars [ 1 ] := ENGINE_PAR_DECAY
+            ADSR_engine_pars [ 2 ] := ENGINE_PAR_SUSTAIN
+            ADSR_engine_pars [ 3 ] := ENGINE_PAR_RELEASE
+        
+
 { VARIABLES _____________________________________________________________________________________ }
     { sketch ___________________________________________________________________________________ }
         declare a.i
@@ -196,6 +204,8 @@
         declare ~x.r
         declare ~y.r
         declare ~z.r
+    {{ GENERAL }}
+        declare note_held_count
 
     {{ SEQ }}
         declare SEQ.LEFT.step_index
@@ -205,6 +215,25 @@
         declare ~SEQ.l.block_index
 
         declare read SEQ.showing_target [ 2 ] // 2 sides, indices of the showing target
+
+        declare read %SEQ.data.i [ 2, 5, 32 ] // side, target, step value
+        declare read ?SEQ.data.f [ 2, 5, 32 ] // side, target, step value
+
+        declare SEQ.current_block [ 2 ] := (-1)
+
+        declare read SEQ.rate [ 2 ] // one for each side
+
+        declare SEQ.first_note_ts
+        declare SEQ.steps_timestamps [ 2, 4, 8 ]
+        declare SEQ.step_duration [ 2 ]
+        declare SEQ.ts_counter // timestamps counter
+        declare SEQ.key_count
+        declare SEQ.step_velocity
+
+        declare SEQ.lcb_layer_side
+
+    {{ PLAY ENGINE }}
+        declare layers.note_events [ 2, 128 ]
 
     {{ LCB }}
         declare read ~__BPM
@@ -230,6 +259,14 @@
         declare seq_xy_block_index
 
 { FUNCTIONS   ___________________________________________________________________________________ }
+    //PLAY_NOTE_NCB
+    declare pn_ncb.a.side
+    declare pn_ncb.a.note
+    declare pn_ncb.a.velo
+
+    //PLAY_LCB
+    declare p_lcb.a.side
+
     //fn001_get_seq_step_index
     declare fn001.a.side // 0 left 1 right
     declare fn001.a.block_index
@@ -249,3 +286,14 @@
     //fn004_get_current_seq_block
     declare ~fn004.a.x_coord
     declare fn004.r.block_index
+
+    //fn005_set_seq_target_selector
+    declare fn005.a.selector_index
+
+    //fn006_recall_seq_values
+    declare fn006.a.side
+
+    //fn007_update_block_and_steps_ts
+    declare fn007.a.side
+
+

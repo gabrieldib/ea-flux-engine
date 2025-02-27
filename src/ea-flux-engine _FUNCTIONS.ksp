@@ -1,5 +1,6 @@
 // import "ARP/__ARP 03 functions.ksp"
 
+{{ LFO }}
 function update_lfo_ms_rates
     beat_rates [ 00 ] := (DURATION_SIXTEENTH/8)/1000
     beat_rates [ 01 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
@@ -21,6 +22,8 @@ function update_lfo_ms_rates
     beat_rates [ 17 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
     beat_rates [ 18 ] := (DURATION_QUARTER * 4)/1000
     LFO_rate := beat_rates [ slider_MAIN.LFO.rate / __BEAT_RATE_DIVISOR ]
+    SEQ.rate [ __LEFT  ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ 0 ] -> value) / __BEAT_RATE_DIVISOR ]
+    SEQ.rate [ __RIGHT ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ 1 ] -> value) / __BEAT_RATE_DIVISOR ]
     LFO_sine_step := (2.0 * NI_MATH_PI) / float(LFO_rate)
 end function
 
@@ -34,6 +37,7 @@ function LCB_data_update
     end if 
 end function
 
+{{ SEQ }}
 function fn001_get_seq_step_index
     fn001.l.xy_x := get_control_par_real_arr(   ...
         UIID_MAIN.SEQ.xypads [ fn001.a.side ], ...
@@ -54,6 +58,21 @@ end function
 function fn002_set_seq_step_value
     UIID_MAIN.seq.step [ fn002.a.side, fn002.a.step_index ] -> picture_state := ...
         int(float(SEQ_XY_H-1) * fn002.a.value)
+
+    { depends on the target showing }
+
+    SEQ.data.i [                             ...
+        fn002.a.side,                        ...
+        SEQ.showing_target [ fn002.a.side ], ...
+        fn002.a.step_index                   ...
+    ] := int( 1000000.0 * fn002.a.value )
+
+    SEQ.data.f [                             ...
+        fn002.a.side,                        ...
+        SEQ.showing_target [ fn002.a.side ], ...
+        fn002.a.step_index                   ...
+    ] := fn002.a.value
+
 end function
 
 function fn003_set_block_step_count
@@ -111,4 +130,92 @@ function get_seq_step_index
     fn001.a.block_index := fn004.r.block_index
     fn001.a.side        := uics_uiid_index
     call fn001_get_seq_step_index
+end function
+
+function fn006_recall_seq_values
+    for i.i := 0 to 31
+        UIID_MAIN.seq.step [ fn006.a.side, i.i ] -> picture_state := ...
+            int(                                         ...
+                float(SEQ_XY_H-1) *                      ...
+                SEQ.data.f [                             ...
+                    fn006.a.side,                        ...
+                    SEQ.showing_target [ fn006.a.side ], ...
+                    i.i                                  ...
+                ]                                        ...
+            )
+    end for
+end function
+
+
+{{ general  }}
+function fn005_set_seq_target_selector
+    for i.i := 0 to 4
+        UIID_MAIN.target_selectors [ i.i ] -> value := __OFF
+    end for
+    UIID_MAIN.target_selectors [ fn005.a.selector_index ] -> value := __ON
+end function
+
+
+{{ play engine }}
+function fn007_update_block_and_steps_ts
+    inc(SEQ.current_block [ fn007.a.side ])
+    if SEQ.current_block [ fn007.a.side ] > 3
+        SEQ.current_block [ fn007.a.side ] := 0
+    end if
+
+    { left sequencer }
+    SEQ.step_duration [ fn007.a.side ] := ...
+        SEQ.rate [ fn007.a.side ] / ( SEQ.MAIN.step_count [ fn007.a.side, SEQ.current_block [ fn007.a.side ] ] + 1 )
+    for s.i := 0 to SEQ.MAIN.step_count [ fn007.a.side, SEQ.current_block [ fn007.a.side ] ]
+        SEQ.steps_timestamps [ fn007.a.side, SEQ.current_block [ fn007.a.side ], s.i ] := ...
+            ENGINE_UPTIME + s.i * SEQ.step_duration [ fn007.a.side ]
+    end for
+end function
+
+function PLAY_NOTE_NCB
+    layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ] := play_note(pn_ncb.a.note, pn_ncb.a.velo, -1, -1)
+    set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
+    { PENDING: group as side here is just for testing}
+    set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __ON,  pn_ncb.a.side)
+
+end function
+
+function PLAY_LCB
+    if SEQ.steps_timestamps [ p_lcb.a.side, SEQ.current_block [ p_lcb.a.side ], SEQ.ts_counter ] = ENGINE_UPTIME
+        if switch_MAIN.FLUXX.LEFT.arp.power = __OFF
+            for SEQ.key_count := 0 to 127
+                if KEY_DOWN[ SEQ.key_count ] = 1
+                    // message(SEQ.key_count & " <-- key pressed")
+                    if layers.note_events [ p_lcb.a.side, SEQ.key_count ] > 0
+                        fade_out( layers.note_events [ p_lcb.a.side, SEQ.key_count ], 2000, 1)
+                        // message("    Killing note:  " & SEQ.key_count & " | UT: " & ENGINE_UPTIME)
+                    end if
+                    SEQ.step_velocity := (126 *                         ...
+                        SEQ.data.i [                                    ...
+                            p_lcb.a.side,                                     ...
+                            SEQ_TARGET_VELO,                            ...
+                            SEQ.ts_counter + SEQ.current_block [ p_lcb.a.side ] * 8 ...
+                        ] ) / 1000000 + 1
+
+                    // message("    " & SEQ.current_block [ p_lcb.a.side ] & " | " & SEQ.ts_counter & " | step velo: " & SEQ.step_velocity)
+                    if SEQ.step_velocity > 1
+                        layers.note_events [ p_lcb.a.side, SEQ.key_count ] := ...
+                            play_note(                      ...
+                                SEQ.key_count,              ...
+                                SEQ.step_velocity,          ...
+                                -1,                         ...
+                                SEQ.step_duration [ p_lcb.a.side ] * 500     ...
+                            )                               ...
+
+                        set_event_par_arr(layers.note_events [ p_lcb.a.side, SEQ.key_count ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
+                        { PENDING: group here is just for testing example -> side }
+                        set_event_par_arr(layers.note_events [ p_lcb.a.side, SEQ.key_count ], EVENT_PAR_ALLOW_GROUP, __ON,  p_lcb.a.side)
+                    end if
+                end if
+            end for
+
+        else { Arpeggiated notes here }
+
+        end if
+    end if
 end function

@@ -1,4 +1,46 @@
 on note
     // import "ARP/__ARP 05 note cb.ksp"
-    
+    ignore_event(EVENT_ID)
+    set_event_par(EVENT_ID, EVENT_PAR_0, 1)
+    inc(note_held_count)
+    if note_held_count = 1
+        lcb_ms_counter := 0
+        SEQ.first_note_ts := ENGINE_UPTIME
+
+        if switch_MAIN.SEQ.LEFT.power = __ON and switch_MAIN.SoundSource.LEFT.power = __ON
+            pn_ncb.a.side := __LEFT
+            pn_ncb.a.note := EVENT_NOTE
+            pn_ncb.a.velo := EVENT_VELOCITY
+            call PLAY_NOTE_NCB
+        end if
+
+        if switch_MAIN.SEQ.LEFT.power = __ON and switch_MAIN.SoundSource.RIGHT.power = __ON
+            pn_ncb.a.side := __RIGHT
+            pn_ncb.a.note := EVENT_NOTE
+            pn_ncb.a.velo := EVENT_VELOCITY
+            call PLAY_NOTE_NCB
+        end if
+    end if
+
+
+
+    if switch_MAIN.SEQ.LEFT.power = __OFF
+        if switch_MAIN.SoundSource.LEFT.power = __ON
+            pn_ncb.a.side := __LEFT
+            pn_ncb.a.note := EVENT_NOTE
+            pn_ncb.a.velo := EVENT_VELOCITY
+            call PLAY_NOTE_NCB
+        end if
+
+        if switch_MAIN.SoundSource.RIGHT.power = __ON
+            pn_ncb.a.side := __RIGHT
+            pn_ncb.a.note := EVENT_NOTE
+            pn_ncb.a.velo := EVENT_VELOCITY
+            call PLAY_NOTE_NCB
+        end if
+
+    else { Sequencer is on }
+
+    end if
+
 end on
