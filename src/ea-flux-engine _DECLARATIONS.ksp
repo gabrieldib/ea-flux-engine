@@ -1,8 +1,10 @@
 { DEFINES   _____________________________________________________________________________________ }
-    define __OFF   := 0
-    define __ON    := 1
-    define __LEFT  := 0
-    define __RIGHT := 1
+    define __OFF      := 0
+    define __ON       := 1
+    define __LEFT     := 0
+    define __RIGHT    := 1
+    define __SEQ_DUAL := 0
+    define __SEQ_JOIN := 1
 
     define LFO_RATE_MODE      := 0
     define LFO_RATE           := 1
@@ -26,10 +28,32 @@
 
 
 { CONSTANTS _____________________________________________________________________________________ }
+    {{ UI }}
+    // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
+    declare SEQ.common_elements_data [ 200, 7 ] 
+
+    declare const PANEL_DUAL_SEQ_PARENT_UIID := 0
+    declare const PANEL_JOIN_SEQ_PARENT_UIID := 1
+    declare const ELEMENT_UIID               := 2
+    declare const PANEL_DUAL_SEQ_X_COORD     := 3
+    declare const PANEL_DUAL_SEQ_Y_COORD     := 4
+    declare const PANEL_JOIN_SEQ_X_COORD     := 5
+    declare const PANEL_JOIN_SEQ_Y_COORD     := 6
+
+    declare SEQ.COMMON_ELEMENTS_COUNT
+    declare UIID_FLUX_RAND_RIGHT [ 4 ] 
+        UIID_FLUX_RAND_RIGHT [ 0 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.1)
+        UIID_FLUX_RAND_RIGHT [ 1 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.2)
+        UIID_FLUX_RAND_RIGHT [ 2 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.3)
+        UIID_FLUX_RAND_RIGHT [ 3 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.4)
+
     {{ SEQ }}
-        declare const SEQ_XY_W                := 366
+        declare const SEQ_DUAL_XY_W           := 366
+        declare const SEQ_JOIN_XY_W           := 740
         declare const SEQ_XY_H                :=  95
         declare const SEQ_XY_BLOCK_WIDTH_PX   :=  90
+
+        declare const UIID_SEQ_JOIN_PANEL := get_ui_id(panel_MAIN.SEQjoin)
 
         declare SEQ_XY_BLOCK_START_OFFSET [ 4 ]
             SEQ_XY_BLOCK_START_OFFSET [ 0 ]   :=   0
@@ -39,41 +63,68 @@
 
         declare const SEQ_RIGHT_X_OFFSET      := 138
 
-        declare      ~SEQ_XY_BLOCK_PX_W       := 1.0 / float(SEQ_XY_W)
-        declare      ~SEQ_XY_BLOCK_W          := float(SEQ_XY_BLOCK_WIDTH_PX)/float(SEQ_XY_W)
-        declare const SEQ_LEFT_START_PX       := 4
-        declare const SEQ_STEP2_WIDTH         := 40
-        declare const SEQ_STEP3_WIDTH         := 26
-        declare const SEQ_STEP4_WIDTH         := 19
-        declare const SEQ_STEP5_WIDTH         := 16
-        declare const SEQ_STEP6_WIDTH         := 13
-        declare const SEQ_STEP7_WIDTH         := 10
-        declare const SEQ_STEP8_WIDTH         :=  9
+        declare      ~SEQ_XY_DUAL_BLOCK_PX_W       := 1.0 / float(SEQ_DUAL_XY_W)
+        declare      ~SEQ_XY_JOIN_BLOCK_PX_W       := 1.0 / float(SEQ_JOIN_XY_W)
+        declare      ~SEQ_XY_DUAL_BLOCK_W     := float(SEQ_XY_BLOCK_WIDTH_PX)/float(SEQ_DUAL_XY_W)
+        declare      ~SEQ_XY_JOIN_BLOCK_W     := float(SEQ_XY_BLOCK_WIDTH_PX)/float(SEQ_JOIN_XY_W)
 
-        declare const SEQ_STEP2_GAP           := 2
-        declare const SEQ_STEP3_GAP           := 2
-        declare const SEQ_STEP4_GAP           := 2
-        declare const SEQ_STEP5_GAP           := 1
-        declare const SEQ_STEP6_GAP           := 2
-        declare const SEQ_STEP7_GAP           := 2
-        declare const SEQ_STEP8_GAP           := 2
+        declare SEQ_STEP_COORD [ 2, 2, 8, 32 ] // 2 modes (dual, join), 2 sides, step count, x coord 
+        declare const SEQ_MODE_DUAL := 0
+        declare const SEQ_MODE_JOIN := 1
+
+        { DUAL seq }
+        declare const SEQ_DUAL_LEFT_START_PX       := 4
+        declare const SEQ_DUAL_STEP2_WIDTH         := 40
+        declare const SEQ_DUAL_STEP3_WIDTH         := 26
+        declare const SEQ_DUAL_STEP4_WIDTH         := 19
+        declare const SEQ_DUAL_STEP5_WIDTH         := 16
+        declare const SEQ_DUAL_STEP6_WIDTH         := 13
+        declare const SEQ_DUAL_STEP7_WIDTH         := 10
+        declare const SEQ_DUAL_STEP8_WIDTH         :=  9
+
+        declare const SEQ_DUAL_STEP2_GAP           := 2
+        declare const SEQ_DUAL_STEP3_GAP           := 2
+        declare const SEQ_DUAL_STEP4_GAP           := 2
+        declare const SEQ_DUAL_STEP5_GAP           := 1
+        declare const SEQ_DUAL_STEP6_GAP           := 2
+        declare const SEQ_DUAL_STEP7_GAP           := 2
+        declare const SEQ_DUAL_STEP8_GAP           := 2
+
+        { DUAL seq }
+        declare const SEQ_JOIN_LEFT_START_PX       := 71
+        declare const SEQ_JOIN_STEP2_WIDTH         := 40
+        declare const SEQ_JOIN_STEP3_WIDTH         := 26
+        declare const SEQ_JOIN_STEP4_WIDTH         := 19
+        declare const SEQ_JOIN_STEP5_WIDTH         := 16
+        declare const SEQ_JOIN_STEP6_WIDTH         := 13
+        declare const SEQ_JOIN_STEP7_WIDTH         := 10
+        declare const SEQ_JOIN_STEP8_WIDTH         :=  9
+
+        declare const SEQ_JOIN_STEP2_GAP           := 2
+        declare const SEQ_JOIN_STEP3_GAP           := 2
+        declare const SEQ_JOIN_STEP4_GAP           := 2
+        declare const SEQ_JOIN_STEP5_GAP           := 1
+        declare const SEQ_JOIN_STEP6_GAP           := 2
+        declare const SEQ_JOIN_STEP7_GAP           := 2
+        declare const SEQ_JOIN_STEP8_GAP           := 2
+
+        declare const SEQ_JOIN_RIGHT_GAP_STEP1     := 446 - SEQ_JOIN_LEFT_START_PX // because RIGHT takes from left
+        declare const SEQ_JOIN_RIGHT_GAP_STEP2     := 447 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP3     := 447 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP4     := 447 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP5     := 446 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP6     := 446 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP7     := 447 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP8     := 445 - SEQ_JOIN_LEFT_START_PX
 
         { 90 is the width of each block }
-        declare const ~SEQ_XY_B1_START := 0.0
-        declare const ~SEQ_XY_B1_END   := 0.245901 // (1 / 366) * 90
-        declare const ~SEQ_XY_B2_START := 0.251366 // B2 px start * BPxW
-        declare const ~SEQ_XY_B2_END   := 0.497267 // start + block width (b1 end)
-        declare const ~SEQ_XY_B3_START := 0.502732 // B3 px start * BPxW
-        declare const ~SEQ_XY_B3_END   := 0.748632 // etc
-        declare const ~SEQ_XY_B4_START := 0.754098
-        declare const ~SEQ_XY_B4_END   := 0.999999
-
-        declare const ~__SEQ_XY_PX_STEP := 1.0 / 366.0
+        declare const __START := 0
+        declare const __END   := 1
+        declare ?SEQ_DUAL_XY_BLOCK_START_END [ 4, 2 ] // block, start or end
+        declare ?SEQ_JOIN_XY_BLOCK_START_END [ 8, 2 ] // block, start or end
 
         declare !SEQ_step_pictures     [ 16 ] // first 8 are unipolar, last 8 bipolar
         declare !SEQ_step_led_pictures [ 16 ]
-
-        declare SEQ_STEP_COORD [ 2, 8, 32 ] // 2 sides, step count, x coord 
 
         declare SEQ.target_type [ 5 ]
             SEQ.target_type [ SEQ_TARGET_VELO   ] := SEQ_TYPE_UNIPOLAR
@@ -209,9 +260,11 @@
 
     {{ SEQ }}
         declare SEQ.LEFT.step_index
-        declare read SEQ.MAIN.step_count  [ 2, 4 ] // side, step count
+        declare read SEQ.DUAL.step_count  [ 2, 4 ] // side, step count
+        declare read SEQ.JOIN.step_count  [ 2, 4 ] // side, step count
 
-        declare read ?SEQ.step_width [ 2, 4 ] // side, step witdh
+        declare read ?SEQ.DUAL.step_width [ 2, 4 ] // side, step witdh
+        declare read ?SEQ.JOIN.step_width [ 2, 4 ] // side, step witdh
         declare ~SEQ.l.block_index
 
         declare read SEQ.showing_target [ 2 ] // 2 sides, indices of the showing target
@@ -219,13 +272,14 @@
         declare read %SEQ.data.i [ 2, 5, 32 ] // side, target, step value
         declare read ?SEQ.data.f [ 2, 5, 32 ] // side, target, step value
 
-        declare SEQ.current_block [ 2 ] := (-1)
+        declare SEQ.DUAL.current_block [ 2 ] := (-1)
+        declare SEQ.JOIN.current_block       :=  -1
 
         declare read SEQ.rate [ 2 ] // one for each side
 
         declare SEQ.first_note_ts
-        declare SEQ.steps_timestamps [ 2, 4, 8 ]
-        declare SEQ.step_duration [ 2 ]
+        declare SEQ.DUAL.steps_timestamps [ 2, 4, 8 ]
+        declare SEQ.DUAL.step_duration [ 2 ]
         declare SEQ.ts_counter // timestamps counter
         declare SEQ.key_count
         declare SEQ.step_velocity
@@ -238,6 +292,7 @@
     {{ LCB }}
         declare read ~__BPM
         declare lcb_ms_counter
+        declare lcb_play_side
 
     {{ LFO }}
         declare read LFO_data [ 4 ]
@@ -258,6 +313,11 @@
         declare seq_xy_left_click_step_index
         declare seq_xy_block_index
 
+    {{ switch_MAIN.SEQ.combine }}
+        declare uicb_combine_mode
+        declare uicb_combine_side
+        declare uicb_combine_block
+
 { FUNCTIONS   ___________________________________________________________________________________ }
     //PLAY_NOTE_NCB
     declare pn_ncb.a.side
@@ -266,6 +326,9 @@
 
     //PLAY_LCB
     declare p_lcb.a.side
+
+    //draw_seq
+    declare ds.counter
 
     //fn001_get_seq_step_index
     declare fn001.a.side // 0 left 1 right
@@ -280,11 +343,13 @@
     declare ~fn002.a.value
 
     //fn003_set_block_step_count
+    declare fn003.a.mode
     declare fn003.a.side
     declare fn003.a.block_index
 
     //fn004_get_current_seq_block
     declare ~fn004.a.x_coord
+    declare fn004.l.block_counter
     declare fn004.r.block_index
 
     //fn005_set_seq_target_selector
@@ -295,5 +360,23 @@
 
     //fn007_update_block_and_steps_ts
     declare fn007.a.side
+
+    //fn008_get_current_seq_join_block
+    declare fn008.l.block_counter
+    declare ~fn008.a.x_coord
+    declare fn008.r.block_index
+
+    //fn009_get_seq_join_step_index
+    declare  fn009.a.side // 0 left 1 right
+    declare  fn009.a.block_index
+    declare ~fn009.l.xy_x
+    declare ~fn009.l.xy_x.normalized // to fit in the 0:0.125 range
+    declare  fn009.r.step_index
+
+    //fn010_set_seq_step_value
+    declare  fn010.a.step_index
+    declare  fn010.l.side
+    declare ~fn010.a.value
+
 
 

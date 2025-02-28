@@ -3,6 +3,7 @@ on note
     ignore_event(EVENT_ID)
     set_event_par(EVENT_ID, EVENT_PAR_0, 1)
     inc(note_held_count)
+    
     if note_held_count = 1
         lcb_ms_counter := 0
         SEQ.first_note_ts := ENGINE_UPTIME

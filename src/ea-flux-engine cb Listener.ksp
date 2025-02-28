@@ -3,47 +3,46 @@ on listener
 
     if (NI_SIGNAL_TYPE = NI_SIGNAL_TIMER_MS)
         {{ SEQUENCER }}
-        {
-            we will count the steps we are in
-            we will start by tracking the block we are in
-        }
         if note_held_count > 0 
-            if lcb_ms_counter mod SEQ.rate [ __LEFT ] = 0
-                {
-                    update the currently playing block
-                    update timestamps for firing the steps
-                        we need to calculate the timestamps based on the 
-                        number of steps of each block.
-                        we will have the duration of the entire block
-                        the duration of each step is block_dur (which is the rate basically) / step_count
-                }
-                fn007.a.side := __LEFT
-                call fn007_update_block_and_steps_ts
-            end if
-            if lcb_ms_counter mod SEQ.rate [ __RIGHT ] = 0
-                fn007.a.side := __RIGHT
-                call fn007_update_block_and_steps_ts
-            end if
+            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                { rates are independent, we have to check against the lcb_counter and run the functions for each }
+                if lcb_ms_counter mod SEQ.rate [ __LEFT ] = 0
+                    {
+                        update the currently playing block
+                        update timestamps for firing the steps
+                            we need to calculate the timestamps based on the 
+                            number of steps of each block.
+                            we will have the duration of the entire block
+                            the duration of each step is block_dur (which is the rate basically) / step_count
+                    }
+                    message("got here 1")
+                    fn007.a.side := __LEFT
+                    call fn007_update_block_and_steps_ts
+                end if
+                if lcb_ms_counter mod SEQ.rate [ __RIGHT ] = 0
+                    fn007.a.side := __RIGHT
+                    call fn007_update_block_and_steps_ts
+                end if
 
-            if SEQ.current_block [ __LEFT ] > -1 and note_held_count > 0
-                for SEQ.ts_counter := 0 to SEQ.MAIN.step_count [ __LEFT, SEQ.current_block [ __LEFT ] ]
-                    if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON and ...
-                        UIID_MAIN.layer.power [ __LEFT ] -> value = __ON
-                        p_lcb.a.side := __LEFT
-                        call PLAY_LCB
-                    end if
-                end for
-            end if
 
-            if SEQ.current_block [ __RIGHT ] > -1 and note_held_count > 0
-                for SEQ.ts_counter := 0 to SEQ.MAIN.step_count [ __RIGHT, SEQ.current_block [ __RIGHT ] ]
-                    if  UIID_MAIN.seq.power [ __RIGHT ] -> value = __ON and ...
-                        UIID_MAIN.layer.power [ __RIGHT ] -> value = __ON
-                        p_lcb.a.side := __RIGHT
-                        call PLAY_LCB
+                for lcb_play_side := __LEFT to __RIGHT
+                    if SEQ.DUAL.current_block [ lcb_play_side ] > -1 and note_held_count > 0
+                        message("got here 2")
+                        for SEQ.ts_counter := 0 to SEQ.DUAL.step_count [ lcb_play_side, SEQ.DUAL.current_block [ lcb_play_side ] ]
+                            if  UIID_MAIN.seq.power   [ lcb_play_side ] -> value = __ON and ...
+                                UIID_MAIN.layer.power [ lcb_play_side ] -> value = __ON
+                                message("got here 3")
+                                p_lcb.a.side := lcb_play_side
+                                call PLAY_LCB
+                            end if
+                        end for
                     end if
                 end for 
             end if
+
+            if switch_MAIN.SEQ.combine = __SEQ_JOIN
+            end if
+            
         end if
 
 

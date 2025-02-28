@@ -4,14 +4,19 @@ on persistence_changed
     import "ea-flux-engine data loading.ksp"
     // import "ARP/__ARP 02 pc cb.ksp"
 
+    { dual or joined sequencer }
+    call draw_seq
+
     { recall block steps }
     for b.i := 0 to 3
         for s.i := 0 to 1
+            fn003.a.mode        := switch_MAIN.SEQ.combine
             fn003.a.side        := s.i // __LEFT then __RIGHT
             fn003.a.block_index := b.i
             call fn003_set_block_step_count
         end for
     end for
+
 
     fn006.a.side := __LEFT
     call fn006_recall_seq_values
@@ -45,9 +50,8 @@ on persistence_changed
     panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
 
     { I may use this in the combined SEQ }
-    label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
-    label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+    // label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
+    // label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
 
-
-
+    message("label_SEQjoin.background Z LAYER = " & label_SEQjoin.background -> z_layer)
 end on

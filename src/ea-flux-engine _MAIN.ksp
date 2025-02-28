@@ -19,6 +19,8 @@ on init
     import "ea-flux-engine UIIDs.ksp"
     // import "ARP/__ARP 01 init cb POST UI figma.ksp"
 
+    declare ui_button hide_bg
+    
 end on // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
 import "ea-flux-engine _FUNCTIONS.ksp"
