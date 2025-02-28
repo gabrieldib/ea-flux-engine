@@ -15,7 +15,6 @@ on listener
                             we will have the duration of the entire block
                             the duration of each step is block_dur (which is the rate basically) / step_count
                     }
-                    message("got here 1")
                     fn007.a.side := __LEFT
                     call fn007_update_block_and_steps_ts
                 end if
@@ -27,11 +26,9 @@ on listener
 
                 for lcb_play_side := __LEFT to __RIGHT
                     if SEQ.DUAL.current_block [ lcb_play_side ] > -1 and note_held_count > 0
-                        message("got here 2")
                         for SEQ.ts_counter := 0 to SEQ.DUAL.step_count [ lcb_play_side, SEQ.DUAL.current_block [ lcb_play_side ] ]
                             if  UIID_MAIN.seq.power   [ lcb_play_side ] -> value = __ON and ...
                                 UIID_MAIN.layer.power [ lcb_play_side ] -> value = __ON
-                                message("got here 3")
                                 p_lcb.a.side := lcb_play_side
                                 call PLAY_LCB
                             end if

@@ -53,5 +53,4 @@ on persistence_changed
     // label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
     // label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
 
-    message("label_SEQjoin.background Z LAYER = " & label_SEQjoin.background -> z_layer)
 end on

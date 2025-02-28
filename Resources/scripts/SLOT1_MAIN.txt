@@ -1,4 +1,4 @@
-{ Compiled on Fri Feb 28 14:47:14 2025 }
+{ Compiled on Fri Feb 28 14:53:29 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -3224,7 +3224,6 @@ on persistence_changed
   set_control_par(get_ui_id($label_MAIN__2SEQ__LEFT__off),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__FX__LEFT__reverb__menu),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__FX__RIGHT__reverb__menu),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
-  message("label_SEQjoin.background Z LAYER = " & get_control_par(get_ui_id($label_SEQjoin__background),$CONTROL_PAR_Z_LAYER))
 end on
 
 on async_complete
@@ -3429,7 +3428,6 @@ on listener
     if ($note_held_count>0)
       if ($switch_MAIN__SEQ__combine=0)
         if ($lcb_ms_counter mod %SEQ__rate[0]=0)
-          message("got here 1")
           $fn007__a__side := 0
           call fn007_update_block_and_steps_ts
         end if
@@ -3440,11 +3438,9 @@ on listener
         $lcb_play_side := 0
         while ($lcb_play_side<=1)
           if (%SEQ__DUAL__current_block[$lcb_play_side]>-1 and ($note_held_count>0))
-            message("got here 2")
             $SEQ__ts_counter := 0
             while ($SEQ__ts_counter<=%_SEQ__DUAL__step_count[4*$lcb_play_side+%SEQ__DUAL__current_block[$lcb_play_side]])
               if (get_control_par(%UIID_MAIN__seq__power[$lcb_play_side],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__layer__power[$lcb_play_side],$CONTROL_PAR_VALUE)=1))
-                message("got here 3")
                 $p_lcb__a__side := $lcb_play_side
                 call PLAY_LCB
               end if
