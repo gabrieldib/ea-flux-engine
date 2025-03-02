@@ -1,4 +1,4 @@
-{ Compiled on Fri Feb 28 14:53:29 2025 }
+{ Compiled on Fri Feb 28 23:29:36 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -1939,13 +1939,13 @@ function fn005_set_seq_target_selector
 end function
 
 function draw_seq
+  set_control_par(get_ui_id($panel_MAIN__2SEQ),$CONTROL_PAR_HIDE,$switch_MAIN__SEQ__combine*$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($panel_MAIN__SEQjoin),$CONTROL_PAR_HIDE,abs(1-$switch_MAIN__SEQ__combine)*$HIDE_WHOLE_CONTROL)
   if ($switch_MAIN__SEQ__combine=0)
     set_control_par(get_ui_id($label_SEQjoin__background),$CONTROL_PAR_PARENT_PANEL,get_ui_id($panel_MAIN__2SEQ))
-    wait(1000)
     set_control_par(get_ui_id($label_SEQjoin__background),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   else
     set_control_par(get_ui_id($label_SEQjoin__background),$CONTROL_PAR_PARENT_PANEL,get_ui_id($panel_MAIN__SEQjoin))
-    wait(1000)
     set_control_par(get_ui_id($label_SEQjoin__background),$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
   end if
   $ds__counter := 0
@@ -1966,8 +1966,6 @@ function draw_seq
     end if
     inc($ds__counter)
   end while
-  set_control_par(get_ui_id($panel_MAIN__2SEQ),$CONTROL_PAR_HIDE,$switch_MAIN__SEQ__combine*$HIDE_WHOLE_CONTROL)
-  set_control_par(get_ui_id($panel_MAIN__SEQjoin),$CONTROL_PAR_HIDE,abs(1-$switch_MAIN__SEQ__combine)*$HIDE_WHOLE_CONTROL)
 end function
 
 function fn003_set_block_step_count

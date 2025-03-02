@@ -2,15 +2,18 @@
 
 {{ MAIN }}
 function draw_seq
+    { SHOW / HIDE dual and joined seq panels }
+    panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
+    panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
+
     if switch_MAIN.SEQ.combine = 0 { dual seq }
         label_SEQjoin.background    -> parent_panel := get_ui_id(panel_MAIN.2SEQ)
-        wait(1000)
         label_SEQjoin.background    -> UI_HIDE
     else
         label_SEQjoin.background    -> parent_panel := get_ui_id(panel_MAIN.SEQjoin)
-        wait(1000)
         label_SEQjoin.background    -> UI_SHOW
     end if
+    
     for ds.counter := 0 to SEQ.COMMON_ELEMENTS_COUNT-1
         { change ui_control parent }
         SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> parent_panel := ...
@@ -42,9 +45,7 @@ function draw_seq
             end if
         end if
     end for
-    { SHOW / HIDE dual and joined seq panels }
-    panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
-    panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
+    
 
     
     // message("DUAL hide state: " & SEQ.common_elements_data [ 0, PANEL_DUAL_SEQ_PARENT_UIID ] -> hide)
