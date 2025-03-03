@@ -12,6 +12,7 @@ end on
 on ui_control (switch_MAIN.SEQ.combine)
     call draw_seq
 
+    { PENDING revision }
     for uicb_combine_side := 0 to 1
         for uicb_combine_block := 0 to 3
             fn003.a.mode        := switch_MAIN.SEQ.combine
@@ -35,19 +36,14 @@ on ui_control (xypad_MAIN.SEQ.join)
     if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
         {   if draw is off, we keep the step index recorded when we pressed the mouse button down 
             if it is on, we update the step_index }
-        if UIID_MAIN.controls.draw [ 0 ] -> value = __ON { we are using the LEFT draw button on JOIN mode }
+        if get_ui_id(button_MAIN.SEQ.join.controls.draw) -> value = __ON { we are using the LEFT draw button on JOIN mode }
             call get_seq_join_step_index
         end if
     end if
-    message("UICB XY JOIN ____________________________________")
-    message("Block: " & fn008.r.block_index)
-    message("Step Index: " & fn009.r.step_index & "   |   " & xypad_MAIN.SEQ.join[0])
+    // message("UICB XY JOIN ____________________________________")
+    // message("Block: " & fn008.r.block_index)
+    // message("Step Index: " & fn009.r.step_index & "   |   " & xypad_MAIN.SEQ.join[0])
 
-    if xypad_MAIN.SEQ.join [ 0 ] < 0.5
-        fn010.l.side := __LEFT
-    else
-        fn010.l.side := __RIGHT
-    end if
     fn010.a.step_index := fn009.r.step_index
     fn010.a.value      := xypad_MAIN.SEQ.join [ 1 ] // y coord 
     call fn010_set_seq_step_value

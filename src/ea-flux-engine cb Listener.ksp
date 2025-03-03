@@ -27,8 +27,8 @@ on listener
                 for lcb_play_side := __LEFT to __RIGHT
                     if SEQ.DUAL.current_block [ lcb_play_side ] > -1 and note_held_count > 0
                         for SEQ.ts_counter := 0 to SEQ.DUAL.step_count [ lcb_play_side, SEQ.DUAL.current_block [ lcb_play_side ] ]
-                            if  UIID_MAIN.seq.power   [ lcb_play_side ] -> value = __ON and ...
-                                UIID_MAIN.layer.power [ lcb_play_side ] -> value = __ON
+                            if  UIID_MAIN.SEQ.DUAL.power [ lcb_play_side ] -> value = __ON and ...
+                                UIID_MAIN.layer.power    [ lcb_play_side ] -> value = __ON
                                 p_lcb.a.side := lcb_play_side
                                 call PLAY_LCB
                             end if
@@ -76,9 +76,9 @@ on listener
 
         {{ DEMO MODE }}
         if lcb_ms_counter mod 41 = 0 and button_demo.mode = __ON
-            UIID_MAIN.seq.step [ __LEFT, LFO_seq_step_count ] -> picture_state := ...
+            UIID_MAIN.SEQ.dual.step [ __LEFT, LFO_seq_step_count ] -> picture_state := ...
                 int( (1.0 - (LFO_emitted_value / 2.0 + 0.5)) * __SEQ_STEP_VALUE_FRAMES)
-            UIID_MAIN.seq.step [ __RIGHT, 31 - LFO_seq_step_count ] -> picture_state := ...
+            UIID_MAIN.SEQ.dual.step [ __RIGHT, 31 - LFO_seq_step_count ] -> picture_state := ...
                 int( (1.0 - (LFO_emitted_value / 2.0 + 0.5)) * __SEQ_STEP_VALUE_FRAMES)
 
             inc(LFO_seq_step_count)
