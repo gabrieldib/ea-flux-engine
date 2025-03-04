@@ -1,4 +1,4 @@
-{ Compiled on Tue Mar  4 07:45:49 2025 }
+{ Compiled on Tue Mar  4 12:11:13 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -1821,6 +1821,10 @@ on init
   declare $LFO_seq_step_count
   declare $uics_uiid_index
   declare $uics_seq_side
+  declare $uics_alt_key
+  declare $uics_counter
+  declare $uics_counter2
+  declare $uics_block_index
   declare $seq_xy_left_click_step_index
   declare $seq_xy_block_index
   declare $uicb_combine_mode
@@ -1969,8 +1973,9 @@ function draw_seq
 end function
 
 function fn003_set_block_step_count
-  message(">>>fn003 fn003.a.block_index: " & $fn003__a__block_index)
+  message("FN003 block_index: " & $fn003__a__block_index & " side: " & $fn003__a__side)
   if ($switch_MAIN__SEQ__combine=0)
+    message("    DUAL step count: " & %_SEQ__DUAL__step_count[4*$fn003__a__side+($fn003__a__block_index mod 4)])
     ?_SEQ__DUAL__step_width[4*$fn003__a__side+$fn003__a__block_index] := ~SEQ_XY_DUAL_BLOCK_W/int_to_real(%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]+1)
     set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+$fn003__a__block_index],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]])
     $i__i := 0
@@ -1986,8 +1991,8 @@ function fn003_set_block_step_count
     end while
   else
     ?SEQ__JOIN__step_width[$fn003__a__block_index] := ~SEQ_XY_JOIN_BLOCK_W/int_to_real(%SEQ__JOIN__step_count[$fn003__a__block_index]+1)
-    message(" SEQ.JOIN.step_width = " & ?SEQ__JOIN__step_width[$fn003__a__block_index])
     set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+($fn003__a__block_index mod 4)],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%SEQ__JOIN__step_count[$fn003__a__block_index]])
+    message("    JOIN step count: " & %SEQ__JOIN__step_count[$fn003__a__block_index])
     $i__i := 0
     while ($i__i<=7)
       if ($i__i<=%SEQ__JOIN__step_count[$fn003__a__block_index])
@@ -2000,6 +2005,25 @@ function fn003_set_block_step_count
       inc($i__i)
     end while
   end if
+end function
+
+function seq_recall_all_step_values
+  $b__i := 0
+  while ($b__i<=3)
+    $s__i := 0
+    while ($s__i<=1)
+      $fn003__a__mode := $switch_MAIN__SEQ__combine
+      $fn003__a__side := $s__i
+      if ($switch_MAIN__SEQ__combine=0)
+        $fn003__a__block_index := $b__i
+      else
+        $fn003__a__block_index := $b__i+(4*$s__i)
+      end if
+      call fn003_set_block_step_count
+      inc($s__i)
+    end while
+    inc($b__i)
+  end while
 end function
 
 function fn008_get_current_seq_join_block
@@ -2022,6 +2046,12 @@ function fn009_get_seq_join_step_index
   message("        x normalized: " & ~fn009__l__xy_x__normalized)
   message("        Step W _____: " & ?SEQ__JOIN__step_width[$fn009__a__block_index])
   message("        step index  : " & $fn009__r__step_index)
+  if ($fn009__r__step_index=32 and (?xypad_MAIN__SEQ__join[0]<0.5))
+    $fn009__r__step_index := 31
+  end if
+  if ($fn009__r__step_index=64 and (?xypad_MAIN__SEQ__join[0]>0.99))
+    $fn009__r__step_index := 63
+  end if
 end function
 
 function get_seq_join_step_index
@@ -2099,7 +2129,7 @@ function PLAY_LCB
     end if
   end if
   if ($switch_MAIN__SEQ__combine=1 and (%_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$SEQ__ts_counter]=$ENGINE_UPTIME))
-    message("    playing SEQ in JOIN mode, step: " & $SEQ__ts_counter)
+    message("    playing SEQ in JOIN mode, block: " & $SEQ__JOIN__current_block & " step: " & $SEQ__ts_counter)
     if ($switch_MAIN__FLUXX__LEFT__arp__power=0)
       $SEQ__key_count := 0
       while ($SEQ__key_count<=127)
@@ -3233,18 +3263,7 @@ on persistence_changed
   %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*1)+(32*7)+6] := %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*0)+(32*7)+6]+$SEQ_JOIN_RIGHT_GAP_STEP8
   %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*1)+(32*7)+7] := %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*0)+(32*7)+7]+$SEQ_JOIN_RIGHT_GAP_STEP8
   call draw_seq
-  $b__i := 0
-  while ($b__i<=3)
-    $s__i := 0
-    while ($s__i<=1)
-      $fn003__a__mode := $switch_MAIN__SEQ__combine
-      $fn003__a__side := $s__i
-      $fn003__a__block_index := $b__i
-      call fn003_set_block_step_count
-      inc($s__i)
-    end while
-    inc($b__i)
-  end while
+  call seq_recall_all_step_values
   $fn006__a__side := 0
   call fn006_recall_seq_values
   $fn006__a__side := 1
@@ -3279,29 +3298,81 @@ end on
 
 on ui_controls
   if (in_range($NI_UI_ID,%_UIID_MAIN__seq__block_steps[4*0+0],%_UIID_MAIN__seq__block_steps[4*1+3]))
+    message("SEQ STEP SLIDERS _________________________________")
+    $uics_alt_key := 0
+    if (get_control_par($NI_UI_ID,$CONTROL_PAR_KEY_ALT)=1)
+      $uics_alt_key := 1
+    end if
     $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__block_steps[4*0+0]
     if ($uics_uiid_index<4)
       $uics_seq_side := 0
     else
       $uics_seq_side := 1
     end if
-    if ($switch_MAIN__SEQ__combine=0)
-      $fn003__a__mode := $switch_MAIN__SEQ__combine
-      $fn003__a__side := $uics_seq_side
-      if ($uics_uiid_index<4)
-        $fn003__a__block_index := $uics_uiid_index
+    if ($uics_alt_key=0)
+      if ($switch_MAIN__SEQ__combine=0)
+        $fn003__a__mode := $switch_MAIN__SEQ__combine
+        $fn003__a__side := $uics_seq_side
+        if ($uics_uiid_index<4)
+          $fn003__a__block_index := $uics_uiid_index
+        else
+          $fn003__a__block_index := $uics_uiid_index-4
+        end if
+        %SEQ__JOIN__step_count[$uics_uiid_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$fn003__a__block_index],$CONTROL_PAR_VALUE)
+        %_SEQ__DUAL__step_count[4*$uics_seq_side+$fn003__a__block_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$fn003__a__block_index],$CONTROL_PAR_VALUE)
       else
-        $fn003__a__block_index := $uics_uiid_index-4
+        %_SEQ__DUAL__step_count[4*$uics_seq_side+($fn003__a__block_index mod 4)] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($fn003__a__block_index mod 4)],$CONTROL_PAR_VALUE)
+        %SEQ__JOIN__step_count[$uics_uiid_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE)
+        $fn003__a__mode := $switch_MAIN__SEQ__combine
+        $fn003__a__side := $uics_seq_side
+        $fn003__a__block_index := $uics_uiid_index
       end if
-      %_SEQ__DUAL__step_count[4*$uics_seq_side+$fn003__a__block_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$fn003__a__block_index],$CONTROL_PAR_VALUE)
+      call fn003_set_block_step_count
     else
-      %SEQ__JOIN__step_count[$uics_uiid_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE)
-      $fn003__a__mode := $switch_MAIN__SEQ__combine
-      $fn003__a__side := $uics_seq_side
-      $fn003__a__block_index := $uics_uiid_index
+      if ($switch_MAIN__SEQ__combine=0)
+        $fn003__a__mode := $switch_MAIN__SEQ__combine
+        $fn003__a__side := $uics_seq_side
+        if ($uics_uiid_index<4)
+          $uics_block_index := $uics_uiid_index
+        else
+          $uics_block_index := $uics_uiid_index-4
+        end if
+        $uics_counter := 0
+        while ($uics_counter<=3)
+          %SEQ__JOIN__step_count[$uics_counter+($uics_seq_side*4)] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$uics_block_index],$CONTROL_PAR_VALUE)
+          %_SEQ__DUAL__step_count[4*$uics_seq_side+$uics_counter] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$uics_block_index],$CONTROL_PAR_VALUE)
+          $fn003__a__block_index := $uics_block_index
+          if ($uics_counter # $uics_block_index)
+            set_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$uics_counter],$CONTROL_PAR_VALUE,get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$uics_block_index],$CONTROL_PAR_VALUE))
+            $fn003__a__block_index := $uics_counter
+          end if
+          call fn003_set_block_step_count
+          inc($uics_counter)
+        end while
+      else
+        $fn003__a__mode := $switch_MAIN__SEQ__combine
+        $uics_counter := 0
+        while ($uics_counter<=1)
+          $uics_counter2 := 0
+          while ($uics_counter2<=3)
+            $fn003__a__side := $uics_counter
+            $fn003__a__block_index := $uics_uiid_index
+            %SEQ__JOIN__step_count[$uics_counter*4+$uics_counter2] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE)
+            %_SEQ__DUAL__step_count[4*$uics_counter+$uics_counter2] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE)
+            if ($uics_counter*4+$uics_counter2 # $uics_uiid_index)
+              set_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_counter+$uics_counter2],$CONTROL_PAR_VALUE,get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE))
+              $fn003__a__block_index := $uics_counter*4+$uics_counter2
+            end if
+            message("STEP SLIDERS: SEQ JOIN step count [ " & $uics_uiid_index & " ]: " & %SEQ__JOIN__step_count[$uics_counter*4+$uics_counter2])
+            message("    uics_uiid_index: " & $uics_uiid_index)
+            message("    fn003.a.block_index = " & $fn003__a__block_index)
+            call fn003_set_block_step_count
+            inc($uics_counter2)
+          end while
+          inc($uics_counter)
+        end while
+      end if
     end if
-    message("step slider index: " & $uics_uiid_index)
-    call fn003_set_block_step_count
   end if
   if ($NI_UI_ID=%UIID_MAIN__SEQ__xypads[0] or ($NI_UI_ID=%UIID_MAIN__SEQ__xypads[1]))
     $uics_uiid_index := $NI_UI_ID-%UIID_MAIN__SEQ__xypads[0]
@@ -3360,18 +3431,7 @@ end on
 
 on ui_control($switch_MAIN__SEQ__combine)
   call draw_seq
-  $uicb_combine_side := 0
-  while ($uicb_combine_side<=1)
-    $uicb_combine_block := 0
-    while ($uicb_combine_block<=3)
-      $fn003__a__mode := $switch_MAIN__SEQ__combine
-      $fn003__a__side := $uicb_combine_side
-      $fn003__a__block_index := $uicb_combine_block
-      call fn003_set_block_step_count
-      inc($uicb_combine_block)
-    end while
-    inc($uicb_combine_side)
-  end while
+  call seq_recall_all_step_values
   set_control_par(get_ui_id($panel_MAIN__2SEQ),$CONTROL_PAR_HIDE,$switch_MAIN__SEQ__combine*$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__SEQjoin),$CONTROL_PAR_HIDE,abs(1-$switch_MAIN__SEQ__combine)*$HIDE_WHOLE_CONTROL)
 end on

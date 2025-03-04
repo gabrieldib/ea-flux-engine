@@ -261,7 +261,7 @@
     {{ SEQ }}
         declare SEQ.LEFT.step_index
         declare read SEQ.DUAL.step_count  [ 2, 4 ] // side, step count
-        declare read SEQ.JOIN.step_count  [ 8 ] // side, step count
+        declare read SEQ.JOIN.step_count  [ 8 ] // side, step count - not using
 
         declare read ?SEQ.DUAL.step_width [ 2, 4 ] // side, step witdh
         declare read ?SEQ.JOIN.step_width [ 8 ] // side, step witdh
@@ -310,6 +310,10 @@
 { CB SPECIFIC ___________________________________________________________________________________ }
     declare uics_uiid_index
     declare uics_seq_side
+    declare uics_alt_key
+    declare uics_counter
+    declare uics_counter2
+    declare uics_block_index
 
     {{ xypad_MAIN.SEQ.LEFT }}
         declare seq_xy_left_click_step_index

@@ -7,19 +7,10 @@ on ui_control (hide_bg)
 end on
 
 
-
 {{ MAIN }}
 on ui_control (switch_MAIN.SEQ.combine)
     call draw_seq
-
-    for uicb_combine_side := 0 to 1
-        for uicb_combine_block := 0 to 3
-            fn003.a.mode        := switch_MAIN.SEQ.combine
-            fn003.a.side        := uicb_combine_side
-            fn003.a.block_index := uicb_combine_block
-            call fn003_set_block_step_count
-        end for
-    end for
+    call seq_recall_all_step_values
 
     panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
     panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL

@@ -145,8 +145,9 @@ function fn003_set_block_step_count
     { PENDING OPTIMIZE CODE }
 
     { needed for the seq xy }
-    message(">>>fn003 fn003.a.block_index: " & fn003.a.block_index)
+    message("FN003 block_index: " & fn003.a.block_index & " side: " & fn003.a.side)
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        message("    DUAL step count: "  & SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index mod 4  ])
         SEQ.DUAL.step_width [ fn003.a.side, fn003.a.block_index ] := ...
             SEQ_XY_DUAL_BLOCK_W / float(SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ] + 1)
         // message(" SEQ.DUAL.step_width = " & SEQ.DUAL.step_width [ fn003.a.side, fn003.a.block_index ])
@@ -176,12 +177,14 @@ function fn003_set_block_step_count
             end if
         end for
     else
-        { PENDING WIP }
+
         SEQ.JOIN.step_width [ fn003.a.block_index ] := ...
             SEQ_XY_JOIN_BLOCK_W / float(SEQ.JOIN.step_count [ fn003.a.block_index ] + 1)
-        message(" SEQ.JOIN.step_width = " & SEQ.JOIN.step_width [ fn003.a.block_index ])
+        // message(" SEQ.JOIN.step_width = " & SEQ.JOIN.step_width [ fn003.a.block_index ])
         UIID_MAIN.seq.leds [ fn003.a.side, fn003.a.block_index mod 4 ] -> picture := ...
             SEQ_step_led_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] ]
+
+        message("    JOIN step count: " & SEQ.JOIN.step_count [ fn003.a.block_index ])
 
         for i.i := 0 to 7
             if i.i <= SEQ.JOIN.step_count [ fn003.a.block_index ]
@@ -205,7 +208,6 @@ function fn003_set_block_step_count
         end for
 
     end if 
-
 end function
 
 function fn004_get_current_seq_block
@@ -264,9 +266,12 @@ function fn009_get_seq_join_step_index
     message("        Step W _____: " & SEQ.JOIN.step_width [ fn009.a.block_index ])
     message("        step index  : " & fn009.r.step_index)
 
-    // if fn009.r.step_index = 64
-    //     fn009.r.step_index := 63
-    // end if
+    if fn009.r.step_index = 32 and xypad_MAIN.SEQ.join [ 0 ] < 0.5
+        fn009.r.step_index := 31
+    end if
+    if fn009.r.step_index = 64 and xypad_MAIN.SEQ.join [ 0 ] > 0.99
+        fn009.r.step_index := 63
+    end if
 end function
 
 function fn010_set_seq_step_value
@@ -292,6 +297,21 @@ function fn010_set_seq_step_value
     ] := fn010.a.value
 end function
 
+function seq_recall_all_step_values
+    for b.i := 0 to 3
+        for s.i := 0 to 1
+            fn003.a.mode        := switch_MAIN.SEQ.combine
+            fn003.a.side        := s.i // __LEFT then __RIGHT
+            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                fn003.a.block_index := b.i
+            else
+                fn003.a.block_index := b.i + 4 * s.i
+            end if
+
+            call fn003_set_block_step_count
+        end for
+    end for
+end function
 
 {{ general  }}
 function fn005_set_seq_target_selector
@@ -350,7 +370,6 @@ function PLAY_LCB
     if  switch_MAIN.SEQ.combine = __SEQ_DUAL and ...
         SEQ.DUAL.steps_timestamps [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ], SEQ.ts_counter ] = ENGINE_UPTIME
         
-
         if switch_MAIN.FLUXX.LEFT.arp.power = __OFF
             for SEQ.key_count := 0 to 127
                 if KEY_DOWN[ SEQ.key_count ] = 1
@@ -392,7 +411,7 @@ function PLAY_LCB
     if  switch_MAIN.SEQ.combine = __SEQ_JOIN and ...
         SEQ.JOIN.steps_timestamps [ SEQ.JOIN.current_block, SEQ.ts_counter ] = ENGINE_UPTIME
 
-        message("    playing SEQ in JOIN mode, step: " & SEQ.ts_counter)
+        message("    playing SEQ in JOIN mode, block: "&SEQ.JOIN.current_block &" step: " & SEQ.ts_counter)
         if switch_MAIN.FLUXX.LEFT.arp.power = __OFF
             for SEQ.key_count := 0 to 127
                 if KEY_DOWN[ SEQ.key_count ] = 1

@@ -1,30 +1,113 @@
 on ui_controls
     {{ MAIN SEQ Steps sliders }}
     if in_range( NI_UI_ID, UIID_MAIN.seq.block_steps [ 0, 0 ], UIID_MAIN.seq.block_steps [ 1, 3 ])
+        message("SEQ STEP SLIDERS _________________________________")
+        uics_alt_key := 0
+        if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_ALT) = 1
+            uics_alt_key := 1
+        end if
+
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.block_steps [ 0, 0 ]
+
         if uics_uiid_index < 4
             uics_seq_side := __LEFT
         else
             uics_seq_side := __RIGHT
         end if
 
-        if switch_MAIN.SEQ.combine = __SEQ_DUAL
-            fn003.a.mode        := switch_MAIN.SEQ.combine
-            fn003.a.side        := uics_seq_side
-            if uics_uiid_index < 4
-                fn003.a.block_index := uics_uiid_index
+        if uics_alt_key = 0
+            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                fn003.a.mode        := switch_MAIN.SEQ.combine
+                fn003.a.side        := uics_seq_side
+                if uics_uiid_index < 4
+                    fn003.a.block_index := uics_uiid_index
+                else
+                    fn003.a.block_index := uics_uiid_index - 4
+                end if
+
+                SEQ.JOIN.step_count [ uics_uiid_index ] := ...
+                    UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index ] -> value
+
+                SEQ.DUAL.step_count [ uics_seq_side, fn003.a.block_index ] := ...
+                    UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index ] -> value
+
             else
-                fn003.a.block_index := uics_uiid_index - 4
+                SEQ.DUAL.step_count [ uics_seq_side, fn003.a.block_index mod 4 ] := ...
+                    UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index mod 4 ] -> value
+
+                SEQ.JOIN.step_count [ uics_uiid_index ] := ...
+                    UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
+
+                fn003.a.mode        := switch_MAIN.SEQ.combine
+                fn003.a.side        := uics_seq_side
+                fn003.a.block_index := uics_uiid_index
             end if
-            SEQ.DUAL.step_count [ uics_seq_side, fn003.a.block_index ] := UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index ] -> value
-        else
-            SEQ.JOIN.step_count [ uics_uiid_index ] := UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
-            fn003.a.mode        := switch_MAIN.SEQ.combine
-            fn003.a.side        := uics_seq_side
-            fn003.a.block_index := uics_uiid_index
+
+            call fn003_set_block_step_count
+
+        else { alt key is pressed }
+            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                fn003.a.mode        := switch_MAIN.SEQ.combine
+                fn003.a.side        := uics_seq_side
+                if uics_uiid_index < 4
+                    uics_block_index := uics_uiid_index
+                else
+                    uics_block_index := uics_uiid_index - 4
+                end if
+
+                for uics_counter := 0 to 3
+                    SEQ.JOIN.step_count [ uics_counter + uics_seq_side * 4 ] := ...
+                        UIID_MAIN.seq.block_steps [ uics_seq_side, uics_block_index ] -> value
+
+                    SEQ.DUAL.step_count [ uics_seq_side, uics_counter ] := ...
+                        UIID_MAIN.seq.block_steps [ uics_seq_side, uics_block_index ] -> value
+
+                    fn003.a.block_index := uics_block_index
+                    { make all sliders the same value }
+                    if uics_counter # uics_block_index
+                        UIID_MAIN.seq.block_steps [ uics_seq_side, uics_counter ] -> value := ...
+                            UIID_MAIN.seq.block_steps [ uics_seq_side, uics_block_index ] -> value
+
+                        fn003.a.block_index := uics_counter
+                        
+                    end if
+                    { update the visible steps in each block }
+                    call fn003_set_block_step_count
+                end for
+            else
+                fn003.a.mode := switch_MAIN.SEQ.combine
+
+                for uics_counter := 0 to 1
+                    for uics_counter2 := 0 to 3
+
+                        fn003.a.side := uics_counter
+                        fn003.a.block_index := uics_uiid_index
+
+                        SEQ.JOIN.step_count [ uics_counter * 4 + uics_counter2 ] := ...
+                            UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
+
+                        SEQ.DUAL.step_count [ uics_counter, uics_counter2 ] := ...
+                            UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
+
+                        { make all sliders the same value, update all step counts but the caller }
+                        if (uics_counter * 4 + uics_counter2) # uics_uiid_index
+                            UIID_MAIN.seq.block_steps [ uics_counter, uics_counter2 ] -> value := ...
+                                UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
+
+                            fn003.a.block_index := uics_counter * 4 + uics_counter2
+
+                        end if
+                        { update the visible steps in each block }
+                        message("STEP SLIDERS: SEQ JOIN step count [ "& uics_uiid_index &" ]: " & SEQ.JOIN.step_count [ uics_counter * 4 + uics_counter2 ])
+                        message("    uics_uiid_index: " & uics_uiid_index)
+                        message("    fn003.a.block_index = " & fn003.a.block_index)
+                        call fn003_set_block_step_count
+
+                    end for
+                end for
+            end if
+
         end if
-        message("step slider index: " & uics_uiid_index)
-        call fn003_set_block_step_count
     end if
 
     {{ SEQ XY PADS }}
