@@ -2,6 +2,7 @@ on release
     // import "ARP/__ARP 06 release cb.ksp"
     if get_event_par(EVENT_ID, EVENT_PAR_0) = 1
         dec(note_held_count)
+        message("note_held_count: " & note_held_count)
         layers.note_events [ __LEFT,  EVENT_NOTE ] := 0
         layers.note_events [ __RIGHT, EVENT_NOTE ] := 0
     end if
