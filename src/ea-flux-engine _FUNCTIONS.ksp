@@ -6,51 +6,46 @@ function draw_seq
     panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
     panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
 
-    // if switch_MAIN.SEQ.combine = 0 { dual seq }
-    //     label_SEQjoin.background    -> parent_panel := get_ui_id(panel_MAIN.2SEQ)
-    //     label_SEQjoin.background    -> UI_HIDE
-    // else
-    //     label_SEQjoin.background    -> parent_panel := get_ui_id(panel_MAIN.SEQjoin)
-    //     label_SEQjoin.background    -> UI_SHOW
-    // end if
+    if switch_MAIN.SEQ.combine = 0 { dual seq }
+        label_SEQjoin.background    -> parent_panel := get_ui_id(panel_MAIN.2SEQ)
+        label_SEQjoin.background    -> UI_HIDE
+    else
+        label_SEQjoin.background    -> parent_panel := get_ui_id(panel_MAIN.SEQjoin)
+        label_SEQjoin.background    -> UI_SHOW
+    end if
     
-    // for ds.counter := 0 to SEQ.COMMON_ELEMENTS_COUNT-1
-    //     { change ui_control parent }
-    //     SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> parent_panel := ...
-    //         SEQ.common_elements_data [ ds.counter, switch_MAIN.SEQ.combine ]
+    for ds.counter := 0 to SEQ.COMMON_ELEMENTS_COUNT-1
+        { change ui_control parent }
+        SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> parent_panel := ...
+            SEQ.common_elements_data [ ds.counter, switch_MAIN.SEQ.combine ]
 
-    //     { update the coordinates }
-    //     if switch_MAIN.SEQ.combine = 0 { dual seq }
-    //         // message("drawing dual seq ")
-    //         SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_x := ...
-    //             SEQ.common_elements_data [ ds.counter, PANEL_DUAL_SEQ_X_COORD ]
+        { update the coordinates }
+        if switch_MAIN.SEQ.combine = 0 { dual seq }
+            // message("drawing dual seq ")
+            SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_x := ...
+                SEQ.common_elements_data [ ds.counter, PANEL_DUAL_SEQ_X_COORD ]
 
-    //         SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_y := ...
-    //             SEQ.common_elements_data [ ds.counter, PANEL_DUAL_SEQ_Y_COORD ]
+            SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_y := ...
+                SEQ.common_elements_data [ ds.counter, PANEL_DUAL_SEQ_Y_COORD ]
 
-    //         if in_range(ds.counter, 29, 32)
-    //             UIID_FLUX_RAND_RIGHT [ ds.counter - 29 ] -> picture := "button_fluxx_block_" & ds.counter - 28
-    //         end if
+            if in_range(ds.counter, 29, 32)
+                UIID_FLUX_RAND_RIGHT [ ds.counter - 29 ] -> picture := "button_fluxx_block_" & ds.counter - 28
+            end if
 
-    //     else                           { join seq }
-    //         // message("drawing join seq ")
-    //         SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_x := ...
-    //             SEQ.common_elements_data [ ds.counter, PANEL_JOIN_SEQ_X_COORD ]
+        else                           { join seq }
+            // message("drawing join seq ")
+            SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_x := ...
+                SEQ.common_elements_data [ ds.counter, PANEL_JOIN_SEQ_X_COORD ]
 
-    //         SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_y := ...
-    //             SEQ.common_elements_data [ ds.counter, PANEL_JOIN_SEQ_Y_COORD ]
+            SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_y := ...
+                SEQ.common_elements_data [ ds.counter, PANEL_JOIN_SEQ_Y_COORD ]
 
-    //         if in_range(ds.counter, 29, 32)
-    //             UIID_FLUX_RAND_RIGHT [ ds.counter - 29 ] -> picture := "button_fluxx_block_" & ds.counter - 24
-    //         end if
-    //     end if
-    // end for
-    
+            if in_range(ds.counter, 29, 32)
+                UIID_FLUX_RAND_RIGHT [ ds.counter - 29 ] -> picture := "button_fluxx_block_" & ds.counter - 24
+            end if
+        end if
+    end for
 
-    
-    // message("DUAL hide state: " & SEQ.common_elements_data [ 0, PANEL_DUAL_SEQ_PARENT_UIID ] -> hide)
-    // message("JOIN hide state: " & SEQ.common_elements_data [ 0, PANEL_JOIN_SEQ_PARENT_UIID ] -> hide)
-    // message("switch_MAIN.SEQ.combine: " & switch_MAIN.SEQ.combine)"
 end function
 
 {{ LFO }}
@@ -174,11 +169,33 @@ function fn003_set_block_step_count
 
     else
         { PENDING }
-        SEQ.JOIN.step_width [ fn003.a.side, fn003.a.block_index ] := ...
-            SEQ_XY_JOIN_BLOCK_W / float(SEQ.JOIN.step_count [ fn003.a.side, fn003.a.block_index ] + 1)
+        SEQ.JOIN.step_width [ fn003.a.block_index ] := ...
+            SEQ_XY_JOIN_BLOCK_W / float(SEQ.JOIN.step_count [ fn003.a.block_index ] + 1)
         // message(" SEQ.JOIN.step_width = " & SEQ.JOIN.step_width [ fn003.a.side, fn003.a.block_index ])
-        UIID_MAIN.SEQ.dual.leds [ fn003.a.side, fn003.a.block_index ] -> picture := ...
-            SEQ_step_led_pictures [ SEQ.JOIN.step_count [ fn003.a.side, fn003.a.block_index ] ]
+        UIID_MAIN.SEQ.dual.leds [ fn003.a.side, (fn003.a.block_index mod 4) ] -> picture := ...
+            SEQ_step_led_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] ]
+
+        { update the number of step sliders and their pictures }
+        for i.i := 0 to 7
+            if i.i <= SEQ.JOIN.step_count [ fn003.a.block_index ]
+                UIID_MAIN.SEQ.dual.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4) * 8 ] -> UI_SHOW
+                
+                UIID_MAIN.SEQ.dual.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4) * 8 ] -> picture := ...
+                    SEQ_step_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] + ...
+                        SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
+
+                UIID_MAIN.SEQ.dual.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4) * 8 ] -> pos_x := ...
+                    SEQ_STEP_COORD [                                               ...
+                        fn003.a.mode,                                              ...
+                        fn003.a.side,                                              ...
+                        SEQ.JOIN.step_count [ fn003.a.block_index ], ...
+                        i.i                                                        ...
+                    ] + SEQ_XY_BLOCK_START_OFFSET [ fn003.a.block_index ]
+
+            else
+                UIID_MAIN.SEQ.dual.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4) * 8 ] -> UI_HIDE
+            end if
+        end for
     end if 
 
 
@@ -236,7 +253,7 @@ function fn009_get_seq_join_step_index
     
     fn009.l.xy_x.normalized := fn009.l.xy_x - 0.125 * float(fn009.a.block_index)    
 
-    fn009.r.step_index := int(( fn009.l.xy_x.normalized )/ SEQ.JOIN.step_width [ fn009.a.side, fn009.a.block_index ]) + ...
+    fn009.r.step_index := int(( fn009.l.xy_x.normalized )/ SEQ.JOIN.step_width [ fn009.a.block_index ]) + ...
         8 * fn009.a.block_index
         
     // message("        Side _______: " & fn009.a.side)

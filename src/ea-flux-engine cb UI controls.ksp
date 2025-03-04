@@ -36,7 +36,7 @@ on ui_control (xypad_MAIN.SEQ.join)
     if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
         {   if draw is off, we keep the step index recorded when we pressed the mouse button down 
             if it is on, we update the step_index }
-        if get_ui_id(button_MAIN.SEQ.join.controls.draw) -> value = __ON { we are using the LEFT draw button on JOIN mode }
+        if UIID_MAIN.SEQ.DUAL.controls.draw [ 0 ] -> value = __ON { we are using the LEFT draw button on JOIN mode }
             call get_seq_join_step_index
         end if
     end if

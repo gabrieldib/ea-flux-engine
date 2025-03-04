@@ -47,14 +47,14 @@ on listener
                 if SEQ.JOIN.current_block > -1 and note_held_count > 0
                     for SEQ.ts_counter := 0 to SEQ.JOIN.step_count [ SEQ.JOIN.current_block ]
                         { left layer  }
-                        if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON and ...
-                            UIID_MAIN.layer.power [ __LEFT ] -> value = __ON
+                        if  UIID_MAIN.SEQ.DUAL.power [ __LEFT ] -> value = __ON and ...
+                            UIID_MAIN.layer.power    [ __LEFT ] -> value = __ON
                             p_lcb.a.side := __LEFT
                             call PLAY_LCB
                         end if
                         { right layer - sequencer power in JOIN is dictated by left power button }
-                        if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON and ...
-                            UIID_MAIN.layer.power [ __RIGHT ] -> value = __ON
+                        if  UIID_MAIN.SEQ.DUAL.power [ __LEFT ] -> value = __ON and ...
+                            UIID_MAIN.layer.power    [ __RIGHT ] -> value = __ON
                             p_lcb.a.side := __RIGHT
                             call PLAY_LCB
                         end if

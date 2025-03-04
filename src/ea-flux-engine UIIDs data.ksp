@@ -45,12 +45,6 @@ UIID_MAIN.SEQ.DUAL.power   [ 0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.power)
 UIID_MAIN.SEQ.DUAL.power   [ 1 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.power)
 
 
-{{ SEQ JOIN }}
-for i.i := 0 to 63
-    UIID_MAIN.SEQ.join.step [ i.i ]  := get_ui_id($label_MAIN.SEQ.join.step.0) + i.i
-end for
-
-
 {{ ADSR }}
 UIID_MAIN.ADSR_controls [ __LEFT,  0 ] := get_ui_id(slider_MAIN.ADSR.LEFT.attack)
 UIID_MAIN.ADSR_controls [ __LEFT,  1 ] := get_ui_id(slider_MAIN.ADSR.LEFT.decay)
