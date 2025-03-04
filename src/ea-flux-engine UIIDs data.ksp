@@ -1,51 +1,39 @@
-UIID_MAIN.layer.power [ 0 ] := get_ui_id(switch_MAIN.SoundSource.LEFT.power)
-UIID_MAIN.layer.power [ 1 ] := get_ui_id(switch_MAIN.SoundSource.RIGHT.power)
-
-{{ SEQ DUAL }}
 for i.i := 0 to 31
-    UIID_MAIN.SEQ.dual.step [ __LEFT, i.i ]  := get_ui_id(label_MAIN.LEFT.seq.step.0) + i.i
-    UIID_MAIN.SEQ.dual.step [ __RIGHT, i.i ] := get_ui_id(label_MAIN.RIGHT.seq.step.0) + i.i
+    UIID_MAIN.seq.step [ __LEFT, i.i ]  := get_ui_id(label_MAIN.LEFT.seq.step.0) + i.i
+    UIID_MAIN.seq.step [ __RIGHT, i.i ] := get_ui_id(label_MAIN.RIGHT.seq.step.0) + i.i
 end for
 
 for i.i := 0 to 3
-    UIID_MAIN.SEQ.dual.leds [ __LEFT,  i.i ] := get_ui_id(label_MAIN.SEQ.LEFT.led1)  + i.i
-    UIID_MAIN.SEQ.dual.leds [ __RIGHT, i.i ] := get_ui_id(label_MAIN.SEQ.RIGHT.led1) + i.i
+    UIID_MAIN.seq.leds [ __LEFT,  i.i ] := get_ui_id(label_MAIN.SEQ.LEFT.led1)  + i.i
+    UIID_MAIN.seq.leds [ __RIGHT, i.i ] := get_ui_id(label_MAIN.SEQ.RIGHT.led1) + i.i
 end for
 
 for i.i := 0 to 3
-    UIID_MAIN.SEQ.dual.block_steps [ __LEFT,  i.i ] := get_ui_id(slider_MAIN.SEQ.LEFT.block1.steps)  + i.i
-    UIID_MAIN.SEQ.dual.block_steps [ __RIGHT, i.i ] := get_ui_id(slider_MAIN.SEQ.RIGHT.block1.steps) + i.i
+    UIID_MAIN.seq.block_steps [ __LEFT,  i.i ] := get_ui_id(slider_MAIN.SEQ.LEFT.block1.steps)  + i.i
+    UIID_MAIN.seq.block_steps [ __RIGHT, i.i ] := get_ui_id(slider_MAIN.SEQ.RIGHT.block1.steps) + i.i
 end for
 
-UIID_MAIN.SEQ.DUAL.xypads [ 0 ] := get_ui_id(xypad_MAIN.SEQ.LEFT)
-UIID_MAIN.SEQ.DUAL.xypads [ 1 ] := get_ui_id(xypad_MAIN.SEQ.RIGHT)
-UIID_MAIN.SEQ.DUAL.controls.draw [ 0 ]:= get_ui_id(button_MAIN.LEFT.controls.draw)
-UIID_MAIN.SEQ.DUAL.controls.draw [ 1 ]:= get_ui_id(button_MAIN.RIGHT.controls.draw)
+UIID_MAIN.SEQ.xypads [ 0 ] := get_ui_id(xypad_MAIN.SEQ.LEFT)
+UIID_MAIN.SEQ.xypads [ 1 ] := get_ui_id(xypad_MAIN.SEQ.RIGHT)
+UIID_MAIN.controls.draw [ 0 ]:= get_ui_id(button_MAIN.LEFT.controls.draw)
+UIID_MAIN.controls.draw [ 1 ]:= get_ui_id(button_MAIN.RIGHT.controls.draw)
 
-UIID_MAIN.SEQ.DUAL.target_selectors [ 0 ] := get_ui_id(switch_MAIN.SEQ.center.select.velocity)
-UIID_MAIN.SEQ.DUAL.target_selectors [ 1 ] := get_ui_id(switch_MAIN.SEQ.center.select.pitch)
-UIID_MAIN.SEQ.DUAL.target_selectors [ 2 ] := get_ui_id(switch_MAIN.SEQ.center.select.octave)
-UIID_MAIN.SEQ.DUAL.target_selectors [ 3 ] := get_ui_id(switch_MAIN.SEQ.center.select.pan)
-UIID_MAIN.SEQ.DUAL.target_selectors [ 4 ] := get_ui_id(switch_MAIN.SEQ.center.select.lphp)
+UIID_MAIN.target_selectors [ 0 ] := get_ui_id(switch_MAIN.SEQ.center.select.velocity)
+UIID_MAIN.target_selectors [ 1 ] := get_ui_id(switch_MAIN.SEQ.center.select.pitch)
+UIID_MAIN.target_selectors [ 2 ] := get_ui_id(switch_MAIN.SEQ.center.select.octave)
+UIID_MAIN.target_selectors [ 3 ] := get_ui_id(switch_MAIN.SEQ.center.select.pan)
+UIID_MAIN.target_selectors [ 4 ] := get_ui_id(switch_MAIN.SEQ.center.select.lphp)
 
 for i.i := 0 to 4
-    UIID_MAIN.SEQ.DUAL.target_selectors [ i.i ] -> font_type             := MAIN.SEQ.TARGETS.FONT_OFF
-    UIID_MAIN.SEQ.DUAL.target_selectors [ i.i ] -> font_type_on          := MAIN.SEQ.TARGETS.FONT_ON
-    UIID_MAIN.SEQ.DUAL.target_selectors [ i.i ] -> font_type_off_pressed := MAIN.SEQ.TARGETS.FONT_OFF_H
-    UIID_MAIN.SEQ.DUAL.target_selectors [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.TARGETS.FONT_ON_H 
-    UIID_MAIN.SEQ.DUAL.target_selectors [ i.i ] -> font_type_off_hover   := MAIN.SEQ.TARGETS.FONT_OFF_H
-    UIID_MAIN.SEQ.DUAL.target_selectors [ i.i ] -> font_type_on_hover    := MAIN.SEQ.TARGETS.FONT_ON_H 
-    UIID_MAIN.SEQ.DUAL.target_selectors [ i.i ] -> disable_text_shifting := __ON
+    UIID_MAIN.target_selectors [ i.i ] -> font_type             := MAIN.SEQ.TARGETS.FONT_OFF
+    UIID_MAIN.target_selectors [ i.i ] -> font_type_on          := MAIN.SEQ.TARGETS.FONT_ON
+    UIID_MAIN.target_selectors [ i.i ] -> font_type_off_pressed := MAIN.SEQ.TARGETS.FONT_OFF_H
+    UIID_MAIN.target_selectors [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.TARGETS.FONT_ON_H 
+    UIID_MAIN.target_selectors [ i.i ] -> font_type_off_hover   := MAIN.SEQ.TARGETS.FONT_OFF_H
+    UIID_MAIN.target_selectors [ i.i ] -> font_type_on_hover    := MAIN.SEQ.TARGETS.FONT_ON_H 
+    UIID_MAIN.target_selectors [ i.i ] -> disable_text_shifting := __ON
 end for
 
-UIID_MAIN.SEQ.DUAL.rate_sliders [ 0 ] := get_ui_id( slider_MAIN.ARP.LEFT.rate )
-UIID_MAIN.SEQ.DUAL.rate_sliders [ 1 ] := get_ui_id( slider_MAIN.ARP.RIGHT.rate )
-
-UIID_MAIN.SEQ.DUAL.power   [ 0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.power)
-UIID_MAIN.SEQ.DUAL.power   [ 1 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.power)
-
-
-{{ ADSR }}
 UIID_MAIN.ADSR_controls [ __LEFT,  0 ] := get_ui_id(slider_MAIN.ADSR.LEFT.attack)
 UIID_MAIN.ADSR_controls [ __LEFT,  1 ] := get_ui_id(slider_MAIN.ADSR.LEFT.decay)
 UIID_MAIN.ADSR_controls [ __LEFT,  2 ] := get_ui_id(slider_MAIN.ADSR.LEFT.sustain)
@@ -55,8 +43,17 @@ UIID_MAIN.ADSR_controls [ __RIGHT, 1 ] := get_ui_id(slider_MAIN.ADSR.RIGHT.decay
 UIID_MAIN.ADSR_controls [ __RIGHT, 2 ] := get_ui_id(slider_MAIN.ADSR.RIGHT.sustain)
 UIID_MAIN.ADSR_controls [ __RIGHT, 3 ] := get_ui_id(slider_MAIN.ADSR.RIGHT.release)
 
+UIID_MAIN.SEQ.rate_sliders [ 0 ] := get_ui_id( slider_MAIN.ARP.LEFT.rate )
+UIID_MAIN.SEQ.rate_sliders [ 1 ] := get_ui_id( slider_MAIN.ARP.RIGHT.rate )
+
 UIID_MAIN.display_title := get_ui_id(label_MAIN.display.control)
 UIID_MAIN.display_value := get_ui_id(label_MAIN.display.value)
+
+UIID_MAIN.seq.power   [ 0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.power)
+UIID_MAIN.seq.power   [ 1 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.power)
+UIID_MAIN.layer.power [ 0 ] := get_ui_id(switch_MAIN.SoundSource.LEFT.power)
+UIID_MAIN.layer.power [ 1 ] := get_ui_id(switch_MAIN.SoundSource.RIGHT.power)
+
 
 SEQ.COMMON_ELEMENTS_COUNT := 119
 

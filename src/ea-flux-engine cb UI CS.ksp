@@ -1,26 +1,35 @@
 on ui_controls
     {{ MAIN SEQ Steps sliders }}
-    if in_range( NI_UI_ID, UIID_MAIN.SEQ.dual.block_steps [ 0, 0 ], UIID_MAIN.SEQ.dual.block_steps [ 1, 3 ])
-        uics_uiid_index := NI_UI_ID - UIID_MAIN.SEQ.dual.block_steps [ 0, 0 ]
-        if switch_MAIN.SEQ.combine = __SEQ_DUAL
-            if uics_uiid_index < 4
-                uics_seq_side := __LEFT
-            else
-                uics_seq_side := __RIGHT
-                uics_uiid_index := uics_uiid_index - 4 
-            end if
-            SEQ.DUAL.step_count [ uics_seq_side, uics_uiid_index ] := UIID_MAIN.SEQ.dual.block_steps [ uics_seq_side, uics_uiid_index ] -> value
+    if in_range( NI_UI_ID, UIID_MAIN.seq.block_steps [ 0, 0 ], UIID_MAIN.seq.block_steps [ 1, 3 ])
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.block_steps [ 0, 0 ]
+        if uics_uiid_index < 4
+            uics_seq_side := __LEFT
+        else
+            uics_seq_side := __RIGHT
+        end if
 
+        if switch_MAIN.SEQ.combine = __SEQ_DUAL
+            fn003.a.mode        := switch_MAIN.SEQ.combine
+            fn003.a.side        := uics_seq_side
+            if uics_uiid_index < 4
+                fn003.a.block_index := uics_uiid_index
+            else
+                fn003.a.block_index := uics_uiid_index - 4
+            end if
+            SEQ.DUAL.step_count [ uics_seq_side, fn003.a.block_index ] := UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index ] -> value
+        else
+            SEQ.JOIN.step_count [ uics_uiid_index ] := UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
             fn003.a.mode        := switch_MAIN.SEQ.combine
             fn003.a.side        := uics_seq_side
             fn003.a.block_index := uics_uiid_index
-            call fn003_set_block_step_count
         end if
+        message("step slider index: " & uics_uiid_index)
+        call fn003_set_block_step_count
     end if
 
     {{ SEQ XY PADS }}
-    if NI_UI_ID = UIID_MAIN.SEQ.DUAL.xypads [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.DUAL.xypads [ 1 ]
-        uics_uiid_index := NI_UI_ID - UIID_MAIN.SEQ.DUAL.xypads [ 0 ]
+    if NI_UI_ID = UIID_MAIN.SEQ.xypads [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.xypads [ 1 ]
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.SEQ.xypads [ 0 ]
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN
             { capture the step index on click }
@@ -30,7 +39,7 @@ on ui_controls
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
             {   if draw is off, we keep the step index recorded when we pressed the mouse button down 
                 if it is on, we update the step_index }
-            if UIID_MAIN.SEQ.DUAL.controls.draw [ uics_uiid_index ] -> value = __ON
+            if UIID_MAIN.controls.draw [ uics_uiid_index ] -> value = __ON
                 call get_seq_dual_step_index
             end if
         end if
@@ -38,7 +47,7 @@ on ui_controls
         fn002.a.step_index := fn001.r.step_index
         fn002.a.side       := uics_uiid_index
         fn002.a.value      := get_control_par_real_arr( ...
-            UIID_MAIN.SEQ.DUAL.xypads [ uics_uiid_index ],   ...
+            UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
             CONTROL_PAR_VALUE,                          ...
             1                                           ...
         ) 
@@ -46,9 +55,9 @@ on ui_controls
     end if
 
     {{ MAIN TARGET SELECTORS }}
-    if in_range(NI_UI_ID, UIID_MAIN.SEQ.DUAL.target_selectors [ 0 ], UIID_MAIN.SEQ.DUAL.target_selectors [ 4 ])
-        fn005.a.selector_index := NI_UI_ID - UIID_MAIN.SEQ.DUAL.target_selectors [ 0 ]
-        call fn005_set_seq_dual_target_selector
+    if in_range(NI_UI_ID, UIID_MAIN.target_selectors [ 0 ], UIID_MAIN.target_selectors [ 4 ])
+        fn005.a.selector_index := NI_UI_ID - UIID_MAIN.target_selectors [ 0 ]
+        call fn005_set_seq_target_selector
     end if
 
     {{ ADSR CONTROLS }}
@@ -71,8 +80,8 @@ on ui_controls
     end if
 
     {{ SEQ RATE }}
-    if NI_UI_ID = UIID_MAIN.SEQ.DUAL.rate_sliders [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.DUAL.rate_sliders [ 1 ]
-        if NI_UI_ID = UIID_MAIN.SEQ.DUAL.rate_sliders [ 0 ]
+    if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ 1 ]
+        if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ 0 ]
             uics_uiid_index := 0
         else
             uics_uiid_index := 1
@@ -81,9 +90,24 @@ on ui_controls
         message("uiid: " & uics_uiid_index)
         UIID_MAIN.display_title -> text := "Rate"
         UIID_MAIN.display_value -> text := ...
-            beat_rates_display [ (UIID_MAIN.SEQ.DUAL.rate_sliders [ uics_uiid_index ] -> value) / __BEAT_RATE_DIVISOR ]
+            beat_rates_display [ (UIID_MAIN.SEQ.rate_sliders [ uics_uiid_index ] -> value) / __BEAT_RATE_DIVISOR ]
         
-        SEQ.rate [ uics_uiid_index ] := beat_rates [ (UIID_MAIN.SEQ.DUAL.rate_sliders [ uics_uiid_index ] -> value) / __BEAT_RATE_DIVISOR ]
+        SEQ.rate [ uics_uiid_index ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ uics_uiid_index ] -> value) / __BEAT_RATE_DIVISOR ]
+
+        if uics_uiid_index = 0
+            slider_MAIN.FLRNDjoin.amount := UIID_MAIN.SEQ.rate_sliders [ 0 ] -> value
+        end if
     end if 
+
+    {{ SEQ JOIN Rate }}
+    if NI_UI_ID = get_ui_id(slider_MAIN.FLRNDjoin.amount)
+        UIID_MAIN.display_title -> text := "Rate"
+        UIID_MAIN.display_value -> text := ...
+            beat_rates_display [ slider_MAIN.FLRNDjoin.amount / __BEAT_RATE_DIVISOR ]
+
+        SEQ.rate [ __LEFT ] := beat_rates [ slider_MAIN.FLRNDjoin.amount / __BEAT_RATE_DIVISOR ]
+
+        UIID_MAIN.SEQ.rate_sliders [ 0 ] -> value := slider_MAIN.FLRNDjoin.amount
+    end if
     
 end on
