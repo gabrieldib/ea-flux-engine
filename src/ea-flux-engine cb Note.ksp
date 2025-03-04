@@ -3,45 +3,130 @@ on note
     ignore_event(EVENT_ID)
     set_event_par(EVENT_ID, EVENT_PAR_0, 1)
     inc(note_held_count)
-    
-    if note_held_count = 1
-        lcb_ms_counter := 0
-        SEQ.first_note_ts := ENGINE_UPTIME
+    message("note_held_count: " & note_held_count)
 
-        if switch_MAIN.SEQ.LEFT.power = __ON and switch_MAIN.SoundSource.LEFT.power = __ON
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+            { first note - with sequencer on or not it always play because
+              seq counter is zeroed and it will play immeditely }
+        if note_held_count = 1
+            lcb_ms_counter := 0
+            SEQ.first_note_ts := ENGINE_UPTIME
+
+        end if
+
+        if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
+            ( ( switch_MAIN.SEQ.LEFT.power     = __ON  and note_held_count = 1) or ...
+            ( switch_MAIN.SEQ.LEFT.power       = __OFF ) )
+
             pn_ncb.a.side := __LEFT
             pn_ncb.a.note := EVENT_NOTE
             pn_ncb.a.velo := EVENT_VELOCITY
             call PLAY_NOTE_NCB
         end if
 
-        if switch_MAIN.SEQ.LEFT.power = __ON and switch_MAIN.SoundSource.RIGHT.power = __ON
+        if  switch_MAIN.SoundSource.RIGHT.power = __ON  and ...
+            (( switch_MAIN.SEQ.RIGHT.power      = __ON  and note_held_count = 1) or ...
+            ( switch_MAIN.SEQ.RIGHT.power       = __OFF ))
+
             pn_ncb.a.side := __RIGHT
             pn_ncb.a.note := EVENT_NOTE
             pn_ncb.a.velo := EVENT_VELOCITY
             call PLAY_NOTE_NCB
         end if
-    end if
 
 
+    else { sequencer is in JOIN mode }
 
-    if switch_MAIN.SEQ.LEFT.power = __OFF
-        if switch_MAIN.SoundSource.LEFT.power = __ON
+        { in this case the sequencer power check uses the LEFT power for both layers }
+        {{ Layer 1 }}
+        if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
+            ( ( switch_MAIN.SEQ.LEFT.power     = __ON  and note_held_count = 1) or ...
+            ( switch_MAIN.SEQ.LEFT.power       = __OFF ) )
+            message(" NCB Playing Layer 1")
+
             pn_ncb.a.side := __LEFT
             pn_ncb.a.note := EVENT_NOTE
             pn_ncb.a.velo := EVENT_VELOCITY
             call PLAY_NOTE_NCB
         end if
 
-        if switch_MAIN.SoundSource.RIGHT.power = __ON
+        {{ Layer 2 }}
+        if  switch_MAIN.SoundSource.RIGHT.power = __ON  and ...
+            ( ( switch_MAIN.SEQ.LEFT.power      = __ON  and note_held_count = 1) or ...
+            ( switch_MAIN.SEQ.LEFT.power        = __OFF ) )
+            message(" NCB Playing Layer 2")
+
             pn_ncb.a.side := __RIGHT
             pn_ncb.a.note := EVENT_NOTE
             pn_ncb.a.velo := EVENT_VELOCITY
             call PLAY_NOTE_NCB
         end if
 
-    else { Sequencer is on }
-
     end if
+
+
 
 end on
+
+{
+
+    combine on ?
+        no  - 
+            is layer 1 on?
+                yes - is l1.seq on ? 
+                    yes - play L1 LEFT sequencer 
+                        is it first note?
+                            yes - play note on NCB
+                            no  - skip
+                    no  - play L1 one shots or sustained notes
+
+            next layer
+
+        yes - 
+            is layer 1 on?
+                yes - play L1 sequencer
+                    is it first note?
+                            yes - play note on NCB
+                            no  - skip
+                no  - play L1 one shots or sustained notes
+
+            is layer 2 on?
+                yes - play L2 sequencer 
+                no  - play L2 one shots or sustained notes
+
+    ------------- nother approach:
+    is L1 on?
+        yes
+            is seq on? -> has to check left or combined
+                yes
+                    is it dual or join?
+                        dual - play notes following SEQ LEFT
+                            is it first note?
+                                yes - reset counters, play note on NCB
+                                no  - do nothing, wait until next rate cycle in LCB
+                        join - play notes following the JOIN seq
+                            is it first note?
+                                yes - reset counters, play note on NCB
+                                no  - do nothing, wait until next rate cycle in LCB
+                no
+                    play one shots
+
+    is L2 on?
+        yes
+            is seq on?
+                yes
+                    is it dual or join?
+                        dual - play notes following SEQ LEFT
+                            is it first note?
+                                yes - reset counters, play note on NCB
+                                no  - do nothing, wait until next rate cycle in LCB
+                        join - play notes following the JOIN seq
+                            is it first note?
+                                yes - reset counters, play note on NCB
+                                no  - do nothing, wait until next rate cycle in LCB
+                no
+                    play one shots
+
+
+
+}

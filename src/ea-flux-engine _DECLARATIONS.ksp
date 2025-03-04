@@ -261,10 +261,10 @@
     {{ SEQ }}
         declare SEQ.LEFT.step_index
         declare read SEQ.DUAL.step_count  [ 2, 4 ] // side, step count
-        declare read SEQ.JOIN.step_count  [ 2, 4 ] // side, step count
+        declare read SEQ.JOIN.step_count  [ 8 ] // side, step count
 
         declare read ?SEQ.DUAL.step_width [ 2, 4 ] // side, step witdh
-        declare read ?SEQ.JOIN.step_width [ 2, 4 ] // side, step witdh
+        declare read ?SEQ.JOIN.step_width [ 8 ] // side, step witdh
         declare ~SEQ.l.block_index
 
         declare read SEQ.showing_target [ 2 ] // 2 sides, indices of the showing target
@@ -280,6 +280,8 @@
         declare SEQ.first_note_ts
         declare SEQ.DUAL.steps_timestamps [ 2, 4, 8 ]
         declare SEQ.DUAL.step_duration [ 2 ]
+        declare SEQ.JOIN.steps_timestamps [ 8, 8 ]
+        declare SEQ.JOIN.step_duration 
         declare SEQ.ts_counter // timestamps counter
         declare SEQ.key_count
         declare SEQ.step_velocity
