@@ -1,4 +1,4 @@
-{ Compiled on Fri Feb 28 23:29:36 2025 }
+{ Compiled on Mon Mar  3 19:14:16 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -1753,21 +1753,17 @@ on init
   read_persistent_var(%_SEQ__DUAL__step_count)
   declare const $SEQ__DUAL__step_count__SIZE_D1 := 2
   declare const $SEQ__DUAL__step_count__SIZE_D2 := 4
-  declare %_SEQ__JOIN__step_count[2*4]
-  make_persistent(%_SEQ__JOIN__step_count)
-  read_persistent_var(%_SEQ__JOIN__step_count)
-  declare const $SEQ__JOIN__step_count__SIZE_D1 := 2
-  declare const $SEQ__JOIN__step_count__SIZE_D2 := 4
+  declare %SEQ__JOIN__step_count[8]
+  make_persistent(%SEQ__JOIN__step_count)
+  read_persistent_var(%SEQ__JOIN__step_count)
   declare ?_SEQ__DUAL__step_width[2*4]
   make_persistent(?_SEQ__DUAL__step_width)
   read_persistent_var(?_SEQ__DUAL__step_width)
   declare const $SEQ__DUAL__step_width__SIZE_D1 := 2
   declare const $SEQ__DUAL__step_width__SIZE_D2 := 4
-  declare ?_SEQ__JOIN__step_width[2*4]
-  make_persistent(?_SEQ__JOIN__step_width)
-  read_persistent_var(?_SEQ__JOIN__step_width)
-  declare const $SEQ__JOIN__step_width__SIZE_D1 := 2
-  declare const $SEQ__JOIN__step_width__SIZE_D2 := 4
+  declare ?SEQ__JOIN__step_width[8]
+  make_persistent(?SEQ__JOIN__step_width)
+  read_persistent_var(?SEQ__JOIN__step_width)
   declare ~SEQ__l__block_index
   declare %SEQ__showing_target[2]
   make_persistent(%SEQ__showing_target)
@@ -1795,6 +1791,10 @@ on init
   declare const $SEQ__DUAL__steps_timestamps__SIZE_D2 := 4
   declare const $SEQ__DUAL__steps_timestamps__SIZE_D3 := 8
   declare %SEQ__DUAL__step_duration[2]
+  declare %_SEQ__JOIN__steps_timestamps[8*8]
+  declare const $SEQ__JOIN__steps_timestamps__SIZE_D1 := 8
+  declare const $SEQ__JOIN__steps_timestamps__SIZE_D2 := 8
+  declare $SEQ__JOIN__step_duration
   declare $SEQ__ts_counter
   declare $SEQ__key_count
   declare $SEQ__step_velocity
@@ -1969,6 +1969,7 @@ function draw_seq
 end function
 
 function fn003_set_block_step_count
+  message(">>>fn003 fn003.a.block_index: " & $fn003__a__block_index)
   if ($switch_MAIN__SEQ__combine=0)
     ?_SEQ__DUAL__step_width[4*$fn003__a__side+$fn003__a__block_index] := ~SEQ_XY_DUAL_BLOCK_W/int_to_real(%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]+1)
     set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+$fn003__a__block_index],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]])
@@ -1984,8 +1985,20 @@ function fn003_set_block_step_count
       inc($i__i)
     end while
   else
-    ?_SEQ__JOIN__step_width[4*$fn003__a__side+$fn003__a__block_index] := ~SEQ_XY_JOIN_BLOCK_W/int_to_real(%_SEQ__JOIN__step_count[4*$fn003__a__side+$fn003__a__block_index]+1)
-    set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+$fn003__a__block_index],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%_SEQ__JOIN__step_count[4*$fn003__a__side+$fn003__a__block_index]])
+    ?SEQ__JOIN__step_width[$fn003__a__block_index] := ~SEQ_XY_JOIN_BLOCK_W/int_to_real(%SEQ__JOIN__step_count[$fn003__a__block_index]+1)
+    message(" SEQ.JOIN.step_width = " & ?SEQ__JOIN__step_width[$fn003__a__block_index])
+    set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+($fn003__a__block_index mod 4)],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%SEQ__JOIN__step_count[$fn003__a__block_index]])
+    $i__i := 0
+    while ($i__i<=7)
+      if ($i__i<=%SEQ__JOIN__step_count[$fn003__a__block_index])
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+        set_control_par_str(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_PICTURE,!SEQ_step_pictures[%SEQ__JOIN__step_count[$fn003__a__block_index]+(%SEQ__target_type[%SEQ__showing_target[$fn003__a__side]]*8)])
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_POS_X,%_SEQ_STEP_COORD[32*8*2*$fn003__a__mode+(32*8*$fn003__a__side)+(32*%SEQ__JOIN__step_count[$fn003__a__block_index])+$i__i]+%SEQ_XY_BLOCK_START_OFFSET[$fn003__a__block_index mod 4])
+      else
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+      end if
+      inc($i__i)
+    end while
   end if
 end function
 
@@ -1993,7 +2006,8 @@ function fn008_get_current_seq_join_block
   $fn008__l__block_counter := 0
   while ($fn008__l__block_counter<=7)
     if (~fn008__a__x_coord>=?_SEQ_JOIN_XY_BLOCK_START_END[2*$fn008__l__block_counter+$__START] and (~fn008__a__x_coord<=?_SEQ_JOIN_XY_BLOCK_START_END[2*$fn008__l__block_counter+$__END]))
-      $fn008__r__block_index := $fn008__l__block_counter mod 4
+      $fn008__r__block_index := $fn008__l__block_counter
+      message("FN008_GET_CURRENT_SEQ_JOIN_BLOCK " & $fn008__r__block_index)
     end if
     inc($fn008__l__block_counter)
   end while
@@ -2001,28 +2015,24 @@ end function
 
 function fn009_get_seq_join_step_index
   ~fn009__l__xy_x := ?xypad_MAIN__SEQ__join[0]
-  if ($fn009__a__side=0)
-    ~fn009__l__xy_x__normalized := ~fn009__l__xy_x-(0.125*int_to_real($fn009__a__block_index))
-  else
-    ~fn009__l__xy_x__normalized := ~fn009__l__xy_x-(0.125*int_to_real($fn009__a__block_index+4))
-  end if
-  $fn009__r__step_index := real_to_int(~fn009__l__xy_x__normalized/?_SEQ__JOIN__step_width[4*$fn009__a__side+$fn009__a__block_index])+(8*$fn009__a__block_index)
+  ~fn009__l__xy_x__normalized := ~fn009__l__xy_x-(0.125*int_to_real($fn009__a__block_index))
+  $fn009__r__step_index := real_to_int(~fn009__l__xy_x__normalized/?SEQ__JOIN__step_width[$fn009__a__block_index])+(8*$fn009__a__block_index)
+  message("        block ______: " & $fn009__a__block_index)
+  message("        x __________: " & ~fn009__l__xy_x)
+  message("        x normalized: " & ~fn009__l__xy_x__normalized)
+  message("        Step W _____: " & ?SEQ__JOIN__step_width[$fn009__a__block_index])
+  message("        step index  : " & $fn009__r__step_index)
 end function
 
 function get_seq_join_step_index
   ~fn008__a__x_coord := ?xypad_MAIN__SEQ__join[0]
   call fn008_get_current_seq_join_block
   $fn009__a__block_index := $fn008__r__block_index
-  if (?xypad_MAIN__SEQ__join[0]<0.5)
-    $fn009__a__side := 0
-  else
-    $fn009__a__side := 1
-  end if
   call fn009_get_seq_join_step_index
 end function
 
 function fn010_set_seq_step_value
-  set_control_par(%_UIID_MAIN__seq__step[32*$fn010__l__side+$fn010__a__step_index],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn010__a__value))
+  set_control_par(%_UIID_MAIN__seq__step[32*$fn010__l__side+($fn010__a__step_index mod 32)],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn010__a__value))
   %_SEQ__data__i[32*5*$fn010__l__side+(32*%SEQ__showing_target[$fn010__l__side])+$fn010__a__step_index] := real_to_int(1000000.0*~fn010__a__value)
   ?_SEQ__data__f[32*5*$fn010__l__side+(32*%SEQ__showing_target[$fn010__l__side])+$fn010__a__step_index] := ~fn010__a__value
 end function
@@ -2047,19 +2057,28 @@ function fn007_update_block_and_steps_ts
     if (%SEQ__DUAL__current_block[$fn007__a__side]>3)
       %SEQ__DUAL__current_block[$fn007__a__side] := 0
     end if
-    if ($switch_MAIN__SEQ__combine=0)
-      %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
-      $s__i := 0
-      while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
-        %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
-        inc($s__i)
-      end while
+    %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
+    $s__i := 0
+    while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
+      %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
+      inc($s__i)
+    end while
+  else
+    inc($SEQ__JOIN__current_block)
+    if ($SEQ__JOIN__current_block>7)
+      $SEQ__JOIN__current_block := 0
     end if
+    $SEQ__JOIN__step_duration := %SEQ__rate[0]/(%SEQ__JOIN__step_count[$SEQ__JOIN__current_block]+1)
+    $s__i := 0
+    while ($s__i<=%SEQ__JOIN__step_count[$SEQ__JOIN__current_block])
+      %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)
+      inc($s__i)
+    end while
   end if
 end function
 
 function PLAY_LCB
-  if (%_SEQ__DUAL__steps_timestamps[8*4*$p_lcb__a__side+(8*%SEQ__DUAL__current_block[$p_lcb__a__side])+$SEQ__ts_counter]=$ENGINE_UPTIME and ($switch_MAIN__SEQ__combine=0))
+  if ($switch_MAIN__SEQ__combine=0 and (%_SEQ__DUAL__steps_timestamps[8*4*$p_lcb__a__side+(8*%SEQ__DUAL__current_block[$p_lcb__a__side])+$SEQ__ts_counter]=$ENGINE_UPTIME))
     if ($switch_MAIN__FLUXX__LEFT__arp__power=0)
       $SEQ__key_count := 0
       while ($SEQ__key_count<=127)
@@ -2070,6 +2089,34 @@ function PLAY_LCB
           $SEQ__step_velocity := 126*%_SEQ__data__i[32*5*$p_lcb__a__side+(32*0)+$SEQ__ts_counter+(%SEQ__DUAL__current_block[$p_lcb__a__side]*8)]/1000000+1
           if ($SEQ__step_velocity>1)
             %_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count] := play_note($SEQ__key_count,$SEQ__step_velocity,-1,%SEQ__DUAL__step_duration[$p_lcb__a__side]*500)
+            set_event_par_arr(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
+            set_event_par_arr(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$EVENT_PAR_ALLOW_GROUP,1,$p_lcb__a__side)
+          end if
+        end if
+        inc($SEQ__key_count)
+      end while
+    else
+    end if
+  end if
+  if ($switch_MAIN__SEQ__combine=1 and (%_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$SEQ__ts_counter]=$ENGINE_UPTIME))
+    message("    playing SEQ in JOIN mode, step: " & $SEQ__ts_counter)
+    if ($switch_MAIN__FLUXX__LEFT__arp__power=0)
+      $SEQ__key_count := 0
+      while ($SEQ__key_count<=127)
+        if (%KEY_DOWN[$SEQ__key_count]=1)
+          if (%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count]>0)
+            fade_out(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],2000,1)
+          end if
+          if (%_layers__note_events[128*1+$SEQ__key_count]>0)
+            fade_out(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],2000,1)
+          end if
+          if ($SEQ__JOIN__current_block<4)
+            $SEQ__step_velocity := 126*%_SEQ__data__i[32*5*0+(32*0)+$SEQ__ts_counter+($SEQ__JOIN__current_block*8)]/1000000+1
+          else
+            $SEQ__step_velocity := 126*%_SEQ__data__i[32*5*1+(32*0)+$SEQ__ts_counter+($SEQ__JOIN__current_block*8)]/1000000+1
+          end if
+          if ($SEQ__step_velocity>1)
+            %_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count] := play_note($SEQ__key_count,$SEQ__step_velocity,-1,$SEQ__JOIN__step_duration*500)
             set_event_par_arr(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
             set_event_par_arr(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$EVENT_PAR_ALLOW_GROUP,1,$p_lcb__a__side)
           end if
@@ -3233,19 +3280,28 @@ end on
 on ui_controls
   if (in_range($NI_UI_ID,%_UIID_MAIN__seq__block_steps[4*0+0],%_UIID_MAIN__seq__block_steps[4*1+3]))
     $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__block_steps[4*0+0]
+    if ($uics_uiid_index<4)
+      $uics_seq_side := 0
+    else
+      $uics_seq_side := 1
+    end if
     if ($switch_MAIN__SEQ__combine=0)
+      $fn003__a__mode := $switch_MAIN__SEQ__combine
+      $fn003__a__side := $uics_seq_side
       if ($uics_uiid_index<4)
-        $uics_seq_side := 0
+        $fn003__a__block_index := $uics_uiid_index
       else
-        $uics_seq_side := 1
-        $uics_uiid_index := $uics_uiid_index-4
+        $fn003__a__block_index := $uics_uiid_index-4
       end if
-      %_SEQ__DUAL__step_count[4*$uics_seq_side+$uics_uiid_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$uics_uiid_index],$CONTROL_PAR_VALUE)
+      %_SEQ__DUAL__step_count[4*$uics_seq_side+$fn003__a__block_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$fn003__a__block_index],$CONTROL_PAR_VALUE)
+    else
+      %SEQ__JOIN__step_count[$uics_uiid_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE)
       $fn003__a__mode := $switch_MAIN__SEQ__combine
       $fn003__a__side := $uics_seq_side
       $fn003__a__block_index := $uics_uiid_index
-      call fn003_set_block_step_count
     end if
+    message("step slider index: " & $uics_uiid_index)
+    call fn003_set_block_step_count
   end if
   if ($NI_UI_ID=%UIID_MAIN__SEQ__xypads[0] or ($NI_UI_ID=%UIID_MAIN__SEQ__xypads[1]))
     $uics_uiid_index := $NI_UI_ID-%UIID_MAIN__SEQ__xypads[0]
@@ -3285,6 +3341,15 @@ on ui_controls
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Rate")
     set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,!beat_rates_display[get_control_par(%UIID_MAIN__SEQ__rate_sliders[$uics_uiid_index],$CONTROL_PAR_VALUE)/$__BEAT_RATE_DIVISOR])
     %SEQ__rate[$uics_uiid_index] := %beat_rates[get_control_par(%UIID_MAIN__SEQ__rate_sliders[$uics_uiid_index],$CONTROL_PAR_VALUE)/$__BEAT_RATE_DIVISOR]
+    if ($uics_uiid_index=0)
+      $slider_MAIN__FLRNDjoin__amount := get_control_par(%UIID_MAIN__SEQ__rate_sliders[0],$CONTROL_PAR_VALUE)
+    end if
+  end if
+  if ($NI_UI_ID=get_ui_id($slider_MAIN__FLRNDjoin__amount))
+    set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Rate")
+    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,!beat_rates_display[$slider_MAIN__FLRNDjoin__amount/$__BEAT_RATE_DIVISOR])
+    %SEQ__rate[0] := %beat_rates[$slider_MAIN__FLRNDjoin__amount/$__BEAT_RATE_DIVISOR]
+    set_control_par(%UIID_MAIN__SEQ__rate_sliders[0],$CONTROL_PAR_VALUE,$slider_MAIN__FLRNDjoin__amount)
   end if
 end on
 
@@ -3375,42 +3440,46 @@ on note
   ignore_event($EVENT_ID)
   set_event_par($EVENT_ID,$EVENT_PAR_0,1)
   inc($note_held_count)
-  if ($note_held_count=1)
-    $lcb_ms_counter := 0
-    $SEQ__first_note_ts := $ENGINE_UPTIME
-    if ($switch_MAIN__SEQ__LEFT__power=1 and ($switch_MAIN__SoundSource__LEFT__power=1))
+  message("note_held_count: " & $note_held_count)
+  if ($switch_MAIN__SEQ__combine=0)
+    if ($note_held_count=1)
+      $lcb_ms_counter := 0
+      $SEQ__first_note_ts := $ENGINE_UPTIME
+    end if
+    if ($switch_MAIN__SoundSource__LEFT__power=1 and ($switch_MAIN__SEQ__LEFT__power=1 and ($note_held_count=1) or ($switch_MAIN__SEQ__LEFT__power=0)))
       $pn_ncb__a__side := 0
       $pn_ncb__a__note := $EVENT_NOTE
       $pn_ncb__a__velo := $EVENT_VELOCITY
       call PLAY_NOTE_NCB
     end if
-    if ($switch_MAIN__SEQ__LEFT__power=1 and ($switch_MAIN__SoundSource__RIGHT__power=1))
-      $pn_ncb__a__side := 1
-      $pn_ncb__a__note := $EVENT_NOTE
-      $pn_ncb__a__velo := $EVENT_VELOCITY
-      call PLAY_NOTE_NCB
-    end if
-  end if
-  if ($switch_MAIN__SEQ__LEFT__power=0)
-    if ($switch_MAIN__SoundSource__LEFT__power=1)
-      $pn_ncb__a__side := 0
-      $pn_ncb__a__note := $EVENT_NOTE
-      $pn_ncb__a__velo := $EVENT_VELOCITY
-      call PLAY_NOTE_NCB
-    end if
-    if ($switch_MAIN__SoundSource__RIGHT__power=1)
+    if ($switch_MAIN__SoundSource__RIGHT__power=1 and ($switch_MAIN__SEQ__RIGHT__power=1 and ($note_held_count=1) or ($switch_MAIN__SEQ__RIGHT__power=0)))
       $pn_ncb__a__side := 1
       $pn_ncb__a__note := $EVENT_NOTE
       $pn_ncb__a__velo := $EVENT_VELOCITY
       call PLAY_NOTE_NCB
     end if
   else
+    if ($switch_MAIN__SoundSource__LEFT__power=1 and ($switch_MAIN__SEQ__LEFT__power=1 and ($note_held_count=1) or ($switch_MAIN__SEQ__LEFT__power=0)))
+      message(" NCB Playing Layer 1")
+      $pn_ncb__a__side := 0
+      $pn_ncb__a__note := $EVENT_NOTE
+      $pn_ncb__a__velo := $EVENT_VELOCITY
+      call PLAY_NOTE_NCB
+    end if
+    if ($switch_MAIN__SoundSource__RIGHT__power=1 and ($switch_MAIN__SEQ__LEFT__power=1 and ($note_held_count=1) or ($switch_MAIN__SEQ__LEFT__power=0)))
+      message(" NCB Playing Layer 2")
+      $pn_ncb__a__side := 1
+      $pn_ncb__a__note := $EVENT_NOTE
+      $pn_ncb__a__velo := $EVENT_VELOCITY
+      call PLAY_NOTE_NCB
+    end if
   end if
 end on
 
 on release
   if (get_event_par($EVENT_ID,$EVENT_PAR_0)=1)
     dec($note_held_count)
+    message("note_held_count: " & $note_held_count)
     %_layers__note_events[128*0+$EVENT_NOTE] := 0
     %_layers__note_events[128*1+$EVENT_NOTE] := 0
   end if
@@ -3449,6 +3518,25 @@ on listener
         end while
       end if
       if ($switch_MAIN__SEQ__combine=1)
+        if ($lcb_ms_counter mod %SEQ__rate[0]=0)
+          message("LCB Join sequencer rate step")
+          $fn007__a__side := 0
+          call fn007_update_block_and_steps_ts
+        end if
+        if ($SEQ__JOIN__current_block>-1 and ($note_held_count>0))
+          $SEQ__ts_counter := 0
+          while ($SEQ__ts_counter<=%SEQ__JOIN__step_count[$SEQ__JOIN__current_block])
+            if (get_control_par(%UIID_MAIN__seq__power[0],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__layer__power[0],$CONTROL_PAR_VALUE)=1))
+              $p_lcb__a__side := 0
+              call PLAY_LCB
+            end if
+            if (get_control_par(%UIID_MAIN__seq__power[0],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__layer__power[1],$CONTROL_PAR_VALUE)=1))
+              $p_lcb__a__side := 1
+              call PLAY_LCB
+            end if
+            inc($SEQ__ts_counter)
+          end while
+        end if
       end if
     end if
     select (%LFO_data[3])

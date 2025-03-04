@@ -35,9 +35,32 @@ on listener
                         end for
                     end if
                 end for 
-            end if
+            end if  { SEQ Dual }
 
             if switch_MAIN.SEQ.combine = __SEQ_JOIN
+                if lcb_ms_counter mod SEQ.rate [ __LEFT ] = 0 { on JOIN we follow the left side }
+                    message("LCB Join sequencer rate step")
+                    fn007.a.side := __LEFT
+                    call fn007_update_block_and_steps_ts
+                end if
+
+                if SEQ.JOIN.current_block > -1 and note_held_count > 0
+                    for SEQ.ts_counter := 0 to SEQ.JOIN.step_count [ SEQ.JOIN.current_block ]
+                        { left layer  }
+                        if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON and ...
+                            UIID_MAIN.layer.power [ __LEFT ] -> value = __ON
+                            p_lcb.a.side := __LEFT
+                            call PLAY_LCB
+                        end if
+                        { right layer - sequencer power in JOIN is dictated by left power button }
+                        if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON and ...
+                            UIID_MAIN.layer.power [ __RIGHT ] -> value = __ON
+                            p_lcb.a.side := __RIGHT
+                            call PLAY_LCB
+                        end if
+                    end for
+                end if
+
             end if
             
         end if
