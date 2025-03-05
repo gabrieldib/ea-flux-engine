@@ -1,4 +1,4 @@
-{ Compiled on Tue Mar  4 16:25:41 2025 }
+{ Compiled on Tue Mar  4 17:55:51 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -2003,13 +2003,26 @@ function fn002_set_seq_step_value
   message("FN02 setting the value for step index: " & $fn002__a__step_index)
 end function
 
+function fn005_set_seq_target_selector
+  $i__i := 0
+  while ($i__i<=4)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_VALUE,0)
+    inc($i__i)
+  end while
+  if (in_range($fn005__a__selector_index,0,4))
+    set_control_par(%UIID_MAIN__target_selectors[$fn005__a__selector_index],$CONTROL_PAR_VALUE,1)
+  end if
+end function
+
 function fn011_clear_target_activators
   $i__i := 0
   while ($i__i<=4)
     set_control_par(%_UIID_MAIN__target_activators[5*$fn011__a__side+$i__i],$CONTROL_PAR_VALUE,0)
     inc($i__i)
   end while
-  set_control_par(%_UIID_MAIN__target_activators[5*$fn011__a__side+$fn011__a__index],$CONTROL_PAR_VALUE,1)
+  if (in_range($fn011__a__index,0,4))
+    set_control_par(%_UIID_MAIN__target_activators[5*$fn011__a__side+$fn011__a__index],$CONTROL_PAR_VALUE,1)
+  end if
 end function
 
 function fn006_recall_seq_values
@@ -2060,15 +2073,6 @@ function fn014_seq_recall_target_steps_values_and_pictures
       inc($fn014__l__counter)
     end while
   end if
-end function
-
-function fn005_set_seq_target_selector
-  $i__i := 0
-  while ($i__i<=4)
-    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_VALUE,0)
-    inc($i__i)
-  end while
-  set_control_par(%UIID_MAIN__target_selectors[$fn005__a__selector_index],$CONTROL_PAR_VALUE,1)
 end function
 
 function draw_seq
@@ -2139,8 +2143,8 @@ end function
 function fn010_set_seq_step_value
   set_control_par(%_UIID_MAIN__seq__step[32*$fn010__l__side+($fn010__a__step_index mod 32)],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn010__a__value))
   message("FN10 setting the value for step index: " & $fn010__a__step_index)
-  %_SEQ__data__i[32*5*$fn010__l__side+(32*%SEQ__showing_target[$fn010__l__side])+$fn010__a__step_index] := real_to_int(1000000.0*~fn010__a__value)
-  ?_SEQ__data__f[32*5*$fn010__l__side+(32*%SEQ__showing_target[$fn010__l__side])+$fn010__a__step_index] := ~fn010__a__value
+  %_SEQ__data__i[32*5*$fn010__l__side+(32*%SEQ__showing_target[$fn010__l__side])+($fn010__a__step_index mod 32)] := real_to_int(1000000.0*~fn010__a__value)
+  ?_SEQ__data__f[32*5*$fn010__l__side+(32*%SEQ__showing_target[$fn010__l__side])+($fn010__a__step_index mod 32)] := ~fn010__a__value
 end function
 
 function PLAY_NOTE_NCB
@@ -3301,12 +3305,6 @@ on persistence_changed
   %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*1)+(32*7)+6] := %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*0)+(32*7)+6]+$SEQ_JOIN_RIGHT_GAP_STEP8
   %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*1)+(32*7)+7] := %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*0)+(32*7)+7]+$SEQ_JOIN_RIGHT_GAP_STEP8
   $switch_MAIN__SEQ__combine := 0
-  $fn011__a__side := 0
-  $fn011__a__index := 0
-  call fn011_clear_target_activators
-  $fn011__a__side := 1
-  $fn011__a__index := 0
-  call fn011_clear_target_activators
   call draw_seq
   $fn013__a__side := 0
   call fn013_update_seq_step_pictures
@@ -3316,6 +3314,20 @@ on persistence_changed
   call fn006_recall_seq_values
   $fn006__a__side := 1
   call fn006_recall_seq_values
+  $fn005__a__selector_index := 0
+  call fn005_set_seq_target_selector
+  $fn011__a__side := 0
+  $fn011__a__index := 0
+  call fn011_clear_target_activators
+  $fn011__a__side := 1
+  $fn011__a__index := 0
+  call fn011_clear_target_activators
+  $fn014__a__side := 0
+  $fn014__a__target_index := 0
+  call fn014_seq_recall_target_steps_values_and_pictures
+  $fn014__a__side := 1
+  $fn014__a__target_index := 0
+  call fn014_seq_recall_target_steps_values_and_pictures
   message("ea-flux-engine loaded successfully")
   $button_demo__mode := 0
   set_control_par(get_ui_id($label_MAIN__SEQ__LEFT__linked),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
@@ -3430,24 +3442,6 @@ on ui_controls
     ~fn002__a__value := get_control_par_real_arr(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_VALUE,1)
     call fn002_set_seq_step_value
   end if
-  if (in_range($NI_UI_ID,%UIID_MAIN__target_selectors[0],%UIID_MAIN__target_selectors[4]))
-    $fn005__a__selector_index := $NI_UI_ID-%UIID_MAIN__target_selectors[0]
-    call fn005_set_seq_target_selector
-    %SEQ__showing_target[0] := $uics_uiid_index
-    %SEQ__showing_target[1] := $uics_uiid_index
-    $fn011__a__side := 0
-    $fn011__a__index := $fn005__a__selector_index
-    call fn011_clear_target_activators
-    $fn011__a__side := 1
-    $fn011__a__index := $fn005__a__selector_index
-    call fn011_clear_target_activators
-    $fn014__a__side := 0
-    $fn014__a__target_index := $fn005__a__selector_index
-    call fn014_seq_recall_target_steps_values_and_pictures
-    $fn014__a__side := 1
-    $fn014__a__target_index := $fn005__a__selector_index
-    call fn014_seq_recall_target_steps_values_and_pictures
-  end if
   if (in_range($NI_UI_ID,%_UIID_MAIN__ADSR_controls[4*0+0],%_UIID_MAIN__ADSR_controls[4*1+3]))
     $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__ADSR_controls[4*0+0]
     if ($uics_uiid_index<4)
@@ -3487,6 +3481,8 @@ on ui_controls
     $fn014__a__side := $uics_seq_side
     $fn014__a__target_index := $uics_uiid_index mod 5
     call fn014_seq_recall_target_steps_values_and_pictures
+    $fn005__a__selector_index := -1
+    call fn005_set_seq_target_selector
     if ($uics_uiid_index<5)
       if (get_control_par(%_UIID_MAIN__target_activators[5*1+$uics_uiid_index],$CONTROL_PAR_VALUE)=1)
         $fn005__a__selector_index := $uics_uiid_index
@@ -3498,6 +3494,26 @@ on ui_controls
         call fn005_set_seq_target_selector
       end if
     end if
+  end if
+  if (in_range($NI_UI_ID,%UIID_MAIN__target_selectors[0],%UIID_MAIN__target_selectors[4]))
+    $uics_uiid_index := $NI_UI_ID-%UIID_MAIN__target_selectors[0]
+    $fn005__a__selector_index := $uics_uiid_index
+    call fn005_set_seq_target_selector
+    %SEQ__showing_target[0] := $uics_uiid_index
+    %SEQ__showing_target[1] := $uics_uiid_index
+    $fn011__a__side := 0
+    $fn011__a__index := $uics_uiid_index
+    call fn011_clear_target_activators
+    $fn011__a__side := 1
+    $fn011__a__index := $uics_uiid_index
+    call fn011_clear_target_activators
+    message("Center target selector clicked, index: " & $uics_uiid_index)
+    $fn014__a__side := 0
+    $fn014__a__target_index := $uics_uiid_index
+    call fn014_seq_recall_target_steps_values_and_pictures
+    $fn014__a__side := 1
+    $fn014__a__target_index := $uics_uiid_index
+    call fn014_seq_recall_target_steps_values_and_pictures
   end if
 end on
 
@@ -3521,12 +3537,6 @@ on ui_control($switch_MAIN__SEQ__combine)
     set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_TEXT_ALIGNMENT,abs(1-$switch_MAIN__SEQ__combine))
     inc($i__i)
   end while
-  if ($switch_MAIN__SEQ__combine=1)
-    $fn011__a__side := 1
-    $fn011__a__index := %SEQ__showing_target[0]
-    call fn011_clear_target_activators
-    %SEQ__showing_target[1] := %SEQ__showing_target[0]
-  end if
   set_control_par(get_ui_id($panel_MAIN__2SEQ),$CONTROL_PAR_HIDE,$switch_MAIN__SEQ__combine*$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__SEQjoin),$CONTROL_PAR_HIDE,abs(1-$switch_MAIN__SEQ__combine)*$HIDE_WHOLE_CONTROL)
 end on

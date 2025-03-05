@@ -26,13 +26,13 @@ on ui_control (switch_MAIN.SEQ.combine)
         UIID_MAIN.target_selectors [ i.i ] -> text_alignment := abs(1 - switch_MAIN.SEQ.combine)
     end for
 
-    if switch_MAIN.SEQ.combine = __SEQ_JOIN
-        { mirror the right side }
-        fn011.a.side  := __RIGHT
-        fn011.a.index := SEQ.showing_target [ __LEFT ]
-        call fn011_clear_target_activators
-        SEQ.showing_target [ __RIGHT ] := SEQ.showing_target [ __LEFT ] 
-    end if
+    // if switch_MAIN.SEQ.combine = __SEQ_DUAL
+    //     { mirror the right side, for whe }
+    //     fn011.a.side  := __RIGHT
+    //     fn011.a.index := SEQ.showing_target [ __LEFT ]
+    //     call fn011_clear_target_activators
+    //     SEQ.showing_target [ __RIGHT ] := SEQ.showing_target [ __LEFT ] 
+    // end if
 
     panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
     panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL

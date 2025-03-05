@@ -204,6 +204,9 @@ on ui_controls
         fn014.a.target_index := uics_uiid_index mod 5
         call fn014_seq_recall_target_steps_values_and_pictures
 
+        { clean all mid selectors first, assuming the activators are not a matching pair }
+        fn005.a.selector_index := -1
+        call fn005_set_seq_target_selector
         { light the middle selector in case both sides match }
         if uics_uiid_index < 5
             if UIID_MAIN.target_activators [ __RIGHT, uics_uiid_index ] -> value = __ON
@@ -221,25 +224,26 @@ on ui_controls
 
     {{ SEQ MAIN TARGET SELECTORS }}
     if in_range(NI_UI_ID, UIID_MAIN.target_selectors [ 0 ], UIID_MAIN.target_selectors [ 4 ])
-        fn005.a.selector_index := NI_UI_ID - UIID_MAIN.target_selectors [ 0 ]
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.target_selectors [ 0 ]
+        fn005.a.selector_index := uics_uiid_index
         call fn005_set_seq_target_selector
 
         SEQ.showing_target [ __LEFT  ] := uics_uiid_index
         SEQ.showing_target [ __RIGHT ] := uics_uiid_index
 
         fn011.a.side  := __LEFT
-        fn011.a.index := fn005.a.selector_index
+        fn011.a.index := uics_uiid_index
         call fn011_clear_target_activators
         fn011.a.side  := __RIGHT
-        fn011.a.index := fn005.a.selector_index
+        fn011.a.index := uics_uiid_index
         call fn011_clear_target_activators
-
+        message("Center target selector clicked, index: " & uics_uiid_index)
         fn014.a.side         := __LEFT
-        fn014.a.target_index := fn005.a.selector_index
+        fn014.a.target_index := uics_uiid_index
         call fn014_seq_recall_target_steps_values_and_pictures
 
         fn014.a.side         := __RIGHT
-        fn014.a.target_index := fn005.a.selector_index
+        fn014.a.target_index := uics_uiid_index
         call fn014_seq_recall_target_steps_values_and_pictures
 
     end if

@@ -6,13 +6,6 @@ on persistence_changed
 
     switch_MAIN.SEQ.combine := __SEQ_DUAL
 
-    fn011.a.side  := __LEFT
-    fn011.a.index := SEQ_TARGET_VELO
-    call fn011_clear_target_activators
-    fn011.a.side  := __RIGHT
-    fn011.a.index := SEQ_TARGET_VELO
-    call fn011_clear_target_activators
-
     { dual or joined sequencer }
     call draw_seq
 
@@ -27,6 +20,25 @@ on persistence_changed
     call fn006_recall_seq_values
     fn006.a.side := __RIGHT
     call fn006_recall_seq_values
+
+
+    fn005.a.selector_index := SEQ_TARGET_VELO
+    call fn005_set_seq_target_selector
+
+    fn011.a.side  := __LEFT
+    fn011.a.index := SEQ_TARGET_VELO
+    call fn011_clear_target_activators
+    fn011.a.side  := __RIGHT
+    fn011.a.index := SEQ_TARGET_VELO
+    call fn011_clear_target_activators
+
+    fn014.a.side         := __LEFT
+    fn014.a.target_index := SEQ_TARGET_VELO
+    call fn014_seq_recall_target_steps_values_and_pictures
+
+    fn014.a.side         := __RIGHT
+    fn014.a.target_index := SEQ_TARGET_VELO
+    call fn014_seq_recall_target_steps_values_and_pictures
 
 
 

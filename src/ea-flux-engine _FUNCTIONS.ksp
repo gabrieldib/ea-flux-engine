@@ -323,13 +323,13 @@ function fn010_set_seq_step_value
     SEQ.data.i [                             ...
         fn010.l.side,                        ...
         SEQ.showing_target [ fn010.l.side ], ...
-        fn010.a.step_index                   ...
+        fn010.a.step_index mod 32            ...
     ] := int( 1000000.0 * fn010.a.value )
 
     SEQ.data.f [                             ...
         fn010.l.side,                        ...
         SEQ.showing_target [ fn010.l.side ], ...
-        fn010.a.step_index                   ...
+        fn010.a.step_index mod 32            ...
     ] := fn010.a.value
 end function
 
@@ -353,14 +353,18 @@ function fn005_set_seq_target_selector
     for i.i := 0 to 4
         UIID_MAIN.target_selectors [ i.i ] -> value := __OFF
     end for
-    UIID_MAIN.target_selectors [ fn005.a.selector_index ] -> value := __ON
+    if in_range(fn005.a.selector_index, 0, 4)
+        UIID_MAIN.target_selectors [ fn005.a.selector_index ] -> value := __ON
+    end if
 end function
 
 function fn011_clear_target_activators
     for i.i := 0 to 4
         UIID_MAIN.target_activators [ fn011.a.side, i.i] -> value := __OFF
     end for
-    UIID_MAIN.target_activators [ fn011.a.side, fn011.a.index ] -> value := __ON
+    if in_range(fn011.a.index, 0, 4)
+        UIID_MAIN.target_activators [ fn011.a.side, fn011.a.index ] -> value := __ON
+    end if
 end function
 
 function fn014_seq_recall_target_steps_values_and_pictures
