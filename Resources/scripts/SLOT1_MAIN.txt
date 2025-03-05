@@ -1,4 +1,4 @@
-{ Compiled on Tue Mar  4 12:11:13 2025 }
+{ Compiled on Tue Mar  4 16:25:41 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -22,8 +22,8 @@ on init
   declare $figma_counter_multi_line_labels
   declare %UI_x[411] := (0, 0, 490, 676, 65, 676, 65, 20, 47, 585, 62, 565, 78, 582, 45, 549, 61, 0, 0, 345, 67, 306, 911, 682, 675, 708, 741, 774, 807, 840, 873, 906, 801, 899, 854, 187, 71, 124, 67, 68, 64, ...
   97, 130, 163, 196, 229, 262, 295, 4, -1, 125, 32, 32, 32, 32, 32, 32, 139, 139, 139, 139, 139, 139, 124, 32, 32, 32, 32, 32, 32, 139, 139, 139, 139, 139, 139, 51, 51, 51, 124, 124, ...
-  124, 111, 111, 111, 184, 184, 184, 107, 123, 139, 155, -1, -1, 65, 158, 174, 190, 206, 304, 304, 191, -1, -1, 101, 101, 203, 203, 316, -1, -1, 101, 101, 203, 203, 316, 432, 432, 432, 432, 432, ...
-  418, 418, 418, 418, 418, 510, 510, 510, 510, 510, 526, 526, 526, 526, 526, 448, 448, 448, 448, 448, 524, 424, 937, -1, 544, 710, 749, 784, 864, 899, 40, 77, 395, 149, 184, 219, 482, 909, 876, 843, ...
+  124, 111, 111, 111, 184, 184, 184, 107, 123, 139, 155, -1, -1, 65, 158, 174, 190, 206, 304, 304, 191, -1, -1, 101, 101, 203, 203, 316, -1, -1, 101, 101, 203, 203, 316, 418, 418, 418, 418, 418, ...
+  526, 526, 526, 526, 526, 432, 432, 432, 432, 432, 510, 510, 510, 510, 510, 448, 448, 448, 448, 448, 524, 424, 937, -1, 544, 710, 749, 784, 864, 899, 40, 77, 395, 149, 184, 219, 482, 909, 876, 843, ...
   810, 777, 744, 711, 678, 298, 265, 232, 199, 166, 133, 100, 712, 745, 778, 811, 844, 877, 910, 101, 134, 167, 200, 233, 266, 299, 679, 80, 137, 56, 96, 136, 176, 216, 199, 19, 957, 767, 752, 235, ...
   220, 49, 783, 10, 949, 416, 101, 830, 342, 342, 342, 342, 281, 660, 342, 61, 565, 61, 565, 61, 791, 61, 672, 0, 0, 0, 155, 155, 155, 155, 155, 155, 156, 156, 156, 0, 66, 66, 66, 66, ...
   66, 66, 67, 67, 67, 41, 31, 150, 0, 0, 0, 1, 93, 185, 277, 2, 13, 24, 35, 46, 57, 68, 79, 94, 105, 116, 127, 138, 149, 160, 171, 186, 197, 208, 219, 230, 241, 252, 263, 278, ...
@@ -44,8 +44,8 @@ on init
   51, 29, 29, 4, 4, 4, 4, -1, -1, 739)
   declare %UI_width[411] := (1000, 1000, 20, 259, 259, 259, 259, 959, 328, 327, 330, 330, 326, 326, 366, 366, 911, 1000, 1000, 310, 21, 11, 21, 11, 28, 28, 28, 28, 28, 28, 28, 28, 11, 29, 22, 11, 29, 22, 23, 22, 28, ...
   28, 28, 28, 28, 28, 28, 28, 11, 21, 10, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 10, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 23, 23, 23, 23, 23, ...
-  23, 23, 23, 23, 23, 23, 23, 13, 13, 13, 13, 23, 23, 71, 13, 13, 13, 13, 23, 23, 71, 88, 88, 88, 88, 88, 88, 10, 88, 88, 88, 88, 88, 88, 10, 17, 17, 17, 17, 17, ...
-  15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 15, 15, 15, 15, 15, 63, 63, 63, 63, 63, 11, 11, 22, 22, 22, 33, 29, 29, 21, 23, 23, 21, 22, 29, 29, 33, 35, 23, 23, 23, ...
+  23, 23, 23, 23, 23, 23, 23, 13, 13, 13, 13, 23, 23, 71, 13, 13, 13, 13, 23, 23, 71, 88, 88, 88, 88, 88, 88, 10, 88, 88, 88, 88, 88, 88, 10, 15, 15, 15, 15, 15, ...
+  15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 63, 63, 63, 63, 63, 11, 11, 22, 22, 22, 33, 29, 29, 21, 23, 23, 21, 22, 29, 29, 33, 35, 23, 23, 23, ...
   23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 35, 35, 34, 34, 34, 34, 34, 22, 23, 23, 15, 15, 15, ...
   15, 166, 166, 42, 42, 184, 70, 70, 316, 316, 316, 316, 59, 60, 316, 374, 374, 374, 374, 148, 148, 267, 267, 259, 259, 259, 36, 36, 36, 36, 36, 36, 34, 34, 34, 259, 36, 36, 36, 36, ...
   36, 36, 34, 34, 34, 878, 146, 146, 330, 330, 366, 88, 88, 88, 88, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, ...
@@ -55,8 +55,8 @@ on init
   740, 364, 364, 32, 32, 32, 32, 23, 23, 11)
   declare %UI_height[411] := (750, 750, 169, 140, 140, 140, 140, 231, 51, 51, 45, 46, 42, 42, 126, 126, 232, 750, 750, 189, 21, 11, 21, 11, 20, 20, 20, 20, 20, 20, 20, 20, 11, 18, 15, 11, 18, 15, 20, 14, 20, ...
   20, 20, 20, 20, 20, 20, 20, 11, 21, 10, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 10, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 19, 19, 19, 20, 20, ...
-  20, 20, 20, 20, 19, 19, 19, 27, 27, 27, 27, 20, 20, 15, 27, 27, 27, 27, 20, 20, 15, 16, 16, 16, 16, 16, 16, 10, 16, 16, 16, 16, 16, 16, 10, 16, 16, 16, 16, 16, ...
-  15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 15, 15, 15, 15, 15, 21, 21, 21, 21, 21, 11, 11, 15, 15, 15, 13, 13, 13, 21, 20, 20, 21, 15, 13, 13, 13, 17, 20, 20, 20, ...
+  20, 20, 20, 20, 19, 19, 19, 27, 27, 27, 27, 20, 20, 15, 27, 27, 27, 27, 20, 20, 15, 16, 16, 16, 16, 16, 16, 10, 16, 16, 16, 16, 16, 16, 10, 15, 15, 15, 15, 15, ...
+  15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 21, 21, 21, 21, 21, 11, 11, 15, 15, 15, 13, 13, 13, 21, 20, 20, 21, 15, 13, 13, 13, 17, 20, 20, 20, ...
   20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 31, 21, 28, 28, 28, 28, 28, 28, 18, 18, 15, 15, 15, ...
   14, 16, 16, 14, 14, 45, 14, 14, 184, 184, 184, 184, 184, 184, 184, 137, 137, 66, 66, 204, 204, 148, 148, 140, 140, 140, 36, 36, 36, 36, 36, 36, 34, 34, 34, 140, 36, 36, 36, 36, ...
   36, 36, 34, 34, 34, 207, 47, 47, 13, 13, 99, 6, 6, 6, 6, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, ...
@@ -67,9 +67,9 @@ on init
   declare %UI_skin[411] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 4, 1, 3, 4, 5, 4, 2, ...
   2, 2, 2, 2, 2, 2, 2, 1, 0, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 5, 5, ...
   5, 5, 5, 5, 8, 8, 8, 9, 10, 11, 12, 5, 5, 13, 9, 10, 11, 12, 5, 5, 13, 7, 7, 7, 7, 7, 7, 6, 7, 7, 7, 7, 7, 7, 6, 14, 14, 14, 14, 14, ...
-  15, 15, 15, 15, 15, 14, 14, 14, 14, 14, 16, 16, 16, 16, 16, 2, 2, 2, 2, 2, 1, 1, 4, 4, 4, 17, 18, 19, 0, 5, 5, 0, 4, 18, 19, 17, 20, 5, 5, 5, ...
-  5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 21, 22, 23, 24, 25, 26, 27, 28, 5, 5, 16, 15, 16, ...
-  15, 2, 2, 2, 2, 29, 2, 2, 30, 31, 32, 33, 34, 35, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 42, 43, 44, 44, 44, 45, 45, 45, 46, 46, 47, 48, 44, 44, 44, 45, ...
+  15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 2, 2, 2, 2, 2, 1, 1, 4, 4, 4, 17, 18, 19, 0, 5, 5, 0, 4, 18, 19, 17, 20, 5, 5, 5, ...
+  5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 21, 22, 23, 24, 25, 26, 27, 28, 5, 5, 15, 14, 15, ...
+  14, 2, 2, 2, 2, 29, 2, 2, 30, 31, 32, 33, 34, 35, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 42, 43, 44, 44, 44, 45, 45, 45, 46, 46, 47, 48, 44, 44, 44, 45, ...
   45, 45, 46, 46, 47, 49, 50, 51, 52, 52, 53, 54, 54, 54, 54, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, ...
   55, 55, 55, 55, 55, 55, 55, 53, 54, 54, 54, 54, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, ...
   55, 55, 55, 55, 56, 57, 2, 2, 58, 58, 59, 59, 60, 61, 61, 62, 63, 63, 2, 2, 2, 2, 2, 64, 64, 65, 65, 65, 65, 65, 65, 65, 65, 66, 66, 66, 66, 67, 68, 66, ...
@@ -189,9 +189,9 @@ on init
   !skin_picture[11] := "button_fluxx_block_3"
   !skin_picture[12] := "button_fluxx_block_4"
   !skin_picture[13] := "switch_arp.menu.L"
-  !skin_picture[14] := "button_power_small"
-  !skin_picture[15] := "button_nav_small_prev"
-  !skin_picture[16] := "button_nav_small_next"
+  !skin_picture[14] := "button_nav_small_prev"
+  !skin_picture[15] := "button_nav_small_next"
+  !skin_picture[16] := "button_power_small"
   !skin_picture[17] := "button_seq_fwbw"
   !skin_picture[18] := "button_seq_fw"
   !skin_picture[19] := "button_seq_bw"
@@ -578,21 +578,6 @@ on init
   declare ui_switch $switch_MAIN__FX__RIGHT__arp__menu__close
   make_persistent($switch_MAIN__FX__RIGHT__arp__menu__close)
   read_persistent_var($switch_MAIN__FX__RIGHT__arp__menu__close)
-  declare ui_switch $switch_MAIN__SEQ__LEFT__power__velocity
-  make_persistent($switch_MAIN__SEQ__LEFT__power__velocity)
-  read_persistent_var($switch_MAIN__SEQ__LEFT__power__velocity)
-  declare ui_switch $switch_MAIN__SEQ__LEFT__power__pitch
-  make_persistent($switch_MAIN__SEQ__LEFT__power__pitch)
-  read_persistent_var($switch_MAIN__SEQ__LEFT__power__pitch)
-  declare ui_switch $switch_MAIN__SEQ__LEFT__power__octave
-  make_persistent($switch_MAIN__SEQ__LEFT__power__octave)
-  read_persistent_var($switch_MAIN__SEQ__LEFT__power__octave)
-  declare ui_switch $switch_MAIN__SEQ__LEFT__power__pan
-  make_persistent($switch_MAIN__SEQ__LEFT__power__pan)
-  read_persistent_var($switch_MAIN__SEQ__LEFT__power__pan)
-  declare ui_switch $switch_MAIN__SEQ__LEFT__power__lphp
-  make_persistent($switch_MAIN__SEQ__LEFT__power__lphp)
-  read_persistent_var($switch_MAIN__SEQ__LEFT__power__lphp)
   declare ui_switch $switch_MAIN__SEQ__LEFT__select__velocity
   make_persistent($switch_MAIN__SEQ__LEFT__select__velocity)
   read_persistent_var($switch_MAIN__SEQ__LEFT__select__velocity)
@@ -608,21 +593,6 @@ on init
   declare ui_switch $switch_MAIN__SEQ__LEFT__select__lphp
   make_persistent($switch_MAIN__SEQ__LEFT__select__lphp)
   read_persistent_var($switch_MAIN__SEQ__LEFT__select__lphp)
-  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__velocity
-  make_persistent($switch_MAIN__SEQ__RIGHTpower__velocity)
-  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__velocity)
-  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__pitch
-  make_persistent($switch_MAIN__SEQ__RIGHTpower__pitch)
-  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__pitch)
-  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__octave
-  make_persistent($switch_MAIN__SEQ__RIGHTpower__octave)
-  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__octave)
-  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__pan
-  make_persistent($switch_MAIN__SEQ__RIGHTpower__pan)
-  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__pan)
-  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__lphp
-  make_persistent($switch_MAIN__SEQ__RIGHTpower__lphp)
-  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__lphp)
   declare ui_switch $switch_MAIN__SEQ__RIGHT__select__velocity
   make_persistent($switch_MAIN__SEQ__RIGHT__select__velocity)
   read_persistent_var($switch_MAIN__SEQ__RIGHT__select__velocity)
@@ -638,6 +608,36 @@ on init
   declare ui_switch $switch_MAIN__SEQ__RIGHT__select__lphp
   make_persistent($switch_MAIN__SEQ__RIGHT__select__lphp)
   read_persistent_var($switch_MAIN__SEQ__RIGHT__select__lphp)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__velocity
+  make_persistent($switch_MAIN__SEQ__LEFT__power__velocity)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__velocity)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__pitch
+  make_persistent($switch_MAIN__SEQ__LEFT__power__pitch)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__pitch)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__octave
+  make_persistent($switch_MAIN__SEQ__LEFT__power__octave)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__octave)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__pan
+  make_persistent($switch_MAIN__SEQ__LEFT__power__pan)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__pan)
+  declare ui_switch $switch_MAIN__SEQ__LEFT__power__lphp
+  make_persistent($switch_MAIN__SEQ__LEFT__power__lphp)
+  read_persistent_var($switch_MAIN__SEQ__LEFT__power__lphp)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__velocity
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__velocity)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__velocity)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__pitch
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__pitch)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__pitch)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__octave
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__octave)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__octave)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__pan
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__pan)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__pan)
+  declare ui_switch $switch_MAIN__SEQ__RIGHTpower__lphp
+  make_persistent($switch_MAIN__SEQ__RIGHTpower__lphp)
+  read_persistent_var($switch_MAIN__SEQ__RIGHTpower__lphp)
   declare ui_switch $switch_MAIN__SEQ__center__select__velocity
   make_persistent($switch_MAIN__SEQ__center__select__velocity)
   read_persistent_var($switch_MAIN__SEQ__center__select__velocity)
@@ -1637,7 +1637,7 @@ on init
   %SEQ__target_type[1] := 1
   %SEQ__target_type[2] := 1
   %SEQ__target_type[3] := 1
-  %SEQ__target_type[4] := 0
+  %SEQ__target_type[4] := 1
   declare !beat_rates_display[19]
   !beat_rates_display[0] := "1/128"
   !beat_rates_display[1] := "1/64 T"
@@ -1843,6 +1843,7 @@ on init
   declare $fn002__a__side
   declare $fn002__a__step_index
   declare ~fn002__a__value
+  declare $fn002__l__mode_side
   declare $fn003__a__mode
   declare $fn003__a__side
   declare $fn003__a__block_index
@@ -1851,6 +1852,7 @@ on init
   declare $fn004__r__block_index
   declare $fn005__a__selector_index
   declare $fn006__a__side
+  declare $fn006__l__mode_side
   declare $fn007__a__side
   declare $fn008__l__block_counter
   declare ~fn008__a__x_coord
@@ -1863,6 +1865,17 @@ on init
   declare $fn010__a__step_index
   declare $fn010__l__side
   declare ~fn010__a__value
+  declare $fn011__a__side
+  declare $fn011__a__index
+  declare $fn012__a__side
+  declare $fn013__a__side
+  declare $fn013__a__block_index
+  declare $fn013__l__mode_side
+  declare $fn013__l__step
+  declare $fn014__a__side
+  declare $fn014__a__target_index
+  declare $fn014__l__counter
+  declare $fn014__l__counter2
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__LEFT),$CONTROL_PAR_MOUSE_MODE,2)
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__RIGHT),$CONTROL_PAR_MOUSE_MODE,2)
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__join),$CONTROL_PAR_MOUSE_MODE,2)
@@ -1888,7 +1901,6 @@ on init
   declare const $UIID_MAIN__seq__block_steps__SIZE_D2 := 4
   declare %UIID_MAIN__SEQ__xypads[2]
   declare %UIID_MAIN__controls__draw[2]
-  declare %UIID_MAIN__target_selectors[5]
   declare %_UIID_MAIN__ADSR_controls[2*4]
   declare const $UIID_MAIN__ADSR_controls__SIZE_D1 := 2
   declare const $UIID_MAIN__ADSR_controls__SIZE_D2 := 4
@@ -1897,8 +1909,60 @@ on init
   declare $UIID_MAIN__display_value
   declare %UIID_MAIN__seq__power[2]
   declare %UIID_MAIN__layer__power[2]
+  declare %_UIID_MAIN__target_activators[2*5]
+  declare const $UIID_MAIN__target_activators__SIZE_D1 := 2
+  declare const $UIID_MAIN__target_activators__SIZE_D2 := 5
+  declare %UIID_MAIN__target_selectors[5]
   declare ui_button $hide_bg
 end on
+
+function fn013_update_seq_step_pictures
+  message("FN13 updating step pictures UNI/BIP")
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn013__l__mode_side := $fn013__a__side
+  else
+    $fn013__l__mode_side := 0
+  end if
+  $fn013__l__step := 0
+  while ($fn013__l__step<=7)
+    set_control_par_str(%_UIID_MAIN__seq__step[32*$fn013__a__side+$fn013__l__step+($fn013__a__block_index mod 4*8)],$CONTROL_PAR_PICTURE,!SEQ_step_pictures[%_SEQ__DUAL__step_count[4*$fn013__a__side+($fn013__a__block_index mod 4)]+(%SEQ__target_type[%SEQ__showing_target[$fn013__l__mode_side]]*8)])
+    inc($fn013__l__step)
+  end while
+end function
+
+function fn003_set_block_step_count
+  message("FN003 block_index: " & $fn003__a__block_index & " side: " & $fn003__a__side)
+  $fn013__a__side := $fn003__a__side
+  $fn013__a__block_index := $fn003__a__block_index
+  call fn013_update_seq_step_pictures
+  if ($switch_MAIN__SEQ__combine=0)
+    ?_SEQ__DUAL__step_width[4*$fn003__a__side+$fn003__a__block_index] := ~SEQ_XY_DUAL_BLOCK_W/int_to_real(%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]+1)
+    set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+$fn003__a__block_index],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]])
+    $i__i := 0
+    while ($i__i<=7)
+      if ($i__i<=%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index])
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_POS_X,%_SEQ_STEP_COORD[32*8*2*$fn003__a__mode+(32*8*$fn003__a__side)+(32*%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index])+$i__i]+%SEQ_XY_BLOCK_START_OFFSET[$fn003__a__block_index])
+      else
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+      end if
+      inc($i__i)
+    end while
+  else
+    ?SEQ__JOIN__step_width[$fn003__a__block_index] := ~SEQ_XY_JOIN_BLOCK_W/int_to_real(%SEQ__JOIN__step_count[$fn003__a__block_index]+1)
+    set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+($fn003__a__block_index mod 4)],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%SEQ__JOIN__step_count[$fn003__a__block_index]])
+    $i__i := 0
+    while ($i__i<=7)
+      if ($i__i<=%SEQ__JOIN__step_count[$fn003__a__block_index])
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_POS_X,%_SEQ_STEP_COORD[32*8*2*$fn003__a__mode+(32*8*$fn003__a__side)+(32*%SEQ__JOIN__step_count[$fn003__a__block_index])+$i__i]+%SEQ_XY_BLOCK_START_OFFSET[$fn003__a__block_index mod 4])
+      else
+        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+      end if
+      inc($i__i)
+    end while
+  end if
+end function
 
 function fn004_get_current_seq_block
   $fn004__l__block_counter := 0
@@ -1929,8 +1993,73 @@ end function
 
 function fn002_set_seq_step_value
   set_control_par(%_UIID_MAIN__seq__step[32*$fn002__a__side+$fn002__a__step_index],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn002__a__value))
-  %_SEQ__data__i[32*5*$fn002__a__side+(32*%SEQ__showing_target[$fn002__a__side])+$fn002__a__step_index] := real_to_int(1000000.0*~fn002__a__value)
-  ?_SEQ__data__f[32*5*$fn002__a__side+(32*%SEQ__showing_target[$fn002__a__side])+$fn002__a__step_index] := ~fn002__a__value
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn002__l__mode_side := $fn002__a__side
+  else
+    $fn002__l__mode_side := 0
+  end if
+  %_SEQ__data__i[32*5*$fn002__a__side+(32*%SEQ__showing_target[$fn002__l__mode_side])+$fn002__a__step_index] := real_to_int(1000000.0*~fn002__a__value)
+  ?_SEQ__data__f[32*5*$fn002__a__side+(32*%SEQ__showing_target[$fn002__l__mode_side])+$fn002__a__step_index] := ~fn002__a__value
+  message("FN02 setting the value for step index: " & $fn002__a__step_index)
+end function
+
+function fn011_clear_target_activators
+  $i__i := 0
+  while ($i__i<=4)
+    set_control_par(%_UIID_MAIN__target_activators[5*$fn011__a__side+$i__i],$CONTROL_PAR_VALUE,0)
+    inc($i__i)
+  end while
+  set_control_par(%_UIID_MAIN__target_activators[5*$fn011__a__side+$fn011__a__index],$CONTROL_PAR_VALUE,1)
+end function
+
+function fn006_recall_seq_values
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn006__l__mode_side := $fn006__a__side
+  else
+    $fn006__l__mode_side := 0
+  end if
+  message("fn006 showing target: " & %SEQ__showing_target[$fn006__l__mode_side])
+  message("     fn006.a.side: " & $fn006__a__side)
+  $i__i := 0
+  while ($i__i<=31)
+    set_control_par(%_UIID_MAIN__seq__step[32*$fn006__a__side+$i__i],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*?_SEQ__data__f[32*5*$fn006__a__side+(32*%SEQ__showing_target[$fn006__l__mode_side])+$i__i]))
+    inc($i__i)
+  end while
+end function
+
+function fn014_seq_recall_target_steps_values_and_pictures
+  message("FN14 called")
+  message("    fn014.a.side: " & $fn014__a__side)
+  message("    fn014.a.target_index: " & $fn014__a__target_index)
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn006__a__side := $fn014__a__side
+    call fn006_recall_seq_values
+    $fn014__l__counter := 0
+    while ($fn014__l__counter<=3)
+      $fn013__a__side := $fn014__a__side
+      $fn013__a__block_index := $fn014__l__counter
+      call fn013_update_seq_step_pictures
+      inc($fn014__l__counter)
+    end while
+  else
+    $fn011__a__side := 1
+    $fn011__a__index := $fn014__a__target_index
+    call fn011_clear_target_activators
+    %SEQ__showing_target[1] := $fn014__a__target_index
+    $fn014__l__counter := 0
+    while ($fn014__l__counter<=1)
+      $fn006__a__side := $fn014__l__counter
+      call fn006_recall_seq_values
+      $fn014__l__counter2 := 0
+      while ($fn014__l__counter2<=3)
+        $fn013__a__side := $fn014__l__counter
+        $fn013__a__block_index := $fn014__l__counter2+($fn014__l__counter*4)
+        call fn013_update_seq_step_pictures
+        inc($fn014__l__counter2)
+      end while
+      inc($fn014__l__counter)
+    end while
+  end if
 end function
 
 function fn005_set_seq_target_selector
@@ -1972,60 +2101,6 @@ function draw_seq
   end while
 end function
 
-function fn003_set_block_step_count
-  message("FN003 block_index: " & $fn003__a__block_index & " side: " & $fn003__a__side)
-  if ($switch_MAIN__SEQ__combine=0)
-    message("    DUAL step count: " & %_SEQ__DUAL__step_count[4*$fn003__a__side+($fn003__a__block_index mod 4)])
-    ?_SEQ__DUAL__step_width[4*$fn003__a__side+$fn003__a__block_index] := ~SEQ_XY_DUAL_BLOCK_W/int_to_real(%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]+1)
-    set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+$fn003__a__block_index],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]])
-    $i__i := 0
-    while ($i__i<=7)
-      if ($i__i<=%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index])
-        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
-        set_control_par_str(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_PICTURE,!SEQ_step_pictures[%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index]+(%SEQ__target_type[%SEQ__showing_target[$fn003__a__side]]*8)])
-        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_POS_X,%_SEQ_STEP_COORD[32*8*2*$fn003__a__mode+(32*8*$fn003__a__side)+(32*%_SEQ__DUAL__step_count[4*$fn003__a__side+$fn003__a__block_index])+$i__i]+%SEQ_XY_BLOCK_START_OFFSET[$fn003__a__block_index])
-      else
-        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index*8)],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
-      end if
-      inc($i__i)
-    end while
-  else
-    ?SEQ__JOIN__step_width[$fn003__a__block_index] := ~SEQ_XY_JOIN_BLOCK_W/int_to_real(%SEQ__JOIN__step_count[$fn003__a__block_index]+1)
-    set_control_par_str(%_UIID_MAIN__seq__leds[4*$fn003__a__side+($fn003__a__block_index mod 4)],$CONTROL_PAR_PICTURE,!SEQ_step_led_pictures[%SEQ__JOIN__step_count[$fn003__a__block_index]])
-    message("    JOIN step count: " & %SEQ__JOIN__step_count[$fn003__a__block_index])
-    $i__i := 0
-    while ($i__i<=7)
-      if ($i__i<=%SEQ__JOIN__step_count[$fn003__a__block_index])
-        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
-        set_control_par_str(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_PICTURE,!SEQ_step_pictures[%SEQ__JOIN__step_count[$fn003__a__block_index]+(%SEQ__target_type[%SEQ__showing_target[$fn003__a__side]]*8)])
-        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_POS_X,%_SEQ_STEP_COORD[32*8*2*$fn003__a__mode+(32*8*$fn003__a__side)+(32*%SEQ__JOIN__step_count[$fn003__a__block_index])+$i__i]+%SEQ_XY_BLOCK_START_OFFSET[$fn003__a__block_index mod 4])
-      else
-        set_control_par(%_UIID_MAIN__seq__step[32*$fn003__a__side+$i__i+($fn003__a__block_index mod 4*8)],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
-      end if
-      inc($i__i)
-    end while
-  end if
-end function
-
-function seq_recall_all_step_values
-  $b__i := 0
-  while ($b__i<=3)
-    $s__i := 0
-    while ($s__i<=1)
-      $fn003__a__mode := $switch_MAIN__SEQ__combine
-      $fn003__a__side := $s__i
-      if ($switch_MAIN__SEQ__combine=0)
-        $fn003__a__block_index := $b__i
-      else
-        $fn003__a__block_index := $b__i+(4*$s__i)
-      end if
-      call fn003_set_block_step_count
-      inc($s__i)
-    end while
-    inc($b__i)
-  end while
-end function
-
 function fn008_get_current_seq_join_block
   $fn008__l__block_counter := 0
   while ($fn008__l__block_counter<=7)
@@ -2063,16 +2138,9 @@ end function
 
 function fn010_set_seq_step_value
   set_control_par(%_UIID_MAIN__seq__step[32*$fn010__l__side+($fn010__a__step_index mod 32)],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn010__a__value))
+  message("FN10 setting the value for step index: " & $fn010__a__step_index)
   %_SEQ__data__i[32*5*$fn010__l__side+(32*%SEQ__showing_target[$fn010__l__side])+$fn010__a__step_index] := real_to_int(1000000.0*~fn010__a__value)
   ?_SEQ__data__f[32*5*$fn010__l__side+(32*%SEQ__showing_target[$fn010__l__side])+$fn010__a__step_index] := ~fn010__a__value
-end function
-
-function fn006_recall_seq_values
-  $i__i := 0
-  while ($i__i<=31)
-    set_control_par(%_UIID_MAIN__seq__step[32*$fn006__a__side+$i__i],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*?_SEQ__data__f[32*5*$fn006__a__side+(32*%SEQ__showing_target[$fn006__a__side])+$i__i]))
-    inc($i__i)
-  end while
 end function
 
 function PLAY_NOTE_NCB
@@ -2217,22 +2285,6 @@ on persistence_changed
   %UIID_MAIN__SEQ__xypads[1] := get_ui_id(?xypad_MAIN__SEQ__RIGHT)
   %UIID_MAIN__controls__draw[0] := get_ui_id($button_MAIN__LEFT__controls__draw)
   %UIID_MAIN__controls__draw[1] := get_ui_id($button_MAIN__RIGHT__controls__draw)
-  %UIID_MAIN__target_selectors[0] := get_ui_id($switch_MAIN__SEQ__center__select__velocity)
-  %UIID_MAIN__target_selectors[1] := get_ui_id($switch_MAIN__SEQ__center__select__pitch)
-  %UIID_MAIN__target_selectors[2] := get_ui_id($switch_MAIN__SEQ__center__select__octave)
-  %UIID_MAIN__target_selectors[3] := get_ui_id($switch_MAIN__SEQ__center__select__pan)
-  %UIID_MAIN__target_selectors[4] := get_ui_id($switch_MAIN__SEQ__center__select__lphp)
-  $i__i := 0
-  while ($i__i<=4)
-    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE,$MAIN__SEQ__TARGETS__FONT_OFF)
-    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_ON,$MAIN__SEQ__TARGETS__FONT_ON)
-    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_OFF_PRESSED,$MAIN__SEQ__TARGETS__FONT_OFF_H)
-    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_ON_PRESSED,$MAIN__SEQ__TARGETS__FONT_ON_H)
-    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_OFF_HOVER,$MAIN__SEQ__TARGETS__FONT_OFF_H)
-    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_ON_HOVER,$MAIN__SEQ__TARGETS__FONT_ON_H)
-    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_DISABLE_TEXT_SHIFTING,1)
-    inc($i__i)
-  end while
   %_UIID_MAIN__ADSR_controls[4*0+0] := get_ui_id($slider_MAIN__ADSR__LEFT__attack)
   %_UIID_MAIN__ADSR_controls[4*0+1] := get_ui_id($slider_MAIN__ADSR__LEFT__decay)
   %_UIID_MAIN__ADSR_controls[4*0+2] := get_ui_id($slider_MAIN__ADSR__LEFT__sustain)
@@ -2249,7 +2301,28 @@ on persistence_changed
   %UIID_MAIN__seq__power[1] := get_ui_id($switch_MAIN__SEQ__RIGHT__power)
   %UIID_MAIN__layer__power[0] := get_ui_id($switch_MAIN__SoundSource__LEFT__power)
   %UIID_MAIN__layer__power[1] := get_ui_id($switch_MAIN__SoundSource__RIGHT__power)
-  $SEQ__COMMON_ELEMENTS_COUNT := 119
+  %_UIID_MAIN__target_activators[5*0+0] := get_ui_id($switch_MAIN__SEQ__LEFT__select__velocity)
+  %_UIID_MAIN__target_activators[5*1+0] := get_ui_id($switch_MAIN__SEQ__RIGHT__select__velocity)
+  %UIID_MAIN__target_selectors[0] := get_ui_id($switch_MAIN__SEQ__center__select__velocity)
+  $i__i := 0
+  while ($i__i<=4)
+    %_UIID_MAIN__target_activators[5*0+$i__i] := %_UIID_MAIN__target_activators[5*0+0]+$i__i
+    %_UIID_MAIN__target_activators[5*1+$i__i] := %_UIID_MAIN__target_activators[5*1+0]+$i__i
+    %UIID_MAIN__target_selectors[$i__i] := %UIID_MAIN__target_selectors[0]+$i__i
+    inc($i__i)
+  end while
+  $i__i := 0
+  while ($i__i<=4)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE,$MAIN__SEQ__TARGETS__FONT_OFF)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_ON,$MAIN__SEQ__TARGETS__FONT_ON)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_OFF_PRESSED,$MAIN__SEQ__TARGETS__FONT_OFF_H)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_ON_PRESSED,$MAIN__SEQ__TARGETS__FONT_ON_H)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_OFF_HOVER,$MAIN__SEQ__TARGETS__FONT_OFF_H)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_FONT_TYPE_ON_HOVER,$MAIN__SEQ__TARGETS__FONT_ON_H)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_DISABLE_TEXT_SHIFTING,1)
+    inc($i__i)
+  end while
+  $SEQ__COMMON_ELEMENTS_COUNT := 113
   %_SEQ__common_elements_data[7*0+$ELEMENT_UIID] := get_ui_id($button_MAIN__LEFT__controls__draw)
   %_SEQ__common_elements_data[7*0+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
   %_SEQ__common_elements_data[7*0+$PANEL_DUAL_SEQ_X_COORD] := 113
@@ -2678,54 +2751,34 @@ on persistence_changed
   %_SEQ__common_elements_data[7*106+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
   %_SEQ__common_elements_data[7*106+$PANEL_DUAL_SEQ_X_COORD] := 78
   %_SEQ__common_elements_data[7*106+$PANEL_DUAL_SEQ_Y_COORD] := 1
-  %_SEQ__common_elements_data[7*107+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__lphp)
+  %_SEQ__common_elements_data[7*107+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__lphp)
   %_SEQ__common_elements_data[7*107+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*107+$PANEL_DUAL_SEQ_X_COORD] := 419
-  %_SEQ__common_elements_data[7*107+$PANEL_DUAL_SEQ_Y_COORD] := 136
-  %_SEQ__common_elements_data[7*108+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__octave)
+  %_SEQ__common_elements_data[7*107+$PANEL_DUAL_SEQ_X_COORD] := 449
+  %_SEQ__common_elements_data[7*107+$PANEL_DUAL_SEQ_Y_COORD] := 134
+  %_SEQ__common_elements_data[7*108+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__octave)
   %_SEQ__common_elements_data[7*108+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*108+$PANEL_DUAL_SEQ_X_COORD] := 419
-  %_SEQ__common_elements_data[7*108+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*109+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__pan)
+  %_SEQ__common_elements_data[7*108+$PANEL_DUAL_SEQ_X_COORD] := 449
+  %_SEQ__common_elements_data[7*108+$PANEL_DUAL_SEQ_Y_COORD] := 90
+  %_SEQ__common_elements_data[7*109+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__pan)
   %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_X_COORD] := 419
-  %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_Y_COORD] := 114
-  %_SEQ__common_elements_data[7*110+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__pitch)
+  %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_X_COORD] := 449
+  %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_Y_COORD] := 112
+  %_SEQ__common_elements_data[7*110+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__pitch)
   %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_X_COORD] := 419
-  %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_Y_COORD] := 70
-  %_SEQ__common_elements_data[7*111+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__velocity)
+  %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_X_COORD] := 449
+  %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_Y_COORD] := 68
+  %_SEQ__common_elements_data[7*111+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__velocity)
   %_SEQ__common_elements_data[7*111+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*111+$PANEL_DUAL_SEQ_X_COORD] := 419
-  %_SEQ__common_elements_data[7*111+$PANEL_DUAL_SEQ_Y_COORD] := 48
-  %_SEQ__common_elements_data[7*112+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__lphp)
+  %_SEQ__common_elements_data[7*111+$PANEL_DUAL_SEQ_X_COORD] := 449
+  %_SEQ__common_elements_data[7*111+$PANEL_DUAL_SEQ_Y_COORD] := 46
+  %_SEQ__common_elements_data[7*112+$ELEMENT_UIID] := get_ui_id($valueedit_MAIN__LEFT__high__range)
   %_SEQ__common_elements_data[7*112+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*112+$PANEL_DUAL_SEQ_X_COORD] := 449
-  %_SEQ__common_elements_data[7*112+$PANEL_DUAL_SEQ_Y_COORD] := 134
-  %_SEQ__common_elements_data[7*113+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__octave)
+  %_SEQ__common_elements_data[7*112+$PANEL_DUAL_SEQ_X_COORD] := 349
+  %_SEQ__common_elements_data[7*112+$PANEL_DUAL_SEQ_Y_COORD] := 4
+  %_SEQ__common_elements_data[7*113+$ELEMENT_UIID] := get_ui_id($valueedit_MAIN__LEFT__low__range)
   %_SEQ__common_elements_data[7*113+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*113+$PANEL_DUAL_SEQ_X_COORD] := 449
-  %_SEQ__common_elements_data[7*113+$PANEL_DUAL_SEQ_Y_COORD] := 90
-  %_SEQ__common_elements_data[7*114+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__pan)
-  %_SEQ__common_elements_data[7*114+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*114+$PANEL_DUAL_SEQ_X_COORD] := 449
-  %_SEQ__common_elements_data[7*114+$PANEL_DUAL_SEQ_Y_COORD] := 112
-  %_SEQ__common_elements_data[7*115+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__pitch)
-  %_SEQ__common_elements_data[7*115+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*115+$PANEL_DUAL_SEQ_X_COORD] := 449
-  %_SEQ__common_elements_data[7*115+$PANEL_DUAL_SEQ_Y_COORD] := 68
-  %_SEQ__common_elements_data[7*116+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__velocity)
-  %_SEQ__common_elements_data[7*116+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*116+$PANEL_DUAL_SEQ_X_COORD] := 449
-  %_SEQ__common_elements_data[7*116+$PANEL_DUAL_SEQ_Y_COORD] := 46
-  %_SEQ__common_elements_data[7*117+$ELEMENT_UIID] := get_ui_id($valueedit_MAIN__LEFT__high__range)
-  %_SEQ__common_elements_data[7*117+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*117+$PANEL_DUAL_SEQ_X_COORD] := 349
-  %_SEQ__common_elements_data[7*117+$PANEL_DUAL_SEQ_Y_COORD] := 4
-  %_SEQ__common_elements_data[7*118+$ELEMENT_UIID] := get_ui_id($valueedit_MAIN__LEFT__low__range)
-  %_SEQ__common_elements_data[7*118+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
-  %_SEQ__common_elements_data[7*118+$PANEL_DUAL_SEQ_X_COORD] := 307
-  %_SEQ__common_elements_data[7*118+$PANEL_DUAL_SEQ_Y_COORD] := 4
+  %_SEQ__common_elements_data[7*113+$PANEL_DUAL_SEQ_X_COORD] := 307
+  %_SEQ__common_elements_data[7*113+$PANEL_DUAL_SEQ_Y_COORD] := 4
   %_SEQ__common_elements_data[7*0+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*0+$PANEL_JOIN_SEQ_X_COORD] := 135
   %_SEQ__common_elements_data[7*0+$PANEL_JOIN_SEQ_Y_COORD] := 0
@@ -3030,59 +3083,44 @@ on persistence_changed
   %_SEQ__common_elements_data[7*100+$PANEL_JOIN_SEQ_X_COORD] := 63
   %_SEQ__common_elements_data[7*100+$PANEL_JOIN_SEQ_Y_COORD] := 1
   %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_X_COORD] := 833
+  %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_X_COORD] := 828
   %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_Y_COORD] := 135
   %_SEQ__common_elements_data[7*102+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*102+$PANEL_JOIN_SEQ_X_COORD] := 833
+  %_SEQ__common_elements_data[7*102+$PANEL_JOIN_SEQ_X_COORD] := 828
   %_SEQ__common_elements_data[7*102+$PANEL_JOIN_SEQ_Y_COORD] := 91
   %_SEQ__common_elements_data[7*103+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*103+$PANEL_JOIN_SEQ_X_COORD] := 833
+  %_SEQ__common_elements_data[7*103+$PANEL_JOIN_SEQ_X_COORD] := 828
   %_SEQ__common_elements_data[7*103+$PANEL_JOIN_SEQ_Y_COORD] := 113
   %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_X_COORD] := 833
+  %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_X_COORD] := 828
   %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_Y_COORD] := 69
   %_SEQ__common_elements_data[7*105+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*105+$PANEL_JOIN_SEQ_X_COORD] := 833
+  %_SEQ__common_elements_data[7*105+$PANEL_JOIN_SEQ_X_COORD] := 828
   %_SEQ__common_elements_data[7*105+$PANEL_JOIN_SEQ_Y_COORD] := 47
   %_SEQ__common_elements_data[7*106+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*106+$PANEL_JOIN_SEQ_X_COORD] := 100
   %_SEQ__common_elements_data[7*106+$PANEL_JOIN_SEQ_Y_COORD] := 1
   %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_X_COORD] := 819
-  %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_Y_COORD] := 135
+  %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_X_COORD] := 849
+  %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_Y_COORD] := 133
   %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_X_COORD] := 819
-  %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_Y_COORD] := 91
+  %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_X_COORD] := 849
+  %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_Y_COORD] := 89
   %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_X_COORD] := 819
-  %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_Y_COORD] := 113
+  %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_X_COORD] := 849
+  %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_Y_COORD] := 111
   %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_X_COORD] := 819
-  %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_Y_COORD] := 69
+  %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_X_COORD] := 849
+  %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_Y_COORD] := 67
   %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_X_COORD] := 819
-  %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_Y_COORD] := 47
+  %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_X_COORD] := 849
+  %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_Y_COORD] := 45
   %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_X_COORD] := 849
-  %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_Y_COORD] := 133
+  %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_X_COORD] := 775
+  %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_Y_COORD] := 4
   %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_X_COORD] := 849
-  %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_Y_COORD] := 89
-  %_SEQ__common_elements_data[7*114+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*114+$PANEL_JOIN_SEQ_X_COORD] := 849
-  %_SEQ__common_elements_data[7*114+$PANEL_JOIN_SEQ_Y_COORD] := 111
-  %_SEQ__common_elements_data[7*115+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*115+$PANEL_JOIN_SEQ_X_COORD] := 849
-  %_SEQ__common_elements_data[7*115+$PANEL_JOIN_SEQ_Y_COORD] := 67
-  %_SEQ__common_elements_data[7*116+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*116+$PANEL_JOIN_SEQ_X_COORD] := 849
-  %_SEQ__common_elements_data[7*116+$PANEL_JOIN_SEQ_Y_COORD] := 45
-  %_SEQ__common_elements_data[7*117+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*117+$PANEL_JOIN_SEQ_X_COORD] := 775
-  %_SEQ__common_elements_data[7*117+$PANEL_JOIN_SEQ_Y_COORD] := 4
-  %_SEQ__common_elements_data[7*118+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*118+$PANEL_JOIN_SEQ_X_COORD] := 733
-  %_SEQ__common_elements_data[7*118+$PANEL_JOIN_SEQ_Y_COORD] := 4
+  %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_X_COORD] := 733
+  %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_Y_COORD] := 4
   $i__i := 0
   while ($i__i<=7)
     !SEQ_step_pictures[$i__i] := "slider_MAIN.sequencer.block" & ($i__i+1) & ".uni_95"
@@ -3262,8 +3300,18 @@ on persistence_changed
   %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*1)+(32*7)+5] := %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*0)+(32*7)+5]+$SEQ_JOIN_RIGHT_GAP_STEP8
   %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*1)+(32*7)+6] := %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*0)+(32*7)+6]+$SEQ_JOIN_RIGHT_GAP_STEP8
   %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*1)+(32*7)+7] := %_SEQ_STEP_COORD[32*8*2*$SEQ_MODE_JOIN+(32*8*0)+(32*7)+7]+$SEQ_JOIN_RIGHT_GAP_STEP8
+  $switch_MAIN__SEQ__combine := 0
+  $fn011__a__side := 0
+  $fn011__a__index := 0
+  call fn011_clear_target_activators
+  $fn011__a__side := 1
+  $fn011__a__index := 0
+  call fn011_clear_target_activators
   call draw_seq
-  call seq_recall_all_step_values
+  $fn013__a__side := 0
+  call fn013_update_seq_step_pictures
+  $fn013__a__side := 1
+  call fn013_update_seq_step_pictures
   $fn006__a__side := 0
   call fn006_recall_seq_values
   $fn006__a__side := 1
@@ -3288,6 +3336,8 @@ on persistence_changed
   set_control_par(get_ui_id($label_MAIN__2SEQ__LEFT__off),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__FX__LEFT__reverb__menu),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__FX__RIGHT__reverb__menu),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__2SEQ__LEFT__sliders__background),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($label_MAIN__2SEQ__RIGHT__sliders__background),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
 end on
 
 on async_complete
@@ -3298,21 +3348,17 @@ end on
 
 on ui_controls
   if (in_range($NI_UI_ID,%_UIID_MAIN__seq__block_steps[4*0+0],%_UIID_MAIN__seq__block_steps[4*1+3]))
-    message("SEQ STEP SLIDERS _________________________________")
     $uics_alt_key := 0
     if (get_control_par($NI_UI_ID,$CONTROL_PAR_KEY_ALT)=1)
       $uics_alt_key := 1
     end if
     $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__block_steps[4*0+0]
-    if ($uics_uiid_index<4)
-      $uics_seq_side := 0
-    else
-      $uics_seq_side := 1
-    end if
+    $uics_seq_side := real_to_int(int_to_real($uics_uiid_index)*0.25)
+    message("uics_seq_side: " & $uics_seq_side)
     if ($uics_alt_key=0)
+      $fn003__a__side := $uics_seq_side
+      $fn003__a__mode := $switch_MAIN__SEQ__combine
       if ($switch_MAIN__SEQ__combine=0)
-        $fn003__a__mode := $switch_MAIN__SEQ__combine
-        $fn003__a__side := $uics_seq_side
         if ($uics_uiid_index<4)
           $fn003__a__block_index := $uics_uiid_index
         else
@@ -3321,10 +3367,8 @@ on ui_controls
         %SEQ__JOIN__step_count[$uics_uiid_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$fn003__a__block_index],$CONTROL_PAR_VALUE)
         %_SEQ__DUAL__step_count[4*$uics_seq_side+$fn003__a__block_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+$fn003__a__block_index],$CONTROL_PAR_VALUE)
       else
-        %_SEQ__DUAL__step_count[4*$uics_seq_side+($fn003__a__block_index mod 4)] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($fn003__a__block_index mod 4)],$CONTROL_PAR_VALUE)
         %SEQ__JOIN__step_count[$uics_uiid_index] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE)
-        $fn003__a__mode := $switch_MAIN__SEQ__combine
-        $fn003__a__side := $uics_seq_side
+        %_SEQ__DUAL__step_count[4*$uics_seq_side+($fn003__a__block_index mod 4)] := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($fn003__a__block_index mod 4)],$CONTROL_PAR_VALUE)
         $fn003__a__block_index := $uics_uiid_index
       end if
       call fn003_set_block_step_count
@@ -3363,9 +3407,6 @@ on ui_controls
               set_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_counter+$uics_counter2],$CONTROL_PAR_VALUE,get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE))
               $fn003__a__block_index := $uics_counter*4+$uics_counter2
             end if
-            message("STEP SLIDERS: SEQ JOIN step count [ " & $uics_uiid_index & " ]: " & %SEQ__JOIN__step_count[$uics_counter*4+$uics_counter2])
-            message("    uics_uiid_index: " & $uics_uiid_index)
-            message("    fn003.a.block_index = " & $fn003__a__block_index)
             call fn003_set_block_step_count
             inc($uics_counter2)
           end while
@@ -3392,6 +3433,20 @@ on ui_controls
   if (in_range($NI_UI_ID,%UIID_MAIN__target_selectors[0],%UIID_MAIN__target_selectors[4]))
     $fn005__a__selector_index := $NI_UI_ID-%UIID_MAIN__target_selectors[0]
     call fn005_set_seq_target_selector
+    %SEQ__showing_target[0] := $uics_uiid_index
+    %SEQ__showing_target[1] := $uics_uiid_index
+    $fn011__a__side := 0
+    $fn011__a__index := $fn005__a__selector_index
+    call fn011_clear_target_activators
+    $fn011__a__side := 1
+    $fn011__a__index := $fn005__a__selector_index
+    call fn011_clear_target_activators
+    $fn014__a__side := 0
+    $fn014__a__target_index := $fn005__a__selector_index
+    call fn014_seq_recall_target_steps_values_and_pictures
+    $fn014__a__side := 1
+    $fn014__a__target_index := $fn005__a__selector_index
+    call fn014_seq_recall_target_steps_values_and_pictures
   end if
   if (in_range($NI_UI_ID,%_UIID_MAIN__ADSR_controls[4*0+0],%_UIID_MAIN__ADSR_controls[4*1+3]))
     $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__ADSR_controls[4*0+0]
@@ -3422,6 +3477,28 @@ on ui_controls
     %SEQ__rate[0] := %beat_rates[$slider_MAIN__FLRNDjoin__amount/$__BEAT_RATE_DIVISOR]
     set_control_par(%UIID_MAIN__SEQ__rate_sliders[0],$CONTROL_PAR_VALUE,$slider_MAIN__FLRNDjoin__amount)
   end if
+  if (in_range($NI_UI_ID,%_UIID_MAIN__target_activators[5*0+0],%_UIID_MAIN__target_activators[5*1+4]))
+    $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__target_activators[5*0+0]
+    $uics_seq_side := real_to_int(int_to_real($uics_uiid_index)*0.2)
+    %SEQ__showing_target[$uics_seq_side] := $uics_uiid_index mod 5
+    $fn011__a__side := $uics_seq_side
+    $fn011__a__index := $uics_uiid_index mod 5
+    call fn011_clear_target_activators
+    $fn014__a__side := $uics_seq_side
+    $fn014__a__target_index := $uics_uiid_index mod 5
+    call fn014_seq_recall_target_steps_values_and_pictures
+    if ($uics_uiid_index<5)
+      if (get_control_par(%_UIID_MAIN__target_activators[5*1+$uics_uiid_index],$CONTROL_PAR_VALUE)=1)
+        $fn005__a__selector_index := $uics_uiid_index
+        call fn005_set_seq_target_selector
+      end if
+    else
+      if (get_control_par(%_UIID_MAIN__target_activators[5*0+($uics_uiid_index mod 5)],$CONTROL_PAR_VALUE)=1)
+        $fn005__a__selector_index := $uics_uiid_index mod 5
+        call fn005_set_seq_target_selector
+      end if
+    end if
+  end if
 end on
 
 on ui_control($hide_bg)
@@ -3431,7 +3508,25 @@ end on
 
 on ui_control($switch_MAIN__SEQ__combine)
   call draw_seq
-  call seq_recall_all_step_values
+  $fn006__a__side := 0
+  call fn006_recall_seq_values
+  $fn006__a__side := 1
+  call fn006_recall_seq_values
+  $fn013__a__side := 0
+  call fn013_update_seq_step_pictures
+  $fn013__a__side := 1
+  call fn013_update_seq_step_pictures
+  $i__i := 0
+  while ($i__i<=4)
+    set_control_par(%UIID_MAIN__target_selectors[$i__i],$CONTROL_PAR_TEXT_ALIGNMENT,abs(1-$switch_MAIN__SEQ__combine))
+    inc($i__i)
+  end while
+  if ($switch_MAIN__SEQ__combine=1)
+    $fn011__a__side := 1
+    $fn011__a__index := %SEQ__showing_target[0]
+    call fn011_clear_target_activators
+    %SEQ__showing_target[1] := %SEQ__showing_target[0]
+  end if
   set_control_par(get_ui_id($panel_MAIN__2SEQ),$CONTROL_PAR_HIDE,$switch_MAIN__SEQ__combine*$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__SEQjoin),$CONTROL_PAR_HIDE,abs(1-$switch_MAIN__SEQ__combine)*$HIDE_WHOLE_CONTROL)
 end on

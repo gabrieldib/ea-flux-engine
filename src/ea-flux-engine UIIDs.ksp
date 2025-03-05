@@ -3,10 +3,12 @@ declare UIID_MAIN.seq.leds              [ 2, 4 ]
 declare UIID_MAIN.seq.block_steps       [ 2, 4 ]
 declare UIID_MAIN.SEQ.xypads            [ 2 ]
 declare UIID_MAIN.controls.draw         [ 2 ]
-declare UIID_MAIN.target_selectors      [ 5 ]
 declare UIID_MAIN.ADSR_controls         [ 2, 4 ]
 declare UIID_MAIN.SEQ.rate_sliders      [ 2 ]
 declare UIID_MAIN.display_title
 declare UIID_MAIN.display_value
 declare UIID_MAIN.seq.power             [ 2 ]
 declare UIID_MAIN.layer.power           [ 2 ]
+
+declare UIID_MAIN.target_activators [ 2, 5 ]
+declare UIID_MAIN.target_selectors      [ 5 ]

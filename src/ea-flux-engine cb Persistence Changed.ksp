@@ -4,17 +4,31 @@ on persistence_changed
     import "ea-flux-engine data loading.ksp"
     // import "ARP/__ARP 02 pc cb.ksp"
 
+    switch_MAIN.SEQ.combine := __SEQ_DUAL
+
+    fn011.a.side  := __LEFT
+    fn011.a.index := SEQ_TARGET_VELO
+    call fn011_clear_target_activators
+    fn011.a.side  := __RIGHT
+    fn011.a.index := SEQ_TARGET_VELO
+    call fn011_clear_target_activators
+
     { dual or joined sequencer }
     call draw_seq
 
-    { recall block steps }
-    call seq_recall_all_step_values
+    { recall block steps numbers and steps pictures }
+    fn013.a.side := __LEFT
+    call fn013_update_seq_step_pictures
+    fn013.a.side := __RIGHT
+    call fn013_update_seq_step_pictures
 
-
+    { recall picture states for steps labels }
     fn006.a.side := __LEFT
     call fn006_recall_seq_values
     fn006.a.side := __RIGHT
     call fn006_recall_seq_values
+
+
 
     message("ea-flux-engine loaded successfully")
     button_demo.mode := __OFF
@@ -43,7 +57,7 @@ on persistence_changed
     panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
 
     { I may use this in the combined SEQ }
-    // label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
-    // label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+    label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
+    label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
 
 end on

@@ -131,7 +131,7 @@
             SEQ.target_type [ SEQ_TARGET_PITCH  ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_OCTAVE ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_PAN    ] := SEQ_TYPE_BIPOLAR
-            SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_UNIPOLAR
+            SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_BIPOLAR
 
     {{ LFO }}
         declare !beat_rates_display [ 19 ]
@@ -347,6 +347,8 @@
     declare fn002.a.side
     declare fn002.a.step_index
     declare ~fn002.a.value
+    declare fn002.l.mode_side
+
 
     //fn003_set_block_step_count
     declare fn003.a.mode
@@ -363,6 +365,7 @@
 
     //fn006_recall_seq_values
     declare fn006.a.side
+    declare fn006.l.mode_side
 
     //fn007_update_block_and_steps_ts
     declare fn007.a.side
@@ -384,5 +387,21 @@
     declare  fn010.l.side
     declare ~fn010.a.value
 
+    //fn011_clear_target_activators
+    declare fn011.a.side
+    declare fn011.a.index
 
+    //fn012_seq_recall_step_values
+    declare fn012.a.side
 
+    //fn013_update_seq_step_pictures
+    declare fn013.a.side
+    declare fn013.a.block_index
+    declare fn013.l.mode_side
+    declare fn013.l.step
+
+    //fn014_seq_recall_target_steps_values_and_pictures
+    declare fn014.a.side
+    declare fn014.a.target_index
+    declare fn014.l.counter
+    declare fn014.l.counter2

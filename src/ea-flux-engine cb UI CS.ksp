@@ -1,24 +1,21 @@
 on ui_controls
     {{ MAIN SEQ Steps sliders }}
     if in_range( NI_UI_ID, UIID_MAIN.seq.block_steps [ 0, 0 ], UIID_MAIN.seq.block_steps [ 1, 3 ])
-        message("SEQ STEP SLIDERS _________________________________")
+        // message("SEQ STEP SLIDERS _________________________________")
         uics_alt_key := 0
         if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_ALT) = 1
             uics_alt_key := 1
         end if
-
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.block_steps [ 0, 0 ]
+        uics_seq_side   := int(float(uics_uiid_index)*0.25)
+        message("uics_seq_side: " & uics_seq_side)
 
-        if uics_uiid_index < 4
-            uics_seq_side := __LEFT
-        else
-            uics_seq_side := __RIGHT
-        end if
-
+        { this code could be optimized / simplifyed }
         if uics_alt_key = 0
+            fn003.a.side := uics_seq_side
+            fn003.a.mode := switch_MAIN.SEQ.combine
+
             if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                fn003.a.mode        := switch_MAIN.SEQ.combine
-                fn003.a.side        := uics_seq_side
                 if uics_uiid_index < 4
                     fn003.a.block_index := uics_uiid_index
                 else
@@ -32,14 +29,12 @@ on ui_controls
                     UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index ] -> value
 
             else
-                SEQ.DUAL.step_count [ uics_seq_side, fn003.a.block_index mod 4 ] := ...
-                    UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index mod 4 ] -> value
-
                 SEQ.JOIN.step_count [ uics_uiid_index ] := ...
                     UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
 
-                fn003.a.mode        := switch_MAIN.SEQ.combine
-                fn003.a.side        := uics_seq_side
+                SEQ.DUAL.step_count [ uics_seq_side, fn003.a.block_index mod 4 ] := ...
+                    UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index mod 4 ] -> value
+
                 fn003.a.block_index := uics_uiid_index
             end if
 
@@ -74,6 +69,7 @@ on ui_controls
                     { update the visible steps in each block }
                     call fn003_set_block_step_count
                 end for
+
             else
                 fn003.a.mode := switch_MAIN.SEQ.combine
 
@@ -98,9 +94,9 @@ on ui_controls
 
                         end if
                         { update the visible steps in each block }
-                        message("STEP SLIDERS: SEQ JOIN step count [ "& uics_uiid_index &" ]: " & SEQ.JOIN.step_count [ uics_counter * 4 + uics_counter2 ])
-                        message("    uics_uiid_index: " & uics_uiid_index)
-                        message("    fn003.a.block_index = " & fn003.a.block_index)
+                        // message("STEP SLIDERS: SEQ JOIN step count [ "& uics_uiid_index &" ]: " & SEQ.JOIN.step_count [ uics_counter * 4 + uics_counter2 ])
+                        // message("    uics_uiid_index: " & uics_uiid_index)
+                        // message("    fn003.a.block_index = " & fn003.a.block_index)
                         call fn003_set_block_step_count
 
                     end for
@@ -109,6 +105,7 @@ on ui_controls
 
         end if
     end if
+
 
     {{ SEQ XY PADS }}
     if NI_UI_ID = UIID_MAIN.SEQ.xypads [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.xypads [ 1 ]
@@ -137,11 +134,6 @@ on ui_controls
         call fn002_set_seq_step_value
     end if
 
-    {{ MAIN TARGET SELECTORS }}
-    if in_range(NI_UI_ID, UIID_MAIN.target_selectors [ 0 ], UIID_MAIN.target_selectors [ 4 ])
-        fn005.a.selector_index := NI_UI_ID - UIID_MAIN.target_selectors [ 0 ]
-        call fn005_set_seq_target_selector
-    end if
 
     {{ ADSR CONTROLS }}
     if in_range(NI_UI_ID, UIID_MAIN.ADSR_controls [ 0, 0 ], UIID_MAIN.ADSR_controls [ 1, 3 ])
@@ -161,6 +153,7 @@ on ui_controls
             -1                                                                        ...
         )
     end if
+
 
     {{ SEQ RATE }}
     if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ 1 ]
@@ -182,6 +175,7 @@ on ui_controls
         end if
     end if 
 
+
     {{ SEQ JOIN Rate }}
     if NI_UI_ID = get_ui_id(slider_MAIN.FLRNDjoin.amount)
         UIID_MAIN.display_title -> text := "Rate"
@@ -193,4 +187,61 @@ on ui_controls
         UIID_MAIN.SEQ.rate_sliders [ 0 ] -> value := slider_MAIN.FLRNDjoin.amount
     end if
     
+
+    {{ SEQ MAIN target activators }}
+    if in_range(NI_UI_ID, UIID_MAIN.target_activators[ 0, 0], UIID_MAIN.target_activators [ 1, 4])
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.target_activators [ 0, 0 ]
+        { this expression in the index returns 0 or 1 }
+        uics_seq_side   := int(float(uics_uiid_index)*0.2) { 1/ 5 options }
+
+        SEQ.showing_target [ uics_seq_side ] := uics_uiid_index mod 5 
+
+        fn011.a.side  := uics_seq_side
+        fn011.a.index := uics_uiid_index mod 5
+        call fn011_clear_target_activators
+
+        fn014.a.side         := uics_seq_side
+        fn014.a.target_index := uics_uiid_index mod 5
+        call fn014_seq_recall_target_steps_values_and_pictures
+
+        { light the middle selector in case both sides match }
+        if uics_uiid_index < 5
+            if UIID_MAIN.target_activators [ __RIGHT, uics_uiid_index ] -> value = __ON
+                fn005.a.selector_index := uics_uiid_index
+                call fn005_set_seq_target_selector
+            end if
+        else
+            if UIID_MAIN.target_activators [ __LEFT, uics_uiid_index mod 5 ] -> value = __ON
+                fn005.a.selector_index := uics_uiid_index mod 5
+                call fn005_set_seq_target_selector
+            end if
+        end if
+    end if
+
+
+    {{ SEQ MAIN TARGET SELECTORS }}
+    if in_range(NI_UI_ID, UIID_MAIN.target_selectors [ 0 ], UIID_MAIN.target_selectors [ 4 ])
+        fn005.a.selector_index := NI_UI_ID - UIID_MAIN.target_selectors [ 0 ]
+        call fn005_set_seq_target_selector
+
+        SEQ.showing_target [ __LEFT  ] := uics_uiid_index
+        SEQ.showing_target [ __RIGHT ] := uics_uiid_index
+
+        fn011.a.side  := __LEFT
+        fn011.a.index := fn005.a.selector_index
+        call fn011_clear_target_activators
+        fn011.a.side  := __RIGHT
+        fn011.a.index := fn005.a.selector_index
+        call fn011_clear_target_activators
+
+        fn014.a.side         := __LEFT
+        fn014.a.target_index := fn005.a.selector_index
+        call fn014_seq_recall_target_steps_values_and_pictures
+
+        fn014.a.side         := __RIGHT
+        fn014.a.target_index := fn005.a.selector_index
+        call fn014_seq_recall_target_steps_values_and_pictures
+
+    end if
+
 end on

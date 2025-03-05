@@ -92,15 +92,23 @@ end function
 
 {{ SEQ COMMON }}
 function fn006_recall_seq_values
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn006.l.mode_side := fn006.a.side
+    else
+        fn006.l.mode_side := __LEFT
+    end if
+    message("fn006 showing target: " & SEQ.showing_target [ fn006.l.mode_side ])
+    message("     fn006.a.side: " & fn006.a.side)
+
     for i.i := 0 to 31
         UIID_MAIN.seq.step [ fn006.a.side, i.i ] -> picture_state := ...
-            int(                                         ...
-                float(SEQ_XY_H-1) *                      ...
-                SEQ.data.f [                             ...
-                    fn006.a.side,                        ...
-                    SEQ.showing_target [ fn006.a.side ], ...
-                    i.i                                  ...
-                ]                                        ...
+            int(                                              ...
+                float(SEQ_XY_H-1) *                           ...
+                SEQ.data.f [                                  ...
+                    fn006.a.side,                             ...
+                    SEQ.showing_target [ fn006.l.mode_side ], ...
+                    i.i                                       ...
+                ]                                             ...
             )
     end for
 end function
@@ -127,27 +135,54 @@ function fn002_set_seq_step_value
     UIID_MAIN.seq.step [ fn002.a.side, fn002.a.step_index ] -> picture_state := ...
         int(float(SEQ_XY_H-1) * fn002.a.value)
 
-    SEQ.data.i [                             ...
-        fn002.a.side,                        ...
-        SEQ.showing_target [ fn002.a.side ], ...
-        fn002.a.step_index                   ...
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn002.l.mode_side := fn002.a.side
+    else
+        fn002.l.mode_side := __LEFT
+    end if
+
+    SEQ.data.i [                                  ...
+        fn002.a.side,                             ...
+        SEQ.showing_target [ fn002.l.mode_side ], ...
+        fn002.a.step_index                        ...
     ] := int( 1000000.0 * fn002.a.value )
 
-    SEQ.data.f [                             ...
-        fn002.a.side,                        ...
-        SEQ.showing_target [ fn002.a.side ], ...
-        fn002.a.step_index                   ...
+    SEQ.data.f [                                  ...
+        fn002.a.side,                             ...
+        SEQ.showing_target [ fn002.l.mode_side ], ...
+        fn002.a.step_index                        ...
     ] := fn002.a.value
+
+    message("FN02 setting the value for step index: " & fn002.a.step_index)
+end function
+
+function fn013_update_seq_step_pictures
+    message("FN13 updating step pictures UNI/BIP")
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn013.l.mode_side := fn013.a.side
+    else
+        fn013.l.mode_side := __LEFT
+    end if
+    for fn013.l.step := 0 to 7
+        UIID_MAIN.seq.step [ fn013.a.side, fn013.l.step + (fn013.a.block_index mod 4 ) * 8 ] -> picture := ...
+            SEQ_step_pictures [                                             ...
+                SEQ.DUAL.step_count [ fn013.a.side, fn013.a.block_index mod 4 ] + ...
+                SEQ.target_type [ SEQ.showing_target [ fn013.l.mode_side ] ] * 8 ...
+            ]
+    end for
 end function
 
 function fn003_set_block_step_count
-
     { PENDING OPTIMIZE CODE }
 
     { needed for the seq xy }
     message("FN003 block_index: " & fn003.a.block_index & " side: " & fn003.a.side)
+    fn013.a.side        := fn003.a.side
+    fn013.a.block_index := fn003.a.block_index
+    call fn013_update_seq_step_pictures
+
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
-        message("    DUAL step count: "  & SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index mod 4  ])
+        // message("    DUAL step count: "  & SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index mod 4  ])
         SEQ.DUAL.step_width [ fn003.a.side, fn003.a.block_index ] := ...
             SEQ_XY_DUAL_BLOCK_W / float(SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ] + 1)
         // message(" SEQ.DUAL.step_width = " & SEQ.DUAL.step_width [ fn003.a.side, fn003.a.block_index ])
@@ -156,13 +191,14 @@ function fn003_set_block_step_count
 
         { update the number of step sliders and their pictures }
 
+
         for i.i := 0 to 7
             if i.i <= SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ]
                 UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> UI_SHOW
                 
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> picture := ...
-                    SEQ_step_pictures [ SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ] + ...
-                        SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
+                // UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> picture := ...
+                //     SEQ_step_pictures [ SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ] + ...
+                //         SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
 
                 UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> pos_x := ...
                     SEQ_STEP_COORD [                                               ...
@@ -184,15 +220,15 @@ function fn003_set_block_step_count
         UIID_MAIN.seq.leds [ fn003.a.side, fn003.a.block_index mod 4 ] -> picture := ...
             SEQ_step_led_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] ]
 
-        message("    JOIN step count: " & SEQ.JOIN.step_count [ fn003.a.block_index ])
+        // message("    JOIN step count: " & SEQ.JOIN.step_count [ fn003.a.block_index ])
 
         for i.i := 0 to 7
             if i.i <= SEQ.JOIN.step_count [ fn003.a.block_index ]
                 UIID_MAIN.seq.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4 ) * 8 ] -> UI_SHOW
                 
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4 ) * 8 ] -> picture := ...
-                    SEQ_step_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] + ...
-                        SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
+                // UIID_MAIN.seq.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4 ) * 8 ] -> picture := ...
+                //     SEQ_step_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] + ...
+                //         SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
 
                 UIID_MAIN.seq.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4 ) * 8 ] -> pos_x := ...
                     SEQ_STEP_COORD [                                               ...
@@ -283,7 +319,7 @@ function fn010_set_seq_step_value
         int(float(SEQ_XY_H-1) * fn010.a.value)
 
     { depends on the target showing }
-
+    message("FN10 setting the value for step index: " & fn010.a.step_index)
     SEQ.data.i [                             ...
         fn010.l.side,                        ...
         SEQ.showing_target [ fn010.l.side ], ...
@@ -297,19 +333,18 @@ function fn010_set_seq_step_value
     ] := fn010.a.value
 end function
 
-function seq_recall_all_step_values
+function fn012_seq_recall_step_count
     for b.i := 0 to 3
-        for s.i := 0 to 1
-            fn003.a.mode        := switch_MAIN.SEQ.combine
-            fn003.a.side        := s.i // __LEFT then __RIGHT
-            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                fn003.a.block_index := b.i
-            else
-                fn003.a.block_index := b.i + 4 * s.i
-            end if
+        fn003.a.mode        := switch_MAIN.SEQ.combine
+        fn003.a.side        := fn012.a.side // __LEFT then __RIGHT
+        if switch_MAIN.SEQ.combine = __SEQ_DUAL
+            fn003.a.block_index := b.i
+        else
+            fn003.a.block_index := b.i + 4 * fn012.a.side
+        end if
 
-            call fn003_set_block_step_count
-        end for
+        call fn003_set_block_step_count
+
     end for
 end function
 
@@ -321,6 +356,45 @@ function fn005_set_seq_target_selector
     UIID_MAIN.target_selectors [ fn005.a.selector_index ] -> value := __ON
 end function
 
+function fn011_clear_target_activators
+    for i.i := 0 to 4
+        UIID_MAIN.target_activators [ fn011.a.side, i.i] -> value := __OFF
+    end for
+    UIID_MAIN.target_activators [ fn011.a.side, fn011.a.index ] -> value := __ON
+end function
+
+function fn014_seq_recall_target_steps_values_and_pictures
+    message("FN14 called")
+    message("    fn014.a.side: " & fn014.a.side)
+    message("    fn014.a.target_index: " & fn014.a.target_index)
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn006.a.side := fn014.a.side
+        call fn006_recall_seq_values
+        for fn014.l.counter := 0 to 3
+            fn013.a.side        := fn014.a.side
+            fn013.a.block_index := fn014.l.counter
+            call fn013_update_seq_step_pictures
+        end for
+    else
+        { mirror the right side }
+        fn011.a.side  := __RIGHT
+        fn011.a.index := fn014.a.target_index
+        call fn011_clear_target_activators
+
+        SEQ.showing_target [ __RIGHT ] := fn014.a.target_index 
+
+        for fn014.l.counter := 0 to 1
+            fn006.a.side := fn014.l.counter
+            call fn006_recall_seq_values
+
+            for fn014.l.counter2 := 0 to 3
+                fn013.a.side        := fn014.l.counter
+                fn013.a.block_index := fn014.l.counter2 + fn014.l.counter * 4
+                call fn013_update_seq_step_pictures
+            end for
+        end for
+    end if
+end function
 
 
 {{ play engine }}
@@ -355,8 +429,6 @@ function fn007_update_block_and_steps_ts
         end for
 
     end if 
-
-
 end function
 
 function PLAY_NOTE_NCB
