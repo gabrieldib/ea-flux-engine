@@ -405,3 +405,7 @@
     declare fn014.a.target_index
     declare fn014.l.counter
     declare fn014.l.counter2
+
+    //fn015_set_seq_play_direction_btns
+    declare fn015.a.side
+    declare fn015.a.btn_index

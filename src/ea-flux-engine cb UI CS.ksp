@@ -248,4 +248,19 @@ on ui_controls
 
     end if
 
+    {{ SEQ MAIN PLAY DIRECTION }}
+    if in_range(NI_UI_ID, UIID_MAIN.seq.direction_btns [ __LEFT, 0 ], UIID_MAIN.seq.direction_btns [ __RIGHT, 2 ])
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.direction_btns [ __LEFT, 0 ]
+
+        if uics_uiid_index < 3
+            fn015.a.side := __LEFT
+        else
+            fn015.a.side := __RIGHT
+        end if
+
+        fn015.a.btn_index := uics_uiid_index mod 3
+        call fn015_set_seq_play_direction_btns
+        message("15 side: " & fn015.a.side)
+
+    end if
 end on

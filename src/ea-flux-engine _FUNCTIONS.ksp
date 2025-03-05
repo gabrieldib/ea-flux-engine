@@ -163,6 +163,7 @@ function fn013_update_seq_step_pictures
     else
         fn013.l.mode_side := __LEFT
     end if
+    message("    updating side: " & fn013.l.mode_side )
     for fn013.l.step := 0 to 7
         UIID_MAIN.seq.step [ fn013.a.side, fn013.l.step + (fn013.a.block_index mod 4 ) * 8 ] -> picture := ...
             SEQ_step_pictures [                                             ...
@@ -398,6 +399,13 @@ function fn014_seq_recall_target_steps_values_and_pictures
             end for
         end for
     end if
+end function
+
+function fn015_set_seq_play_direction_btns
+    for i.i := 0 to 2
+        UIID_MAIN.seq.direction_btns [ fn015.a.side,  i.i] -> value := __OFF
+    end for
+    UIID_MAIN.seq.direction_btns [ fn015.a.side, fn015.a.btn_index] -> value := __ON
 end function
 
 

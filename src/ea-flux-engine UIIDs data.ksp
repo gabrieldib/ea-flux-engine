@@ -58,7 +58,13 @@ for i.i := 0 to 4
     UIID_MAIN.target_selectors [ i.i ] -> disable_text_shifting := __ON
 end for
 
+UIID_MAIN.seq.direction_btns [ __LEFT,  0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.mode.forwards)
+UIID_MAIN.seq.direction_btns [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.mode.forwards)
+for i.i := 1 to 2
+    UIID_MAIN.seq.direction_btns [ __LEFT,  i.i ] := UIID_MAIN.seq.direction_btns [ __LEFT,  0 ] + i.i
+    UIID_MAIN.seq.direction_btns [ __RIGHT, i.i ] := UIID_MAIN.seq.direction_btns [ __RIGHT, 0 ] + i.i
+end for
 
-{ this has to go to nka files: }
+{ PENDING this has to go to nka files: }
 import "ea-flux-engine DUAL-JOIN coordinates data.ksp"
 

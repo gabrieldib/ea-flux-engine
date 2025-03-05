@@ -10,10 +10,13 @@ on persistence_changed
     call draw_seq
 
     { recall block steps numbers and steps pictures }
-    fn013.a.side := __LEFT
-    call fn013_update_seq_step_pictures
-    fn013.a.side := __RIGHT
-    call fn013_update_seq_step_pictures
+    for i.i := 0 to 7
+        fn013.a.block_index := i.i
+        fn013.a.side := __LEFT
+        call fn013_update_seq_step_pictures
+        fn013.a.side := __RIGHT
+        call fn013_update_seq_step_pictures
+    end for
 
     { recall picture states for steps labels }
     fn006.a.side := __LEFT
@@ -39,8 +42,6 @@ on persistence_changed
     fn014.a.side         := __RIGHT
     fn014.a.target_index := SEQ_TARGET_VELO
     call fn014_seq_recall_target_steps_values_and_pictures
-
-
 
     message("ea-flux-engine loaded successfully")
     button_demo.mode := __OFF
@@ -71,5 +72,13 @@ on persistence_changed
     { I may use this in the combined SEQ }
     label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
     label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+
+
+    message(UIID_MAIN.seq.direction_btns[__LEFT,  0])
+    message(UIID_MAIN.seq.direction_btns[__LEFT,  1])
+    message(UIID_MAIN.seq.direction_btns[__LEFT,  2])
+    message(UIID_MAIN.seq.direction_btns[__RIGHT, 0])
+    message(UIID_MAIN.seq.direction_btns[__RIGHT, 1])
+    message(UIID_MAIN.seq.direction_btns[__RIGHT, 2])
 
 end on
