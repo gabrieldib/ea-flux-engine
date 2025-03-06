@@ -38,24 +38,31 @@ UIID_MAIN.seq.power   [ 1 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.power)
 UIID_MAIN.layer.power [ 0 ] := get_ui_id(switch_MAIN.SoundSource.LEFT.power)
 UIID_MAIN.layer.power [ 1 ] := get_ui_id(switch_MAIN.SoundSource.RIGHT.power)
 
-UIID_MAIN.target_activators [ __LEFT,  0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.select.velocity)
-UIID_MAIN.target_activators [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.select.velocity)
-UIID_MAIN.target_selectors           [ 0 ] := get_ui_id(switch_MAIN.SEQ.center.select.velocity)
+UIID_MAIN.seq.target_activators [ __LEFT,  0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.select.velocity)
+UIID_MAIN.seq.target_activators [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.select.velocity)
+UIID_MAIN.seq.target_selectors           [ 0 ] := get_ui_id(switch_MAIN.SEQ.center.select.velocity)
 
 for i.i := 0 to 4
-    UIID_MAIN.target_activators [ __LEFT,  i.i ] := UIID_MAIN.target_activators [ __LEFT,  0 ] + i.i
-    UIID_MAIN.target_activators [ __RIGHT, i.i ] := UIID_MAIN.target_activators [ __RIGHT, 0 ] + i.i
-    UIID_MAIN.target_selectors           [ i.i ] := UIID_MAIN.target_selectors           [ 0 ] + i.i
+    UIID_MAIN.seq.target_activators [ __LEFT,  i.i ] := UIID_MAIN.seq.target_activators [ __LEFT,  0 ] + i.i
+    UIID_MAIN.seq.target_activators [ __RIGHT, i.i ] := UIID_MAIN.seq.target_activators [ __RIGHT, 0 ] + i.i
+    UIID_MAIN.seq.target_selectors           [ i.i ] := UIID_MAIN.seq.target_selectors           [ 0 ] + i.i
 end for 
 
 for i.i := 0 to 4
-    UIID_MAIN.target_selectors [ i.i ] -> font_type             := MAIN.SEQ.TARGETS.FONT_OFF
-    UIID_MAIN.target_selectors [ i.i ] -> font_type_on          := MAIN.SEQ.TARGETS.FONT_ON
-    UIID_MAIN.target_selectors [ i.i ] -> font_type_off_pressed := MAIN.SEQ.TARGETS.FONT_OFF_H
-    UIID_MAIN.target_selectors [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.TARGETS.FONT_ON_H 
-    UIID_MAIN.target_selectors [ i.i ] -> font_type_off_hover   := MAIN.SEQ.TARGETS.FONT_OFF_H
-    UIID_MAIN.target_selectors [ i.i ] -> font_type_on_hover    := MAIN.SEQ.TARGETS.FONT_ON_H 
-    UIID_MAIN.target_selectors [ i.i ] -> disable_text_shifting := __ON
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type             := MAIN.SEQ.TARGETS.FONT_OFF
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on          := MAIN.SEQ.TARGETS.FONT_ON
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_pressed := MAIN.SEQ.TARGETS.FONT_OFF_H
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.TARGETS.FONT_ON_H 
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_hover   := MAIN.SEQ.TARGETS.FONT_OFF_H
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_hover    := MAIN.SEQ.TARGETS.FONT_ON_H 
+    UIID_MAIN.seq.target_selectors [ i.i ] -> disable_text_shifting := __ON
+end for
+
+UIID_MAIN.seq.target_power [ __LEFT,  0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.power.velocity)
+UIID_MAIN.seq.target_power [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.power.velocity)
+for i.i := 1 to 4
+    UIID_MAIN.seq.target_power [ __LEFT,  i.i ] := UIID_MAIN.seq.target_power [ __LEFT,  0 ] + i.i
+    UIID_MAIN.seq.target_power [ __RIGHT, i.i ] := UIID_MAIN.seq.target_power [ __RIGHT, 0 ] + i.i
 end for
 
 UIID_MAIN.seq.direction_btns [ __LEFT,  0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.mode.forwards)
@@ -63,6 +70,23 @@ UIID_MAIN.seq.direction_btns [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.m
 for i.i := 1 to 2
     UIID_MAIN.seq.direction_btns [ __LEFT,  i.i ] := UIID_MAIN.seq.direction_btns [ __LEFT,  0 ] + i.i
     UIID_MAIN.seq.direction_btns [ __RIGHT, i.i ] := UIID_MAIN.seq.direction_btns [ __RIGHT, 0 ] + i.i
+end for
+
+UIID_MAIN.seq.flux_rand_intensity [ __LEFT  ] := get_ui_id(slider_MAIN.FLRND.LEFT.amount)
+UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ] := get_ui_id(slider_MAIN.FLRND.RIGHT.amount)
+
+UIID_MAIN.seq.flux_rand_btns [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FLUXX.LEFT.block.1)
+UIID_MAIN.seq.flux_rand_btns [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.1)
+for i.i := 1 to 3
+    UIID_MAIN.seq.flux_rand_btns [ __LEFT,  i.i ] := UIID_MAIN.seq.flux_rand_btns [ __LEFT,  0 ] + i.i
+    UIID_MAIN.seq.flux_rand_btns [ __RIGHT, i.i ] := UIID_MAIN.seq.flux_rand_btns [ __RIGHT, 0 ] + i.i
+end for
+
+UIID_MAIN.seq.step_leds [ __LEFT,  0 ] := get_ui_id(label_MAIN.SEQ.LEFT.led1)
+UIID_MAIN.seq.step_leds [ __RIGHT, 0 ] := get_ui_id(label_MAIN.SEQ.RIGHT.led1)
+for i.i := 1 to 3
+    UIID_MAIN.seq.step_leds [ __LEFT,  i.i ] := UIID_MAIN.seq.step_leds [ __LEFT,  0 ] + i.i
+    UIID_MAIN.seq.step_leds [ __RIGHT, i.i ] := UIID_MAIN.seq.step_leds [ __RIGHT, 0 ] + i.i
 end for
 
 { PENDING this has to go to nka files: }

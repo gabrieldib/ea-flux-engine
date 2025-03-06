@@ -5,14 +5,17 @@ on note
     inc(note_held_count)
     message("note_held_count: " & note_held_count)
 
+    layers.note_velo [ __LEFT,  EVENT_NOTE ] := EVENT_VELOCITY
+    layers.note_velo [ __RIGHT, EVENT_NOTE ] := EVENT_VELOCITY
+
+    if note_held_count = 1
+        lcb_ms_counter := 0
+        SEQ.first_note_ts := ENGINE_UPTIME
+    end if
+
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
             { first note - with sequencer on or not it always play because
               seq counter is zeroed and it will play immeditely }
-        if note_held_count = 1
-            lcb_ms_counter := 0
-            SEQ.first_note_ts := ENGINE_UPTIME
-
-        end if
 
         if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
             ( ( switch_MAIN.SEQ.LEFT.power     = __ON  and note_held_count = 1) or ...

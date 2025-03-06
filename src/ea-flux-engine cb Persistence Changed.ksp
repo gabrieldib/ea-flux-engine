@@ -4,18 +4,20 @@ on persistence_changed
     import "ea-flux-engine data loading.ksp"
     // import "ARP/__ARP 02 pc cb.ksp"
 
-    switch_MAIN.SEQ.combine := __SEQ_DUAL
-
     { dual or joined sequencer }
     call draw_seq
 
+    SEQ.showing_target [ __LEFT  ] := SEQ_TARGET_VELO
+    SEQ.showing_target [ __RIGHT ] := SEQ_TARGET_VELO
+
     { recall block steps numbers and steps pictures }
-    for i.i := 0 to 7
-        fn013.a.block_index := i.i
-        fn013.a.side := __LEFT
-        call fn013_update_seq_step_pictures
-        fn013.a.side := __RIGHT
-        call fn013_update_seq_step_pictures
+    fn003.a.mode := switch_MAIN.SEQ.combine
+    for pccb_counter := 0 to 7
+        fn003.a.block_index := pccb_counter
+        fn003.a.side := __LEFT
+        call fn003_set_block_step_count
+        fn003.a.side := __RIGHT
+        call fn003_set_block_step_count
     end for
 
     { recall picture states for steps labels }
@@ -24,7 +26,7 @@ on persistence_changed
     fn006.a.side := __RIGHT
     call fn006_recall_seq_values
 
-
+    { target selectors and activators }
     fn005.a.selector_index := SEQ_TARGET_VELO
     call fn005_set_seq_target_selector
 
@@ -35,13 +37,9 @@ on persistence_changed
     fn011.a.index := SEQ_TARGET_VELO
     call fn011_clear_target_activators
 
-    fn014.a.side         := __LEFT
-    fn014.a.target_index := SEQ_TARGET_VELO
-    call fn014_seq_recall_target_steps_values_and_pictures
+    { change text alignment on target selectors }
+    call set_seq_target_selectors_text_alignment
 
-    fn014.a.side         := __RIGHT
-    fn014.a.target_index := SEQ_TARGET_VELO
-    call fn014_seq_recall_target_steps_values_and_pictures
 
     message("ea-flux-engine loaded successfully")
     button_demo.mode := __OFF
@@ -73,12 +71,5 @@ on persistence_changed
     label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
     label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
 
-
-    message(UIID_MAIN.seq.direction_btns[__LEFT,  0])
-    message(UIID_MAIN.seq.direction_btns[__LEFT,  1])
-    message(UIID_MAIN.seq.direction_btns[__LEFT,  2])
-    message(UIID_MAIN.seq.direction_btns[__RIGHT, 0])
-    message(UIID_MAIN.seq.direction_btns[__RIGHT, 1])
-    message(UIID_MAIN.seq.direction_btns[__RIGHT, 2])
 
 end on

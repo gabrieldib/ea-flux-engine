@@ -124,14 +124,26 @@ on ui_controls
             end if
         end if
 
-        fn002.a.step_index := fn001.r.step_index
-        fn002.a.side       := uics_uiid_index
-        fn002.a.value      := get_control_par_real_arr( ...
+        uics_r_value := get_control_par_real_arr( ...
             UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
             CONTROL_PAR_VALUE,                          ...
             1                                           ...
         ) 
+
+        fn002.a.step_index := fn001.r.step_index
+        fn002.a.side       := uics_uiid_index
+        fn002.a.value      := uics_r_value
         call fn002_set_seq_step_value
+
+        { update display data }
+        // depends on the side
+        fn016.a.target_index := uics_uiid_index
+        fn016.a.value        := uics_r_value
+        call fn016_set_data_display_from_seq_xy
+
+        UIID_MAIN.display_title -> text := @fn016.r.title
+        UIID_MAIN.display_value -> text := @fn016.r.text_data
+
     end if
 
 
@@ -163,7 +175,7 @@ on ui_controls
             uics_uiid_index := 1
         end if
 
-        message("uiid: " & uics_uiid_index)
+        message("rate side: " & uics_uiid_index)
         UIID_MAIN.display_title -> text := "Rate"
         UIID_MAIN.display_value -> text := ...
             beat_rates_display [ (UIID_MAIN.SEQ.rate_sliders [ uics_uiid_index ] -> value) / __BEAT_RATE_DIVISOR ]
@@ -189,8 +201,8 @@ on ui_controls
     
 
     {{ SEQ MAIN target activators }}
-    if in_range(NI_UI_ID, UIID_MAIN.target_activators[ 0, 0], UIID_MAIN.target_activators [ 1, 4])
-        uics_uiid_index := NI_UI_ID - UIID_MAIN.target_activators [ 0, 0 ]
+    if in_range(NI_UI_ID, UIID_MAIN.seq.target_activators[ 0, 0], UIID_MAIN.seq.target_activators [ 1, 4])
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.target_activators [ 0, 0 ]
         { this expression in the index returns 0 or 1 }
         uics_seq_side   := int(float(uics_uiid_index)*0.2) { 1/ 5 options }
 
@@ -209,12 +221,12 @@ on ui_controls
         call fn005_set_seq_target_selector
         { light the middle selector in case both sides match }
         if uics_uiid_index < 5
-            if UIID_MAIN.target_activators [ __RIGHT, uics_uiid_index ] -> value = __ON
+            if UIID_MAIN.seq.target_activators [ __RIGHT, uics_uiid_index ] -> value = __ON
                 fn005.a.selector_index := uics_uiid_index
                 call fn005_set_seq_target_selector
             end if
         else
-            if UIID_MAIN.target_activators [ __LEFT, uics_uiid_index mod 5 ] -> value = __ON
+            if UIID_MAIN.seq.target_activators [ __LEFT, uics_uiid_index mod 5 ] -> value = __ON
                 fn005.a.selector_index := uics_uiid_index mod 5
                 call fn005_set_seq_target_selector
             end if
@@ -223,8 +235,8 @@ on ui_controls
 
 
     {{ SEQ MAIN TARGET SELECTORS }}
-    if in_range(NI_UI_ID, UIID_MAIN.target_selectors [ 0 ], UIID_MAIN.target_selectors [ 4 ])
-        uics_uiid_index := NI_UI_ID - UIID_MAIN.target_selectors [ 0 ]
+    if in_range(NI_UI_ID, UIID_MAIN.seq.target_selectors [ 0 ], UIID_MAIN.seq.target_selectors [ 4 ])
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.target_selectors [ 0 ]
         fn005.a.selector_index := uics_uiid_index
         call fn005_set_seq_target_selector
 
@@ -245,8 +257,8 @@ on ui_controls
         fn014.a.side         := __RIGHT
         fn014.a.target_index := uics_uiid_index
         call fn014_seq_recall_target_steps_values_and_pictures
-
     end if
+
 
     {{ SEQ MAIN PLAY DIRECTION }}
     if in_range(NI_UI_ID, UIID_MAIN.seq.direction_btns [ __LEFT, 0 ], UIID_MAIN.seq.direction_btns [ __RIGHT, 2 ])
@@ -262,5 +274,14 @@ on ui_controls
         call fn015_set_seq_play_direction_btns
         message("15 side: " & fn015.a.side)
 
+    end if
+
+
+    {{ SEQ MAIN FLUX RAND INTENSITY }}
+    if NI_UI_ID = UIID_MAIN.seq.flux_rand_intensity [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ]
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.flux_rand_intensity [ __LEFT ]
+
+        UIID_MAIN.display_title -> text := "Flux Randomizer"
+        UIID_MAIN.display_value -> text := UIID_MAIN.seq.flux_rand_intensity [ uics_uiid_index ] -> value & "%"
     end if
 end on
