@@ -1,4 +1,4 @@
-{ Compiled on Wed Mar  5 16:47:12 2025 }
+{ Compiled on Fri Mar  7 06:56:35 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -25,10 +25,10 @@ on init
   124, 111, 111, 111, 184, 184, 184, 107, 123, 139, 155, -1, -1, 65, 158, 174, 190, 206, 304, 304, 191, -1, -1, 101, 101, 203, 203, 316, -1, -1, 101, 101, 203, 203, 316, 418, 418, 418, 418, 418, ...
   526, 526, 526, 526, 526, 432, 432, 432, 432, 432, 510, 510, 510, 510, 510, 448, 448, 448, 448, 448, 524, 424, 937, -1, 544, 864, 899, 40, 77, 395, 149, 184, 219, 710, 745, 780, 482, 909, 876, 843, ...
   810, 777, 744, 711, 678, 298, 265, 232, 199, 166, 133, 100, 712, 745, 778, 811, 844, 877, 910, 101, 134, 167, 200, 233, 266, 299, 679, 80, 137, 56, 96, 136, 176, 216, 199, 19, 957, 767, 752, 235, ...
-  220, 49, 783, 10, 949, 416, 101, 830, 342, 342, 342, 342, 281, 660, 342, 61, 565, 61, 565, 61, 791, 61, 672, 0, 0, 0, 155, 155, 155, 155, 155, 155, 156, 156, 156, 0, 66, 66, 66, 66, ...
+  220, 49, 783, 10, 949, 410, 101, 830, 342, 342, 342, 342, 281, 660, 342, 61, 565, 61, 565, 61, 791, 61, 672, 0, 0, 0, 155, 155, 155, 155, 155, 155, 156, 156, 156, 0, 66, 66, 66, 66, ...
   66, 66, 67, 67, 67, 41, 31, 150, 0, 0, 0, 1, 93, 185, 277, 2, 13, 24, 35, 46, 57, 68, 79, 94, 105, 116, 127, 138, 149, 160, 171, 186, 197, 208, 219, 230, 241, 252, 263, 278, ...
   289, 300, 311, 322, 333, 344, 355, 0, 1, 93, 185, 277, 2, 13, 24, 35, 46, 57, 68, 79, 94, 105, 116, 127, 138, 149, 160, 171, 186, 197, 208, 219, 230, 241, 252, 263, 278, 289, 300, 311, ...
-  322, 333, 344, 355, 573, 70, 428, 428, 669, 165, 1, 939, 65, 76, 757, 92, 0, 270, 43, 206, 138, 207, 69, 14, 952, 78, 111, 144, 177, 808, 841, 874, 907, 87, 87, 87, 160, 160, 160, 71, ...
+  322, 333, 344, 355, 573, 70, 428, 428, 546, 42, 1, 939, 65, 76, 757, 92, 0, 270, 43, 206, 138, 207, 69, 14, 952, 78, 111, 144, 177, 808, 841, 874, 907, 87, 87, 87, 160, 160, 160, 71, ...
   71, 71, 147, 147, 147, 184, 184, 0, 0, 6, 64, 122, 180, 238, 296, 6, 64, 122, 180, 238, 296, 1, 93, 185, 277, 1, 93, 185, 277, 663, 267, 5, 943, 132, 511, 70, 212, 342, 0, 0, ...
   69, 46, 550, 581, 624, 307, 349, 827, 112, 989)
   declare %UI_y[411] := (0, 0, 292, 567, 567, 567, 567, 42, 172, 172, 177, 177, 176, 176, 31, 31, 41, 0, 0, 496, 569, 573, 569, 573, 492, 492, 492, 492, 492, 492, 492, 492, 288, 284, 455, 288, 284, 455, 514, 536, 492, ...
@@ -39,7 +39,7 @@ on init
   19, 19, 19, 410, 410, -2, 287, 287, 279, 279, 279, 279, 279, 279, 279, 66, 66, 207, 207, 277, 277, 563, 563, 0, 0, 0, 12, 52, 92, 12, 52, 92, 13, 53, 93, 0, 12, 52, 92, 12, ...
   52, 92, 13, 53, 93, 24, 1, 1, 32, 33, 17, 118, 118, 118, 118, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, ...
   19, 19, 19, 19, 19, 19, 19, 16, 118, 118, 118, 118, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, ...
-  18, 18, 18, 18, 4, 4, 176, 194, 87, 87, 171, 171, 25, 188, 197, 4, 18, 18, 123, 123, 123, 58, 58, 355, 355, 313, 313, 313, 313, 313, 313, 313, 313, 17, 57, 97, 17, 57, 97, 17, ...
+  18, 18, 18, 18, 4, 4, 176, 194, 25, 25, 171, 171, 25, 188, 197, 4, 18, 18, 123, 123, 123, 58, 58, 355, 355, 313, 313, 313, 313, 313, 313, 313, 313, 17, 57, 97, 17, 57, 97, 17, ...
   57, 97, 17, 57, 97, 6, 33, 6, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 24, 24, 211, 211, 87, 87, 279, 19, 18, ...
   51, 29, 29, 4, 4, 4, 4, -1, -1, 739)
   declare %UI_width[411] := (1000, 1000, 20, 259, 259, 259, 259, 959, 328, 327, 330, 330, 326, 326, 366, 366, 911, 1000, 1000, 310, 21, 11, 21, 11, 28, 28, 28, 28, 28, 28, 28, 28, 11, 29, 22, 11, 29, 22, 23, 22, 28, ...
@@ -50,7 +50,7 @@ on init
   15, 166, 166, 42, 42, 184, 70, 70, 316, 316, 316, 316, 59, 60, 316, 374, 374, 374, 374, 148, 148, 267, 267, 259, 259, 259, 36, 36, 36, 36, 36, 36, 34, 34, 34, 259, 36, 36, 36, 36, ...
   36, 36, 34, 34, 34, 878, 146, 146, 330, 330, 366, 88, 88, 88, 88, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, ...
   9, 9, 9, 9, 9, 9, 9, 366, 88, 88, 88, 88, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, ...
-  9, 9, 9, 9, 320, 320, 104, 104, 127, 127, 20, 20, 748, 46, 46, 682, 40, 40, 80, 42, 34, 38, 29, 34, 34, 15, 15, 15, 15, 15, 15, 15, 15, 26, 26, 26, 28, 28, 28, 28, ...
+  9, 9, 9, 9, 320, 320, 104, 104, 372, 372, 20, 20, 748, 46, 46, 682, 40, 40, 80, 42, 34, 38, 29, 34, 34, 15, 15, 15, 15, 15, 15, 15, 15, 26, 26, 26, 28, 28, 28, 28, ...
   28, 28, 26, 26, 26, 144, 144, 144, 144, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 87, 87, 87, 87, 87, 87, 87, 87, 33, 33, 12, 12, 235, 235, 28, 28, 316, 366, 366, ...
   740, 364, 364, 32, 32, 32, 32, 23, 23, 11)
   declare %UI_height[411] := (750, 750, 169, 140, 140, 140, 140, 231, 51, 51, 45, 46, 42, 42, 126, 126, 232, 750, 750, 189, 21, 11, 21, 11, 20, 20, 20, 20, 20, 20, 20, 20, 11, 18, 15, 11, 18, 15, 20, 14, 20, ...
@@ -61,7 +61,7 @@ on init
   14, 16, 16, 14, 14, 45, 14, 14, 184, 184, 184, 184, 184, 184, 184, 137, 137, 66, 66, 204, 204, 148, 148, 140, 140, 140, 36, 36, 36, 36, 36, 36, 34, 34, 34, 140, 36, 36, 36, 36, ...
   36, 36, 34, 34, 34, 207, 47, 47, 13, 13, 99, 6, 6, 6, 6, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, ...
   95, 95, 95, 95, 95, 95, 95, 99, 6, 6, 6, 6, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, ...
-  95, 95, 95, 95, 13, 13, 12, 23, 15, 15, 15, 15, 207, 25, 25, 14, 171, 171, 15, 15, 14, 14, 14, 35, 35, 116, 116, 116, 116, 116, 116, 116, 116, 26, 26, 26, 26, 26, 26, 26, ...
+  95, 95, 95, 95, 13, 13, 12, 23, 135, 135, 15, 15, 207, 25, 25, 14, 171, 171, 15, 15, 14, 14, 14, 35, 35, 116, 116, 116, 116, 116, 116, 116, 116, 26, 26, 26, 26, 26, 26, 26, ...
   26, 26, 26, 26, 26, 15, 15, 15, 15, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 133, 133, 12, 12, 26, 26, 184, 95, 95, ...
   95, 127, 127, 14, 14, 14, 14, 23, 23, 11)
   declare %UI_skin[411] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 4, 1, 3, 4, 5, 4, 2, ...
@@ -83,7 +83,7 @@ on init
   -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
-  -1, -1, -1, -1, -1, -1, 1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, 1, 2, 3, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
   declare %UI_label_text[411] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
@@ -94,7 +94,7 @@ on init
   -1, -1, -1, -1, -1, -1, 5, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
-  -1, -1, -1, -1, -1, -1, 7, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9, 10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, 7, 8, 9, 9, -1, -1, -1, -1, -1, -1, -1, -1, 10, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
   declare %UI_default_value[411] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
@@ -116,7 +116,7 @@ on init
   -1, -1, -1, -1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
-  -1, -1, -1, -1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
   declare %UI_text_y_pos[411] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
@@ -127,7 +127,7 @@ on init
   -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
-  -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
+  -1, -1, -1, -1, -1, -1, 0, 0, 60, 60, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
   declare %UI_mouse_behaviour[411] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
@@ -251,8 +251,8 @@ on init
   !skin_picture[73] := "slider_MAIN.joinSeq.randomizer_235"
   !skin_picture[74] := "xypad_MAIN.matrix.center"
   !skin_picture[75] := "button_draw"
-  declare !_labels_text[11*10]
-  declare const $labels_text__SIZE_D1 := 11
+  declare !_labels_text[12*10]
+  declare const $labels_text__SIZE_D1 := 12
   declare const $labels_text__SIZE_D2 := 10
   !_labels_text[10*0+0] := "VELOCITY"
   !_labels_text[10*1+0] := "PITCH"
@@ -263,13 +263,15 @@ on init
   !_labels_text[10*6+0] := "STEP"
   !_labels_text[10*7+0] := "delay lo pass"
   !_labels_text[10*8+0] := "786 Hz"
-  !_labels_text[10*9+0] := "1/4 T"
-  !_labels_text[10*10+0] := "100%"
-  declare %MULTI_LINE_DATA[11] := (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-  declare %font_file_ids[3]
+  !_labels_text[10*9+0] := "TARGET OFF"
+  !_labels_text[10*10+0] := "1/4 T"
+  !_labels_text[10*11+0] := "100%"
+  declare %MULTI_LINE_DATA[12] := (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+  declare %font_file_ids[4]
   %font_file_ids[0] := get_font_id("font_Roboto Regular Size 12 #FFF4ED")
   %font_file_ids[1] := get_font_id("font_Roboto Regular Size 10 #FFE3D3")
   %font_file_ids[2] := get_font_id("font_Roboto Regular Size 20 #FFFFFF")
+  %font_file_ids[3] := get_font_id("font_Roboto Regular Size 13 #FFFFFF")
   declare ui_panel $panel_UI
   declare ui_panel $panel_MAIN
   declare ui_panel $panel_MAIN__matrix__controls
@@ -1622,6 +1624,12 @@ on init
   declare const $SEQ_JOIN_RIGHT_GAP_STEP6 := 446-$SEQ_JOIN_LEFT_START_PX
   declare const $SEQ_JOIN_RIGHT_GAP_STEP7 := 447-$SEQ_JOIN_LEFT_START_PX
   declare const $SEQ_JOIN_RIGHT_GAP_STEP8 := 445-$SEQ_JOIN_LEFT_START_PX
+  declare !SEQ__target_names[5]
+  !SEQ__target_names[0] := "Velocity"
+  !SEQ__target_names[1] := "Pitch"
+  !SEQ__target_names[2] := "Octave"
+  !SEQ__target_names[3] := "Pan"
+  !SEQ__target_names[4] := "Filter"
   declare const $__START := 0
   declare const $__END := 1
   declare ?_SEQ_DUAL_XY_BLOCK_START_END[4*2]
@@ -1782,6 +1790,11 @@ on init
   declare const $SEQ__data__f__SIZE_D3 := 32
   declare %SEQ__DUAL__current_block[2] := (-1)
   declare $SEQ__JOIN__current_block := -1
+  declare %_SEQ__flux_rand_intensity[2*5]
+  make_persistent(%_SEQ__flux_rand_intensity)
+  read_persistent_var(%_SEQ__flux_rand_intensity)
+  declare const $SEQ__flux_rand_intensity__SIZE_D1 := 2
+  declare const $SEQ__flux_rand_intensity__SIZE_D2 := 5
   declare %SEQ__rate[2]
   make_persistent(%SEQ__rate)
   read_persistent_var(%SEQ__rate)
@@ -1841,7 +1854,9 @@ on init
   declare $LFO_seq_step_count
   declare $uics_uiid_index
   declare $uics_seq_side
+  declare $uics_value
   declare $uics_alt_key
+  declare $uics_shift_key
   declare $uics_counter
   declare $uics_counter2
   declare $uics_block_index
@@ -1849,9 +1864,13 @@ on init
   declare $uics_i_value
   declare @uics_title
   declare @uics_text_data
+  declare $uics_loop_range_min
+  declare $uics_loop_range_max
   declare $pccb_counter
   declare $seq_xy_left_click_step_index
   declare $seq_xy_block_index
+  declare $seq_xy_shift_pressed
+  declare ~seq_xy_alt_y_coord
   declare $uicb_combine_mode
   declare $uicb_combine_side
   declare $uicb_combine_block
@@ -1922,8 +1941,22 @@ on init
   declare $fn017__r__pan
   declare $fn017__r__lp_filter_value
   declare $fn017__r__hp_filter_value
+  declare $fn017__r__filter_value
   declare $fn017__r__filter_type
   declare $fn017__r__filter_status
+  declare $fn018__a__side
+  declare $fn018__a__step_index
+  declare ~fn018__a__value
+  declare $fn019__a__side
+  declare $fn019__a__step_index
+  declare $fn019__l__mode_side
+  declare ~fn019__a__value
+  declare $fn020__a__side
+  declare $fn020__a__target_index
+  declare $fn020__a__target_uiid
+  declare $fn021__a__side
+  declare $fn021__l__counter
+  declare $fn021__r__active_index
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__LEFT),$CONTROL_PAR_MOUSE_MODE,2)
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__RIGHT),$CONTROL_PAR_MOUSE_MODE,2)
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__join),$CONTROL_PAR_MOUSE_MODE,2)
@@ -1938,6 +1971,7 @@ on init
   $MAIN__SEQ__TARGETS__FONT_OFF_H := get_font_id("font_Roboto Regular Size 10 #8B7E76")
   declare $MAIN__SEQ__TARGETS__FONT_ON_H
   $MAIN__SEQ__TARGETS__FONT_ON_H := get_font_id("font_Roboto Regular Size 10 #FFF1E9")
+  declare %UIID_MAIN__seq__off_label[2]
   declare %_UIID_MAIN__seq__step[2*32]
   declare const $UIID_MAIN__seq__step__SIZE_D1 := 2
   declare const $UIID_MAIN__seq__step__SIZE_D2 := 32
@@ -1967,6 +2001,7 @@ on init
   declare %_UIID_MAIN__seq__direction_btns[2*3]
   declare const $UIID_MAIN__seq__direction_btns__SIZE_D1 := 2
   declare const $UIID_MAIN__seq__direction_btns__SIZE_D2 := 3
+  declare %UIID_MAIN__seq__flux_rand_power[2]
   declare %UIID_MAIN__seq__flux_rand_intensity[2]
   declare %_UIID_MAIN__seq__flux_rand_btns[2*4]
   declare const $UIID_MAIN__seq__flux_rand_btns__SIZE_D1 := 2
@@ -2004,6 +2039,32 @@ function get_seq_dual_step_index
   call fn001_get_seq_step_index
 end function
 
+function fn018_set_seq_step_picture_state
+  message("    ps = " & real_to_int(int_to_real($SEQ_XY_H-1)*~fn018__a__value) & " | value " & ~fn018__a__value)
+  set_control_par(%_UIID_MAIN__seq__step[32*$fn018__a__side+$fn018__a__step_index],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn018__a__value))
+end function
+
+function fn019_set_seq_step_value
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn019__l__mode_side := $fn019__a__side
+  else
+    $fn019__l__mode_side := 0
+  end if
+  %_SEQ__data__i[32*5*$fn019__a__side+(32*%SEQ__showing_target[$fn019__l__mode_side])+$fn019__a__step_index] := real_to_int(1000000.0*~fn019__a__value)
+  ?_SEQ__data__f[32*5*$fn019__a__side+(32*%SEQ__showing_target[$fn019__l__mode_side])+$fn019__a__step_index] := ~fn019__a__value
+end function
+
+function fn002_set_seq_step_value_and_ps
+  $fn018__a__side := $fn002__a__side
+  $fn018__a__step_index := $fn002__a__step_index
+  ~fn018__a__value := ~fn002__a__value
+  call fn018_set_seq_step_picture_state
+  $fn019__a__side := $fn002__a__side
+  $fn019__a__step_index := $fn002__a__step_index
+  ~fn019__a__value := ~fn002__a__value
+  call fn019_set_seq_step_value
+end function
+
 function fn016_set_data_display_from_seq_xy
   select (%SEQ__showing_target[$fn016__a__target_index])
     case 0
@@ -2015,14 +2076,14 @@ function fn016_set_data_display_from_seq_xy
       end if
     case 1
       @fn016__r__title := "pitch"
-      if (get_control_par(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_KEY_ALT)=1)
+      if (get_control_par(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_KEY_SHIFT)=1)
         @fn016__r__text_data := round((~fn016__a__value*24.0-12.0)*100.0)/100.0
       else
         @fn016__r__text_data := real_to_int(~fn016__a__value*24.0-12.0)
       end if
     case 2
       @fn016__r__title := "octave"
-      if (get_control_par(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_KEY_ALT)=1)
+      if (get_control_par(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_KEY_SHIFT)=1)
         @fn016__r__text_data := round((~fn016__a__value*4.0-2.0)*100.0)/100.0
       else
         @fn016__r__text_data := real_to_int(~fn016__a__value*4.0-2.0)
@@ -2040,14 +2101,14 @@ function fn016_set_data_display_from_seq_xy
       end if
     case 4
       if (~fn016__a__value<0.49)
-        set_engine_par($ENGINE_PAR_CUTOFF,real_to_int(1000000.0-(~fn016__a__value*2000000.0)),-1,0,$NI_BUS_OFFSET+15)
+        set_engine_par($ENGINE_PAR_CUTOFF,real_to_int(~fn016__a__value*2000000.0),-1,0,$NI_BUS_OFFSET+15)
         @fn016__r__title := "Low Pass"
-        @fn016__r__text_data := get_engine_par_disp($ENGINE_PAR_CUTOFF,-1,0,$NI_BUS_OFFSET+15)
+        @fn016__r__text_data := get_engine_par_disp($ENGINE_PAR_CUTOFF,-1,0,$NI_BUS_OFFSET+15) & "hz"
       else
         if (~fn016__a__value>0.51)
           set_engine_par($ENGINE_PAR_CUTOFF,real_to_int((~fn016__a__value-0.5)*2000000.0),-1,1,$NI_BUS_OFFSET+15)
           @fn016__r__title := "High Pass"
-          @fn016__r__text_data := get_engine_par_disp($ENGINE_PAR_CUTOFF,-1,1,$NI_BUS_OFFSET+15)
+          @fn016__r__text_data := get_engine_par_disp($ENGINE_PAR_CUTOFF,-1,1,$NI_BUS_OFFSET+15) & "hz"
         else
           @fn016__r__title := "Filter Off"
           @fn016__r__text_data := "Off"
@@ -2136,6 +2197,29 @@ function fn014_seq_recall_target_steps_values_and_pictures
       end while
       inc($fn014__l__counter)
     end while
+  end if
+end function
+
+function fn21_get_seq_target_active_activator
+  $fn021__l__counter := 0
+  while ($fn021__l__counter<=4)
+    if (get_control_par(%_UIID_MAIN__seq__target_activators[5*$fn021__a__side+$fn021__l__counter],$CONTROL_PAR_VALUE)=1)
+      $fn021__r__active_index := $fn021__l__counter
+      $sksp_dummy := $sksp_dummy
+      exit
+    end if
+    inc($fn021__l__counter)
+  end while
+end function
+
+function fn020_update_seq_target_off_label
+  if (get_control_par($fn020__a__target_uiid,$CONTROL_PAR_VALUE)=0)
+    message("    fn020 value is OFF")
+    set_control_par(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+    set_control_par_str(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_TEXT,"Target " & !SEQ__target_names[$fn020__a__target_index] & " is off")
+  else
+    message("    fn020 value is ON")
+    set_control_par(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   end if
 end function
 
@@ -2316,8 +2400,9 @@ function fn017_get_seq_target_data
   if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn017__a__side+4],$CONTROL_PAR_VALUE)=1)
     $fn017__r__filter_status := 1
     $fn017__l__filter_data := %_SEQ__data__i[32*5*$fn017__a__side+(32*4)+$fn017__a__step_counter+($fn017__a__block_step_index*8)]
+    $fn017__r__filter_value := $fn017__l__filter_data
     if ($fn017__l__filter_data<490000)
-      $fn017__r__lp_filter_value := 1000000-($fn017__l__filter_data*2)
+      $fn017__r__lp_filter_value := $fn017__l__filter_data*2
       $fn017__r__hp_filter_value := 0
     else
       if ($fn017__l__filter_data>510000)
@@ -2330,18 +2415,8 @@ function fn017_get_seq_target_data
     end if
   else
     $fn017__r__filter_status := 0
+    $fn017__r__filter_value := 500000
   end if
-end function
-
-function fn002_set_seq_step_value
-  set_control_par(%_UIID_MAIN__seq__step[32*$fn002__a__side+$fn002__a__step_index],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn002__a__value))
-  if ($switch_MAIN__SEQ__combine=0)
-    $fn002__l__mode_side := $fn002__a__side
-  else
-    $fn002__l__mode_side := 0
-  end if
-  %_SEQ__data__i[32*5*$fn002__a__side+(32*%SEQ__showing_target[$fn002__l__mode_side])+$fn002__a__step_index] := real_to_int(1000000.0*~fn002__a__value)
-  ?_SEQ__data__f[32*5*$fn002__a__side+(32*%SEQ__showing_target[$fn002__l__mode_side])+$fn002__a__step_index] := ~fn002__a__value
 end function
 
 function PLAY_LCB
@@ -2368,14 +2443,15 @@ function PLAY_LCB
           $fn017__a__block_step_index := %SEQ__DUAL__current_block[$fn017__a__side]
           call fn017_get_seq_target_data
           $SEQ__step_velocity := $fn017__r__velocity
-          $SEQ__step_pitch := $fn017__r__pitch
+          $SEQ__step_pitch := $fn017__r__pitch*100000
           $SEQ__step_octave := $fn017__r__octave
           $SEQ__step_pan := $fn017__r__pan
+          $SEQ__step_filter := $fn017__r__filter_value
           $SEQ__step_lp_filter := $fn017__r__lp_filter_value
           $SEQ__step_hp_filter := $fn017__r__hp_filter_value
-          if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1)
+          if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__seq__flux_rand_power[$p_lcb__a__side],$CONTROL_PAR_VALUE)=1))
             if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+0],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_velo_seed := real_to_int(127.0*(int_to_real(get_control_par(%UIID_MAIN__seq__flux_rand_intensity[$p_lcb__a__side],$CONTROL_PAR_VALUE))/100.0))
+              $SEQ__flux_velo_seed := real_to_int(127.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+0])/100.0))
               $SEQ__flux_velo := random(-1*$SEQ__flux_velo_seed,$SEQ__flux_velo_seed)
               $SEQ__step_velocity := $SEQ__step_velocity+$SEQ__flux_velo
               if ($SEQ__step_velocity>127)
@@ -2386,18 +2462,18 @@ function PLAY_LCB
               end if
             end if
             if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+1],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_pitch_seed := real_to_int(12.0*(int_to_real(get_control_par(%UIID_MAIN__seq__flux_rand_intensity[$p_lcb__a__side],$CONTROL_PAR_VALUE))/100.0))
-              $SEQ__flux_pitch := random(-1*$SEQ__flux_pitch_seed,$SEQ__flux_pitch_seed)
+              $SEQ__flux_pitch_seed := real_to_int(12.0*int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+1]))
+              $SEQ__flux_pitch := random(-1000*$SEQ__flux_pitch_seed,$SEQ__flux_pitch_seed*1000)
               $SEQ__step_pitch := $SEQ__step_pitch+$SEQ__flux_pitch
-              if ($SEQ__step_pitch>12)
-                $SEQ__step_pitch := 12
+              if ($SEQ__step_pitch>1200000)
+                $SEQ__step_pitch := 1200000
               end if
-              if ($SEQ__step_pitch<-12)
-                $SEQ__step_pitch := -12
+              if ($SEQ__step_pitch<-1200000)
+                $SEQ__step_pitch := -1200000
               end if
             end if
             if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+2],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_octave_seed := real_to_int(2.0*(int_to_real(get_control_par(%UIID_MAIN__seq__flux_rand_intensity[$p_lcb__a__side],$CONTROL_PAR_VALUE))/100.0))
+              $SEQ__flux_octave_seed := real_to_int(2.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+2])/100.0))
               $SEQ__flux_octave := random(-1*$SEQ__flux_octave_seed,$SEQ__flux_octave_seed)
               $SEQ__step_octave := $SEQ__step_octave+$SEQ__flux_octave
               if ($SEQ__step_octave>2)
@@ -2408,7 +2484,7 @@ function PLAY_LCB
               end if
             end if
             if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+3],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_pan_seed := real_to_int(1000.0*(int_to_real(get_control_par(%UIID_MAIN__seq__flux_rand_intensity[$p_lcb__a__side],$CONTROL_PAR_VALUE))/100.0))
+              $SEQ__flux_pan_seed := real_to_int(1000.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+3])/100.0))
               $SEQ__flux_pan := random(-1*$SEQ__flux_pan_seed,$SEQ__flux_pan_seed)
               $SEQ__step_pan := $SEQ__step_pan+$SEQ__flux_pan
               if ($SEQ__step_pan>1000)
@@ -2419,42 +2495,52 @@ function PLAY_LCB
               end if
             end if
             if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+4],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_filter_seed := real_to_int(1000000.0*(int_to_real(get_control_par(%UIID_MAIN__seq__flux_rand_intensity[$p_lcb__a__side],$CONTROL_PAR_VALUE))/100.0))
+              message("REPORT ________________")
+              message("SEQ.step_filter: " & $SEQ__step_filter)
+              $SEQ__flux_filter_seed := real_to_int(1000000.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+4])/150.0))
               $SEQ__flux_filter := random(-1*$SEQ__flux_filter_seed,$SEQ__flux_filter_seed)
               $SEQ__step_filter := $SEQ__step_filter+$SEQ__flux_filter
-              if ($SEQ__step_filter>1000000)
-                $SEQ__step_filter := 1000000
+              message("SEQ.flux_filter: " & $SEQ__flux_filter)
+              if ($SEQ__step_filter>850000)
+                $SEQ__step_filter := 850000
               end if
-              if ($SEQ__step_filter<0)
-                $SEQ__step_filter := 0
+              if ($SEQ__step_filter<150000)
+                $SEQ__step_filter := 150000
               end if
+              message("SEQ.step_filter: " & $SEQ__step_filter)
               if ($SEQ__step_filter>500000)
                 $SEQ__step_lp_filter := 1000000
                 $SEQ__step_hp_filter := ($SEQ__step_filter-500000)*2
               else
-                $SEQ__step_lp_filter := 1000000-($SEQ__step_filter*2)
+                $SEQ__step_lp_filter := $SEQ__step_filter*2
                 $SEQ__step_hp_filter := 0
               end if
+              message("SEQ.step_lp_filter: " & $SEQ__step_lp_filter)
+              message("SEQ.step_hp_filter: " & $SEQ__step_hp_filter)
             end if
-            $fn002__a__side := $p_lcb__a__side
-            $fn002__a__step_index := $fn017__a__step_counter+(%SEQ__DUAL__current_block[$p_lcb__a__side]*8)
-            select (%SEQ__showing_target[$p_lcb__a__side])
-              case 0
-                ~fn002__a__value := int_to_real($SEQ__step_velocity)/127.0
-              case 1
-                ~fn002__a__value := int_to_real($SEQ__step_velocity+12)/24.0
-              case 2
-                ~fn002__a__value := int_to_real($SEQ__step_velocity+2)/4.0
-              case 3
-                ~fn002__a__value := int_to_real($SEQ__step_velocity+1000)/2000.0
-            end select
-            call fn002_set_seq_step_value
+            if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+%SEQ__showing_target[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1)
+              select (%SEQ__showing_target[$p_lcb__a__side])
+                case 0
+                  ~fn018__a__value := int_to_real($SEQ__step_velocity)/127.0
+                case 1
+                  ~fn018__a__value := int_to_real($SEQ__step_pitch+1200000)/2400000.0
+                case 2
+                  ~fn018__a__value := int_to_real($SEQ__step_octave+2)/4.0
+                case 3
+                  ~fn018__a__value := int_to_real($SEQ__step_pan+1000)/2000.0
+                case 4
+                  ~fn018__a__value := int_to_real($SEQ__step_filter)/850000.0
+              end select
+              $fn018__a__side := $p_lcb__a__side
+              $fn018__a__step_index := $fn017__a__step_counter+(%SEQ__DUAL__current_block[$p_lcb__a__side]*8)
+              call fn018_set_seq_step_picture_state
+            end if
           end if
           if ($SEQ__step_velocity>1)
             %_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count] := play_note($SEQ__key_count,$SEQ__step_velocity,-1,%SEQ__DUAL__step_duration[$p_lcb__a__side]*500)
             set_event_par_arr(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
             set_event_par_arr(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$EVENT_PAR_ALLOW_GROUP,1,$p_lcb__a__side)
-            change_tune(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$SEQ__step_pitch*100000+($SEQ__step_octave*1200000),0)
+            change_tune(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$SEQ__step_pitch+($SEQ__step_octave*1200000),0)
             change_pan(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$SEQ__step_pan,0)
             if ($fn017__r__filter_status=1)
               set_engine_par($ENGINE_PAR_CUTOFF,$SEQ__step_lp_filter,-1,5,$NI_BUS_OFFSET+$p_lcb__a__side)
@@ -2629,6 +2715,10 @@ on persistence_changed
     %_UIID_MAIN__seq__step_leds[4*1+$i__i] := %_UIID_MAIN__seq__step_leds[4*1+0]+$i__i
     inc($i__i)
   end while
+  %UIID_MAIN__seq__flux_rand_power[0] := get_ui_id($switch_MAIN__FLUXX__LEFT__randomPower)
+  %UIID_MAIN__seq__flux_rand_power[1] := get_ui_id($switch_MAIN__FLUXX__RIGHT__randomPower)
+  %UIID_MAIN__seq__off_label[0] := get_ui_id($label_MAIN__2SEQ__LEFT__off)
+  %UIID_MAIN__seq__off_label[1] := get_ui_id($label_MAIN__2SEQ__RIGHT__off)
   $SEQ__COMMON_ELEMENTS_COUNT := 113
   %_SEQ__common_elements_data[7*0+$ELEMENT_UIID] := get_ui_id($button_MAIN__LEFT__controls__draw)
   %_SEQ__common_elements_data[7*0+$PANEL_DUAL_SEQ_PARENT_UIID] := get_ui_id($panel_MAIN__2SEQ)
@@ -3655,6 +3745,18 @@ on persistence_changed
   set_control_par(get_ui_id($panel_MAIN__FX__RIGHT__reverb__menu),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($label_MAIN__2SEQ__LEFT__sliders__background),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($label_MAIN__2SEQ__RIGHT__sliders__background),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  $pccb_counter := 0
+  while ($pccb_counter<=1)
+    $fn021__a__side := $pccb_counter
+    call fn21_get_seq_target_active_activator
+    if ($fn021__r__active_index=0)
+      $fn020__a__target_uiid := %_UIID_MAIN__seq__target_power[5*$pccb_counter+0]
+      $fn020__a__side := $pccb_counter
+      $fn020__a__target_index := 0
+      call fn020_update_seq_target_off_label
+    end if
+    inc($pccb_counter)
+  end while
 end on
 
 on async_complete
@@ -3736,22 +3838,38 @@ on ui_controls
     $uics_uiid_index := $NI_UI_ID-%UIID_MAIN__SEQ__xypads[0]
     if ($NI_MOUSE_EVENT_TYPE=$NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN)
       call get_seq_dual_step_index
+      if (get_control_par(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_KEY_SHIFT)=1)
+        set_control_par(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_MOUSE_BEHAVIOUR_Y,100)
+      end if
+      $uics_alt_key := 0
+      if (get_control_par(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_KEY_ALT)=1)
+        $uics_alt_key := 1
+        ~seq_xy_alt_y_coord := get_control_par_real_arr(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_VALUE,1)
+      else
+      end if
     end if
     if ($NI_MOUSE_EVENT_TYPE=$NI_MOUSE_EVENT_TYPE_DRAG)
       if (get_control_par(%UIID_MAIN__controls__draw[$uics_uiid_index],$CONTROL_PAR_VALUE)=1)
         call get_seq_dual_step_index
       end if
     end if
-    ~uics_r_value := get_control_par_real_arr(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_VALUE,1)
+    if ($uics_alt_key=1)
+      ~uics_r_value := ~seq_xy_alt_y_coord
+    else
+      ~uics_r_value := get_control_par_real_arr(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_VALUE,1)
+    end if
     $fn002__a__step_index := $fn001__r__step_index
     $fn002__a__side := $uics_uiid_index
     ~fn002__a__value := ~uics_r_value
-    call fn002_set_seq_step_value
+    call fn002_set_seq_step_value_and_ps
     $fn016__a__target_index := $uics_uiid_index
     ~fn016__a__value := ~uics_r_value
     call fn016_set_data_display_from_seq_xy
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,@fn016__r__title)
     set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,@fn016__r__text_data)
+    if ($NI_MOUSE_EVENT_TYPE=$NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_UP)
+      set_control_par(%UIID_MAIN__SEQ__xypads[$uics_uiid_index],$CONTROL_PAR_MOUSE_BEHAVIOUR_Y,1000)
+    end if
   end if
   if (in_range($NI_UI_ID,%_UIID_MAIN__ADSR_controls[4*0+0],%_UIID_MAIN__ADSR_controls[4*1+3]))
     $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__ADSR_controls[4*0+0]
@@ -3805,6 +3923,15 @@ on ui_controls
         call fn005_set_seq_target_selector
       end if
     end if
+    $fn021__a__side := $uics_seq_side
+    call fn21_get_seq_target_active_activator
+    if ($fn021__r__active_index=($uics_uiid_index mod 5))
+      $fn020__a__target_uiid := %_UIID_MAIN__seq__target_power[5*$pccb_counter+($uics_uiid_index mod 5)]
+      $fn020__a__side := $uics_seq_side
+      $fn020__a__target_index := $uics_uiid_index mod 5
+      call fn020_update_seq_target_off_label
+    end if
+    set_control_par(%UIID_MAIN__seq__flux_rand_intensity[$uics_seq_side],$CONTROL_PAR_VALUE,%_SEQ__flux_rand_intensity[5*$uics_seq_side+%SEQ__showing_target[$uics_seq_side]])
   end if
   if (in_range($NI_UI_ID,%UIID_MAIN__seq__target_selectors[0],%UIID_MAIN__seq__target_selectors[4]))
     $uics_uiid_index := $NI_UI_ID-%UIID_MAIN__seq__target_selectors[0]
@@ -3825,6 +3952,60 @@ on ui_controls
     $fn014__a__side := 1
     $fn014__a__target_index := $uics_uiid_index
     call fn014_seq_recall_target_steps_values_and_pictures
+    $uics_counter := 0
+    while ($uics_counter<=1)
+      $fn021__a__side := $uics_counter
+      call fn21_get_seq_target_active_activator
+      if ($fn021__r__active_index=$uics_uiid_index)
+        $fn020__a__target_uiid := %_UIID_MAIN__seq__target_power[5*$uics_counter+$uics_uiid_index]
+        $fn020__a__side := $uics_counter
+        $fn020__a__target_index := $uics_uiid_index
+        call fn020_update_seq_target_off_label
+      end if
+      inc($uics_counter)
+    end while
+    set_control_par(%UIID_MAIN__seq__flux_rand_intensity[0],$CONTROL_PAR_VALUE,%_SEQ__flux_rand_intensity[5*0+%SEQ__showing_target[0]])
+    set_control_par(%UIID_MAIN__seq__flux_rand_intensity[1],$CONTROL_PAR_VALUE,%_SEQ__flux_rand_intensity[5*1+%SEQ__showing_target[1]])
+  end if
+  if (in_range($NI_UI_ID,%_UIID_MAIN__seq__target_power[5*0+0],%_UIID_MAIN__seq__target_power[5*0+4]) or in_range($NI_UI_ID,%_UIID_MAIN__seq__target_power[5*1+0],%_UIID_MAIN__seq__target_power[5*1+4]))
+    if (in_range($NI_UI_ID,%_UIID_MAIN__seq__target_power[5*0+0],%_UIID_MAIN__seq__target_power[5*0+4]))
+      $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__target_power[5*0+0]
+      $uics_seq_side := 0
+      $uics_value := get_control_par(%_UIID_MAIN__seq__target_power[5*0+$uics_uiid_index],$CONTROL_PAR_VALUE)
+    end if
+    if (in_range($NI_UI_ID,%_UIID_MAIN__seq__target_power[5*1+0],%_UIID_MAIN__seq__target_power[5*1+4]))
+      $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__target_power[5*1+0]
+      $uics_seq_side := 1
+      $uics_value := get_control_par(%_UIID_MAIN__seq__target_power[5*1+$uics_uiid_index],$CONTROL_PAR_VALUE)
+    end if
+    $fn021__a__side := $uics_seq_side
+    call fn21_get_seq_target_active_activator
+    if ($fn021__r__active_index=$uics_uiid_index)
+      $fn020__a__target_uiid := $NI_UI_ID
+      $fn020__a__side := $uics_seq_side
+      $fn020__a__target_index := $uics_uiid_index
+      call fn020_update_seq_target_off_label
+    end if
+    if (get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)=0 and (get_control_par(%UIID_MAIN__seq__flux_rand_power[$uics_seq_side],$CONTROL_PAR_VALUE)=1))
+      $uics_loop_range_min := $uics_uiid_index
+      $uics_loop_range_max := $uics_uiid_index
+      $uics_loop_range_min := 0
+      $uics_loop_range_max := 3
+      if ($uics_value=0)
+        $uics_counter2 := $uics_loop_range_min
+        while ($uics_counter2<=$uics_loop_range_max)
+          $uics_counter := 0
+          while ($uics_counter<=7)
+            $fn018__a__side := $uics_seq_side
+            $fn018__a__step_index := $uics_counter+(8*$uics_counter2)
+            ~fn018__a__value := ?_SEQ__data__f[32*5*$uics_seq_side+(32*%SEQ__showing_target[$uics_seq_side])+$uics_counter+(8*$uics_counter2)]
+            call fn018_set_seq_step_picture_state
+            inc($uics_counter)
+          end while
+          inc($uics_counter2)
+        end while
+      end if
+    end if
   end if
   if (in_range($NI_UI_ID,%_UIID_MAIN__seq__direction_btns[3*0+0],%_UIID_MAIN__seq__direction_btns[3*1+2]))
     $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__direction_btns[3*0+0]
@@ -3838,9 +4019,73 @@ on ui_controls
     message("15 side: " & $fn015__a__side)
   end if
   if ($NI_UI_ID=%UIID_MAIN__seq__flux_rand_intensity[0] or ($NI_UI_ID=%UIID_MAIN__seq__flux_rand_intensity[1]))
-    $uics_uiid_index := $NI_UI_ID-%UIID_MAIN__seq__flux_rand_intensity[0]
+    $uics_seq_side := 0
+    if ($NI_UI_ID=%UIID_MAIN__seq__flux_rand_intensity[1])
+      $uics_seq_side := 1
+    end if
+    %_SEQ__flux_rand_intensity[5*$uics_seq_side+%SEQ__showing_target[$uics_seq_side]] := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Flux Randomizer")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_control_par(%UIID_MAIN__seq__flux_rand_intensity[$uics_uiid_index],$CONTROL_PAR_VALUE) & "%")
+    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_control_par(%UIID_MAIN__seq__flux_rand_intensity[$uics_seq_side],$CONTROL_PAR_VALUE) & "%")
+  end if
+  if (in_range($NI_UI_ID,%_UIID_MAIN__seq__flux_rand_btns[4*0+0],%_UIID_MAIN__seq__flux_rand_btns[4*0+3]) or in_range($NI_UI_ID,%_UIID_MAIN__seq__flux_rand_btns[4*1+0],%_UIID_MAIN__seq__flux_rand_btns[4*1+3]))
+    if (in_range($NI_UI_ID,%_UIID_MAIN__seq__flux_rand_btns[4*0+0],%_UIID_MAIN__seq__flux_rand_btns[4*0+3]))
+      $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__flux_rand_btns[4*0+0]
+      $uics_seq_side := 0
+      $uics_value := get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*0+$uics_uiid_index],$CONTROL_PAR_VALUE)
+    end if
+    if (in_range($NI_UI_ID,%_UIID_MAIN__seq__flux_rand_btns[4*1+0],%_UIID_MAIN__seq__flux_rand_btns[4*1+3]))
+      $uics_uiid_index := $NI_UI_ID-%_UIID_MAIN__seq__flux_rand_btns[4*1+0]
+      $uics_seq_side := 1
+      $uics_value := get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*1+$uics_uiid_index],$CONTROL_PAR_VALUE)
+    end if
+    $uics_loop_range_min := $uics_uiid_index
+    $uics_loop_range_max := $uics_uiid_index
+    if (get_control_par($NI_UI_ID,$CONTROL_PAR_KEY_ALT)=1)
+      $uics_counter := 0
+      while ($uics_counter<=3)
+        set_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$uics_seq_side+$uics_counter],$CONTROL_PAR_VALUE,$uics_value)
+        inc($uics_counter)
+      end while
+      $uics_loop_range_min := 0
+      $uics_loop_range_max := 3
+    end if
+    if ($uics_value=0)
+      $uics_counter2 := $uics_loop_range_min
+      while ($uics_counter2<=$uics_loop_range_max)
+        $uics_counter := 0
+        while ($uics_counter<=7)
+          $fn018__a__side := $uics_seq_side
+          $fn018__a__step_index := $uics_counter+(8*$uics_counter2)
+          ~fn018__a__value := ?_SEQ__data__f[32*5*$uics_seq_side+(32*%SEQ__showing_target[$uics_seq_side])+$uics_counter+(8*$uics_counter2)]
+          call fn018_set_seq_step_picture_state
+          inc($uics_counter)
+        end while
+        inc($uics_counter2)
+      end while
+    end if
+  end if
+  if ($NI_UI_ID=%UIID_MAIN__seq__flux_rand_power[0] or ($NI_UI_ID=%UIID_MAIN__seq__flux_rand_power[1]))
+    $uics_seq_side := 0
+    if ($NI_UI_ID=%UIID_MAIN__seq__flux_rand_power[1])
+      $uics_seq_side := 1
+    end if
+    $uics_value := get_control_par(%UIID_MAIN__seq__flux_rand_power[$uics_seq_side],$CONTROL_PAR_VALUE)
+    $uics_loop_range_min := 0
+    $uics_loop_range_max := 3
+    if ($uics_value=0)
+      $uics_counter2 := $uics_loop_range_min
+      while ($uics_counter2<=$uics_loop_range_max)
+        $uics_counter := 0
+        while ($uics_counter<=7)
+          $fn018__a__side := $uics_seq_side
+          $fn018__a__step_index := $uics_counter+(8*$uics_counter2)
+          ~fn018__a__value := ?_SEQ__data__f[32*5*$uics_seq_side+(32*%SEQ__showing_target[$uics_seq_side])+$uics_counter+(8*$uics_counter2)]
+          call fn018_set_seq_step_picture_state
+          inc($uics_counter)
+        end while
+        inc($uics_counter2)
+      end while
+    end if
   end if
 end on
 

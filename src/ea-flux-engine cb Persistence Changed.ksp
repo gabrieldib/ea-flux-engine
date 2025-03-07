@@ -37,39 +37,56 @@ on persistence_changed
     fn011.a.index := SEQ_TARGET_VELO
     call fn011_clear_target_activators
 
+    
+
     { change text alignment on target selectors }
     call set_seq_target_selectors_text_alignment
 
 
     message("ea-flux-engine loaded successfully")
     button_demo.mode := __OFF
+
     // development ------------------------------------------------------------------------------- 
-    label_MAIN.SEQ.LEFT.linked        -> UI_HIDE
-    label_MAIN.SEQ.RIGHT.linked       -> UI_HIDE
-    label_MAIN.ARP.LEFT.linked        -> UI_HIDE
-    label_MAIN.ARP.RIGHT.linked       -> UI_HIDE
-    label_MAIN.ADSR.LEFT.linked       -> UI_HIDE
-    label_MAIN.ADSR.RIGHT.linked      -> UI_HIDE
-    label_MAIN.FX.LEFT.linked         -> UI_HIDE
-    label_MAIN.FX.RIGHT.linked        -> UI_HIDE
-    waveform_MAIN.2SEQ.LEFT.display   -> UI_HIDE
-    waveform_MAIN.2SEQ.RIGHT.display  -> UI_HIDE
-    // panel_MAIN.2SEQ.LEFT.fluxxArp     -> UI_HIDE
-    // panel_MAIN.2SEQ.RIGHT.fluxxArp    -> UI_HIDE
-    panel_MAIN.2SEQ.RIGHT.arpModes    -> UI_HIDE
-    panel_MAIN.2SEQ.LEFT.arpModes     -> UI_HIDE
-    panel_MAIN.2SEQ.LEFT.single.shot  -> UI_HIDE
-    panel_MAIN.2SEQ.RIGHT.single.shot -> UI_HIDE
+        { work on these as the development goes until there's nothing here }
+        label_MAIN.SEQ.LEFT.linked        -> UI_HIDE
+        label_MAIN.SEQ.RIGHT.linked       -> UI_HIDE
+        label_MAIN.ARP.LEFT.linked        -> UI_HIDE
+        label_MAIN.ARP.RIGHT.linked       -> UI_HIDE
+        label_MAIN.ADSR.LEFT.linked       -> UI_HIDE
+        label_MAIN.ADSR.RIGHT.linked      -> UI_HIDE
+        label_MAIN.FX.LEFT.linked         -> UI_HIDE
+        label_MAIN.FX.RIGHT.linked        -> UI_HIDE
+        waveform_MAIN.2SEQ.LEFT.display   -> UI_HIDE
+        waveform_MAIN.2SEQ.RIGHT.display  -> UI_HIDE
+        // panel_MAIN.2SEQ.LEFT.fluxxArp     -> UI_HIDE
+        // panel_MAIN.2SEQ.RIGHT.fluxxArp    -> UI_HIDE
+        panel_MAIN.2SEQ.RIGHT.arpModes    -> UI_HIDE
+        panel_MAIN.2SEQ.LEFT.arpModes     -> UI_HIDE
+        panel_MAIN.2SEQ.LEFT.single.shot  -> UI_HIDE
+        panel_MAIN.2SEQ.RIGHT.single.shot -> UI_HIDE
 
-    label_MAIN.2SEQ.RIGHT.off -> UI_HIDE
-    label_MAIN.2SEQ.LEFT.off  -> UI_HIDE
+        label_MAIN.2SEQ.RIGHT.off -> UI_HIDE
+        label_MAIN.2SEQ.LEFT.off  -> UI_HIDE
 
-    panel_MAIN.FX.LEFT.reverb.menu   -> UI_HIDE
-    panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
+        panel_MAIN.FX.LEFT.reverb.menu   -> UI_HIDE
+        panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
 
-    { I may use this in the combined SEQ }
-    label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
-    label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+        { I may use this in the combined SEQ }
+        label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
+        label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+    // END development --------------------------------------------------------------------------- 
 
+
+    for pccb_counter := __LEFT to __RIGHT
+        fn021.a.side := pccb_counter
+        call fn21_get_seq_target_active_activator
+        { we only update the label if the power button pressed has the same index as the active target activator }
+        if fn021.r.active_index = SEQ_TARGET_VELO
+            fn020.a.target_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, SEQ_TARGET_VELO ]
+            fn020.a.side         := pccb_counter
+            fn020.a.target_index := SEQ_TARGET_VELO
+            call fn020_update_seq_target_off_label
+        end if
+    end for
 
 end on

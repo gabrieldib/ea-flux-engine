@@ -89,6 +89,12 @@ for i.i := 1 to 3
     UIID_MAIN.seq.step_leds [ __RIGHT, i.i ] := UIID_MAIN.seq.step_leds [ __RIGHT, 0 ] + i.i
 end for
 
+UIID_MAIN.seq.flux_rand_power [ __LEFT  ] := get_ui_id(switch_MAIN.FLUXX.LEFT.randomPower)
+UIID_MAIN.seq.flux_rand_power [ __RIGHT ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.randomPower)
+
+UIID_MAIN.seq.off_label       [ __LEFT  ] := get_ui_id(label_MAIN.2SEQ.LEFT.off)
+UIID_MAIN.seq.off_label       [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.off)
+
 { PENDING this has to go to nka files: }
 import "ea-flux-engine DUAL-JOIN coordinates data.ksp"
 

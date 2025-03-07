@@ -127,6 +127,13 @@
         declare const SEQ_JOIN_RIGHT_GAP_STEP7     := 447 - SEQ_JOIN_LEFT_START_PX
         declare const SEQ_JOIN_RIGHT_GAP_STEP8     := 445 - SEQ_JOIN_LEFT_START_PX
 
+        declare !SEQ.target_names [ 5 ]
+            !SEQ.target_names [ 0 ] := 'Velocity'
+            !SEQ.target_names [ 1 ] := 'Pitch'
+            !SEQ.target_names [ 2 ] := 'Octave'
+            !SEQ.target_names [ 3 ] := 'Pan'
+            !SEQ.target_names [ 4 ] := 'Filter'
+
         { 90 is the width of each block }
         declare const __START := 0
         declare const __END   := 1
@@ -285,6 +292,9 @@
         declare SEQ.DUAL.current_block [ 2 ] := (-1)
         declare SEQ.JOIN.current_block       :=  -1
 
+        { so we can have independent intensities per target }
+        declare read SEQ.flux_rand_intensity [ 2, 5 ]
+
         declare read SEQ.rate [ 2 ] // one for each side
 
         declare SEQ.first_note_ts
@@ -338,7 +348,9 @@
 { CB SPECIFIC ___________________________________________________________________________________ }
     declare uics_uiid_index
     declare uics_seq_side
+    declare uics_value
     declare uics_alt_key
+    declare uics_shift_key
     declare uics_counter
     declare uics_counter2
     declare uics_block_index
@@ -346,12 +358,16 @@
     declare uics_i_value
     declare @uics_title
     declare @uics_text_data
+    declare uics_loop_range_min
+    declare uics_loop_range_max
 
     declare pccb_counter
 
     {{ xypad_MAIN.SEQ.LEFT }}
         declare seq_xy_left_click_step_index
         declare seq_xy_block_index
+        declare seq_xy_shift_pressed
+        declare ~seq_xy_alt_y_coord
 
     {{ switch_MAIN.SEQ.combine }}
         declare uicb_combine_mode
@@ -467,5 +483,37 @@
     declare fn017.r.pan
     declare fn017.r.lp_filter_value
     declare fn017.r.hp_filter_value
+    declare fn017.r.filter_value
     declare fn017.r.filter_type
     declare fn017.r.filter_status
+
+    //fn018_set_seq_step_picture_state
+    declare fn018.a.side
+    declare fn018.a.step_index
+    declare ~fn018.a.value
+
+    //fn002_set_seq_step_value_and_ps
+    declare fn019.a.side
+    declare fn019.a.step_index
+    declare fn019.l.mode_side
+    declare ~fn019.a.value
+
+    //fn020_update_seq_target_off_label
+    declare fn020.a.side
+    declare fn020.a.target_index
+    declare fn020.a.target_uiid
+
+    //fn21_get_seq_target_active_activator
+    declare fn021.a.side
+    declare fn021.l.counter
+    declare fn021.r.active_index
+
+
+
+
+
+
+
+
+
+

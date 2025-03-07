@@ -114,6 +114,21 @@ on ui_controls
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN
             { capture the step index on click }
             call get_seq_dual_step_index
+
+            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_uiid_index ], CONTROL_PAR_KEY_SHIFT) = __ON
+                UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> mouse_behaviour_y := 100
+            end if
+            uics_alt_key := __OFF
+            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_uiid_index ], CONTROL_PAR_KEY_ALT) = __ON
+                uics_alt_key := __ON
+                seq_xy_alt_y_coord := ...
+                    get_control_par_real_arr( ...
+                        UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
+                        CONTROL_PAR_VALUE,                          ...
+                        1                                           ...
+                    ) 
+            else
+            end if
         end if
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
@@ -124,16 +139,20 @@ on ui_controls
             end if
         end if
 
-        uics_r_value := get_control_par_real_arr( ...
-            UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
-            CONTROL_PAR_VALUE,                          ...
-            1                                           ...
-        ) 
+        if uics_alt_key = __ON
+            uics_r_value := seq_xy_alt_y_coord
+        else
+            uics_r_value := get_control_par_real_arr( ...
+                UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
+                CONTROL_PAR_VALUE,                          ...
+                1                                           ...
+            ) 
+        end if
 
         fn002.a.step_index := fn001.r.step_index
         fn002.a.side       := uics_uiid_index
         fn002.a.value      := uics_r_value
-        call fn002_set_seq_step_value
+        call fn002_set_seq_step_value_and_ps
 
         { update display data }
         // depends on the side
@@ -144,6 +163,9 @@ on ui_controls
         UIID_MAIN.display_title -> text := @fn016.r.title
         UIID_MAIN.display_value -> text := @fn016.r.text_data
 
+        if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_UP
+            UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> mouse_behaviour_y := 1000
+        end if
     end if
 
 
@@ -231,6 +253,20 @@ on ui_controls
                 call fn005_set_seq_target_selector
             end if
         end if
+
+        { update target off label state }
+        fn021.a.side := uics_seq_side
+        call fn21_get_seq_target_active_activator
+        { we only update the label if the power button pressed has the same index as the active target activator }
+        if fn021.r.active_index = uics_uiid_index mod 5
+            fn020.a.target_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, uics_uiid_index mod 5 ]
+            fn020.a.side         := uics_seq_side
+            fn020.a.target_index := uics_uiid_index mod 5
+            call fn020_update_seq_target_off_label
+        end if
+
+        { restore the value for the UI control slider }
+        UIID_MAIN.seq.flux_rand_intensity [ uics_seq_side ] -> value := SEQ.flux_rand_intensity [ uics_seq_side, SEQ.showing_target [ uics_seq_side ] ]
     end if
 
 
@@ -257,6 +293,84 @@ on ui_controls
         fn014.a.side         := __RIGHT
         fn014.a.target_index := uics_uiid_index
         call fn014_seq_recall_target_steps_values_and_pictures
+
+        for uics_counter := __LEFT to __RIGHT
+            { update target off label state }
+            fn021.a.side := uics_counter
+            call fn21_get_seq_target_active_activator
+            { we only update the label if the power button pressed has the same index as the active target activator }
+            if fn021.r.active_index = uics_uiid_index
+                fn020.a.target_uiid  := UIID_MAIN.seq.target_power [ uics_counter, uics_uiid_index ]
+                fn020.a.side         := uics_counter
+                fn020.a.target_index := uics_uiid_index
+                call fn020_update_seq_target_off_label
+            end if
+        end for
+
+        { restore the value for the UI control slider }
+        UIID_MAIN.seq.flux_rand_intensity [ __LEFT  ] -> value := SEQ.flux_rand_intensity [ __LEFT , SEQ.showing_target [ __LEFT  ] ]
+        UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ] -> value := SEQ.flux_rand_intensity [ __RIGHT, SEQ.showing_target [ __RIGHT ] ]
+    end if
+
+
+    {{ SEQ MAIN TARGET POWER }}
+    if  in_range(NI_UI_ID, UIID_MAIN.seq.target_power [ __LEFT,  0 ], UIID_MAIN.seq.target_power [ __LEFT,  4  ] ) or ...
+        in_range(NI_UI_ID, UIID_MAIN.seq.target_power [ __RIGHT, 0 ], UIID_MAIN.seq.target_power [ __RIGHT, 4 ] )
+
+        if  in_range(NI_UI_ID, UIID_MAIN.seq.target_power [ __LEFT,  0 ], UIID_MAIN.seq.target_power [ __LEFT,  4  ] )
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.target_power [ __LEFT, 0 ]
+            uics_seq_side := __LEFT
+            uics_value := UIID_MAIN.seq.target_power [ __LEFT, uics_uiid_index ] -> value
+        end if
+        if  in_range(NI_UI_ID, UIID_MAIN.seq.target_power [ __RIGHT, 0 ], UIID_MAIN.seq.target_power [ __RIGHT, 4 ] )
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.target_power [ __RIGHT, 0 ]
+            uics_seq_side := __RIGHT
+            uics_value := UIID_MAIN.seq.target_power [ __RIGHT, uics_uiid_index ] -> value
+        end if
+
+
+        fn021.a.side := uics_seq_side
+        call fn21_get_seq_target_active_activator
+        { we only update the label if the power button pressed has the same index as the active target activator }
+        if fn021.r.active_index = uics_uiid_index
+            fn020.a.target_uiid  := NI_UI_ID
+            fn020.a.side         := uics_seq_side
+            fn020.a.target_index := uics_uiid_index
+            call fn020_update_seq_target_off_label
+        end if
+
+        { The code below should only run when:
+            - target power is turned OFF and if the randomizer is ON
+        }
+        if  NI_UI_ID -> value = __OFF and ...
+            UIID_MAIN.seq.flux_rand_power [ uics_seq_side  ] -> value = __ON 
+
+            { OPTIMIZATION: EXHIBIT A - code that could/should be combined into a function }
+
+            { process only the related clicked block in case ALT is not pressed }
+            uics_loop_range_min := uics_uiid_index
+            uics_loop_range_max := uics_uiid_index
+
+            uics_loop_range_min := 0
+            uics_loop_range_max := 3
+
+            if uics_value = __OFF
+                { counter 2 is block index }
+                for uics_counter2 := uics_loop_range_min to uics_loop_range_max { optimization to not write this loop twice }
+                    { counter 1 is step index }
+                    for uics_counter := 0 to 7
+                        fn018.a.side       := uics_seq_side
+                        fn018.a.step_index := uics_counter + 8 * uics_counter2
+                        fn018.a.value      := SEQ.data.f [        ...
+                            uics_seq_side,                        ...
+                            SEQ.showing_target [ uics_seq_side ], ...
+                            uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
+                        ]
+                        call fn018_set_seq_step_picture_state
+                    end for
+                end for
+            end if
+        end if
     end if
 
 
@@ -273,15 +387,99 @@ on ui_controls
         fn015.a.btn_index := uics_uiid_index mod 3
         call fn015_set_seq_play_direction_btns
         message("15 side: " & fn015.a.side)
-
     end if
 
 
     {{ SEQ MAIN FLUX RAND INTENSITY }}
     if NI_UI_ID = UIID_MAIN.seq.flux_rand_intensity [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ]
-        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.flux_rand_intensity [ __LEFT ]
-
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+        
+        SEQ.flux_rand_intensity [ uics_seq_side, SEQ.showing_target [ uics_seq_side ] ] := NI_UI_ID -> value
         UIID_MAIN.display_title -> text := "Flux Randomizer"
-        UIID_MAIN.display_value -> text := UIID_MAIN.seq.flux_rand_intensity [ uics_uiid_index ] -> value & "%"
+        UIID_MAIN.display_value -> text := UIID_MAIN.seq.flux_rand_intensity [ uics_seq_side ] -> value & "%"
     end if
+
+
+    {{ SEQ MAIN FLUX RAND BUTTONS }}
+    if  in_range(NI_UI_ID, UIID_MAIN.seq.flux_rand_btns [ __LEFT,  0 ], UIID_MAIN.seq.flux_rand_btns [ __LEFT,  3  ] ) or ...
+        in_range(NI_UI_ID, UIID_MAIN.seq.flux_rand_btns [ __RIGHT, 0 ], UIID_MAIN.seq.flux_rand_btns [ __RIGHT, 3 ] )
+
+        { OPTIMIZATION: EXHIBIT A - code that could/should be combined into a function }
+        if  in_range(NI_UI_ID, UIID_MAIN.seq.flux_rand_btns [ __LEFT, 0  ], UIID_MAIN.seq.flux_rand_btns [ __LEFT, 3 ] )
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.flux_rand_btns [ __LEFT, 0 ]
+            uics_seq_side := __LEFT
+            uics_value := UIID_MAIN.seq.flux_rand_btns [ __LEFT, uics_uiid_index ] -> value
+        end if
+        if  in_range(NI_UI_ID, UIID_MAIN.seq.flux_rand_btns [ __RIGHT, 0  ], UIID_MAIN.seq.flux_rand_btns [ __RIGHT, 3 ] )
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.flux_rand_btns [ __RIGHT, 0 ]
+            uics_seq_side := __RIGHT
+            uics_value := UIID_MAIN.seq.flux_rand_btns [ __RIGHT, uics_uiid_index ] -> value
+        end if
+
+        { process only the related clicked block in case ALT is not pressed }
+        uics_loop_range_min := uics_uiid_index
+        uics_loop_range_max := uics_uiid_index
+
+        if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_ALT) = __ON
+            for uics_counter := 0 to 3
+                UIID_MAIN.seq.flux_rand_btns [ uics_seq_side, uics_counter ] -> value := uics_value
+            end for
+            { to process all blocks }
+            uics_loop_range_min := 0
+            uics_loop_range_max := 3
+        end if
+
+        if uics_value = __OFF
+            { counter 2 is block index }
+            for uics_counter2 := uics_loop_range_min to uics_loop_range_max { optimization to not write this loop twice }
+                { counter 1 is step index }
+                for uics_counter := 0 to 7
+                    fn018.a.side       := uics_seq_side
+                    fn018.a.step_index := uics_counter + 8 * uics_counter2
+                    fn018.a.value      := SEQ.data.f [        ...
+                        uics_seq_side,                        ...
+                        SEQ.showing_target [ uics_seq_side ], ...
+                        uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
+                    ]
+                    call fn018_set_seq_step_picture_state
+                end for
+            end for
+        end if
+    end if
+
+
+    {{  SEQ MAIN FLUX RAND POWER }}
+    if NI_UI_ID = UIID_MAIN.seq.flux_rand_power [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.flux_rand_power [ __RIGHT ]
+
+        { OPTIMIZATION: EXHIBIT A - code that could/should be combined into a function }
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_MAIN.seq.flux_rand_power [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+        uics_value := UIID_MAIN.seq.flux_rand_power [ uics_seq_side ] -> value
+
+        uics_loop_range_min := 0
+        uics_loop_range_max := 3
+
+        if uics_value = __OFF
+            { counter 2 is block index }
+            for uics_counter2 := uics_loop_range_min to uics_loop_range_max { optimization to not write this loop twice }
+                { counter 1 is step index }
+                for uics_counter := 0 to 7
+                    fn018.a.side       := uics_seq_side
+                    fn018.a.step_index := uics_counter + 8 * uics_counter2
+                    fn018.a.value      := SEQ.data.f [        ...
+                        uics_seq_side,                        ...
+                        SEQ.showing_target [ uics_seq_side ], ...
+                        uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
+                    ]
+                    call fn018_set_seq_step_picture_state
+                end for
+            end for
+        end if
+    end if
+
 end on

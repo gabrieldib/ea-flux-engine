@@ -131,29 +131,42 @@ function fn001_get_seq_step_index
     end if
 end function
 
-function fn002_set_seq_step_value
-    UIID_MAIN.seq.step [ fn002.a.side, fn002.a.step_index ] -> picture_state := ...
-        int(float(SEQ_XY_H-1) * fn002.a.value)
+function fn018_set_seq_step_picture_state
+    message("    ps = " & int(float(SEQ_XY_H-1) * fn018.a.value) & " | value " & fn018.a.value)
+    UIID_MAIN.seq.step [ fn018.a.side, fn018.a.step_index ] -> picture_state := ...
+        int(float(SEQ_XY_H-1) * fn018.a.value)
+end function
 
+function fn019_set_seq_step_value
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
-        fn002.l.mode_side := fn002.a.side
+        fn019.l.mode_side := fn019.a.side
     else
-        fn002.l.mode_side := __LEFT
+        fn019.l.mode_side := __LEFT
     end if
 
     SEQ.data.i [                                  ...
-        fn002.a.side,                             ...
-        SEQ.showing_target [ fn002.l.mode_side ], ...
-        fn002.a.step_index                        ...
-    ] := int( 1000000.0 * fn002.a.value )
-    // message("    writing into step: " & fn002.a.step_index)
-    // message("    value: "  & int( 1000000.0 * fn002.a.value ))
-    SEQ.data.f [                                  ...
-        fn002.a.side,                             ...
-        SEQ.showing_target [ fn002.l.mode_side ], ...
-        fn002.a.step_index                        ...
-    ] := fn002.a.value
+        fn019.a.side,                             ...
+        SEQ.showing_target [ fn019.l.mode_side ], ...
+        fn019.a.step_index                        ...
+    ] := int( 1000000.0 * fn019.a.value )
 
+    SEQ.data.f [                                  ...
+        fn019.a.side,                             ...
+        SEQ.showing_target [ fn019.l.mode_side ], ...
+        fn019.a.step_index                        ...
+    ] := fn019.a.value
+end function
+
+function fn002_set_seq_step_value_and_ps
+    fn018.a.side       := fn002.a.side
+    fn018.a.step_index := fn002.a.step_index
+    fn018.a.value      := fn002.a.value
+    call fn018_set_seq_step_picture_state
+
+    fn019.a.side       := fn002.a.side
+    fn019.a.step_index := fn002.a.step_index
+    fn019.a.value      := fn002.a.value
+    call fn019_set_seq_step_value
     // message("FN02 setting the value for step index: " & fn002.a.step_index)
 end function
 
@@ -432,7 +445,7 @@ function fn016_set_data_display_from_seq_xy
 
         case SEQ_TARGET_PITCH 
             @fn016.r.title      := "pitch"
-            if UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> key_alt = __ON
+            if UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> key_shift = __ON
                 @fn016.r.text_data := round((fn016.a.value * 24.0 - 12.0)*100.0)/100.0
             else
                 @fn016.r.text_data := int(fn016.a.value * 24.0 - 12.0)
@@ -440,7 +453,7 @@ function fn016_set_data_display_from_seq_xy
 
         case SEQ_TARGET_OCTAVE
             @fn016.r.title      := "octave"
-            if UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> key_alt = __ON
+            if UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> key_shift = __ON
                 @fn016.r.text_data := round((fn016.a.value * 4.0 - 2.0)*100.0)/100.0
             else
                 @fn016.r.text_data := int(fn016.a.value * 4.0 - 2.0)
@@ -460,14 +473,14 @@ function fn016_set_data_display_from_seq_xy
 
         case SEQ_TARGET_FILTER
             if fn016.a.value < 0.49 { low  pass }
-                set_engine_par(ENGINE_PAR_CUTOFF, int(1000000.0 - fn016.a.value * 2000000.0), __NO_GROUP, __LP_FILTER_CA_SLOT, NI_BUS_OFFSET+15)
+                set_engine_par(ENGINE_PAR_CUTOFF, int(fn016.a.value * 2000000.0), __NO_GROUP, __LP_FILTER_CA_SLOT, NI_BUS_OFFSET+15)
                 @fn016.r.title     := "Low Pass"
-                @fn016.r.text_data := get_engine_par_disp(ENGINE_PAR_CUTOFF, __NO_GROUP, __LP_FILTER_CA_SLOT, NI_BUS_OFFSET+15)
+                @fn016.r.text_data := get_engine_par_disp(ENGINE_PAR_CUTOFF, __NO_GROUP, __LP_FILTER_CA_SLOT, NI_BUS_OFFSET+15) & "hz"
             else                   { high pass }
                 if fn016.a.value > 0.51
                     set_engine_par(ENGINE_PAR_CUTOFF, int((fn016.a.value-0.5) * 2000000.0), __NO_GROUP, __HP_FILTER_CA_SLOT, NI_BUS_OFFSET+15)
                     @fn016.r.title     := "High Pass"
-                    @fn016.r.text_data := get_engine_par_disp(ENGINE_PAR_CUTOFF, __NO_GROUP, __HP_FILTER_CA_SLOT, NI_BUS_OFFSET+15)
+                    @fn016.r.text_data := get_engine_par_disp(ENGINE_PAR_CUTOFF, __NO_GROUP, __HP_FILTER_CA_SLOT, NI_BUS_OFFSET+15) & "hz"
                 else
                     @fn016.r.title     := "Filter Off"
                     @fn016.r.text_data := "Off"
@@ -535,8 +548,9 @@ function fn017_get_seq_target_data
             SEQ_TARGET_FILTER,                                  ...
             fn017.a.step_counter + fn017.a.block_step_index * 8 ...
         ]
+        fn017.r.filter_value := fn017.l.filter_data
         if fn017.l.filter_data < 490000  { low pass }
-            fn017.r.lp_filter_value := 1000000 - fn017.l.filter_data * 2
+            fn017.r.lp_filter_value := fn017.l.filter_data * 2
             fn017.r.hp_filter_value := 0
         else                             { high pass }
             if fn017.l.filter_data > 510000
@@ -549,8 +563,31 @@ function fn017_get_seq_target_data
         end if
     else
         fn017.r.filter_status := __OFF
+        fn017.r.filter_value  := 500000
     end if
 end function
+
+function fn020_update_seq_target_off_label
+    if  fn020.a.target_uiid -> value = __OFF
+        message("    fn020 value is OFF")
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_SHOW
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> text := "Target " & SEQ.target_names [ fn020.a.target_index ] & " is off"
+    else
+        message("    fn020 value is ON")
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_HIDE
+    end if
+end function
+
+function fn21_get_seq_target_active_activator
+    for fn021.l.counter := 0 to 4 { 5 activator buttons per side }
+        if  UIID_MAIN.seq.target_activators [ fn021.a.side, fn021.l.counter ] -> value = __ON
+            fn021.r.active_index := fn021.l.counter
+            exit
+        end if
+    end for
+
+end function
+
 
 {{ play engine }}
 function fn007_update_block_and_steps_ts
@@ -629,20 +666,39 @@ function PLAY_LCB
                     call fn017_get_seq_target_data
                     { return values from fn017_get_seq_target_data() }
                     SEQ.step_velocity  := fn017.r.velocity
-                    SEQ.step_pitch     := fn017.r.pitch
+                    SEQ.step_pitch     := fn017.r.pitch * 100000
                     SEQ.step_octave    := fn017.r.octave
                     SEQ.step_pan       := fn017.r.pan
+                    SEQ.step_filter    := fn017.r.filter_value
                     SEQ.step_lp_filter := fn017.r.lp_filter_value
                     SEQ.step_hp_filter := fn017.r.hp_filter_value
 
-                    if UIID_MAIN.seq.flux_rand_btns [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] -> value = __ON
+                    { 
+                        PENDING
+                        Adjust the behavior to:
+                        Read from the sequencer data, but don't change it
+                        only read, apply the flux randomizer and use these modifyed values
+                        to play the step, but always come back to the original values set in the sequencer
+                        data structure.
+                        beak fn022 apart into different independent functions
+                    }
+
+                    if  UIID_MAIN.seq.flux_rand_btns  [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] -> value = __ON and ...
+                        UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON
+
                         {{ FLUX RAND VELOCITY }}
                         // if  fn017.a.step_counter = 0 { in case you want to do the randomization per block, not per step }
+                        { would still need the logic to populate all steps }
+
                         if UIID_MAIN.seq.target_power [ p_lcb.a.side, SEQ_TARGET_VELO ] -> value = __ON
-                            SEQ.flux_velo_seed := int(127.0 * (float(UIID_MAIN.seq.flux_rand_intensity [ p_lcb.a.side ] -> value )/100.0) )
+                            { first get the seed based on the flux randomizer intensity amount }
+                            SEQ.flux_velo_seed := int(127.0 * ...
+                                (float(SEQ.flux_rand_intensity [ p_lcb.a.side, SEQ_TARGET_VELO ] )/100.0) )
+                            { generate the actual flux offset value }
                             SEQ.flux_velo      := random( -1 * SEQ.flux_velo_seed, SEQ.flux_velo_seed)
-                            // end if
+                            { add to the base value }
                             SEQ.step_velocity := SEQ.step_velocity + SEQ.flux_velo
+                            { clam if needed }
                             if SEQ.step_velocity > 127
                                 SEQ.step_velocity := 127
                             end if
@@ -653,20 +709,23 @@ function PLAY_LCB
 
                         {{ FLUX RAND PITCH }}
                         if UIID_MAIN.seq.target_power [ p_lcb.a.side, SEQ_TARGET_PITCH ] -> value = __ON
-                            SEQ.flux_pitch_seed := int(12.0 * (float(UIID_MAIN.seq.flux_rand_intensity [ p_lcb.a.side ] -> value )/100.0) )
-                            SEQ.flux_pitch      := random( -1 * SEQ.flux_pitch_seed, SEQ.flux_pitch_seed)
+                            { flux rand intensity is 0:100, }
+                            SEQ.flux_pitch_seed := int(12.0 * ...
+                                (float(SEQ.flux_rand_intensity [ p_lcb.a.side, SEQ_TARGET_PITCH ] )))
+                            SEQ.flux_pitch      := random( -1000 * SEQ.flux_pitch_seed, SEQ.flux_pitch_seed * 1000)
                             SEQ.step_pitch := SEQ.step_pitch + SEQ.flux_pitch
-                            if SEQ.step_pitch > 12
-                                SEQ.step_pitch := 12
+                            if SEQ.step_pitch > 1200000
+                                SEQ.step_pitch := 1200000
                             end if
-                            if SEQ.step_pitch < -12
-                                SEQ.step_pitch := -12
+                            if SEQ.step_pitch < -1200000
+                                SEQ.step_pitch := -1200000
                             end if
                         end if
 
                         {{ FLUX RAND OCTAVE }}
                         if UIID_MAIN.seq.target_power [ p_lcb.a.side, SEQ_TARGET_OCTAVE ] -> value = __ON
-                            SEQ.flux_octave_seed := int(2.0 * (float(UIID_MAIN.seq.flux_rand_intensity [ p_lcb.a.side ] -> value )/100.0) )
+                            SEQ.flux_octave_seed := int(2.0 * ...
+                                (float(SEQ.flux_rand_intensity [ p_lcb.a.side, SEQ_TARGET_OCTAVE ] )/100.0) )
                             SEQ.flux_octave      := random( -1 * SEQ.flux_octave_seed, SEQ.flux_octave_seed)
                             SEQ.step_octave := SEQ.step_octave + SEQ.flux_octave
                             if SEQ.step_octave > 2
@@ -679,7 +738,8 @@ function PLAY_LCB
                         
                         {{ FLUX RAND PAN }}
                         if UIID_MAIN.seq.target_power [ p_lcb.a.side, SEQ_TARGET_PAN ] -> value = __ON
-                            SEQ.flux_pan_seed := int(1000.0 * (float(UIID_MAIN.seq.flux_rand_intensity [ p_lcb.a.side ] -> value )/100.0) )
+                            SEQ.flux_pan_seed := int(1000.0 * ...
+                                (float(SEQ.flux_rand_intensity [ p_lcb.a.side, SEQ_TARGET_PAN ] )/100.0) )
                             SEQ.flux_pan      := random( -1 * SEQ.flux_pan_seed, SEQ.flux_pan_seed)
                             SEQ.step_pan := SEQ.step_pan + SEQ.flux_pan
                             if SEQ.step_pan > 1000
@@ -692,49 +752,52 @@ function PLAY_LCB
 
                         {{ FLUX RAND PAN }}
                         if UIID_MAIN.seq.target_power [ p_lcb.a.side, SEQ_TARGET_FILTER ] -> value = __ON
-                            SEQ.flux_filter_seed := int(1000000.0 * (float(UIID_MAIN.seq.flux_rand_intensity [ p_lcb.a.side ] -> value )/100.0) )
+                            { not scaling by /100 because the extreme values of the filter just completely close the sound
+                            so scaling by 150 instead of 100 }
+                            message("REPORT ________________")
+                            message("SEQ.step_filter: " & SEQ.step_filter)
+                            SEQ.flux_filter_seed := int(1000000.0 * ...
+                                (float(SEQ.flux_rand_intensity [ p_lcb.a.side, SEQ_TARGET_FILTER ] )/150.0) )
                             SEQ.flux_filter      := random( -1 * SEQ.flux_filter_seed, SEQ.flux_filter_seed)
                             SEQ.step_filter := SEQ.step_filter + SEQ.flux_filter
-                            if SEQ.step_filter > 1000000
-                                SEQ.step_filter := 1000000
+                            message("SEQ.flux_filter: " & SEQ.flux_filter)
+                            if SEQ.step_filter > 850000
+                                SEQ.step_filter := 850000
                             end if
-                            if SEQ.step_filter < 0
-                                SEQ.step_filter := 0
+                            if SEQ.step_filter < 150000
+                                SEQ.step_filter := 150000
                             end if
-                            // message("BLOCK: "&fn017.a.block_step_index&" | STEP " & fn017.a.step_counter & " -------------------------------- ")
-
-                            // message("SEQ.step_filter: " & SEQ.step_filter)
-                            if SEQ.step_filter > 500000
+                            message("SEQ.step_filter: " & SEQ.step_filter)
+                            if SEQ.step_filter > 500000 { high pass }
                                 SEQ.step_lp_filter := 1000000
-                                SEQ.step_hp_filter := (SEQ.step_filter-500000) * 2
-                            else
-                                SEQ.step_lp_filter := 1000000 - SEQ.step_filter * 2
+                                SEQ.step_hp_filter := ( SEQ.step_filter - 500000 ) * 2
+                            else                        { low pass }
+                                SEQ.step_lp_filter := SEQ.step_filter * 2
                                 SEQ.step_hp_filter := 0
                             end if
+                            message("SEQ.step_lp_filter: " & SEQ.step_lp_filter)
+                            message("SEQ.step_hp_filter: " & SEQ.step_hp_filter)
                         end if
-                        // message("SEQ.step_lp_filter: " & SEQ.step_lp_filter)
-                        // message("SEQ.step_hp_filter: " & SEQ.step_hp_filter)
 
-                        { update the step picture and data in the ds storage }
-                        fn002.a.side       := p_lcb.a.side
-                        fn002.a.step_index := fn017.a.step_counter + SEQ.DUAL.current_block [ p_lcb.a.side ] * 8
-                        select(SEQ.showing_target [ p_lcb.a.side ])
-                            case SEQ_TARGET_VELO
-                                fn002.a.value      := float(SEQ.step_velocity)/127.0
-                            case SEQ_TARGET_PITCH
-                                fn002.a.value      := float(SEQ.step_velocity + 12)/24.0
-                            case SEQ_TARGET_OCTAVE
-                                fn002.a.value      := float(SEQ.step_velocity + 2)/4.0
-
-                            case SEQ_TARGET_PAN
-                                fn002.a.value      := float(SEQ.step_velocity + 1000)/2000.0
-
-                            case SEQ_TARGET_FILTER
-
-                        end select
-                        { PENDING: WRONG -> visually only set the one showing,
-                          the data should be set for all of them though }
-                        call fn002_set_seq_step_value
+                        if UIID_MAIN.seq.target_power [ p_lcb.a.side, SEQ.showing_target [ p_lcb.a.side ] ] -> value = __ON
+                            { update the step picture only }
+                            select(SEQ.showing_target [ p_lcb.a.side ])
+                                case SEQ_TARGET_VELO
+                                    fn018.a.value      := float(SEQ.step_velocity)/127.0
+                                case SEQ_TARGET_PITCH
+                                    fn018.a.value      := float(SEQ.step_pitch + 1200000)/2400000.0
+                                case SEQ_TARGET_OCTAVE
+                                    fn018.a.value      := float(SEQ.step_octave + 2)/4.0
+                                case SEQ_TARGET_PAN
+                                    fn018.a.value      := float(SEQ.step_pan + 1000)/2000.0
+                                case SEQ_TARGET_FILTER
+                                    fn018.a.value      := float(SEQ.step_filter)/850000.0
+                            end select
+                            
+                            fn018.a.side       := p_lcb.a.side
+                            fn018.a.step_index := fn017.a.step_counter + SEQ.DUAL.current_block [ p_lcb.a.side ] * 8
+                            call fn018_set_seq_step_picture_state
+                        end if
 
                     end if
 
@@ -755,7 +818,7 @@ function PLAY_LCB
                         { adjust event according to seq modulations }
                         change_tune( ...
                             layers.note_events [ p_lcb.a.side, SEQ.key_count ], ...
-                            SEQ.step_pitch * 100000 + SEQ.step_octave * 1200000, 0)
+                            SEQ.step_pitch + SEQ.step_octave * 1200000, 0)
 
                         change_pan( ...
                             layers.note_events [ p_lcb.a.side, SEQ.key_count ], ...
