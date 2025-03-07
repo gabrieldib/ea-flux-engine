@@ -1,4 +1,22 @@
 on ui_controls
+    {{ GLOBAL LAYER POWER }}
+    if NI_UI_ID = UIID_MAIN.seq.power [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+
+        fn021.a.side := uics_seq_side
+        call fn21_get_seq_target_active_activator
+
+        fn020.a.seq_power_state   := NI_UI_ID -> value
+        fn020.a.side              := uics_seq_side
+        fn020.a.target_index      := fn021.r.active_index
+        fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
+        call fn020_update_seq_target_off_label
+    end if
+
+
     {{ MAIN SEQ Steps sliders }}
     if in_range( NI_UI_ID, UIID_MAIN.seq.block_steps [ 0, 0 ], UIID_MAIN.seq.block_steps [ 1, 3 ])
         // message("SEQ STEP SLIDERS _________________________________")
@@ -259,9 +277,10 @@ on ui_controls
         call fn21_get_seq_target_active_activator
         { we only update the label if the power button pressed has the same index as the active target activator }
         if fn021.r.active_index = uics_uiid_index mod 5
-            fn020.a.target_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, uics_uiid_index mod 5 ]
-            fn020.a.side         := uics_seq_side
-            fn020.a.target_index := uics_uiid_index mod 5
+            fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_seq_side ] -> value
+            fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ uics_seq_side, uics_uiid_index mod 5 ]
+            fn020.a.side               := uics_seq_side
+            fn020.a.target_index       := uics_uiid_index mod 5
             call fn020_update_seq_target_off_label
         end if
 
@@ -300,9 +319,10 @@ on ui_controls
             call fn21_get_seq_target_active_activator
             { we only update the label if the power button pressed has the same index as the active target activator }
             if fn021.r.active_index = uics_uiid_index
-                fn020.a.target_uiid  := UIID_MAIN.seq.target_power [ uics_counter, uics_uiid_index ]
-                fn020.a.side         := uics_counter
-                fn020.a.target_index := uics_uiid_index
+                fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_seq_side ] -> value
+                fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ uics_counter, uics_uiid_index ]
+                fn020.a.side               := uics_counter
+                fn020.a.target_index       := uics_uiid_index
                 call fn020_update_seq_target_off_label
             end if
         end for
@@ -333,9 +353,10 @@ on ui_controls
         call fn21_get_seq_target_active_activator
         { we only update the label if the power button pressed has the same index as the active target activator }
         if fn021.r.active_index = uics_uiid_index
-            fn020.a.target_uiid  := NI_UI_ID
-            fn020.a.side         := uics_seq_side
-            fn020.a.target_index := uics_uiid_index
+            fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_seq_side ] -> value
+            fn020.a.target_power_uiid  := NI_UI_ID
+            fn020.a.side               := uics_seq_side
+            fn020.a.target_index       := uics_uiid_index
             call fn020_update_seq_target_off_label
         end if
 
@@ -377,7 +398,6 @@ on ui_controls
     {{ SEQ MAIN PLAY DIRECTION }}
     if in_range(NI_UI_ID, UIID_MAIN.seq.direction_btns [ __LEFT, 0 ], UIID_MAIN.seq.direction_btns [ __RIGHT, 2 ])
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.direction_btns [ __LEFT, 0 ]
-
         if uics_uiid_index < 3
             fn015.a.side := __LEFT
         else
@@ -386,7 +406,11 @@ on ui_controls
 
         fn015.a.btn_index := uics_uiid_index mod 3
         call fn015_set_seq_play_direction_btns
-        message("15 side: " & fn015.a.side)
+        
+        layers.seq_play_direction [ fn015.a.side ] := uics_uiid_index mod 3
+        
+        { if dir is forward or backwards it stays that way, id it is dual direction then starts with forward }
+        seq.direction_status [ fn015.a.side ] := (uics_uiid_index mod 3) mod 2
     end if
 
 

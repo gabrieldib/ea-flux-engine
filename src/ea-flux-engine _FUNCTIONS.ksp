@@ -132,7 +132,7 @@ function fn001_get_seq_step_index
 end function
 
 function fn018_set_seq_step_picture_state
-    message("    ps = " & int(float(SEQ_XY_H-1) * fn018.a.value) & " | value " & fn018.a.value)
+    // message("    ps = " & int(float(SEQ_XY_H-1) * fn018.a.value) & " | value " & fn018.a.value)
     UIID_MAIN.seq.step [ fn018.a.side, fn018.a.step_index ] -> picture_state := ...
         int(float(SEQ_XY_H-1) * fn018.a.value)
 end function
@@ -388,9 +388,9 @@ function fn011_clear_target_activators
 end function
 
 function fn014_seq_recall_target_steps_values_and_pictures
-    message("FN14 called")
-    message("    fn014.a.side: " & fn014.a.side)
-    message("    fn014.a.target_index: " & fn014.a.target_index)
+    // message("FN14 called")
+    // message("    fn014.a.side: " & fn014.a.side)
+    // message("    fn014.a.target_index: " & fn014.a.target_index)
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
         fn006.a.side := fn014.a.side
         call fn006_recall_seq_values
@@ -568,14 +568,20 @@ function fn017_get_seq_target_data
 end function
 
 function fn020_update_seq_target_off_label
-    if  fn020.a.target_uiid -> value = __OFF
-        message("    fn020 value is OFF")
-        UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_SHOW
-        UIID_MAIN.seq.off_label [ fn020.a.side ] -> text := "Target " & SEQ.target_names [ fn020.a.target_index ] & " is off"
+    if fn020.a.seq_power_state = __ON
+        if  fn020.a.target_power_uiid -> value = __OFF
+            UIID_MAIN.seq.off_label [ fn020.a.side ] -> picture := "label_FX.off"
+            UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_SHOW
+            UIID_MAIN.seq.off_label [ fn020.a.side ] -> text := "TARGET " & SEQ.target_names [ fn020.a.target_index ] & " IS OFF"
+        else
+            UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_HIDE
+        end if
     else
-        message("    fn020 value is ON")
-        UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_HIDE
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_SHOW
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> picture := "label_seq_steps_bg"
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> text := "SEQUENCER IS OFF"
     end if
+
 end function
 
 function fn21_get_seq_target_active_activator
@@ -592,18 +598,53 @@ end function
 {{ play engine }}
 function fn007_update_block_and_steps_ts
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
-        inc(SEQ.DUAL.current_block [ fn007.a.side ])
-        if SEQ.DUAL.current_block [ fn007.a.side ] > 3
-            SEQ.DUAL.current_block [ fn007.a.side ] := 0
+
+        if  seq.direction_status [ fn007.a.side ] = SEQ_DIRECTION_FORWARD
+            inc(SEQ.DUAL.current_block [ fn007.a.side ])
+            if SEQ.DUAL.current_block [ fn007.a.side ] > 3
+                { check the actual selected direction button }
+                if layers.seq_play_direction [ fn007.a.side ] = SEQ_DIRECTION_FWBW
+                    SEQ.DUAL.current_block [ fn007.a.side ] := 3
+                    seq.direction_status [ fn007.a.side ] := SEQ_DIRECTION_BACKWARD
+                else { regular forward motion }
+                    SEQ.DUAL.current_block [ fn007.a.side ] := 0
+                end if
+            end if
+
+            SEQ.DUAL.step_duration [ fn007.a.side ] := ...
+                SEQ.rate [ fn007.a.side ] / ( SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ] + 1 )
+
+            // message(fn007.a.side & "| Block: " & SEQ.DUAL.current_block [ fn007.a.side ] & " | ET: " & ENGINE_UPTIME)
+            for s.i := 0 to SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ]
+                SEQ.DUAL.steps_timestamps [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ], s.i ] := ...
+                    ENGINE_UPTIME + s.i * SEQ.DUAL.step_duration [ fn007.a.side ]
+                // message("    Step " & s.i & " ts: " &  SEQ.DUAL.steps_timestamps [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ], s.i ])
+            end for
+
+        else
+            if  seq.direction_status [ fn007.a.side ] = SEQ_DIRECTION_BACKWARD 
+                dec(SEQ.DUAL.current_block [ fn007.a.side ])
+                if SEQ.DUAL.current_block [ fn007.a.side ] < 0
+                    if layers.seq_play_direction [ fn007.a.side ] = SEQ_DIRECTION_FWBW
+                        SEQ.DUAL.current_block [ fn007.a.side ] := 0
+                        seq.direction_status [ fn007.a.side ] := SEQ_DIRECTION_FORWARD
+                    else { regular backward motion }
+                        SEQ.DUAL.current_block [ fn007.a.side ] := 3 
+                    end if
+                end if
+
+                SEQ.DUAL.step_duration [ fn007.a.side ] := ...
+                    SEQ.rate [ fn007.a.side ] / ( SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ] + 1 )
+
+                // message(fn007.a.side & "| Block: " & SEQ.DUAL.current_block [ fn007.a.side ] & " | ET: " & ENGINE_UPTIME)
+                for s.i := 0 to SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ]
+                    SEQ.DUAL.steps_timestamps [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ], s.i ] := ...
+                        ENGINE_UPTIME + s.i * SEQ.DUAL.step_duration [ fn007.a.side ]
+                    // message("    Step " & s.i & " ts: " &  SEQ.DUAL.steps_timestamps [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ], s.i ])
+                end for
+            end if
+
         end if
-
-        SEQ.DUAL.step_duration [ fn007.a.side ] := ...
-            SEQ.rate [ fn007.a.side ] / ( SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ] + 1 )
-
-        for s.i := 0 to SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ]
-            SEQ.DUAL.steps_timestamps [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ], s.i ] := ...
-                ENGINE_UPTIME + s.i * SEQ.DUAL.step_duration [ fn007.a.side ]
-        end for
 
     else { JOIN sequencer }
 
@@ -631,9 +672,25 @@ function PLAY_NOTE_NCB
 end function
 
 function PLAY_LCB
+    select(seq.direction_status [ p_lcb.a.side ])
+        case SEQ_DIRECTION_FORWARD  
+            p_lcb.l.ts_counter := SEQ.ts_counter
+
+        case SEQ_DIRECTION_BACKWARD 
+            if  switch_MAIN.SEQ.combine = __SEQ_DUAL
+                { inverts the steps }
+                p_lcb.l.ts_counter := ...
+                    SEQ.DUAL.step_count [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] - SEQ.ts_counter
+            end if
+    end select
+
     if  switch_MAIN.SEQ.combine = __SEQ_DUAL and ...
-        SEQ.DUAL.steps_timestamps [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ], SEQ.ts_counter ] = ENGINE_UPTIME
-        
+        SEQ.DUAL.steps_timestamps [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ], p_lcb.l.ts_counter ] = ENGINE_UPTIME
+        message(lcb_play_side & " | play LCB -----> step : " & SEQ.ts_counter & ...
+                                    " | block: " & SEQ.DUAL.current_block [ lcb_play_side ] & " play dir: " & layers.seq_play_direction [ lcb_play_side ])
+        message("    PLAY LCB: dir BACKW | step inv " & p_lcb.l.ts_counter)
+        message("    SEQ.DUAL.step_count: " & SEQ.DUAL.step_count [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ])
+        message("    step counter: " & SEQ.ts_counter)
         { update step leds - has to be here, at the timestamp of each step }
         for lcb_block_counter := 0 to 3
             if lcb_block_counter = SEQ.DUAL.current_block [ lcb_play_side ]
@@ -754,20 +811,20 @@ function PLAY_LCB
                         if UIID_MAIN.seq.target_power [ p_lcb.a.side, SEQ_TARGET_FILTER ] -> value = __ON
                             { not scaling by /100 because the extreme values of the filter just completely close the sound
                             so scaling by 150 instead of 100 }
-                            message("REPORT ________________")
-                            message("SEQ.step_filter: " & SEQ.step_filter)
+                            // message("REPORT ________________")
+                            // message("SEQ.step_filter: " & SEQ.step_filter)
                             SEQ.flux_filter_seed := int(1000000.0 * ...
                                 (float(SEQ.flux_rand_intensity [ p_lcb.a.side, SEQ_TARGET_FILTER ] )/150.0) )
                             SEQ.flux_filter      := random( -1 * SEQ.flux_filter_seed, SEQ.flux_filter_seed)
                             SEQ.step_filter := SEQ.step_filter + SEQ.flux_filter
-                            message("SEQ.flux_filter: " & SEQ.flux_filter)
+                            // message("SEQ.flux_filter: " & SEQ.flux_filter)
                             if SEQ.step_filter > 850000
                                 SEQ.step_filter := 850000
                             end if
                             if SEQ.step_filter < 150000
                                 SEQ.step_filter := 150000
                             end if
-                            message("SEQ.step_filter: " & SEQ.step_filter)
+                            // message("SEQ.step_filter: " & SEQ.step_filter)
                             if SEQ.step_filter > 500000 { high pass }
                                 SEQ.step_lp_filter := 1000000
                                 SEQ.step_hp_filter := ( SEQ.step_filter - 500000 ) * 2
@@ -775,8 +832,8 @@ function PLAY_LCB
                                 SEQ.step_lp_filter := SEQ.step_filter * 2
                                 SEQ.step_hp_filter := 0
                             end if
-                            message("SEQ.step_lp_filter: " & SEQ.step_lp_filter)
-                            message("SEQ.step_hp_filter: " & SEQ.step_hp_filter)
+                            // message("SEQ.step_lp_filter: " & SEQ.step_lp_filter)
+                            // message("SEQ.step_hp_filter: " & SEQ.step_hp_filter)
                         end if
 
                         if UIID_MAIN.seq.target_power [ p_lcb.a.side, SEQ.showing_target [ p_lcb.a.side ] ] -> value = __ON

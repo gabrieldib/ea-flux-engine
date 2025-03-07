@@ -1,4 +1,4 @@
-{ Compiled on Fri Mar  7 06:56:35 2025 }
+{ Compiled on Fri Mar  7 15:27:54 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -1625,11 +1625,11 @@ on init
   declare const $SEQ_JOIN_RIGHT_GAP_STEP7 := 447-$SEQ_JOIN_LEFT_START_PX
   declare const $SEQ_JOIN_RIGHT_GAP_STEP8 := 445-$SEQ_JOIN_LEFT_START_PX
   declare !SEQ__target_names[5]
-  !SEQ__target_names[0] := "Velocity"
-  !SEQ__target_names[1] := "Pitch"
-  !SEQ__target_names[2] := "Octave"
-  !SEQ__target_names[3] := "Pan"
-  !SEQ__target_names[4] := "Filter"
+  !SEQ__target_names[0] := "VELOCITY"
+  !SEQ__target_names[1] := "PITCH"
+  !SEQ__target_names[2] := "OCTAVE"
+  !SEQ__target_names[3] := "PAN"
+  !SEQ__target_names[4] := "FILTER"
   declare const $__START := 0
   declare const $__END := 1
   declare ?_SEQ_DUAL_XY_BLOCK_START_END[4*2]
@@ -1795,6 +1795,10 @@ on init
   read_persistent_var(%_SEQ__flux_rand_intensity)
   declare const $SEQ__flux_rand_intensity__SIZE_D1 := 2
   declare const $SEQ__flux_rand_intensity__SIZE_D2 := 5
+  declare %layers__seq_play_direction[2]
+  make_persistent(%layers__seq_play_direction)
+  read_persistent_var(%layers__seq_play_direction)
+  declare %seq__direction_status[2]
   declare %SEQ__rate[2]
   make_persistent(%SEQ__rate)
   read_persistent_var(%SEQ__rate)
@@ -1809,6 +1813,7 @@ on init
   declare const $SEQ__JOIN__steps_timestamps__SIZE_D2 := 8
   declare $SEQ__JOIN__step_duration
   declare $SEQ__ts_counter
+  declare $SEQ__ts_counter_incrementor
   declare $SEQ__key_count
   declare $SEQ__step_velocity
   declare $SEQ__step_pitch
@@ -1840,6 +1845,10 @@ on init
   declare $lcb_ms_counter
   declare $lcb_play_side
   declare $lcb_block_counter
+  declare $lcb_step_counter_start
+  declare $lcb_step_counter_end
+  declare $lcb_counter1
+  declare $lcb_play_direction_index
   declare %LFO_data[4]
   make_persistent(%LFO_data)
   read_persistent_var(%LFO_data)
@@ -1879,6 +1888,7 @@ on init
   declare $pn_ncb__a__note
   declare $pn_ncb__a__velo
   declare $p_lcb__a__side
+  declare $p_lcb__l__ts_counter
   declare $ds__counter
   declare $fn001__a__side
   declare $fn001__a__block_index
@@ -1901,6 +1911,8 @@ on init
   declare $fn006__a__side
   declare $fn006__l__mode_side
   declare $fn007__a__side
+  declare $fn007__l__counter
+  declare $fn007__l__direction_index
   declare $fn008__l__block_counter
   declare ~fn008__a__x_coord
   declare $fn008__r__block_index
@@ -1953,7 +1965,8 @@ on init
   declare ~fn019__a__value
   declare $fn020__a__side
   declare $fn020__a__target_index
-  declare $fn020__a__target_uiid
+  declare $fn020__a__target_power_uiid
+  declare $fn020__a__seq_power_state
   declare $fn021__a__side
   declare $fn021__l__counter
   declare $fn021__r__active_index
@@ -2040,7 +2053,6 @@ function get_seq_dual_step_index
 end function
 
 function fn018_set_seq_step_picture_state
-  message("    ps = " & real_to_int(int_to_real($SEQ_XY_H-1)*~fn018__a__value) & " | value " & ~fn018__a__value)
   set_control_par(%_UIID_MAIN__seq__step[32*$fn018__a__side+$fn018__a__step_index],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn018__a__value))
 end function
 
@@ -2166,9 +2178,6 @@ function fn013_update_seq_step_pictures
 end function
 
 function fn014_seq_recall_target_steps_values_and_pictures
-  message("FN14 called")
-  message("    fn014.a.side: " & $fn014__a__side)
-  message("    fn014.a.target_index: " & $fn014__a__target_index)
   if ($switch_MAIN__SEQ__combine=0)
     $fn006__a__side := $fn014__a__side
     call fn006_recall_seq_values
@@ -2213,13 +2222,18 @@ function fn21_get_seq_target_active_activator
 end function
 
 function fn020_update_seq_target_off_label
-  if (get_control_par($fn020__a__target_uiid,$CONTROL_PAR_VALUE)=0)
-    message("    fn020 value is OFF")
-    set_control_par(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
-    set_control_par_str(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_TEXT,"Target " & !SEQ__target_names[$fn020__a__target_index] & " is off")
+  if ($fn020__a__seq_power_state=1)
+    if (get_control_par($fn020__a__target_power_uiid,$CONTROL_PAR_VALUE)=0)
+      set_control_par_str(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_PICTURE,"label_FX.off")
+      set_control_par(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+      set_control_par_str(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_TEXT,"TARGET " & !SEQ__target_names[$fn020__a__target_index] & " IS OFF")
+    else
+      set_control_par(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+    end if
   else
-    message("    fn020 value is ON")
-    set_control_par(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+    set_control_par(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+    set_control_par_str(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_PICTURE,"label_seq_steps_bg")
+    set_control_par_str(%UIID_MAIN__seq__off_label[$fn020__a__side],$CONTROL_PAR_TEXT,"SEQUENCER IS OFF")
   end if
 end function
 
@@ -2347,16 +2361,41 @@ end function
 
 function fn007_update_block_and_steps_ts
   if ($switch_MAIN__SEQ__combine=0)
-    inc(%SEQ__DUAL__current_block[$fn007__a__side])
-    if (%SEQ__DUAL__current_block[$fn007__a__side]>3)
-      %SEQ__DUAL__current_block[$fn007__a__side] := 0
+    if (%seq__direction_status[$fn007__a__side]=0)
+      inc(%SEQ__DUAL__current_block[$fn007__a__side])
+      if (%SEQ__DUAL__current_block[$fn007__a__side]>3)
+        if (%layers__seq_play_direction[$fn007__a__side]=2)
+          %SEQ__DUAL__current_block[$fn007__a__side] := 3
+          %seq__direction_status[$fn007__a__side] := 1
+        else
+          %SEQ__DUAL__current_block[$fn007__a__side] := 0
+        end if
+      end if
+      %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
+      $s__i := 0
+      while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
+        %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
+        inc($s__i)
+      end while
+    else
+      if (%seq__direction_status[$fn007__a__side]=1)
+        dec(%SEQ__DUAL__current_block[$fn007__a__side])
+        if (%SEQ__DUAL__current_block[$fn007__a__side]<0)
+          if (%layers__seq_play_direction[$fn007__a__side]=2)
+            %SEQ__DUAL__current_block[$fn007__a__side] := 0
+            %seq__direction_status[$fn007__a__side] := 0
+          else
+            %SEQ__DUAL__current_block[$fn007__a__side] := 3
+          end if
+        end if
+        %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
+        $s__i := 0
+        while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
+          %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
+          inc($s__i)
+        end while
+      end if
     end if
-    %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
-    $s__i := 0
-    while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
-      %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
-      inc($s__i)
-    end while
   else
     inc($SEQ__JOIN__current_block)
     if ($SEQ__JOIN__current_block>7)
@@ -2420,7 +2459,19 @@ function fn017_get_seq_target_data
 end function
 
 function PLAY_LCB
-  if ($switch_MAIN__SEQ__combine=0 and (%_SEQ__DUAL__steps_timestamps[8*4*$p_lcb__a__side+(8*%SEQ__DUAL__current_block[$p_lcb__a__side])+$SEQ__ts_counter]=$ENGINE_UPTIME))
+  select (%seq__direction_status[$p_lcb__a__side])
+    case 0
+      $p_lcb__l__ts_counter := $SEQ__ts_counter
+    case 1
+      if ($switch_MAIN__SEQ__combine=0)
+        $p_lcb__l__ts_counter := %_SEQ__DUAL__step_count[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]]-$SEQ__ts_counter
+      end if
+  end select
+  if ($switch_MAIN__SEQ__combine=0 and (%_SEQ__DUAL__steps_timestamps[8*4*$p_lcb__a__side+(8*%SEQ__DUAL__current_block[$p_lcb__a__side])+$p_lcb__l__ts_counter]=$ENGINE_UPTIME))
+    message($lcb_play_side & " | play LCB -----> step : " & $SEQ__ts_counter & " | block: " & %SEQ__DUAL__current_block[$lcb_play_side] & " play dir: " & %layers__seq_play_direction[$lcb_play_side])
+    message("    PLAY LCB: dir BACKW | step inv " & $p_lcb__l__ts_counter)
+    message("    SEQ.DUAL.step_count: " & %_SEQ__DUAL__step_count[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]])
+    message("    step counter: " & $SEQ__ts_counter)
     $lcb_block_counter := 0
     while ($lcb_block_counter<=3)
       if ($lcb_block_counter=%SEQ__DUAL__current_block[$lcb_play_side])
@@ -2495,19 +2546,15 @@ function PLAY_LCB
               end if
             end if
             if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+4],$CONTROL_PAR_VALUE)=1)
-              message("REPORT ________________")
-              message("SEQ.step_filter: " & $SEQ__step_filter)
               $SEQ__flux_filter_seed := real_to_int(1000000.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+4])/150.0))
               $SEQ__flux_filter := random(-1*$SEQ__flux_filter_seed,$SEQ__flux_filter_seed)
               $SEQ__step_filter := $SEQ__step_filter+$SEQ__flux_filter
-              message("SEQ.flux_filter: " & $SEQ__flux_filter)
               if ($SEQ__step_filter>850000)
                 $SEQ__step_filter := 850000
               end if
               if ($SEQ__step_filter<150000)
                 $SEQ__step_filter := 150000
               end if
-              message("SEQ.step_filter: " & $SEQ__step_filter)
               if ($SEQ__step_filter>500000)
                 $SEQ__step_lp_filter := 1000000
                 $SEQ__step_hp_filter := ($SEQ__step_filter-500000)*2
@@ -2515,8 +2562,6 @@ function PLAY_LCB
                 $SEQ__step_lp_filter := $SEQ__step_filter*2
                 $SEQ__step_hp_filter := 0
               end if
-              message("SEQ.step_lp_filter: " & $SEQ__step_lp_filter)
-              message("SEQ.step_hp_filter: " & $SEQ__step_hp_filter)
             end if
             if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+%SEQ__showing_target[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1)
               select (%SEQ__showing_target[$p_lcb__a__side])
@@ -3750,7 +3795,8 @@ on persistence_changed
     $fn021__a__side := $pccb_counter
     call fn21_get_seq_target_active_activator
     if ($fn021__r__active_index=0)
-      $fn020__a__target_uiid := %_UIID_MAIN__seq__target_power[5*$pccb_counter+0]
+      $fn020__a__seq_power_state := get_control_par(%UIID_MAIN__seq__power[$pccb_counter],$CONTROL_PAR_VALUE)
+      $fn020__a__target_power_uiid := %_UIID_MAIN__seq__target_power[5*$pccb_counter+0]
       $fn020__a__side := $pccb_counter
       $fn020__a__target_index := 0
       call fn020_update_seq_target_off_label
@@ -3766,6 +3812,19 @@ on async_complete
 end on
 
 on ui_controls
+  if ($NI_UI_ID=%UIID_MAIN__seq__power[0] or ($NI_UI_ID=%UIID_MAIN__seq__power[1]))
+    $uics_seq_side := 0
+    if ($NI_UI_ID=%UIID_MAIN__seq__power[1])
+      $uics_seq_side := 1
+    end if
+    $fn021__a__side := $uics_seq_side
+    call fn21_get_seq_target_active_activator
+    $fn020__a__seq_power_state := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
+    $fn020__a__side := $uics_seq_side
+    $fn020__a__target_index := $fn021__r__active_index
+    $fn020__a__target_power_uiid := %_UIID_MAIN__seq__target_power[5*$uics_seq_side+$fn021__r__active_index]
+    call fn020_update_seq_target_off_label
+  end if
   if (in_range($NI_UI_ID,%_UIID_MAIN__seq__block_steps[4*0+0],%_UIID_MAIN__seq__block_steps[4*1+3]))
     $uics_alt_key := 0
     if (get_control_par($NI_UI_ID,$CONTROL_PAR_KEY_ALT)=1)
@@ -3926,7 +3985,8 @@ on ui_controls
     $fn021__a__side := $uics_seq_side
     call fn21_get_seq_target_active_activator
     if ($fn021__r__active_index=($uics_uiid_index mod 5))
-      $fn020__a__target_uiid := %_UIID_MAIN__seq__target_power[5*$pccb_counter+($uics_uiid_index mod 5)]
+      $fn020__a__seq_power_state := get_control_par(%UIID_MAIN__seq__power[$uics_seq_side],$CONTROL_PAR_VALUE)
+      $fn020__a__target_power_uiid := %_UIID_MAIN__seq__target_power[5*$uics_seq_side+($uics_uiid_index mod 5)]
       $fn020__a__side := $uics_seq_side
       $fn020__a__target_index := $uics_uiid_index mod 5
       call fn020_update_seq_target_off_label
@@ -3957,7 +4017,8 @@ on ui_controls
       $fn021__a__side := $uics_counter
       call fn21_get_seq_target_active_activator
       if ($fn021__r__active_index=$uics_uiid_index)
-        $fn020__a__target_uiid := %_UIID_MAIN__seq__target_power[5*$uics_counter+$uics_uiid_index]
+        $fn020__a__seq_power_state := get_control_par(%UIID_MAIN__seq__power[$uics_seq_side],$CONTROL_PAR_VALUE)
+        $fn020__a__target_power_uiid := %_UIID_MAIN__seq__target_power[5*$uics_counter+$uics_uiid_index]
         $fn020__a__side := $uics_counter
         $fn020__a__target_index := $uics_uiid_index
         call fn020_update_seq_target_off_label
@@ -3981,7 +4042,8 @@ on ui_controls
     $fn021__a__side := $uics_seq_side
     call fn21_get_seq_target_active_activator
     if ($fn021__r__active_index=$uics_uiid_index)
-      $fn020__a__target_uiid := $NI_UI_ID
+      $fn020__a__seq_power_state := get_control_par(%UIID_MAIN__seq__power[$uics_seq_side],$CONTROL_PAR_VALUE)
+      $fn020__a__target_power_uiid := $NI_UI_ID
       $fn020__a__side := $uics_seq_side
       $fn020__a__target_index := $uics_uiid_index
       call fn020_update_seq_target_off_label
@@ -4016,7 +4078,8 @@ on ui_controls
     end if
     $fn015__a__btn_index := $uics_uiid_index mod 3
     call fn015_set_seq_play_direction_btns
-    message("15 side: " & $fn015__a__side)
+    %layers__seq_play_direction[$fn015__a__side] := $uics_uiid_index mod 3
+    %seq__direction_status[$fn015__a__side] := $uics_uiid_index mod 3 mod 2
   end if
   if ($NI_UI_ID=%UIID_MAIN__seq__flux_rand_intensity[0] or ($NI_UI_ID=%UIID_MAIN__seq__flux_rand_intensity[1]))
     $uics_seq_side := 0
@@ -4225,9 +4288,15 @@ on release
     %_layers__note_events[128*1+$EVENT_NOTE] := 0
   end if
   if ($note_held_count<=0)
-    %SEQ__DUAL__current_block[0] := -1
-    %SEQ__DUAL__current_block[1] := -1
     $SEQ__JOIN__current_block := -1
+    $r__i := 0
+    while ($r__i<=1)
+      %SEQ__DUAL__current_block[$r__i] := -1
+      if (%layers__seq_play_direction[$r__i]=2)
+        %seq__direction_status[$r__i] := 0
+      end if
+      inc($r__i)
+    end while
   end if
 end on
 
@@ -4246,13 +4315,23 @@ on listener
         $lcb_play_side := 0
         while ($lcb_play_side<=1)
           if (%SEQ__DUAL__current_block[$lcb_play_side]>-1 and ($note_held_count>0))
-            $SEQ__ts_counter := 0
-            while ($SEQ__ts_counter<=%_SEQ__DUAL__step_count[4*$lcb_play_side+%SEQ__DUAL__current_block[$lcb_play_side]])
+            if (%seq__direction_status[$lcb_play_side]=0)
+              $lcb_step_counter_start := 0
+              $lcb_step_counter_end := %_SEQ__DUAL__step_count[4*$lcb_play_side+%SEQ__DUAL__current_block[$lcb_play_side]]+1
+              $SEQ__ts_counter_incrementor := 1
+            end if
+            if (%seq__direction_status[$lcb_play_side]=1)
+              $lcb_step_counter_start := %_SEQ__DUAL__step_count[4*$lcb_play_side+%SEQ__DUAL__current_block[$lcb_play_side]]
+              $lcb_step_counter_end := -1
+              $SEQ__ts_counter_incrementor := -1
+            end if
+            $SEQ__ts_counter := $lcb_step_counter_start
+            while ($SEQ__ts_counter # $lcb_step_counter_end)
               if (get_control_par(%UIID_MAIN__seq__power[$lcb_play_side],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__layer__power[$lcb_play_side],$CONTROL_PAR_VALUE)=1))
                 $p_lcb__a__side := $lcb_play_side
                 call PLAY_LCB
               end if
-              inc($SEQ__ts_counter)
+              $SEQ__ts_counter := $SEQ__ts_counter+$SEQ__ts_counter_incrementor
             end while
           end if
           inc($lcb_play_side)

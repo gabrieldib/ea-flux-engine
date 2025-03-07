@@ -8,8 +8,12 @@ on release
     end if
 
     if note_held_count <= 0
-        SEQ.DUAL.current_block [ __LEFT  ] := -1
-        SEQ.DUAL.current_block [ __RIGHT ] := -1
         SEQ.JOIN.current_block             := -1
+        for r.i := __LEFT to __RIGHT
+            SEQ.DUAL.current_block [ r.i  ] := -1
+            if layers.seq_play_direction [ r.i ] = SEQ_DIRECTION_FWBW
+                seq.direction_status [ r.i ] := SEQ_DIRECTION_FORWARD
+            end if
+        end for
     end if
 end on

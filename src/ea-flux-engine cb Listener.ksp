@@ -15,7 +15,7 @@ on listener
                             we will have the duration of the entire block
                             the duration of each step is block_dur (which is the rate basically) / step_count
                     }
-                    fn007.a.side := __LEFT
+                    fn007.a.side            := __LEFT
                     call fn007_update_block_and_steps_ts
                 end if
                 if lcb_ms_counter mod SEQ.rate [ __RIGHT ] = 0
@@ -25,14 +25,37 @@ on listener
 
                 for lcb_play_side := __LEFT to __RIGHT
                     if SEQ.DUAL.current_block [ lcb_play_side ] > -1 and note_held_count > 0
-                        for SEQ.ts_counter := 0 to SEQ.DUAL.step_count [ lcb_play_side, SEQ.DUAL.current_block [ lcb_play_side ] ]
+                        { counter behavior will depend on the mode }
+                        // select(layers.seq_play_direction [ lcb_play_side ])
+                        //     case SEQ_DIRECTION_FORWARD  
+                        //     case SEQ_DIRECTION_BACKWARD
+                        //     case SEQ_DIRECTION_FWBW
+                        // end select
+                        if  seq.direction_status [ lcb_play_side ] = SEQ_DIRECTION_FORWARD  
+                            lcb_step_counter_start     := 0
+                            lcb_step_counter_end       := ...
+                                SEQ.DUAL.step_count [ lcb_play_side, SEQ.DUAL.current_block [ lcb_play_side ] ] + 1
+                            SEQ.ts_counter_incrementor := 1
+                        end if
+                        if  seq.direction_status [ lcb_play_side ] = SEQ_DIRECTION_BACKWARD 
+                            lcb_step_counter_start     := ...
+                                SEQ.DUAL.step_count [ lcb_play_side, SEQ.DUAL.current_block [ lcb_play_side ] ]
+                            lcb_step_counter_end       :=  -1
+                            SEQ.ts_counter_incrementor := -1
+                        end if
+
+                        SEQ.ts_counter := lcb_step_counter_start
+                        while ( SEQ.ts_counter # lcb_step_counter_end )
+
                             if  UIID_MAIN.seq.power   [ lcb_play_side ] -> value = __ON and ...
                                 UIID_MAIN.layer.power [ lcb_play_side ] -> value = __ON
+                                
                                 p_lcb.a.side := lcb_play_side
                                 call PLAY_LCB
-
                             end if
-                        end for
+
+                            SEQ.ts_counter := SEQ.ts_counter + SEQ.ts_counter_incrementor
+                        end while
                     end if
                 end for 
             end if  { SEQ Dual }

@@ -82,9 +82,10 @@ on persistence_changed
         call fn21_get_seq_target_active_activator
         { we only update the label if the power button pressed has the same index as the active target activator }
         if fn021.r.active_index = SEQ_TARGET_VELO
-            fn020.a.target_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, SEQ_TARGET_VELO ]
-            fn020.a.side         := pccb_counter
-            fn020.a.target_index := SEQ_TARGET_VELO
+            fn020.a.seq_power_state    := UIID_MAIN.seq.power [ pccb_counter ] -> value
+            fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, SEQ_TARGET_VELO ]
+            fn020.a.side               := pccb_counter
+            fn020.a.target_index       := SEQ_TARGET_VELO
             call fn020_update_seq_target_off_label
         end if
     end for
