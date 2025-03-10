@@ -40,6 +40,19 @@
     define SEQ_DIRECTION_BACKWARD := 1
     define SEQ_DIRECTION_FWBW     := 2
 
+    define __STEP_COUNTER_0    :=  1
+    define __DIR_BTN_FORWARD   :=  2
+    define __DIR_BTN_BACKWARD  :=  4
+    define __DIR_BTN_FWBW      :=  8
+    define __STEP_COUNTER_LAST := 16
+    define __DIR_PLAY_FORWARD  := 32
+    define __DIR_PLAY_BACKWARD := 64
+
+    define __COUNTER_0_BTN_FORWARD         := 3
+    define __COUNTER_0_BTN_FWBW_PLAY_FW    := 41
+    define __COUNTER_LAST_BTN_FWBW_PLAY_BW := 88
+    define __COUNTER_LAST_BTN_BW_PLAY_BW   := 84
+
 
 { CONSTANTS _____________________________________________________________________________________ }
     {{ UI }}
@@ -290,8 +303,13 @@
 
         declare read SEQ.showing_target [ 2 ] // 2 sides, indices of the showing target
 
+        { this is the permanent steps data defined by the user }
         declare read %SEQ.data.i [ 2, 5, 32 ] // side, target, step value
         declare read ?SEQ.data.f [ 2, 5, 32 ] // side, target, step value
+
+        { this is the volatile data altered by the flux randomizer influence }
+        declare read %SEQ.data.flux.i [ 2, 5, 32 ] // side, target, step value
+        declare read ?SEQ.data.flux.f [ 2, 5, 32 ] // side, target, step value
 
         declare SEQ.DUAL.current_block [ 2 ] := (-1)
         declare SEQ.JOIN.current_block       :=  -1
@@ -300,7 +318,7 @@
         declare read SEQ.flux_rand_intensity [ 2, 5 ]
 
         declare read layers.seq_play_direction [ 2 ]
-        declare seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
+        declare read seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
 
         declare read SEQ.rate [ 2 ] // one for each side
 
@@ -439,6 +457,7 @@
     //fn007_update_block_and_steps_ts
     declare fn007.a.side
     declare fn007.l.counter
+    declare fn007.l.counter2
     declare fn007.l.direction_index
 
     //fn008_get_current_seq_join_block
@@ -526,11 +545,58 @@
     declare fn021.l.counter
     declare fn021.r.active_index
 
+    //fn022_get_flux_values
+    declare  fn022.a.side
+    declare  fn022.a.step_counter
+    declare  fn022.a.block_step_index
+    declare  fn022.a.step_velocity
+    declare  fn022.a.step_pitch
+    declare  fn022.a.step_octave
+    declare  fn022.a.step_pan
+    declare  fn022.a.step_filter
 
+    declare  fn022.l.flux_velo
+    declare  fn022.l.flux_pitch
+    declare  fn022.l.flux_octave
+    declare  fn022.l.flux_pan
+    declare  fn022.l.flux_filter
+    declare  fn022.l.flux_velo_seed
+    declare  fn022.l.flux_pitch_seed
+    declare  fn022.l.flux_octave_seed
+    declare  fn022.l.flux_pan_seed
+    declare  fn022.l.flux_filter_seed
 
+    declare  fn022.r.step_velocity
+    declare  fn022.r.step_pitch
+    declare  fn022.r.step_octave
+    declare  fn022.r.step_pan
+    declare  fn022.r.step_filter
+    declare  fn022.r.step_lp_filter
+    declare  fn022.r.step_hp_filter
 
+    //fn023.r.check
+    declare fn023.a.counter
+    declare fn023.a.side
+    declare fn023.r.check
 
+    //fn024_update_flux_data_and_ui
+    declare  fn024.a.step_velocity   
+    declare  fn024.a.step_pitch      
+    declare  fn024.a.step_octave     
+    declare  fn024.a.step_pan        
+    declare  fn024.a.step_filter     
+    declare  fn024.a.step_lp_filter  
+    declare  fn024.a.step_hp_filter  
+    declare  fn024.a.side            
+    declare  fn024.a.step_counter    
+    declare  fn024.a.block_step_index
+    declare ~fn024.l.picture_state
+    declare  fn024.l.pan_data
 
+    //fn025_update_all_block_steps
+    declare fn025.a.side
+    declare fn025.l.counter2
+    declare fn025.l.counter
 
 
 

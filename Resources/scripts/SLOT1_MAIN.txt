@@ -1,4 +1,4 @@
-{ Compiled on Fri Mar  7 15:27:54 2025 }
+{ Compiled on Mon Mar 10 10:42:53 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -1788,6 +1788,18 @@ on init
   declare const $SEQ__data__f__SIZE_D1 := 2
   declare const $SEQ__data__f__SIZE_D2 := 5
   declare const $SEQ__data__f__SIZE_D3 := 32
+  declare %_SEQ__data__flux__i[2*5*32]
+  make_persistent(%_SEQ__data__flux__i)
+  read_persistent_var(%_SEQ__data__flux__i)
+  declare const $SEQ__data__flux__i__SIZE_D1 := 2
+  declare const $SEQ__data__flux__i__SIZE_D2 := 5
+  declare const $SEQ__data__flux__i__SIZE_D3 := 32
+  declare ?_SEQ__data__flux__f[2*5*32]
+  make_persistent(?_SEQ__data__flux__f)
+  read_persistent_var(?_SEQ__data__flux__f)
+  declare const $SEQ__data__flux__f__SIZE_D1 := 2
+  declare const $SEQ__data__flux__f__SIZE_D2 := 5
+  declare const $SEQ__data__flux__f__SIZE_D3 := 32
   declare %SEQ__DUAL__current_block[2] := (-1)
   declare $SEQ__JOIN__current_block := -1
   declare %_SEQ__flux_rand_intensity[2*5]
@@ -1799,6 +1811,8 @@ on init
   make_persistent(%layers__seq_play_direction)
   read_persistent_var(%layers__seq_play_direction)
   declare %seq__direction_status[2]
+  make_persistent(%seq__direction_status)
+  read_persistent_var(%seq__direction_status)
   declare %SEQ__rate[2]
   make_persistent(%SEQ__rate)
   read_persistent_var(%SEQ__rate)
@@ -1912,6 +1926,7 @@ on init
   declare $fn006__l__mode_side
   declare $fn007__a__side
   declare $fn007__l__counter
+  declare $fn007__l__counter2
   declare $fn007__l__direction_index
   declare $fn008__l__block_counter
   declare ~fn008__a__x_coord
@@ -1970,6 +1985,49 @@ on init
   declare $fn021__a__side
   declare $fn021__l__counter
   declare $fn021__r__active_index
+  declare $fn022__a__side
+  declare $fn022__a__step_counter
+  declare $fn022__a__block_step_index
+  declare $fn022__a__step_velocity
+  declare $fn022__a__step_pitch
+  declare $fn022__a__step_octave
+  declare $fn022__a__step_pan
+  declare $fn022__a__step_filter
+  declare $fn022__l__flux_velo
+  declare $fn022__l__flux_pitch
+  declare $fn022__l__flux_octave
+  declare $fn022__l__flux_pan
+  declare $fn022__l__flux_filter
+  declare $fn022__l__flux_velo_seed
+  declare $fn022__l__flux_pitch_seed
+  declare $fn022__l__flux_octave_seed
+  declare $fn022__l__flux_pan_seed
+  declare $fn022__l__flux_filter_seed
+  declare $fn022__r__step_velocity
+  declare $fn022__r__step_pitch
+  declare $fn022__r__step_octave
+  declare $fn022__r__step_pan
+  declare $fn022__r__step_filter
+  declare $fn022__r__step_lp_filter
+  declare $fn022__r__step_hp_filter
+  declare $fn023__a__counter
+  declare $fn023__a__side
+  declare $fn023__r__check
+  declare $fn024__a__step_velocity
+  declare $fn024__a__step_pitch
+  declare $fn024__a__step_octave
+  declare $fn024__a__step_pan
+  declare $fn024__a__step_filter
+  declare $fn024__a__step_lp_filter
+  declare $fn024__a__step_hp_filter
+  declare $fn024__a__side
+  declare $fn024__a__step_counter
+  declare $fn024__a__block_step_index
+  declare ~fn024__l__picture_state
+  declare $fn024__l__pan_data
+  declare $fn025__a__side
+  declare $fn025__l__counter2
+  declare $fn025__l__counter
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__LEFT),$CONTROL_PAR_MOUSE_MODE,2)
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__RIGHT),$CONTROL_PAR_MOUSE_MODE,2)
   set_control_par(get_ui_id(?xypad_MAIN__SEQ__join),$CONTROL_PAR_MOUSE_MODE,2)
@@ -2359,57 +2417,6 @@ function PLAY_NOTE_NCB
   set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_ALLOW_GROUP,1,$pn_ncb__a__side)
 end function
 
-function fn007_update_block_and_steps_ts
-  if ($switch_MAIN__SEQ__combine=0)
-    if (%seq__direction_status[$fn007__a__side]=0)
-      inc(%SEQ__DUAL__current_block[$fn007__a__side])
-      if (%SEQ__DUAL__current_block[$fn007__a__side]>3)
-        if (%layers__seq_play_direction[$fn007__a__side]=2)
-          %SEQ__DUAL__current_block[$fn007__a__side] := 3
-          %seq__direction_status[$fn007__a__side] := 1
-        else
-          %SEQ__DUAL__current_block[$fn007__a__side] := 0
-        end if
-      end if
-      %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
-      $s__i := 0
-      while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
-        %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
-        inc($s__i)
-      end while
-    else
-      if (%seq__direction_status[$fn007__a__side]=1)
-        dec(%SEQ__DUAL__current_block[$fn007__a__side])
-        if (%SEQ__DUAL__current_block[$fn007__a__side]<0)
-          if (%layers__seq_play_direction[$fn007__a__side]=2)
-            %SEQ__DUAL__current_block[$fn007__a__side] := 0
-            %seq__direction_status[$fn007__a__side] := 0
-          else
-            %SEQ__DUAL__current_block[$fn007__a__side] := 3
-          end if
-        end if
-        %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
-        $s__i := 0
-        while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
-          %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
-          inc($s__i)
-        end while
-      end if
-    end if
-  else
-    inc($SEQ__JOIN__current_block)
-    if ($SEQ__JOIN__current_block>7)
-      $SEQ__JOIN__current_block := 0
-    end if
-    $SEQ__JOIN__step_duration := %SEQ__rate[0]/(%SEQ__JOIN__step_count[$SEQ__JOIN__current_block]+1)
-    $s__i := 0
-    while ($s__i<=%SEQ__JOIN__step_count[$SEQ__JOIN__current_block])
-      %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)
-      inc($s__i)
-    end while
-  end if
-end function
-
 function fn017_get_seq_target_data
   if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn017__a__side+0],$CONTROL_PAR_VALUE)=1)
     $fn017__r__velocity := 126*%_SEQ__data__i[32*5*$fn017__a__side+(32*0)+$fn017__a__step_counter+($fn017__a__block_step_index*8)]/1000000+1
@@ -2458,6 +2465,208 @@ function fn017_get_seq_target_data
   end if
 end function
 
+function fn022_get_flux_values
+  if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__seq__flux_rand_power[$fn022__a__side],$CONTROL_PAR_VALUE)=1))
+    if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__a__side+0],$CONTROL_PAR_VALUE)=1)
+      $fn022__l__flux_velo_seed := real_to_int(127.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$fn022__a__side+0])/100.0))
+      $fn022__l__flux_velo := random(-1*$fn022__l__flux_velo_seed,$fn022__l__flux_velo_seed)
+      $fn022__r__step_velocity := $fn022__a__step_velocity+$fn022__l__flux_velo
+      if ($fn022__r__step_velocity>127)
+        $fn022__r__step_velocity := 127
+      end if
+      if ($fn022__r__step_velocity<1)
+        $fn022__r__step_velocity := 1
+      end if
+    end if
+    if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__a__side+1],$CONTROL_PAR_VALUE)=1)
+      $fn022__l__flux_pitch_seed := real_to_int(12.0*int_to_real(%_SEQ__flux_rand_intensity[5*$fn022__a__side+1]))
+      $fn022__l__flux_pitch := random(-1000*$fn022__l__flux_pitch_seed,$fn022__l__flux_pitch_seed*1000)
+      $fn022__r__step_pitch := $fn022__a__step_pitch+$fn022__l__flux_pitch
+      if ($fn022__r__step_pitch>1200000)
+        $fn022__r__step_pitch := 1200000
+      end if
+      if ($fn022__r__step_pitch<-1200000)
+        $fn022__r__step_pitch := -1200000
+      end if
+    end if
+    if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__a__side+2],$CONTROL_PAR_VALUE)=1)
+      $fn022__l__flux_octave_seed := real_to_int(2.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$fn022__a__side+2])/100.0))
+      $fn022__l__flux_octave := random(-1*$fn022__l__flux_octave_seed,$fn022__l__flux_octave_seed)
+      $fn022__r__step_octave := $fn022__a__step_octave+$fn022__l__flux_octave
+      if ($fn022__r__step_octave>2)
+        $fn022__r__step_octave := 2
+      end if
+      if ($fn022__r__step_octave<-2)
+        $fn022__r__step_octave := -2
+      end if
+    end if
+    if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__a__side+3],$CONTROL_PAR_VALUE)=1)
+      $fn022__l__flux_pan_seed := real_to_int(1000.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$fn022__a__side+3])/100.0))
+      $fn022__l__flux_pan := random(-1*$fn022__l__flux_pan_seed,$fn022__l__flux_pan_seed)
+      $fn022__r__step_pan := $fn022__a__step_pan+$fn022__l__flux_pan
+      if ($fn022__r__step_pan>1000)
+        $fn022__r__step_pan := 1000
+      end if
+      if ($fn022__r__step_pan<-1000)
+        $fn022__r__step_pan := -1000
+      end if
+    end if
+    if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__a__side+4],$CONTROL_PAR_VALUE)=1)
+      $fn022__l__flux_filter_seed := real_to_int(1000000.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$fn022__a__side+4])/150.0))
+      $fn022__l__flux_filter := random(-1*$fn022__l__flux_filter_seed,$fn022__l__flux_filter_seed)
+      $fn022__r__step_filter := $fn022__a__step_filter+$fn022__l__flux_filter
+      if ($fn022__r__step_filter>850000)
+        $fn022__r__step_filter := 850000
+      end if
+      if ($fn022__r__step_filter<150000)
+        $fn022__r__step_filter := 150000
+      end if
+      if ($fn022__r__step_filter>500000)
+        $fn022__r__step_lp_filter := 1000000
+        $fn022__r__step_hp_filter := ($fn022__r__step_filter-500000)*2
+      else
+        $fn022__r__step_lp_filter := $fn022__r__step_filter*2
+        $fn022__r__step_hp_filter := 0
+      end if
+    end if
+    if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__a__side+%SEQ__showing_target[$fn022__a__side]],$CONTROL_PAR_VALUE)=1)
+      select (%SEQ__showing_target[$fn022__a__side])
+        case 0
+          ~fn018__a__value := int_to_real($fn022__r__step_velocity)/127.0
+        case 1
+          ~fn018__a__value := int_to_real($fn022__r__step_pitch+1200000)/2400000.0
+        case 2
+          ~fn018__a__value := int_to_real($fn022__r__step_octave+2)/4.0
+        case 3
+          ~fn018__a__value := int_to_real($fn022__r__step_pan+1000)/2000.0
+        case 4
+          ~fn018__a__value := int_to_real($fn022__r__step_filter)/850000.0
+      end select
+      $fn018__a__side := $fn022__a__side
+      $fn018__a__step_index := $fn022__a__step_counter+($fn022__a__block_step_index*8)
+      call fn018_set_seq_step_picture_state
+    end if
+  end if
+end function
+
+function fn024_update_flux_data_and_ui
+  %_SEQ__data__flux__i[32*5*$fn024__a__side+(32*0)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := $fn024__a__step_velocity
+  ?_SEQ__data__flux__f[32*5*$fn024__a__side+(32*0)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := int_to_real($fn024__a__step_velocity)/127.0
+  %_SEQ__data__flux__i[32*5*$fn024__a__side+(32*1)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := $fn024__a__step_pitch
+  ?_SEQ__data__flux__f[32*5*$fn024__a__side+(32*1)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := int_to_real($fn024__a__step_pitch+1200000)/2400000.0
+  %_SEQ__data__flux__i[32*5*$fn024__a__side+(32*2)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := $fn024__a__step_octave
+  ?_SEQ__data__flux__f[32*5*$fn024__a__side+(32*2)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := int_to_real($fn024__a__step_octave+2)/4.0
+  %_SEQ__data__flux__i[32*5*$fn024__a__side+(32*2)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := $fn024__a__step_pan
+  ?_SEQ__data__flux__f[32*5*$fn024__a__side+(32*2)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := int_to_real($fn024__a__step_pan+1000)/2000.0
+  %_SEQ__data__flux__i[32*5*$fn024__a__side+(32*2)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := $fn024__a__step_filter
+  ?_SEQ__data__flux__f[32*5*$fn024__a__side+(32*2)+$fn024__a__step_counter+($fn024__a__block_step_index*8)] := int_to_real($fn024__a__step_filter)/1000000.0
+  select (%SEQ__showing_target[$fn024__a__side])
+    case 0
+      ~fn024__l__picture_state := int_to_real($fn024__a__step_velocity)/127.0
+    case 1
+      ~fn024__l__picture_state := int_to_real($fn024__a__step_pitch+1200000)/2400000.0
+    case 2
+      ~fn024__l__picture_state := int_to_real($fn024__a__step_octave+2)/4.0
+    case 3
+      ~fn024__l__picture_state := int_to_real($fn024__a__step_pan+1000)/2000.0
+    case 4
+      ~fn024__l__picture_state := int_to_real($fn024__a__step_filter)/1000000.0
+  end select
+  set_control_par(%_UIID_MAIN__seq__step[32*$fn024__a__side+$fn024__a__step_counter+($fn024__a__block_step_index*8)],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($SEQ_XY_H-1)*~fn024__l__picture_state))
+end function
+
+function fn025_update_all_block_steps
+  if (%SEQ__DUAL__current_block[$fn025__a__side]=0 and (%seq__direction_status[$fn025__a__side]=0) or (%SEQ__DUAL__current_block[$fn025__a__side]=3 and (%seq__direction_status[$fn025__a__side]=1)))
+    $fn025__l__counter2 := 0
+    while ($fn025__l__counter2<=3)
+      if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn025__a__side+$fn025__l__counter2],$CONTROL_PAR_VALUE)=1)
+        $fn025__l__counter := 0
+        while ($fn025__l__counter<=%_SEQ__DUAL__step_count[4*$fn025__a__side+$fn025__l__counter2])
+          $fn017__a__side := $fn025__a__side
+          $fn017__a__step_counter := $fn025__l__counter
+          $fn017__a__block_step_index := $fn025__l__counter2
+          call fn017_get_seq_target_data
+          $fn022__a__side := $fn025__a__side
+          $fn022__a__step_counter := $fn025__l__counter
+          $fn022__a__block_step_index := $fn025__l__counter2
+          $fn022__a__step_velocity := $fn017__r__velocity
+          $fn022__a__step_pitch := $fn017__r__pitch
+          $fn022__a__step_octave := $fn017__r__octave
+          $fn022__a__step_pan := $fn017__r__pan
+          $fn022__a__step_filter := $fn017__r__filter_value
+          call fn022_get_flux_values
+          $fn024__a__step_velocity := $fn022__r__step_velocity
+          $fn024__a__step_pitch := $fn022__r__step_pitch
+          $fn024__a__step_octave := $fn022__r__step_octave
+          $fn024__a__step_pan := $fn022__r__step_pan
+          $fn024__a__step_filter := $fn022__r__step_filter
+          $fn024__a__step_lp_filter := $fn022__r__step_lp_filter
+          $fn024__a__step_hp_filter := $fn022__r__step_hp_filter
+          $fn024__a__side := $fn025__a__side
+          $fn024__a__step_counter := $fn025__l__counter
+          $fn024__a__block_step_index := $fn025__l__counter2
+          call fn024_update_flux_data_and_ui
+          inc($fn025__l__counter)
+        end while
+      end if
+      inc($fn025__l__counter2)
+    end while
+  end if
+end function
+
+function fn007_update_block_and_steps_ts
+  if ($switch_MAIN__SEQ__combine=0)
+    if (%seq__direction_status[$fn007__a__side]=0)
+      inc(%SEQ__DUAL__current_block[$fn007__a__side])
+      if (%SEQ__DUAL__current_block[$fn007__a__side]>3)
+        if (%layers__seq_play_direction[$fn007__a__side]=2)
+          %SEQ__DUAL__current_block[$fn007__a__side] := 3
+          %seq__direction_status[$fn007__a__side] := 1
+        else
+          %SEQ__DUAL__current_block[$fn007__a__side] := 0
+        end if
+      end if
+      %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
+      $s__i := 0
+      while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
+        %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
+        inc($s__i)
+      end while
+    else
+      if (%seq__direction_status[$fn007__a__side]=1)
+        dec(%SEQ__DUAL__current_block[$fn007__a__side])
+        if (%SEQ__DUAL__current_block[$fn007__a__side]<0)
+          if (%layers__seq_play_direction[$fn007__a__side]=2)
+            %SEQ__DUAL__current_block[$fn007__a__side] := 0
+            %seq__direction_status[$fn007__a__side] := 0
+          else
+            %SEQ__DUAL__current_block[$fn007__a__side] := 3
+          end if
+        end if
+        %SEQ__DUAL__step_duration[$fn007__a__side] := %SEQ__rate[$fn007__a__side]/(%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]]+1)
+        $s__i := 0
+        while ($s__i<=%_SEQ__DUAL__step_count[4*$fn007__a__side+%SEQ__DUAL__current_block[$fn007__a__side]])
+          %_SEQ__DUAL__steps_timestamps[8*4*$fn007__a__side+(8*%SEQ__DUAL__current_block[$fn007__a__side])+$s__i] := $ENGINE_UPTIME+($s__i*%SEQ__DUAL__step_duration[$fn007__a__side])
+          inc($s__i)
+        end while
+      end if
+    end if
+    $fn025__a__side := $fn007__a__side
+    call fn025_update_all_block_steps
+  else
+    inc($SEQ__JOIN__current_block)
+    if ($SEQ__JOIN__current_block>7)
+      $SEQ__JOIN__current_block := 0
+    end if
+    $SEQ__JOIN__step_duration := %SEQ__rate[0]/(%SEQ__JOIN__step_count[$SEQ__JOIN__current_block]+1)
+    $s__i := 0
+    while ($s__i<=%SEQ__JOIN__step_count[$SEQ__JOIN__current_block])
+      %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)
+      inc($s__i)
+    end while
+  end if
+end function
+
 function PLAY_LCB
   select (%seq__direction_status[$p_lcb__a__side])
     case 0
@@ -2468,10 +2677,6 @@ function PLAY_LCB
       end if
   end select
   if ($switch_MAIN__SEQ__combine=0 and (%_SEQ__DUAL__steps_timestamps[8*4*$p_lcb__a__side+(8*%SEQ__DUAL__current_block[$p_lcb__a__side])+$p_lcb__l__ts_counter]=$ENGINE_UPTIME))
-    message($lcb_play_side & " | play LCB -----> step : " & $SEQ__ts_counter & " | block: " & %SEQ__DUAL__current_block[$lcb_play_side] & " play dir: " & %layers__seq_play_direction[$lcb_play_side])
-    message("    PLAY LCB: dir BACKW | step inv " & $p_lcb__l__ts_counter)
-    message("    SEQ.DUAL.step_count: " & %_SEQ__DUAL__step_count[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]])
-    message("    step counter: " & $SEQ__ts_counter)
     $lcb_block_counter := 0
     while ($lcb_block_counter<=3)
       if ($lcb_block_counter=%SEQ__DUAL__current_block[$lcb_play_side])
@@ -2500,87 +2705,6 @@ function PLAY_LCB
           $SEQ__step_filter := $fn017__r__filter_value
           $SEQ__step_lp_filter := $fn017__r__lp_filter_value
           $SEQ__step_hp_filter := $fn017__r__hp_filter_value
-          if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__seq__flux_rand_power[$p_lcb__a__side],$CONTROL_PAR_VALUE)=1))
-            if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+0],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_velo_seed := real_to_int(127.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+0])/100.0))
-              $SEQ__flux_velo := random(-1*$SEQ__flux_velo_seed,$SEQ__flux_velo_seed)
-              $SEQ__step_velocity := $SEQ__step_velocity+$SEQ__flux_velo
-              if ($SEQ__step_velocity>127)
-                $SEQ__step_velocity := 127
-              end if
-              if ($SEQ__step_velocity<1)
-                $SEQ__step_velocity := 1
-              end if
-            end if
-            if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+1],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_pitch_seed := real_to_int(12.0*int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+1]))
-              $SEQ__flux_pitch := random(-1000*$SEQ__flux_pitch_seed,$SEQ__flux_pitch_seed*1000)
-              $SEQ__step_pitch := $SEQ__step_pitch+$SEQ__flux_pitch
-              if ($SEQ__step_pitch>1200000)
-                $SEQ__step_pitch := 1200000
-              end if
-              if ($SEQ__step_pitch<-1200000)
-                $SEQ__step_pitch := -1200000
-              end if
-            end if
-            if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+2],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_octave_seed := real_to_int(2.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+2])/100.0))
-              $SEQ__flux_octave := random(-1*$SEQ__flux_octave_seed,$SEQ__flux_octave_seed)
-              $SEQ__step_octave := $SEQ__step_octave+$SEQ__flux_octave
-              if ($SEQ__step_octave>2)
-                $SEQ__step_octave := 2
-              end if
-              if ($SEQ__step_octave<-2)
-                $SEQ__step_octave := -2
-              end if
-            end if
-            if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+3],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_pan_seed := real_to_int(1000.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+3])/100.0))
-              $SEQ__flux_pan := random(-1*$SEQ__flux_pan_seed,$SEQ__flux_pan_seed)
-              $SEQ__step_pan := $SEQ__step_pan+$SEQ__flux_pan
-              if ($SEQ__step_pan>1000)
-                $SEQ__step_pan := 1000
-              end if
-              if ($SEQ__step_pan<-1000)
-                $SEQ__step_pan := -1000
-              end if
-            end if
-            if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+4],$CONTROL_PAR_VALUE)=1)
-              $SEQ__flux_filter_seed := real_to_int(1000000.0*(int_to_real(%_SEQ__flux_rand_intensity[5*$p_lcb__a__side+4])/150.0))
-              $SEQ__flux_filter := random(-1*$SEQ__flux_filter_seed,$SEQ__flux_filter_seed)
-              $SEQ__step_filter := $SEQ__step_filter+$SEQ__flux_filter
-              if ($SEQ__step_filter>850000)
-                $SEQ__step_filter := 850000
-              end if
-              if ($SEQ__step_filter<150000)
-                $SEQ__step_filter := 150000
-              end if
-              if ($SEQ__step_filter>500000)
-                $SEQ__step_lp_filter := 1000000
-                $SEQ__step_hp_filter := ($SEQ__step_filter-500000)*2
-              else
-                $SEQ__step_lp_filter := $SEQ__step_filter*2
-                $SEQ__step_hp_filter := 0
-              end if
-            end if
-            if (get_control_par(%_UIID_MAIN__seq__target_power[5*$p_lcb__a__side+%SEQ__showing_target[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1)
-              select (%SEQ__showing_target[$p_lcb__a__side])
-                case 0
-                  ~fn018__a__value := int_to_real($SEQ__step_velocity)/127.0
-                case 1
-                  ~fn018__a__value := int_to_real($SEQ__step_pitch+1200000)/2400000.0
-                case 2
-                  ~fn018__a__value := int_to_real($SEQ__step_octave+2)/4.0
-                case 3
-                  ~fn018__a__value := int_to_real($SEQ__step_pan+1000)/2000.0
-                case 4
-                  ~fn018__a__value := int_to_real($SEQ__step_filter)/850000.0
-              end select
-              $fn018__a__side := $p_lcb__a__side
-              $fn018__a__step_index := $fn017__a__step_counter+(%SEQ__DUAL__current_block[$p_lcb__a__side]*8)
-              call fn018_set_seq_step_picture_state
-            end if
-          end if
           if ($SEQ__step_velocity>1)
             %_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count] := play_note($SEQ__key_count,$SEQ__step_velocity,-1,%SEQ__DUAL__step_duration[$p_lcb__a__side]*500)
             set_event_par_arr(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
