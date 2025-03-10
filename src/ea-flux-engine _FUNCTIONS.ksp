@@ -581,7 +581,6 @@ function fn020_update_seq_target_off_label
         UIID_MAIN.seq.off_label [ fn020.a.side ] -> picture := "label_seq_steps_bg"
         UIID_MAIN.seq.off_label [ fn020.a.side ] -> text := "SEQUENCER IS OFF"
     end if
-
 end function
 
 function fn21_get_seq_target_active_activator
@@ -819,6 +818,7 @@ function fn024_update_flux_data_and_ui
         SEQ_TARGET_VELO,                                    ...
         fn024.a.step_counter + fn024.a.block_step_index * 8 ...
     ] := fn024.a.step_velocity
+
     SEQ.data.flux.f [                                       ...
         fn024.a.side,                                       ...
         SEQ_TARGET_VELO,                                    ...
@@ -854,29 +854,28 @@ function fn024_update_flux_data_and_ui
     {{ PAN }}
     SEQ.data.flux.i [                                       ...
         fn024.a.side,                                       ...
-        SEQ_TARGET_OCTAVE,                                  ...
+        SEQ_TARGET_PAN,                                     ...
         fn024.a.step_counter + fn024.a.block_step_index * 8 ...
     ] := fn024.a.step_pan
 
     SEQ.data.flux.f [                                       ...
         fn024.a.side,                                       ...
-        SEQ_TARGET_OCTAVE,                                  ...
+        SEQ_TARGET_PAN,                                     ...
         fn024.a.step_counter + fn024.a.block_step_index * 8 ...
     ] := float(fn024.a.step_pan+1000)/2000.0
 
     {{ FILTER }}
     SEQ.data.flux.i [                                       ...
         fn024.a.side,                                       ...
-        SEQ_TARGET_OCTAVE,                                  ...
+        SEQ_TARGET_FILTER,                                  ...
         fn024.a.step_counter + fn024.a.block_step_index * 8 ...
     ] := fn024.a.step_filter
 
     SEQ.data.flux.f [                                       ...
         fn024.a.side,                                       ...
-        SEQ_TARGET_OCTAVE,                                  ...
+        SEQ_TARGET_FILTER,                                  ...
         fn024.a.step_counter + fn024.a.block_step_index * 8 ...
     ] := float(fn024.a.step_filter)/1000000.0
-
 
     select(SEQ.showing_target [ fn024.a.side ])
         case SEQ_TARGET_VELO
@@ -934,6 +933,82 @@ function fn025_update_all_block_steps
         end for
     end if
 end function
+
+function fn026_get_seq_fluxxed_target_data
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_VELO ] -> value = __ON
+        fn026.r.velocity := (                                       ...
+            SEQ.data.flux.i [                                       ...
+                fn026.a.side,                                       ...
+                SEQ_TARGET_VELO,                                    ...
+                fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+            ] )
+    else
+        fn026.r.velocity := layers.note_velo [ fn026.a.side, fn026.a.key_note ]
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_PITCH ] -> value = __ON
+        fn026.r.pitch := (                                          ...
+            SEQ.data.flux.i [                                       ...
+                fn026.a.side,                                       ...
+                SEQ_TARGET_PITCH,                                   ...
+                fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+            ] )
+    else
+        fn026.r.pitch := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_OCTAVE ] -> value = __ON
+        fn026.r.octave := (                                         ...
+            SEQ.data.flux.i [                                       ...
+                fn026.a.side,                                       ...
+                SEQ_TARGET_OCTAVE,                                  ...
+                fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+            ] )
+    else
+        fn026.r.octave := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_PAN ] -> value = __ON
+        fn026.l.pan_data :=                                     ...
+        SEQ.data.flux.i [                                       ...
+            fn026.a.side,                                       ...
+            SEQ_TARGET_PAN,                                     ...
+            fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+        ]
+
+        fn026.r.pan := fn026.l.pan_data 
+    else
+        fn026.r.pan := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_FILTER ] -> value = __ON
+        fn026.r.filter_status := __ON
+        fn026.l.filter_data   :=                                ...
+        SEQ.data.flux.i [                                       ...
+            fn026.a.side,                                       ...
+            SEQ_TARGET_FILTER,                                  ...
+            fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+        ]
+        fn026.r.filter_value := fn026.l.filter_data
+        if fn026.l.filter_data < 490000  { low pass }
+            fn026.r.lp_filter_value := fn026.l.filter_data * 2
+            fn026.r.hp_filter_value := 0
+        else                             { high pass }
+            if fn026.l.filter_data > 510000
+                fn026.r.lp_filter_value := 1000000
+                fn026.r.hp_filter_value := (fn026.l.filter_data - 500000) * 2
+            else { center point, both filters off }
+                fn026.r.lp_filter_value := 1000000
+                fn026.r.hp_filter_value := 0
+            end if 
+        end if
+    else
+        fn026.r.filter_status := __OFF
+        fn026.r.filter_value  := 500000
+    end if
+end function
+
+
 
 function PLAY_NOTE_NCB
     layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ] := play_note(pn_ncb.a.note, pn_ncb.a.velo, -1, -1)
@@ -995,19 +1070,19 @@ function PLAY_LCB
 
                     // end if
 
-                    fn017.a.side             := p_lcb.a.side
-                    fn017.a.key_note         := SEQ.key_count
-                    fn017.a.step_counter     := SEQ.ts_counter
-                    fn017.a.block_step_index := SEQ.DUAL.current_block [ fn017.a.side ]
-                    call fn017_get_seq_target_data
+                    fn026.a.side             := p_lcb.a.side
+                    fn026.a.key_note         := SEQ.key_count
+                    fn026.a.step_counter     := SEQ.ts_counter
+                    fn026.a.block_step_index := SEQ.DUAL.current_block [ fn026.a.side ]
+                    call fn026_get_seq_fluxxed_target_data
                     { return values from fn017_get_seq_target_data() }
-                    SEQ.step_velocity  := fn017.r.velocity
-                    SEQ.step_pitch     := fn017.r.pitch * 100000
-                    SEQ.step_octave    := fn017.r.octave
-                    SEQ.step_pan       := fn017.r.pan
-                    SEQ.step_filter    := fn017.r.filter_value
-                    SEQ.step_lp_filter := fn017.r.lp_filter_value
-                    SEQ.step_hp_filter := fn017.r.hp_filter_value
+                    SEQ.step_velocity  := fn026.r.velocity
+                    SEQ.step_pitch     := fn026.r.pitch
+                    SEQ.step_octave    := fn026.r.octave
+                    SEQ.step_pan       := fn026.r.pan
+                    SEQ.step_filter    := fn026.r.filter_value
+                    SEQ.step_lp_filter := fn026.r.lp_filter_value
+                    SEQ.step_hp_filter := fn026.r.hp_filter_value
 
                     if SEQ.step_velocity > 1
                         layers.note_events [ p_lcb.a.side, SEQ.key_count ] := ...
@@ -1032,7 +1107,7 @@ function PLAY_LCB
                             SEQ.step_pan, 0 )
 
                         { filter seq setting }
-                        if fn017.r.filter_status = __ON
+                        if fn026.r.filter_status = __ON
                             set_engine_par(ENGINE_PAR_CUTOFF, SEQ.step_lp_filter, __NO_GROUP, __LP_FILTER_SLOT, NI_BUS_OFFSET+p_lcb.a.side)
                             set_engine_par(ENGINE_PAR_CUTOFF, SEQ.step_hp_filter, __NO_GROUP, __HP_FILTER_SLOT, NI_BUS_OFFSET+p_lcb.a.side)
                         else

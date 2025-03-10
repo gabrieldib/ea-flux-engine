@@ -598,6 +598,21 @@
     declare fn025.l.counter2
     declare fn025.l.counter
 
+    //fn026_get_seq_fluxxed_target_data
+    declare fn026.a.side
+    declare fn026.a.key_note
+    declare fn026.a.step_counter
+    declare fn026.a.block_step_index
+    declare fn026.l.pan_data
+    declare fn026.l.filter_data
+    declare fn026.r.velocity
+    declare fn026.r.pitch
+    declare fn026.r.octave
+    declare fn026.r.pan
+    declare fn026.r.filter_value
+    declare fn026.r.lp_filter_value
+    declare fn026.r.hp_filter_value
+    declare fn026.r.filter_status
 
 
 
