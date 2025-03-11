@@ -48,16 +48,6 @@ for i.i := 0 to 4
     UIID_MAIN.seq.target_selectors           [ i.i ] := UIID_MAIN.seq.target_selectors           [ 0 ] + i.i
 end for 
 
-for i.i := 0 to 4
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type             := MAIN.SEQ.TARGETS.FONT_OFF
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on          := MAIN.SEQ.TARGETS.FONT_ON
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_pressed := MAIN.SEQ.TARGETS.FONT_OFF_H
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.TARGETS.FONT_ON_H 
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_hover   := MAIN.SEQ.TARGETS.FONT_OFF_H
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_hover    := MAIN.SEQ.TARGETS.FONT_ON_H 
-    UIID_MAIN.seq.target_selectors [ i.i ] -> disable_text_shifting := __ON
-end for
-
 UIID_MAIN.seq.target_power [ __LEFT,  0 ] := get_ui_id(switch_MAIN.SEQ.LEFT.power.velocity)
 UIID_MAIN.seq.target_power [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.power.velocity)
 for i.i := 1 to 4
@@ -94,6 +84,54 @@ UIID_MAIN.seq.flux_rand_power [ __RIGHT ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.r
 
 UIID_MAIN.seq.off_label       [ __LEFT  ] := get_ui_id(label_MAIN.2SEQ.LEFT.off)
 UIID_MAIN.seq.off_label       [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.off)
+
+UIID_MAIN.seq.arp_power [ __LEFT  ] := get_ui_id(switch_MAIN.FLUXX.LEFT.arp.power)
+UIID_MAIN.seq.arp_power [ __RIGHT ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.arp.power)
+
+UIID_MAIN.seq.arp_menu [ __LEFT  ] := get_ui_id(switch_MAIN.ARP.LEFT.modeMenu)
+UIID_MAIN.seq.arp_menu [ __RIGHT ] := get_ui_id(switch_MAIN.ARP.RIGHT.modeMenu)
+
+UIID_MAIN.seq.flux_panels     [ __LEFT  ] := get_ui_id(panel_MAIN.2SEQ.LEFT.fluxxArp)
+UIID_MAIN.seq.flux_panels     [ __RIGHT ] := get_ui_id(panel_MAIN.2SEQ.RIGHT.fluxxArp)
+UIID_MAIN.seq.arp_mode_panels [ __LEFT  ] := get_ui_id(panel_MAIN.2SEQ.LEFT.arpModes)
+UIID_MAIN.seq.arp_mode_panels [ __RIGHT ] := get_ui_id(panel_MAIN.2SEQ.RIGHT.arpModes)
+UIID_MAIN.seq.arp_mode_panels_close_btn [ __LEFT  ] := get_ui_id(switch_MAIN.FX.LEFT.arp.menu.close)
+UIID_MAIN.seq.arp_mode_panels_close_btn [ __RIGHT ] := get_ui_id(switch_MAIN.FX.RIGHT.arp.menu.close)
+
+UIID_MAIN.seq.arp_menu_items [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FX.LEFT.arp.menu.0)
+UIID_MAIN.seq.arp_menu_items [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.arp.menu.0)
+for i.i := 1 to 5
+    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] := UIID_MAIN.seq.arp_menu_items [ __LEFT,  0 ] + i.i
+    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] := UIID_MAIN.seq.arp_menu_items [ __RIGHT, 0 ] + i.i
+end for
+
+{{ SETTING FONTS }}
+for i.i := 0 to 5
+    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> disable_text_shifting := __ON
+    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> disable_text_shifting := __ON
+end for
+
+for i.i := 0 to 4
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type             := MAIN.SEQ.TARGETS.FONT_OFF
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on          := MAIN.SEQ.TARGETS.FONT_ON
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_pressed := MAIN.SEQ.TARGETS.FONT_OFF_H
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.TARGETS.FONT_ON_H 
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_hover   := MAIN.SEQ.TARGETS.FONT_OFF_H
+    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_hover    := MAIN.SEQ.TARGETS.FONT_ON_H 
+    UIID_MAIN.seq.target_selectors [ i.i ] -> disable_text_shifting := __ON
+end for
 
 { PENDING this has to go to nka files: }
 import "ea-flux-engine DUAL-JOIN coordinates data.ksp"

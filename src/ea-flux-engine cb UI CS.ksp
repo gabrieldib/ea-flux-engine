@@ -506,4 +506,48 @@ on ui_controls
         end if
     end if
 
+
+    {{ ARP MODES MENU  }}
+    if NI_UI_ID = UIID_MAIN.seq.arp_menu [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.arp_menu [ __RIGHT ] 
+        uics_uiid_index := __LEFT
+        if NI_UI_ID = UIID_MAIN.seq.arp_menu [ __RIGHT ] 
+            uics_uiid_index := __RIGHT
+        end if
+        
+        UIID_MAIN.seq.arp_menu        [ uics_uiid_index  ] -> value := __OFF
+        UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
+        UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
+
+    end if
+
+
+    {{ ARP MODES MENU CLOSE BTN  }}
+    if NI_UI_ID = UIID_MAIN.seq.arp_mode_panels_close_btn [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.arp_mode_panels_close_btn [ __RIGHT ] 
+        uics_uiid_index := __LEFT
+        if NI_UI_ID = UIID_MAIN.seq.arp_mode_panels_close_btn [ __RIGHT ] 
+            uics_uiid_index := __RIGHT
+        end if
+        
+        UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
+        UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
+
+    end if
+
+
+    {{ ARP MODES BTNS }}
+    if  in_range(NI_UI_ID, UIID_MAIN.seq.arp_menu_items [ __LEFT, 0 ], UIID_MAIN.seq.arp_menu_items [ __LEFT, 5 ]) or ...
+        in_range(NI_UI_ID, UIID_MAIN.seq.arp_menu_items [ __RIGHT, 0 ], UIID_MAIN.seq.arp_menu_items [ __RIGHT, 5 ])
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.arp_menu_items [ __LEFT, 0 ]
+        uics_seq_side    := __LEFT
+        if in_range(NI_UI_ID, UIID_MAIN.seq.arp_menu_items [ __RIGHT, 0 ], UIID_MAIN.seq.arp_menu_items [ __RIGHT, 5 ])
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.arp_menu_items [ __RIGHT, 0 ]
+            uics_seq_side    := __RIGHT
+        end if
+
+        arp_mode [ uics_seq_side ] := uics_uiid_index
+
+        fn029.a.side    := uics_seq_side
+        fn029.a.index   := uics_uiid_index
+        call fn029_clear_arp_mode_btns
+    end if
 end on

@@ -53,8 +53,20 @@
     define __COUNTER_LAST_BTN_FWBW_PLAY_BW := 88
     define __COUNTER_LAST_BTN_BW_PLAY_BW   := 84
 
+    define __ARP_MODE_AS_PLAYED := 0
+    define __ARP_MODE_UP        := 1
+    define __ARP_MODE_DOWN      := 2
+    define __ARP_MODE_UP_DOWN   := 3
+    define __ARP_MODE_RANDOM    := 4
+    define __ARP_MODE_CHORD     := 5
+
 
 { CONSTANTS _____________________________________________________________________________________ }
+    {{ generic }}
+    declare hide_constants [ 2 ]
+        hide_constants [ 0 ] := HIDE_PART_NOTHING
+        hide_constants [ 1 ] := HIDE_WHOLE_CONTROL
+
     {{ UI }}
     // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
     declare SEQ.common_elements_data [ 200, 7 ] 
@@ -366,6 +378,9 @@
         declare lcb_counter1
         declare lcb_play_direction_index
 
+    {{ ARP }}
+        declare read arp_mode [ 2 ]
+
     {{ LFO }}
         declare read LFO_data [ 4 ]
             LFO_data [ LFO_WAVESHAPE ] := LFO_WAVESHAPE_SIN
@@ -614,5 +629,16 @@
     declare fn026.r.hp_filter_value
     declare fn026.r.filter_status
 
+    //fn027_play_lcb_core
+    declare fn027.a.side
+    declare fn027.a.note
+    declare fn027.a.step_counter
 
+    //fn028_update_arp_note_buffers
+    declare fn028.a.side
+
+    //fn029_clear_arp_mode_btns
+    declare fn029.a.side
+    declare fn029.a.index
+    declare fn029.l.counter
 

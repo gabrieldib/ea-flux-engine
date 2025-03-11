@@ -1,4 +1,4 @@
-// import "ARP/__ARP 03 functions.ksp"
+import "ARP/__ARP 03 functions.ksp"
 
 {{ MAIN }}
 function draw_seq
@@ -713,7 +713,15 @@ function fn022_get_flux_values
     end if
 end function 
 
-{{ play engine }}
+function fn029_clear_arp_mode_btns
+    for fn029.l.counter := 0 to 5
+        UIID_MAIN.seq.arp_menu_items [ fn029.a.side, fn029.l.counter ] -> value := __OFF
+    end for
+    UIID_MAIN.seq.arp_menu_items [ fn029.a.side, fn029.a.index ] -> value := __ON
+end function
+
+
+{{ play engine ____________________________________________________________________ }}
 function fn007_update_block_and_steps_ts
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
 
@@ -810,7 +818,7 @@ function fn023_check_block_start
     end if
 end function
 
-{ this function will update the %SEQ.data.flux.i/f arrays and the steps height on th UI in the current block }
+{ this function will update the SEQ.data.flux.i/f arrays and the steps height on th UI in the current block }
 function fn024_update_flux_data_and_ui
     {{ VELOCITY }}
     SEQ.data.flux.i [                                       ...
@@ -1008,6 +1016,103 @@ function fn026_get_seq_fluxxed_target_data
     end if
 end function
 
+function fn028_update_arp_note_buffers
+    if fn028.a.side = __LEFT
+        ARP.i := 0
+        while (ARP.i <= 127)
+            if (ARP.i < ARP.cursor [ fn028.a.side ] )
+                ARP.sorted_buffer_LEFT      [ ARP.i ] := ARP.note_buffer_LEFT [ ARP.i ]
+                ARP.sorted_vel_buffer_LEFT  [ ARP.i ] := ARP.vel_buffer_LEFT  [ ARP.i ]
+            else
+                ARP.sorted_buffer_LEFT     [ ARP.i ] := 0
+                ARP.sorted_vel_buffer_LEFT [ ARP.i ] := -1
+                ARP.note_buffer_LEFT       [ ARP.i ] := 0
+                ARP.vel_buffer_LEFT        [ ARP.i ] := -1
+            end if
+
+            inc(ARP.i)
+        end while
+        { using insertion sort here because the velocity buffer needs to follow the sorting of the note buffer }
+        ARP.o := 1
+        while ( ARP.o < num_elements(ARP.sorted_buffer_LEFT))
+            ARP.temp1 := ARP.sorted_buffer_LEFT     [ ARP.o]
+            ARP.temp2 := ARP.sorted_vel_buffer_LEFT [ ARP.o]
+
+            ARP.p :=  ARP.o - 1
+            while ( ARP.p >= 0 and ( ARP.sorted_buffer_LEFT [ ARP.p ] <  ARP.temp1 ) )
+                ARP.sorted_buffer_LEFT     [ ARP.p + 1] := ARP.sorted_buffer_LEFT     [ ARP.p ]
+                ARP.sorted_vel_buffer_LEFT [ ARP.p + 1] := ARP.sorted_vel_buffer_LEFT [ ARP.p ]
+                dec( ARP.p )
+            end while
+
+            ARP.sorted_buffer_LEFT     [ ARP.p + 1 ] :=  ARP.temp1
+            ARP.sorted_vel_buffer_LEFT [ ARP.p + 1 ] :=  ARP.temp2
+
+            inc( ARP.o)
+        end while
+
+        { create play buffers }
+        ARP.i := 0
+        while ( ARP.i <  ARP.cursor [ fn028.a.side ] )
+            ARP.play_buffer_LEFT          [ ARP.i ] := ARP.note_buffer_LEFT       [ ARP.i ]
+            ARP.play_up_buffer_LEFT       [ ARP.i ] := ARP.sorted_buffer_LEFT     [ ARP.cursor [ fn028.a.side ] - 1 -  ARP.i ]
+            ARP.play_down_buffer_LEFT     [ ARP.i ] := ARP.sorted_buffer_LEFT     [ ARP.i ]
+            ARP.play_vel_buffer_LEFT      [ ARP.i ] := ARP.vel_buffer_LEFT        [ ARP.i ]
+            ARP.play_up_vel_buffer_LEFT   [ ARP.i ] := ARP.sorted_vel_buffer_LEFT [ ARP.cursor [ fn028.a.side ] - 1 -  ARP.i ]
+            ARP.play_down_vel_buffer_LEFT [ ARP.i ] := ARP.sorted_vel_buffer_LEFT [ ARP.i ]
+
+            inc( ARP.i )
+        end while
+
+    else
+        ARP.i := 0
+        while (ARP.i <= 127)
+            if (ARP.i < ARP.cursor [ fn028.a.side ])
+                ARP.sorted_buffer_RIGHT      [ ARP.i ] := ARP.note_buffer_RIGHT [ ARP.i ]
+                ARP.sorted_vel_buffer_RIGHT  [ ARP.i ] := ARP.vel_buffer_RIGHT  [ ARP.i ]
+            else
+                ARP.sorted_buffer_RIGHT     [ ARP.i ] := 0
+                ARP.sorted_vel_buffer_RIGHT [ ARP.i ] := -1
+                ARP.note_buffer_RIGHT       [ ARP.i ] := 0
+                ARP.vel_buffer_RIGHT        [ ARP.i ] := -1
+            end if
+
+            inc(ARP.i)
+        end while
+        { using insertion sort here because the velocity buffer needs to follow the sorting of the note buffer }
+        ARP.o := 1
+        while ( ARP.o < num_elements(ARP.sorted_buffer_RIGHT))
+            ARP.temp1 := ARP.sorted_buffer_RIGHT     [ ARP.o]
+            ARP.temp2 := ARP.sorted_vel_buffer_RIGHT [ ARP.o]
+
+            ARP.p :=  ARP.o - 1
+            while ( ARP.p >= 0 and ( ARP.sorted_buffer_RIGHT [ ARP.p ] <  ARP.temp1 ) )
+                ARP.sorted_buffer_RIGHT     [ ARP.p + 1] := ARP.sorted_buffer_RIGHT     [ ARP.p ]
+                ARP.sorted_vel_buffer_RIGHT [ ARP.p + 1] := ARP.sorted_vel_buffer_RIGHT [ ARP.p ]
+                dec( ARP.p )
+            end while
+
+            ARP.sorted_buffer_RIGHT     [ ARP.p + 1 ] :=  ARP.temp1
+            ARP.sorted_vel_buffer_RIGHT [ ARP.p + 1 ] :=  ARP.temp2
+
+            inc( ARP.o)
+        end while
+
+        { create play buffers }
+        ARP.i := 0
+        while ( ARP.i <  ARP.cursor [ fn028.a.side ] )
+            ARP.play_buffer_RIGHT          [ ARP.i ] := ARP.note_buffer_RIGHT       [ ARP.i ]
+            ARP.play_up_buffer_RIGHT       [ ARP.i ] := ARP.sorted_buffer_RIGHT     [ ARP.cursor [ fn028.a.side ] - 1 -  ARP.i ]
+            ARP.play_down_buffer_RIGHT     [ ARP.i ] := ARP.sorted_buffer_RIGHT     [ ARP.i ]
+            ARP.play_vel_buffer_RIGHT      [ ARP.i ] := ARP.vel_buffer_RIGHT        [ ARP.i ]
+            ARP.play_up_vel_buffer_RIGHT   [ ARP.i ] := ARP.sorted_vel_buffer_RIGHT [ ARP.cursor [ fn028.a.side ] - 1 -  ARP.i ]
+            ARP.play_down_vel_buffer_RIGHT [ ARP.i ] := ARP.sorted_vel_buffer_RIGHT [ ARP.i ]
+
+            inc( ARP.i )
+        end while
+    end if
+end function
+
 
 
 function PLAY_NOTE_NCB
@@ -1015,6 +1120,41 @@ function PLAY_NOTE_NCB
     set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
     { PENDING: group as side here is just for testing}
     set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __ON,  pn_ncb.a.side)
+end function
+
+function fn027_play_lcb_core
+    if SEQ.step_velocity > 1
+        layers.note_events [ fn027.a.side, fn027.a.note ] := ...
+            play_note(                      ...
+                fn027.a.note,              ...
+                SEQ.step_velocity,          ...
+                -1,                         ...
+                SEQ.DUAL.step_duration [ fn027.a.side ] * 500     ...
+            )                               ...
+
+        set_event_par_arr(layers.note_events [ fn027.a.side, fn027.a.note ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
+        { PENDING: group here is just for testing example -> side }
+        set_event_par_arr(layers.note_events [ fn027.a.side, fn027.a.note ], EVENT_PAR_ALLOW_GROUP, __ON,  fn027.a.side)
+
+        { adjust event according to seq modulations }
+        change_tune( ...
+            layers.note_events [ fn027.a.side, fn027.a.note ], ...
+            SEQ.step_pitch + SEQ.step_octave * 1200000, 0)
+
+        change_pan( ...
+            layers.note_events [ fn027.a.side, fn027.a.note ], ...
+            SEQ.step_pan, 0 )
+
+        { filter seq setting }
+        if fn026.r.filter_status = __ON
+            set_engine_par(ENGINE_PAR_CUTOFF, SEQ.step_lp_filter, __NO_GROUP, __LP_FILTER_SLOT, NI_BUS_OFFSET+fn027.a.side)
+            set_engine_par(ENGINE_PAR_CUTOFF, SEQ.step_hp_filter, __NO_GROUP, __HP_FILTER_SLOT, NI_BUS_OFFSET+fn027.a.side)
+        else
+            set_engine_par(ENGINE_PAR_CUTOFF, 1000000, __NO_GROUP, __LP_FILTER_SLOT, NI_BUS_OFFSET+fn027.a.side)
+            set_engine_par(ENGINE_PAR_CUTOFF,       0, __NO_GROUP, __HP_FILTER_SLOT, NI_BUS_OFFSET+fn027.a.side)
+        end if
+
+    end if
 end function
 
 function PLAY_LCB
@@ -1053,7 +1193,7 @@ function PLAY_LCB
         end for
 
         { play }
-        if switch_MAIN.FLUXX.LEFT.arp.power = __OFF
+        if UIID_MAIN.seq.arp_power [ p_lcb.a.side ] -> value = __OFF
             for SEQ.key_count := 0 to 127
                 if KEY_DOWN[ SEQ.key_count ] = 1
                     // message(SEQ.key_count & " <-- key pressed")
@@ -1070,9 +1210,9 @@ function PLAY_LCB
 
                     // end if
 
-                    fn026.a.side             := p_lcb.a.side
-                    fn026.a.key_note         := SEQ.key_count
-                    fn026.a.step_counter     := SEQ.ts_counter
+                    fn026.a.side             := fn027.a.side
+                    fn026.a.key_note         := fn027.a.note
+                    fn026.a.step_counter     := fn027.a.step_counter
                     fn026.a.block_step_index := SEQ.DUAL.current_block [ fn026.a.side ]
                     call fn026_get_seq_fluxxed_target_data
                     { return values from fn017_get_seq_target_data() }
@@ -1084,42 +1224,173 @@ function PLAY_LCB
                     SEQ.step_lp_filter := fn026.r.lp_filter_value
                     SEQ.step_hp_filter := fn026.r.hp_filter_value
 
-                    if SEQ.step_velocity > 1
-                        layers.note_events [ p_lcb.a.side, SEQ.key_count ] := ...
-                            play_note(                      ...
-                                SEQ.key_count,              ...
-                                SEQ.step_velocity,          ...
-                                -1,                         ...
-                                SEQ.DUAL.step_duration [ p_lcb.a.side ] * 500     ...
-                            )                               ...
-
-                        set_event_par_arr(layers.note_events [ p_lcb.a.side, SEQ.key_count ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
-                        { PENDING: group here is just for testing example -> side }
-                        set_event_par_arr(layers.note_events [ p_lcb.a.side, SEQ.key_count ], EVENT_PAR_ALLOW_GROUP, __ON,  p_lcb.a.side)
-
-                        { adjust event according to seq modulations }
-                        change_tune( ...
-                            layers.note_events [ p_lcb.a.side, SEQ.key_count ], ...
-                            SEQ.step_pitch + SEQ.step_octave * 1200000, 0)
-
-                        change_pan( ...
-                            layers.note_events [ p_lcb.a.side, SEQ.key_count ], ...
-                            SEQ.step_pan, 0 )
-
-                        { filter seq setting }
-                        if fn026.r.filter_status = __ON
-                            set_engine_par(ENGINE_PAR_CUTOFF, SEQ.step_lp_filter, __NO_GROUP, __LP_FILTER_SLOT, NI_BUS_OFFSET+p_lcb.a.side)
-                            set_engine_par(ENGINE_PAR_CUTOFF, SEQ.step_hp_filter, __NO_GROUP, __HP_FILTER_SLOT, NI_BUS_OFFSET+p_lcb.a.side)
-                        else
-                            set_engine_par(ENGINE_PAR_CUTOFF, 1000000, __NO_GROUP, __LP_FILTER_SLOT, NI_BUS_OFFSET+p_lcb.a.side)
-                            set_engine_par(ENGINE_PAR_CUTOFF,       0, __NO_GROUP, __HP_FILTER_SLOT, NI_BUS_OFFSET+p_lcb.a.side)
-                        end if
-
-                    end if
+                    fn027.a.side         := p_lcb.a.side
+                    fn027.a.note         := SEQ.key_count
+                    fn027.a.step_counter := SEQ.ts_counter
+                    call fn027_play_lcb_core
                 end if
             end for
 
         else { Arpeggiated notes here }
+            fn028.a.side := p_lcb.a.side
+            call fn028_update_arp_note_buffers
+            
+            {{ get played note from buffer according to play mode }}
+            select (arp_mode[ p_lcb.a.side ])
+                case __ARP_MODE_AS_PLAYED
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ]     := ARP.play_buffer_LEFT [ ARP.play_counter [ p_lcb.a.side ] ]{ + ($ARP.oct_counter * 12)}
+                    else
+                        ARP.played_note [ p_lcb.a.side ]     := ARP.play_buffer_RIGHT [ ARP.play_counter [ p_lcb.a.side ] ]{ + ($ARP.oct_counter * 12)}
+                    end if
+
+                case __ARP_MODE_UP
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_up_buffer_LEFT [ ARP.play_counter [ p_lcb.a.side ] ]
+                    else
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_up_buffer_RIGHT [ ARP.play_counter [ p_lcb.a.side ] ]
+                    end if
+
+                case __ARP_MODE_DOWN
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_down_buffer_LEFT [ ARP.play_counter [ p_lcb.a.side ] ]
+                    else
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_down_buffer_RIGHT [ ARP.play_counter [ p_lcb.a.side ] ]
+                    end if
+
+                case __ARP_MODE_UP_DOWN
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_up_buffer_LEFT [ ARP.up_down_counter [ p_lcb.a.side ] ]
+                    else
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_up_buffer_RIGHT [ ARP.up_down_counter [ p_lcb.a.side ] ]
+                    end if
+
+                case __ARP_MODE_RANDOM
+                    if p_lcb.a.side = __LEFT
+                        ARP.temp3 := random(0, ARP.cursor [ p_lcb.a.side ] - 1)
+                        // while (ARP.last_random_note [ p_lcb.a.side ] = ARP.played_note [ p_lcb.a.side ])
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_buffer_LEFT [ ARP.temp3 ]
+                        // end while
+                    else
+                        ARP.temp4 := random(0, ARP.cursor [ p_lcb.a.side ] - 1)
+                        // while (ARP.last_random_note [ p_lcb.a.side ] = ARP.played_note [ p_lcb.a.side ])
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_buffer_RIGHT [ ARP.temp4 ]
+                        // end while
+                    end if
+
+                case __ARP_MODE_CHORD { treated directly at the play level }
+
+            end select
+
+            {{ Actual note generation }}
+            if arp_mode [ p_lcb.a.side ] # __ARP_MODE_CHORD
+                ARP.played_duration [ p_lcb.a.side ] := SEQ.DUAL.step_duration [ p_lcb.a.side ] * 500
+                ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
+
+                fn026.a.side             := p_lcb.a.side
+                fn026.a.key_note         := ARP.played_note [ p_lcb.a.side ]
+                fn026.a.step_counter     := SEQ.ts_counter
+                fn026.a.block_step_index := SEQ.DUAL.current_block [ p_lcb.a.side ]
+                call fn026_get_seq_fluxxed_target_data
+                { return values from fn017_get_seq_target_data() }
+                SEQ.step_velocity  := fn026.r.velocity
+                SEQ.step_pitch     := fn026.r.pitch
+                SEQ.step_octave    := fn026.r.octave
+                SEQ.step_pan       := fn026.r.pan
+                SEQ.step_filter    := fn026.r.filter_value
+                SEQ.step_lp_filter := fn026.r.lp_filter_value
+                SEQ.step_hp_filter := fn026.r.hp_filter_value
+
+                if layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ] > 0
+                    fade_out( layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ], 2000, 1)
+                end if
+
+                if (in_range(ARP.played_note [ p_lcb.a.side ], 0, 127))
+                    fn027.a.side         := p_lcb.a.side
+                    fn027.a.note         := ARP.played_note [ p_lcb.a.side ]
+                    fn027.a.step_counter := SEQ.ts_counter
+                    call fn027_play_lcb_core
+                end if
+
+            else { CHORD MODE HERE }
+                ARP.i := 0
+                while (ARP.i < ARP.cursor [ p_lcb.a.side ] )
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_buffer_LEFT [ ARP.i ]
+                    else
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_buffer_RIGHT [ ARP.i ]
+                    end if
+
+                    ARP.played_duration [ p_lcb.a.side ] := SEQ.DUAL.step_duration [ p_lcb.a.side ] * 500
+                    ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
+
+                    fn026.a.side             := p_lcb.a.side
+                    fn026.a.key_note         := ARP.played_note [ p_lcb.a.side ]
+                    fn026.a.step_counter     := SEQ.ts_counter
+                    fn026.a.block_step_index := SEQ.DUAL.current_block [ p_lcb.a.side ]
+                    call fn026_get_seq_fluxxed_target_data
+                    { return values from fn017_get_seq_target_data() }
+                    SEQ.step_velocity  := fn026.r.velocity
+                    SEQ.step_pitch     := fn026.r.pitch
+                    SEQ.step_octave    := fn026.r.octave
+                    SEQ.step_pan       := fn026.r.pan
+                    SEQ.step_filter    := fn026.r.filter_value
+                    SEQ.step_lp_filter := fn026.r.lp_filter_value
+                    SEQ.step_hp_filter := fn026.r.hp_filter_value
+
+                    if layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ] > 0
+                        fade_out( layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ], 2000, 1)
+                    end if
+
+                    if (in_range(ARP.played_note [ p_lcb.a.side ], 0, 127))
+                        fn027.a.side         := p_lcb.a.side
+                        fn027.a.note         := ARP.played_note [ p_lcb.a.side ]
+                        fn027.a.step_counter := SEQ.ts_counter
+                        call fn027_play_lcb_core
+                    end if
+
+                    inc(ARP.i)
+                end while
+
+            end if
+
+            if arp_mode [ p_lcb.a.side ] = __ARP_MODE_UP_DOWN
+                if (ARP.cursor  [ p_lcb.a.side ] = 2)
+                    inc( ARP.up_down_counter [ p_lcb.a.side ] )
+                    if ( ARP.up_down_counter [ p_lcb.a.side ] = 2)
+                        ARP.up_down_counter [ p_lcb.a.side ] := 0
+                    end if
+                end if
+
+
+                if (ARP.cursor  [ p_lcb.a.side ] > 2)
+                    if (ARP.up_down_counter  [ p_lcb.a.side ] >= ARP.cursor  [ p_lcb.a.side ] - 1)
+                        ARP.up_down_direction  [ p_lcb.a.side ] := 1  { go down }
+                    end if
+
+                    if (ARP.up_down_counter  [ p_lcb.a.side ] <= 0)
+                        ARP.up_down_direction  [ p_lcb.a.side ] := 0  { go up }
+                    end if
+
+                    if ARP.up_down_direction  [ p_lcb.a.side ] = 1 
+                        dec( ARP.up_down_counter [ p_lcb.a.side ] )
+                    else
+                        inc( ARP.up_down_counter [ p_lcb.a.side ] )
+                    end if
+                end if
+            end if
+
+            if arp_mode [ p_lcb.a.side ] = __ARP_MODE_RANDOM
+                ARP.last_random_note [ p_lcb.a.side ] := ARP.played_note [ p_lcb.a.side ]
+            end if
+
+            { advance play counter }
+            inc( ARP.play_counter [ p_lcb.a.side ] )
+            if ( ARP.play_counter [ p_lcb.a.side ] >= ARP.cursor [ p_lcb.a.side ] )  { we have finished a cycle }
+                 ARP.play_counter [ p_lcb.a.side ] := 0
+            end if
+
+
 
         end if
     end if
