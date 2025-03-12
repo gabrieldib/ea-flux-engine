@@ -158,15 +158,29 @@ function fn019_set_seq_step_value
 end function
 
 function fn002_set_seq_step_value_and_ps
-    fn018.a.side       := fn002.a.side
-    fn018.a.step_index := fn002.a.step_index
-    fn018.a.value      := fn002.a.value
-    call fn018_set_seq_step_picture_state
 
-    fn019.a.side       := fn002.a.side
-    fn019.a.step_index := fn002.a.step_index
-    fn019.a.value      := fn002.a.value
-    call fn019_set_seq_step_value
+    if fn002.a.caller = __CALLER_SEQ_XY
+        fn018.a.side       := fn002.a.side
+        fn018.a.step_index := fn002.a.step_index
+        fn018.a.value      := fn002.a.value
+        call fn018_set_seq_step_picture_state
+
+        fn019.a.side       := fn002.a.side
+        fn019.a.step_index := fn002.a.step_index
+        fn019.a.value      := fn002.a.value
+        call fn019_set_seq_step_value
+    end if
+    if fn002.a.caller = __CALLER_SEQ_DYN
+        fn030.a.side       := fn002.a.side
+        fn030.a.step_index := fn002.a.step_index
+        fn030.a.value      := fn002.a.value
+        call fn030_set_seq_step_dyn_value
+        
+        fn018.a.side       := fn002.a.side
+        fn018.a.step_index := fn002.a.step_index
+        fn018.a.value      := fn030.r.transf_value
+        call fn018_set_seq_step_picture_state
+    end if
     // message("FN02 setting the value for step index: " & fn002.a.step_index)
 end function
 
@@ -718,6 +732,46 @@ function fn029_clear_arp_mode_btns
         UIID_MAIN.seq.arp_menu_items [ fn029.a.side, fn029.l.counter ] -> value := __OFF
     end for
     UIID_MAIN.seq.arp_menu_items [ fn029.a.side, fn029.a.index ] -> value := __ON
+end function
+
+function fn030_set_seq_step_dyn_value
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn030.l.mode_side := fn030.a.side
+    else
+        fn030.l.mode_side := __LEFT
+    end if
+
+    fn030.l.dyn_value := ...
+        get_control_par_real_arr(                       ...
+            UIID_MAIN.seq.dyn_slider [ fn030.a.side ], ...
+            CONTROL_PAR_VALUE,                          ...
+            1                                           ...
+        )
+    
+    if fn030.l.dyn_value >= 0.5
+        fn030.l.dyn_transf_value := abs(2.0 * fn030.l.dyn_value - 1.0 )
+    else
+        fn030.l.dyn_transf_value := 2.0 * fn030.l.dyn_value
+    end if
+
+    if fn030.l.dyn_value >= 0.5
+        fn030.l.delta_max        := 1.0 - fn030.a.value
+        fn030.r.transf_value     := fn030.a.value + fn030.l.delta_max * fn030.l.dyn_transf_value
+    else
+        fn030.r.transf_value     := fn030.a.value * fn030.l.dyn_transf_value
+    end if
+
+    SEQ.data.dyn.i [                              ...
+        fn030.a.side,                             ...
+        SEQ.showing_target [ fn030.l.mode_side ], ...
+        fn030.a.step_index                        ...
+    ] := int( 1000000.0 * fn030.r.transf_value )
+
+    SEQ.data.dyn.f [                                  ...
+        fn030.a.side,                             ...
+        SEQ.showing_target [ fn030.l.mode_side ], ...
+        fn030.a.step_index                        ...
+    ] := fn030.r.transf_value
 end function
 
 

@@ -24,6 +24,8 @@ declare UIID_MAIN.seq.arp_menu_items         [ 2, 6 ]
 declare UIID_MAIN.seq.arp_mode_panels           [ 2 ]
 declare UIID_MAIN.seq.flux_panels               [ 2 ]
 declare UIID_MAIN.seq.arp_mode_panels_close_btn [ 2 ]
+declare UIID_MAIN.seq.dyn_slider                [ 2 ]
+declare UIID_MAIN.seq.dyn_slider.label          [ 2 ]
 
 
 

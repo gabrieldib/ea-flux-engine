@@ -105,6 +105,11 @@ for i.i := 1 to 5
     UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] := UIID_MAIN.seq.arp_menu_items [ __RIGHT, 0 ] + i.i
 end for
 
+UIID_MAIN.seq.dyn_slider [ 0 ] := get_ui_id(xypad_MAIN.LEFT.dynamics)
+UIID_MAIN.seq.dyn_slider [ 1 ] := get_ui_id(xypad_MAIN.RIGHT.dynamics)
+UIID_MAIN.seq.dyn_slider.label [ 0 ] := get_ui_id(label_MAIN.LEFT.dynamics)
+UIID_MAIN.seq.dyn_slider.label [ 1 ] := get_ui_id(label_MAIN.RIGHT.dynamics)
+
 {{ SETTING FONTS }}
 for i.i := 0 to 5
     UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  

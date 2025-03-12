@@ -60,6 +60,11 @@
     define __ARP_MODE_RANDOM    := 4
     define __ARP_MODE_CHORD     := 5
 
+    define __NOT_PRESSED := 0
+    define __PRESSED     := 1
+
+    declare __CALLER_SEQ_XY  := 0
+    declare __CALLER_SEQ_DYN := 1
 
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
@@ -319,6 +324,10 @@
         declare read %SEQ.data.i [ 2, 5, 32 ] // side, target, step value
         declare read ?SEQ.data.f [ 2, 5, 32 ] // side, target, step value
 
+        { this is the volatile data altered by the dyn slider  }
+        declare read %SEQ.data.dyn.i [ 2, 5, 32 ] // side, target, step value
+        declare read ?SEQ.data.dyn.f [ 2, 5, 32 ] // side, target, step value
+
         { this is the volatile data altered by the flux randomizer influence }
         declare read %SEQ.data.flux.i [ 2, 5, 32 ] // side, target, step value
         declare read ?SEQ.data.flux.f [ 2, 5, 32 ] // side, target, step value
@@ -333,6 +342,9 @@
         declare read seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
 
         declare read SEQ.rate [ 2 ] // one for each side
+
+        declare seq.dyn_slider.last_value [ 2 ]
+        declare seq.dyn_slider.pressed [ 2 ]
 
         declare SEQ.first_note_ts
         declare SEQ.DUAL.steps_timestamps [ 2, 4, 8 ]
@@ -396,6 +408,7 @@
     declare uics_uiid_index
     declare uics_seq_side
     declare uics_value
+    declare uics_last_value
     declare uics_alt_key
     declare uics_shift_key
     declare uics_counter
@@ -444,6 +457,7 @@
     declare fn001.r.step_index
 
     //fn002_update_seq_step_value
+    declare fn002.a.caller
     declare fn002.a.side
     declare fn002.a.step_index
     declare ~fn002.a.value
@@ -642,3 +656,12 @@
     declare fn029.a.index
     declare fn029.l.counter
 
+    //fn030_set_seq_step_dyn_value
+    declare  fn030.a.side
+    declare  fn030.a.step_index
+    declare ~fn030.a.value
+    declare  fn030.l.mode_side
+    declare ~fn030.l.dyn_value
+    declare ~fn030.l.dyn_transf_value
+    declare ~fn030.l.delta_max
+    declare ~fn030.r.transf_value

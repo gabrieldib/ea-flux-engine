@@ -167,6 +167,7 @@ on ui_controls
             ) 
         end if
 
+        fn002.a.caller     := __CALLER_SEQ_XY
         fn002.a.step_index := fn001.r.step_index
         fn002.a.side       := uics_uiid_index
         fn002.a.value      := uics_r_value
@@ -517,7 +518,6 @@ on ui_controls
         UIID_MAIN.seq.arp_menu        [ uics_uiid_index  ] -> value := __OFF
         UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
         UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
-
     end if
 
 
@@ -530,7 +530,6 @@ on ui_controls
         
         UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
         UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
-
     end if
 
 
@@ -549,5 +548,69 @@ on ui_controls
         fn029.a.side    := uics_seq_side
         fn029.a.index   := uics_uiid_index
         call fn029_clear_arp_mode_btns
+    end if
+
+    {{ SEQ DYN SLIDERS }}
+    if NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __RIGHT ] 
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __RIGHT ] 
+            uics_seq_side := __RIGHT
+        end if
+
+        { update the ui label for the dyn slider }
+        if  UIID_MAIN.seq.dyn_slider [ uics_seq_side ] -> key_control = __OFF
+            UIID_MAIN.seq.dyn_slider.label [ uics_seq_side ] -> picture_state := int ( ...
+                get_control_par_real_arr(                       ...
+                    UIID_MAIN.seq.dyn_slider [ uics_seq_side ], ...
+                    CONTROL_PAR_VALUE,                          ...
+                    1                                           ...
+                ) * 132.0 )
+        else
+            UIID_MAIN.seq.dyn_slider.label [ uics_seq_side ] -> picture_state := 66
+            set_control_par_real_arr(                       ...
+                UIID_MAIN.seq.dyn_slider [ uics_seq_side ], ...
+                CONTROL_PAR_VALUE,                          ...
+                0.5,                                        ...
+                1                                           ...
+            )
+            // set_control_par_arr(ui_id, control_parameter, value, index)
+        end if
+
+        {
+            - a step has int and float values stored
+            - when we press mouse down any subsequent update in the
+            slider (y axis) will 
+                - read from SEQ.data.f and update the sequencer steps pictures
+                - the new step values will be stored in 
+                    SEQ.data.dyn.i
+                    SEQ.data.dyn.f
+
+                but what does it mean? 
+                means that when the flux rand runs, it will update its 
+                arrays based on these dyn slider arrays rather than the original arrays
+                
+
+                update the SEQ.data.dyn.f with the new values calculated from
+                the SEQ.data.i and the current slider value
+                what's the calculation?
+        }
+
+        for uics_counter := 0 to 3
+            for uics_counter2 := 0 to 7
+                fn002.a.caller     := __CALLER_SEQ_DYN
+                fn002.a.step_index := uics_counter * 8 + uics_counter2
+                fn002.a.side       := uics_seq_side
+                fn002.a.value      := ...
+                SEQ.data.f [                              ...
+                    uics_seq_side,                        ...
+                    SEQ.showing_target [ uics_seq_side ], ...
+                    uics_counter * 8 + uics_counter2      ...
+                ]
+                call fn002_set_seq_step_value_and_ps
+
+            end for
+        end for
+        message(f'fn030.l.dyn_transf_value: <fn030.l.dyn_transf_value>')
+        message(f'    <uics_counter-1> | <uics_counter2-1> | fn030.r.transf_value: <fn030.r.transf_value>')
     end if
 end on
