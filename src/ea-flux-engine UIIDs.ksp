@@ -1,12 +1,31 @@
-declare UIID_MAIN.seq.step              [ 2, 32 ]
-declare UIID_MAIN.seq.leds              [ 2, 4 ]
-declare UIID_MAIN.seq.block_steps       [ 2, 4 ]
-declare UIID_MAIN.SEQ.xypads            [ 2 ]
-declare UIID_MAIN.controls.draw         [ 2 ]
-declare UIID_MAIN.target_selectors      [ 5 ]
-declare UIID_MAIN.ADSR_controls         [ 2, 4 ]
-declare UIID_MAIN.SEQ.rate_sliders      [ 2 ]
-declare UIID_MAIN.display_title
-declare UIID_MAIN.display_value
-declare UIID_MAIN.seq.power             [ 2 ]
-declare UIID_MAIN.layer.power           [ 2 ]
+declare UIID_MAIN.seq.off_label                  [ 2 ]
+declare UIID_MAIN.seq.step                   [ 2, 32 ]
+declare UIID_MAIN.seq.leds                   [ 2, 4 ]
+declare UIID_MAIN.seq.block_steps            [ 2, 4 ]
+declare UIID_MAIN.SEQ.xypads                 [ 2 ]
+declare UIID_MAIN.controls.draw              [ 2 ]
+declare UIID_MAIN.ADSR_controls              [ 2, 4 ]
+declare UIID_MAIN.SEQ.rate_sliders           [ 2 ]
+declare UIID_MAIN.display_title     
+declare UIID_MAIN.display_value     
+declare UIID_MAIN.seq.step_leds              [ 2, 4 ]
+declare UIID_MAIN.seq.power                     [ 2 ]
+declare UIID_MAIN.layer.power                   [ 2 ]
+declare UIID_MAIN.seq.target_activators      [ 2, 5 ]
+declare UIID_MAIN.seq.target_selectors          [ 5 ]
+declare UIID_MAIN.seq.target_power           [ 2, 5 ]
+declare UIID_MAIN.seq.direction_btns         [ 2, 3 ]
+declare UIID_MAIN.seq.flux_rand_power           [ 2 ]
+declare UIID_MAIN.seq.flux_rand_intensity       [ 2 ]
+declare UIID_MAIN.seq.flux_rand_btns         [ 2, 4 ]
+declare UIID_MAIN.seq.arp_power                 [ 2 ]
+declare UIID_MAIN.seq.arp_menu                  [ 2 ]
+declare UIID_MAIN.seq.arp_menu_items         [ 2, 6 ]
+declare UIID_MAIN.seq.arp_mode_panels           [ 2 ]
+declare UIID_MAIN.seq.flux_panels               [ 2 ]
+declare UIID_MAIN.seq.arp_mode_panels_close_btn [ 2 ]
+declare UIID_MAIN.seq.dyn_slider                [ 2 ]
+declare UIID_MAIN.seq.dyn_slider.label          [ 2 ]
+
+
+

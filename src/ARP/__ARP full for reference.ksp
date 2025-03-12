@@ -9,7 +9,7 @@ on init
     declare       ~XY_ARP_STEP_UNIT { to help identify which arp column the xy cursor is pointing at }
     declare       XY_ARP_COLUMN_INDEX
 
-    import "../UI figma.ksp"
+    import "__ARP_reference_figma_UI.ksp"
 
     declare $ARP.beat_grid := 16
     declare $ARP.check_id

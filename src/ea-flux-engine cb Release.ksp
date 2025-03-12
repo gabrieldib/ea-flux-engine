@@ -2,14 +2,49 @@ on release
     // import "ARP/__ARP 06 release cb.ksp"
     if get_event_par(EVENT_ID, EVENT_PAR_0) = 1
         dec(note_held_count)
-        message("note_held_count: " & note_held_count)
         layers.note_events [ __LEFT,  EVENT_NOTE ] := 0
         layers.note_events [ __RIGHT, EVENT_NOTE ] := 0
+
+        {{ ARP }}
+        if ( ARP.seq_running = 1)
+            ARP.cursor_helper := 0
+            ARP.i := 0
+            while ( ARP.i <  ARP.cursor [ __LEFT ] )
+                if ( EVENT_NOTE # %ARP.note_buffer_LEFT [ ARP.i ] )
+                    ARP.note_buffer_LEFT [ ARP.cursor_helper ] := ARP.note_buffer_LEFT [ ARP.i ]
+                    inc( ARP.cursor_helper)
+                end if
+
+                inc( ARP.i )
+            end while
+            ARP.cursor [ __LEFT ] :=  ARP.cursor_helper
+
+            ARP.cursor_helper := 0
+            ARP.i := 0
+            while ( ARP.i <  ARP.cursor [ __RIGHT ] )
+                if ( EVENT_NOTE # %ARP.note_buffer_RIGHT [ ARP.i ] )
+                    ARP.note_buffer_RIGHT [ ARP.cursor_helper ] := ARP.note_buffer_RIGHT [ ARP.i ]
+                    inc( ARP.cursor_helper)
+                end if
+
+                inc( ARP.i )
+            end while
+            ARP.cursor [ __RIGHT ] :=  ARP.cursor_helper
+
+            if ( ARP.seq_running = 1 and  ARP.cursor [ __LEFT ] = 0)
+                call ARP.StopSeq()
+            end if
+        end if
+
     end if
 
     if note_held_count <= 0
-        SEQ.DUAL.current_block [ __LEFT  ] := -1
-        SEQ.DUAL.current_block [ __RIGHT ] := -1
         SEQ.JOIN.current_block             := -1
+        for r.i := __LEFT to __RIGHT
+            SEQ.DUAL.current_block [ r.i  ] := -1
+            if layers.seq_play_direction [ r.i ] = SEQ_DIRECTION_FWBW
+                seq.direction_status [ r.i ] := SEQ_DIRECTION_FORWARD
+            end if
+        end for
     end if
 end on

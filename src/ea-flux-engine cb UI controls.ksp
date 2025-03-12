@@ -10,7 +10,34 @@ end on
 {{ MAIN }}
 on ui_control (switch_MAIN.SEQ.combine)
     call draw_seq
-    call seq_recall_all_step_values
+    
+    { recall block steps numbers and steps pictures }
+    fn003.a.mode := switch_MAIN.SEQ.combine
+    for uicb_combine_counter := 0 to 7
+        fn003.a.block_index := uicb_combine_counter
+        fn003.a.side := __LEFT
+        call fn003_set_block_step_count
+        fn003.a.side := __RIGHT
+        call fn003_set_block_step_count
+    end for
+
+    { recall picture states for steps labels }
+    fn006.a.side := __LEFT
+    call fn006_recall_seq_values
+    fn006.a.side := __RIGHT
+    call fn006_recall_seq_values
+
+
+    { change text alignment on target selectors }
+    call set_seq_target_selectors_text_alignment
+
+    // if switch_MAIN.SEQ.combine = __SEQ_DUAL
+    //     { mirror the right side, for whe }
+    //     fn011.a.side  := __RIGHT
+    //     fn011.a.index := SEQ.showing_target [ __LEFT ]
+    //     call fn011_clear_target_activators
+    //     SEQ.showing_target [ __RIGHT ] := SEQ.showing_target [ __LEFT ] 
+    // end if
 
     panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
     panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL

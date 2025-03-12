@@ -1,33 +1,77 @@
 { DEFINES   _____________________________________________________________________________________ }
-    define __OFF      := 0
-    define __ON       := 1
-    define __LEFT     := 0
-    define __RIGHT    := 1
-    define __SEQ_DUAL := 0
-    define __SEQ_JOIN := 1
+    define __OFF               := 0
+    define __ON                := 1
+    define __LEFT              := 0
+    define __RIGHT             := 1
+    define __SEQ_DUAL          := 0
+    define __SEQ_JOIN          := 1
 
-    define LFO_RATE_MODE      := 0
-    define LFO_RATE           := 1
-    define LFO_DEPTH          := 2
-    define LFO_WAVESHAPE      := 3
+    define LFO_RATE_MODE       := 0
+    define LFO_RATE            := 1
+    define LFO_DEPTH           := 2
+    define LFO_WAVESHAPE       := 3
 
-    define LFO_WAVESHAPE_SIN  := 0
-    define LFO_WAVESHAPE_TRI  := 1
-    define LFO_WAVESHAPE_SQR  := 2
-    define LFO_WAVESHAPE_SAW  := 3
-    define LFO_WAVESHAPE_RND  := 4
+    define LFO_WAVESHAPE_SIN   := 0
+    define LFO_WAVESHAPE_TRI   := 1
+    define LFO_WAVESHAPE_SQR   := 2
+    define LFO_WAVESHAPE_SAW   := 3
+    define LFO_WAVESHAPE_RND   := 4
 
-    define SEQ_TYPE_UNIPOLAR  := 0
-    define SEQ_TYPE_BIPOLAR   := 1
+    define SEQ_TYPE_UNIPOLAR   := 0
+    define SEQ_TYPE_BIPOLAR    := 1
 
-    define SEQ_TARGET_VELO    := 0
-    define SEQ_TARGET_PITCH   := 1
-    define SEQ_TARGET_OCTAVE  := 2
-    define SEQ_TARGET_PAN     := 3
-    define SEQ_TARGET_FILTER  := 4
+    define SEQ_TARGET_VELO     := 0
+    define SEQ_TARGET_PITCH    := 1
+    define SEQ_TARGET_OCTAVE   := 2
+    define SEQ_TARGET_PAN      := 3
+    define SEQ_TARGET_FILTER   := 4
 
+    define __LP_FILTER_SLOT    := 5
+    define __HP_FILTER_SLOT    := 6
+    define __LP_FILTER_CA_SLOT := 0 // code aux
+    define __HP_FILTER_CA_SLOT := 1 // code aux
+
+    define __NO_GROUP          := -1
+
+    define __SEQ_TARGET_LO_PASS := 0
+    define __SEQ_TARGET_HI_PASS := 1
+
+    define SEQ_DIRECTION_FORWARD  := 0
+    define SEQ_DIRECTION_BACKWARD := 1
+    define SEQ_DIRECTION_FWBW     := 2
+
+    define __STEP_COUNTER_0    :=  1
+    define __DIR_BTN_FORWARD   :=  2
+    define __DIR_BTN_BACKWARD  :=  4
+    define __DIR_BTN_FWBW      :=  8
+    define __STEP_COUNTER_LAST := 16
+    define __DIR_PLAY_FORWARD  := 32
+    define __DIR_PLAY_BACKWARD := 64
+
+    define __COUNTER_0_BTN_FORWARD         := 3
+    define __COUNTER_0_BTN_FWBW_PLAY_FW    := 41
+    define __COUNTER_LAST_BTN_FWBW_PLAY_BW := 88
+    define __COUNTER_LAST_BTN_BW_PLAY_BW   := 84
+
+    define __ARP_MODE_AS_PLAYED := 0
+    define __ARP_MODE_UP        := 1
+    define __ARP_MODE_DOWN      := 2
+    define __ARP_MODE_UP_DOWN   := 3
+    define __ARP_MODE_RANDOM    := 4
+    define __ARP_MODE_CHORD     := 5
+
+    define __NOT_PRESSED := 0
+    define __PRESSED     := 1
+
+    declare __CALLER_SEQ_XY  := 0
+    declare __CALLER_SEQ_DYN := 1
 
 { CONSTANTS _____________________________________________________________________________________ }
+    {{ generic }}
+    declare hide_constants [ 2 ]
+        hide_constants [ 0 ] := HIDE_PART_NOTHING
+        hide_constants [ 1 ] := HIDE_WHOLE_CONTROL
+
     {{ UI }}
     // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
     declare SEQ.common_elements_data [ 200, 7 ] 
@@ -117,6 +161,13 @@
         declare const SEQ_JOIN_RIGHT_GAP_STEP7     := 447 - SEQ_JOIN_LEFT_START_PX
         declare const SEQ_JOIN_RIGHT_GAP_STEP8     := 445 - SEQ_JOIN_LEFT_START_PX
 
+        declare !SEQ.target_names [ 5 ]
+            !SEQ.target_names [ 0 ] := 'VELOCITY'
+            !SEQ.target_names [ 1 ] := 'PITCH'
+            !SEQ.target_names [ 2 ] := 'OCTAVE'
+            !SEQ.target_names [ 3 ] := 'PAN'
+            !SEQ.target_names [ 4 ] := 'FILTER'
+
         { 90 is the width of each block }
         declare const __START := 0
         declare const __END   := 1
@@ -131,7 +182,7 @@
             SEQ.target_type [ SEQ_TARGET_PITCH  ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_OCTAVE ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_PAN    ] := SEQ_TYPE_BIPOLAR
-            SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_UNIPOLAR
+            SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_BIPOLAR
 
     {{ LFO }}
         declare !beat_rates_display [ 19 ]
@@ -269,32 +320,78 @@
 
         declare read SEQ.showing_target [ 2 ] // 2 sides, indices of the showing target
 
+        { this is the permanent steps data defined by the user }
         declare read %SEQ.data.i [ 2, 5, 32 ] // side, target, step value
         declare read ?SEQ.data.f [ 2, 5, 32 ] // side, target, step value
+
+        { this is the volatile data altered by the dyn slider  }
+        declare read %SEQ.data.dyn.i [ 2, 5, 32 ] // side, target, step value
+        declare read ?SEQ.data.dyn.f [ 2, 5, 32 ] // side, target, step value
+
+        { this is the volatile data altered by the flux randomizer influence }
+        declare read %SEQ.data.flux.i [ 2, 5, 32 ] // side, target, step value
+        declare read ?SEQ.data.flux.f [ 2, 5, 32 ] // side, target, step value
 
         declare SEQ.DUAL.current_block [ 2 ] := (-1)
         declare SEQ.JOIN.current_block       :=  -1
 
+        { so we can have independent intensities per target }
+        declare read SEQ.flux_rand_intensity [ 2, 5 ]
+
+        declare read layers.seq_play_direction [ 2 ]
+        declare read seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
+
         declare read SEQ.rate [ 2 ] // one for each side
+
+        declare seq.dyn_slider.last_value [ 2 ]
+        declare seq.dyn_slider.pressed [ 2 ]
 
         declare SEQ.first_note_ts
         declare SEQ.DUAL.steps_timestamps [ 2, 4, 8 ]
         declare SEQ.DUAL.step_duration [ 2 ]
         declare SEQ.JOIN.steps_timestamps [ 8, 8 ]
         declare SEQ.JOIN.step_duration 
+
         declare SEQ.ts_counter // timestamps counter
+        declare SEQ.ts_counter_incrementor
+
         declare SEQ.key_count
         declare SEQ.step_velocity
+        declare SEQ.step_pitch
+        declare SEQ.step_octave
+        declare SEQ.step_pan
+        declare SEQ.step_lp_filter
+        declare SEQ.step_hp_filter
+        declare SEQ.step_filter
+        declare SEQ.flux_velo_seed
+        declare SEQ.flux_velo
+        declare SEQ.flux_pitch_seed
+        declare SEQ.flux_pitch
+        declare SEQ.flux_octave_seed
+        declare SEQ.flux_octave
+        declare SEQ.flux_pan_seed
+        declare SEQ.flux_pan
+        declare SEQ.flux_filter_seed
+        declare SEQ.flux_filter
 
         declare SEQ.lcb_layer_side
 
     {{ PLAY ENGINE }}
         declare layers.note_events [ 2, 128 ]
+        declare layers.note_velo   [ 2, 128 ] // stores played velocities
 
     {{ LCB }}
         declare read ~__BPM
         declare lcb_ms_counter
         declare lcb_play_side
+        declare lcb_block_counter
+        declare lcb_step_counter_start
+        declare lcb_step_counter_end
+        declare lcb_counter1
+        declare lcb_play_direction_index
+
+    {{ ARP }}
+        declare read arp_mode [ 2 ]
 
     {{ LFO }}
         declare read LFO_data [ 4 ]
@@ -310,19 +407,34 @@
 { CB SPECIFIC ___________________________________________________________________________________ }
     declare uics_uiid_index
     declare uics_seq_side
+    declare uics_value
+    declare uics_last_value
     declare uics_alt_key
+    declare uics_shift_key
     declare uics_counter
     declare uics_counter2
     declare uics_block_index
+    declare ~uics_r_value
+    declare uics_i_value
+    declare @uics_title
+    declare @uics_text_data
+    declare uics_loop_range_min
+    declare uics_loop_range_max
+
+    declare pccb_counter
 
     {{ xypad_MAIN.SEQ.LEFT }}
         declare seq_xy_left_click_step_index
         declare seq_xy_block_index
+        declare seq_xy_shift_pressed
+        declare ~seq_xy_alt_y_coord
 
     {{ switch_MAIN.SEQ.combine }}
         declare uicb_combine_mode
         declare uicb_combine_side
         declare uicb_combine_block
+        declare uicb_combine_counter
+
 
 { FUNCTIONS   ___________________________________________________________________________________ }
     //PLAY_NOTE_NCB
@@ -332,6 +444,7 @@
 
     //PLAY_LCB
     declare p_lcb.a.side
+    declare p_lcb.l.ts_counter
 
     //draw_seq
     declare ds.counter
@@ -344,14 +457,19 @@
     declare fn001.r.step_index
 
     //fn002_update_seq_step_value
+    declare fn002.a.caller
     declare fn002.a.side
     declare fn002.a.step_index
     declare ~fn002.a.value
+    declare fn002.l.mode_side
+
 
     //fn003_set_block_step_count
     declare fn003.a.mode
     declare fn003.a.side
     declare fn003.a.block_index
+    declare fn003.l.block_index_mod
+    declare fn003.l.counter
 
     //fn004_get_current_seq_block
     declare ~fn004.a.x_coord
@@ -363,9 +481,13 @@
 
     //fn006_recall_seq_values
     declare fn006.a.side
+    declare fn006.l.mode_side
 
     //fn007_update_block_and_steps_ts
     declare fn007.a.side
+    declare fn007.l.counter
+    declare fn007.l.counter2
+    declare fn007.l.direction_index
 
     //fn008_get_current_seq_join_block
     declare fn008.l.block_counter
@@ -384,5 +506,162 @@
     declare  fn010.l.side
     declare ~fn010.a.value
 
+    //fn011_clear_target_activators
+    declare fn011.a.side
+    declare fn011.a.index
 
+    //fn012_seq_recall_step_values
+    declare fn012.a.side
 
+    //fn013_update_seq_step_pictures
+    declare fn013.a.side
+    declare fn013.a.block_index
+    declare fn013.l.mode_side
+    declare fn013.l.step
+
+    //fn014_seq_recall_target_steps_values_and_pictures
+    declare fn014.a.side
+    declare fn014.a.target_index
+    declare fn014.l.counter
+    declare fn014.l.counter2
+
+    //fn015_set_seq_play_direction_btns
+    declare fn015.a.side
+    declare fn015.a.btn_index
+
+    //fn016_set_data_display_from_seq_xy
+    declare ~fn016.a.value
+    declare fn016.a.target_index
+    declare @fn016.r.title
+    declare @fn016.r.text_data
+
+    //fn017_get_seq_target_data
+    declare fn017.a.side
+    declare fn017.a.step_counter
+    declare fn017.a.key_note
+    declare fn017.a.block_step_index
+    declare fn017.l.pan_data
+    declare fn017.l.filter_data
+    declare fn017.r.velocity
+    declare fn017.r.pitch
+    declare fn017.r.octave
+    declare fn017.r.pan
+    declare fn017.r.lp_filter_value
+    declare fn017.r.hp_filter_value
+    declare fn017.r.filter_value
+    declare fn017.r.filter_type
+    declare fn017.r.filter_status
+
+    //fn018_set_seq_step_picture_state
+    declare fn018.a.side
+    declare fn018.a.step_index
+    declare ~fn018.a.value
+
+    //fn002_set_seq_step_value_and_ps
+    declare fn019.a.side
+    declare fn019.a.step_index
+    declare fn019.l.mode_side
+    declare ~fn019.a.value
+
+    //fn020_update_seq_target_off_label
+    declare fn020.a.side
+    declare fn020.a.target_index
+    declare fn020.a.target_power_uiid
+    declare fn020.a.seq_power_state
+
+    //fn21_get_seq_target_active_activator
+    declare fn021.a.side
+    declare fn021.l.counter
+    declare fn021.r.active_index
+
+    //fn022_get_flux_values
+    declare  fn022.a.side
+    declare  fn022.a.step_counter
+    declare  fn022.a.block_step_index
+    declare  fn022.a.step_velocity
+    declare  fn022.a.step_pitch
+    declare  fn022.a.step_octave
+    declare  fn022.a.step_pan
+    declare  fn022.a.step_filter
+
+    declare  fn022.l.flux_velo
+    declare  fn022.l.flux_pitch
+    declare  fn022.l.flux_octave
+    declare  fn022.l.flux_pan
+    declare  fn022.l.flux_filter
+    declare  fn022.l.flux_velo_seed
+    declare  fn022.l.flux_pitch_seed
+    declare  fn022.l.flux_octave_seed
+    declare  fn022.l.flux_pan_seed
+    declare  fn022.l.flux_filter_seed
+
+    declare  fn022.r.step_velocity
+    declare  fn022.r.step_pitch
+    declare  fn022.r.step_octave
+    declare  fn022.r.step_pan
+    declare  fn022.r.step_filter
+    declare  fn022.r.step_lp_filter
+    declare  fn022.r.step_hp_filter
+
+    //fn023.r.check
+    declare fn023.a.counter
+    declare fn023.a.side
+    declare fn023.r.check
+
+    //fn024_update_flux_data_and_ui
+    declare  fn024.a.step_velocity   
+    declare  fn024.a.step_pitch      
+    declare  fn024.a.step_octave     
+    declare  fn024.a.step_pan        
+    declare  fn024.a.step_filter     
+    declare  fn024.a.step_lp_filter  
+    declare  fn024.a.step_hp_filter  
+    declare  fn024.a.side            
+    declare  fn024.a.step_counter    
+    declare  fn024.a.block_step_index
+    declare ~fn024.l.picture_state
+    declare  fn024.l.pan_data
+
+    //fn025_update_all_block_steps
+    declare fn025.a.side
+    declare fn025.l.counter2
+    declare fn025.l.counter
+
+    //fn026_get_seq_fluxxed_target_data
+    declare fn026.a.side
+    declare fn026.a.key_note
+    declare fn026.a.step_counter
+    declare fn026.a.block_step_index
+    declare fn026.l.pan_data
+    declare fn026.l.filter_data
+    declare fn026.r.velocity
+    declare fn026.r.pitch
+    declare fn026.r.octave
+    declare fn026.r.pan
+    declare fn026.r.filter_value
+    declare fn026.r.lp_filter_value
+    declare fn026.r.hp_filter_value
+    declare fn026.r.filter_status
+
+    //fn027_play_lcb_core
+    declare fn027.a.side
+    declare fn027.a.note
+    declare fn027.a.step_counter
+
+    //fn028_update_arp_note_buffers
+    declare fn028.a.side
+
+    //fn029_clear_arp_mode_btns
+    declare fn029.a.side
+    declare fn029.a.index
+    declare fn029.l.counter
+
+    //fn030_set_seq_step_dyn_value
+    declare  fn030.a.side
+    declare  fn030.a.step_index
+    declare ~fn030.a.value
+    declare  fn030.l.mode_side
+    declare ~fn030.l.dyn_value
+    declare ~fn030.l.dyn_transf_value
+    declare ~fn030.l.delta_max
+    declare ~fn030.r.transf_value

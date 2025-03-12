@@ -1,4 +1,4 @@
-// import "ARP/__ARP 03 functions.ksp"
+import "ARP/__ARP 03 functions.ksp"
 
 {{ MAIN }}
 function draw_seq
@@ -92,15 +92,23 @@ end function
 
 {{ SEQ COMMON }}
 function fn006_recall_seq_values
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn006.l.mode_side := fn006.a.side
+    else
+        fn006.l.mode_side := __LEFT
+    end if
+    // message("fn006 showing target: " & SEQ.showing_target [ fn006.l.mode_side ])
+    // message("     fn006.a.side: " & fn006.a.side)
+
     for i.i := 0 to 31
         UIID_MAIN.seq.step [ fn006.a.side, i.i ] -> picture_state := ...
-            int(                                         ...
-                float(SEQ_XY_H-1) *                      ...
-                SEQ.data.f [                             ...
-                    fn006.a.side,                        ...
-                    SEQ.showing_target [ fn006.a.side ], ...
-                    i.i                                  ...
-                ]                                        ...
+            int(                                              ...
+                float(SEQ_XY_H-1) *                           ...
+                SEQ.data.f [                                  ...
+                    fn006.a.side,                             ...
+                    SEQ.showing_target [ fn006.l.mode_side ], ...
+                    i.i                                       ...
+                ]                                             ...
             )
     end for
 end function
@@ -123,57 +131,119 @@ function fn001_get_seq_step_index
     end if
 end function
 
-function fn002_set_seq_step_value
-    UIID_MAIN.seq.step [ fn002.a.side, fn002.a.step_index ] -> picture_state := ...
-        int(float(SEQ_XY_H-1) * fn002.a.value)
+function fn018_set_seq_step_picture_state
+    // message("    ps = " & int(float(SEQ_XY_H-1) * fn018.a.value) & " | value " & fn018.a.value)
+    UIID_MAIN.seq.step [ fn018.a.side, fn018.a.step_index ] -> picture_state := ...
+        int(float(SEQ_XY_H-1) * fn018.a.value)
+end function
 
-    SEQ.data.i [                             ...
-        fn002.a.side,                        ...
-        SEQ.showing_target [ fn002.a.side ], ...
-        fn002.a.step_index                   ...
-    ] := int( 1000000.0 * fn002.a.value )
+function fn019_set_seq_step_value
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn019.l.mode_side := fn019.a.side
+    else
+        fn019.l.mode_side := __LEFT
+    end if
 
-    SEQ.data.f [                             ...
-        fn002.a.side,                        ...
-        SEQ.showing_target [ fn002.a.side ], ...
-        fn002.a.step_index                   ...
-    ] := fn002.a.value
+    SEQ.data.i [                                  ...
+        fn019.a.side,                             ...
+        SEQ.showing_target [ fn019.l.mode_side ], ...
+        fn019.a.step_index                        ...
+    ] := int( 1000000.0 * fn019.a.value )
+
+    SEQ.data.f [                                  ...
+        fn019.a.side,                             ...
+        SEQ.showing_target [ fn019.l.mode_side ], ...
+        fn019.a.step_index                        ...
+    ] := fn019.a.value
+end function
+
+function fn002_set_seq_step_value_and_ps
+
+    if fn002.a.caller = __CALLER_SEQ_XY
+        fn018.a.side       := fn002.a.side
+        fn018.a.step_index := fn002.a.step_index
+        fn018.a.value      := fn002.a.value
+        call fn018_set_seq_step_picture_state
+
+        fn019.a.side       := fn002.a.side
+        fn019.a.step_index := fn002.a.step_index
+        fn019.a.value      := fn002.a.value
+        call fn019_set_seq_step_value
+    end if
+    if fn002.a.caller = __CALLER_SEQ_DYN
+        fn030.a.side       := fn002.a.side
+        fn030.a.step_index := fn002.a.step_index
+        fn030.a.value      := fn002.a.value
+        call fn030_set_seq_step_dyn_value
+        
+        fn018.a.side       := fn002.a.side
+        fn018.a.step_index := fn002.a.step_index
+        fn018.a.value      := fn030.r.transf_value
+        call fn018_set_seq_step_picture_state
+    end if
+    // message("FN02 setting the value for step index: " & fn002.a.step_index)
+end function
+
+function fn013_update_seq_step_pictures
+    // message("FN13 updating step pictures UNI/BIP")
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn013.l.mode_side := fn013.a.side
+    else
+        fn013.l.mode_side := __LEFT
+    end if
+    // message("    updating side: " & fn013.l.mode_side )
+    for fn013.l.step := 0 to 7
+        UIID_MAIN.seq.step [ fn013.a.side, fn013.l.step + (fn013.a.block_index mod 4 ) * 8 ] -> picture := ...
+            SEQ_step_pictures [                                             ...
+                SEQ.DUAL.step_count [ fn013.a.side, fn013.a.block_index mod 4 ] + ...
+                SEQ.target_type [ SEQ.showing_target [ fn013.l.mode_side ] ] * 8 ...
+            ]
+        // message("    step picture set to " & SEQ_step_pictures [                                             ...
+        //         SEQ.DUAL.step_count [ fn013.a.side, fn013.a.block_index mod 4 ] + ...
+        //         SEQ.target_type [ SEQ.showing_target [ fn013.l.mode_side ] ] * 8 ...
+        //     ])
+    end for
 end function
 
 function fn003_set_block_step_count
-
     { PENDING OPTIMIZE CODE }
 
     { needed for the seq xy }
-    message("FN003 block_index: " & fn003.a.block_index & " side: " & fn003.a.side)
+    // message("FN003 block_index: " & fn003.a.block_index & " side: " & fn003.a.side)
+    fn013.a.side        := fn003.a.side
+    fn013.a.block_index := fn003.a.block_index
+    call fn013_update_seq_step_pictures
+
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
-        message("    DUAL step count: "  & SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index mod 4  ])
-        SEQ.DUAL.step_width [ fn003.a.side, fn003.a.block_index ] := ...
-            SEQ_XY_DUAL_BLOCK_W / float(SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ] + 1)
+        // message("    DUAL step count: "  & SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index mod 4  ])
+        fn003.l.block_index_mod := fn003.a.block_index mod 4
+
+        SEQ.DUAL.step_width [ fn003.a.side, fn003.l.block_index_mod ] := ...
+            SEQ_XY_DUAL_BLOCK_W / float(SEQ.DUAL.step_count [ fn003.a.side, fn003.l.block_index_mod ] + 1)
         // message(" SEQ.DUAL.step_width = " & SEQ.DUAL.step_width [ fn003.a.side, fn003.a.block_index ])
-        UIID_MAIN.seq.leds [ fn003.a.side, fn003.a.block_index ] -> picture := ...
-            SEQ_step_led_pictures [ SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ] ]
+
+        UIID_MAIN.seq.leds [ fn003.a.side, fn003.l.block_index_mod ] -> picture := ...
+            SEQ_step_led_pictures [ SEQ.DUAL.step_count [ fn003.a.side, fn003.l.block_index_mod ] ]
 
         { update the number of step sliders and their pictures }
-
-        for i.i := 0 to 7
-            if i.i <= SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ]
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> UI_SHOW
+        for fn003.l.counter := 0 to 7
+            if fn003.l.counter <= SEQ.DUAL.step_count [ fn003.a.side, fn003.l.block_index_mod ]
+                UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + fn003.l.block_index_mod * 8 ] -> UI_SHOW
                 
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> picture := ...
-                    SEQ_step_pictures [ SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ] + ...
-                        SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
+                // UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + fn003.a.block_index * 8 ] -> picture := ...
+                //     SEQ_step_pictures [ SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ] + ...
+                //         SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
 
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> pos_x := ...
+                UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + fn003.l.block_index_mod * 8 ] -> pos_x := ...
                     SEQ_STEP_COORD [                                               ...
                         fn003.a.mode,                                              ...
                         fn003.a.side,                                              ...
-                        SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ], ...
-                        i.i                                                        ...
-                    ] + SEQ_XY_BLOCK_START_OFFSET [ fn003.a.block_index ]
+                        SEQ.DUAL.step_count [ fn003.a.side, fn003.l.block_index_mod ], ...
+                        fn003.l.counter                                                        ...
+                    ] + SEQ_XY_BLOCK_START_OFFSET [ fn003.l.block_index_mod ]
 
             else
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + fn003.a.block_index * 8 ] -> UI_HIDE
+                UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + fn003.l.block_index_mod * 8 ] -> UI_HIDE
             end if
         end for
     else
@@ -184,26 +254,26 @@ function fn003_set_block_step_count
         UIID_MAIN.seq.leds [ fn003.a.side, fn003.a.block_index mod 4 ] -> picture := ...
             SEQ_step_led_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] ]
 
-        message("    JOIN step count: " & SEQ.JOIN.step_count [ fn003.a.block_index ])
+        // message("    JOIN step count: " & SEQ.JOIN.step_count [ fn003.a.block_index ])
 
-        for i.i := 0 to 7
-            if i.i <= SEQ.JOIN.step_count [ fn003.a.block_index ]
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4 ) * 8 ] -> UI_SHOW
+        for fn003.l.counter := 0 to 7
+            if fn003.l.counter <= SEQ.JOIN.step_count [ fn003.a.block_index ]
+                UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + (fn003.a.block_index mod 4 ) * 8 ] -> UI_SHOW
                 
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4 ) * 8 ] -> picture := ...
-                    SEQ_step_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] + ...
-                        SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
+                // UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + (fn003.a.block_index mod 4 ) * 8 ] -> picture := ...
+                //     SEQ_step_pictures [ SEQ.JOIN.step_count [ fn003.a.block_index ] + ...
+                //         SEQ.target_type [ SEQ.showing_target [ fn003.a.side ] ] * 8 ]
 
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4 ) * 8 ] -> pos_x := ...
+                UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + (fn003.a.block_index mod 4 ) * 8 ] -> pos_x := ...
                     SEQ_STEP_COORD [                                               ...
                         fn003.a.mode,                                              ...
                         fn003.a.side,                                              ...
                         SEQ.JOIN.step_count [ fn003.a.block_index ], ...
-                        i.i                                                        ...
+                        fn003.l.counter                                                        ...
                     ] + SEQ_XY_BLOCK_START_OFFSET [ fn003.a.block_index mod 4 ]
 
             else
-                UIID_MAIN.seq.step [ fn003.a.side, i.i + (fn003.a.block_index mod 4 ) * 8 ] -> UI_HIDE
+                UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + (fn003.a.block_index mod 4 ) * 8 ] -> UI_HIDE
             end if
         end for
 
@@ -247,7 +317,7 @@ function fn008_get_current_seq_join_block
         if  fn008.a.x_coord >= SEQ_JOIN_XY_BLOCK_START_END [ fn008.l.block_counter, __START ] and ...
             fn008.a.x_coord <= SEQ_JOIN_XY_BLOCK_START_END [ fn008.l.block_counter, __END ]
             fn008.r.block_index := fn008.l.block_counter
-            message("FN008_GET_CURRENT_SEQ_JOIN_BLOCK " & fn008.r.block_index)
+            // message("FN008_GET_CURRENT_SEQ_JOIN_BLOCK " & fn008.r.block_index)
         end if
     end for
 end function
@@ -260,11 +330,11 @@ function fn009_get_seq_join_step_index
 
     fn009.r.step_index := int(( fn009.l.xy_x.normalized )/ SEQ.JOIN.step_width [ fn009.a.block_index ]) + ...
         8 * fn009.a.block_index
-    message("        block ______: " & fn009.a.block_index)
-    message("        x __________: " & fn009.l.xy_x)
-    message("        x normalized: " & fn009.l.xy_x.normalized)
-    message("        Step W _____: " & SEQ.JOIN.step_width [ fn009.a.block_index ])
-    message("        step index  : " & fn009.r.step_index)
+    // message("        block ______: " & fn009.a.block_index)
+    // message("        x __________: " & fn009.l.xy_x)
+    // message("        x normalized: " & fn009.l.xy_x.normalized)
+    // message("        Step W _____: " & SEQ.JOIN.step_width [ fn009.a.block_index ])
+    // message("        step index  : " & fn009.r.step_index)
 
     if fn009.r.step_index = 32 and xypad_MAIN.SEQ.join [ 0 ] < 0.5
         fn009.r.step_index := 31
@@ -283,61 +353,480 @@ function fn010_set_seq_step_value
         int(float(SEQ_XY_H-1) * fn010.a.value)
 
     { depends on the target showing }
-
+    // message("FN10 setting the value for step index: " & fn010.a.step_index)
     SEQ.data.i [                             ...
         fn010.l.side,                        ...
         SEQ.showing_target [ fn010.l.side ], ...
-        fn010.a.step_index                   ...
+        fn010.a.step_index mod 32            ...
     ] := int( 1000000.0 * fn010.a.value )
 
     SEQ.data.f [                             ...
         fn010.l.side,                        ...
         SEQ.showing_target [ fn010.l.side ], ...
-        fn010.a.step_index                   ...
+        fn010.a.step_index mod 32            ...
     ] := fn010.a.value
 end function
 
-function seq_recall_all_step_values
+function fn012_seq_recall_step_count
     for b.i := 0 to 3
-        for s.i := 0 to 1
-            fn003.a.mode        := switch_MAIN.SEQ.combine
-            fn003.a.side        := s.i // __LEFT then __RIGHT
-            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                fn003.a.block_index := b.i
-            else
-                fn003.a.block_index := b.i + 4 * s.i
-            end if
+        fn003.a.mode        := switch_MAIN.SEQ.combine
+        fn003.a.side        := fn012.a.side // __LEFT then __RIGHT
+        if switch_MAIN.SEQ.combine = __SEQ_DUAL
+            fn003.a.block_index := b.i
+        else
+            fn003.a.block_index := b.i + 4 * fn012.a.side
+        end if
 
-            call fn003_set_block_step_count
-        end for
+        call fn003_set_block_step_count
+
     end for
 end function
 
 {{ general  }}
 function fn005_set_seq_target_selector
     for i.i := 0 to 4
-        UIID_MAIN.target_selectors [ i.i ] -> value := __OFF
+        UIID_MAIN.seq.target_selectors [ i.i ] -> value := __OFF
     end for
-    UIID_MAIN.target_selectors [ fn005.a.selector_index ] -> value := __ON
+    if in_range(fn005.a.selector_index, 0, 4)
+        UIID_MAIN.seq.target_selectors [ fn005.a.selector_index ] -> value := __ON
+    end if
+end function
+
+function fn011_clear_target_activators
+    for i.i := 0 to 4
+        UIID_MAIN.seq.target_activators [ fn011.a.side, i.i] -> value := __OFF
+    end for
+    if in_range(fn011.a.index, 0, 4)
+        UIID_MAIN.seq.target_activators [ fn011.a.side, fn011.a.index ] -> value := __ON
+    end if
+end function
+
+function fn014_seq_recall_target_steps_values_and_pictures
+    // message("FN14 called")
+    // message("    fn014.a.side: " & fn014.a.side)
+    // message("    fn014.a.target_index: " & fn014.a.target_index)
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn006.a.side := fn014.a.side
+        call fn006_recall_seq_values
+        for fn014.l.counter := 0 to 3
+            fn013.a.side        := fn014.a.side
+            fn013.a.block_index := fn014.l.counter
+            call fn013_update_seq_step_pictures
+        end for
+    else
+        { mirror the right side }
+        fn011.a.side  := __RIGHT
+        fn011.a.index := fn014.a.target_index
+        call fn011_clear_target_activators
+
+        SEQ.showing_target [ __RIGHT ] := fn014.a.target_index 
+
+        for fn014.l.counter := 0 to 1
+            fn006.a.side := fn014.l.counter
+            call fn006_recall_seq_values
+
+            for fn014.l.counter2 := 0 to 3
+                fn013.a.side        := fn014.l.counter
+                fn013.a.block_index := fn014.l.counter2 + fn014.l.counter * 4
+                call fn013_update_seq_step_pictures
+            end for
+        end for
+    end if
+end function
+
+function fn015_set_seq_play_direction_btns
+    for i.i := 0 to 2
+        UIID_MAIN.seq.direction_btns [ fn015.a.side,  i.i] -> value := __OFF
+    end for
+    UIID_MAIN.seq.direction_btns [ fn015.a.side, fn015.a.btn_index] -> value := __ON
+end function
+
+function set_seq_target_selectors_text_alignment
+    for i.i := 0 to 4
+        UIID_MAIN.seq.target_selectors [ i.i ] -> text_alignment := abs(1 - switch_MAIN.SEQ.combine)
+    end for
+end function
+
+function fn016_set_data_display_from_seq_xy
+    select(SEQ.showing_target [ fn016.a.target_index ])
+        case SEQ_TARGET_VELO  
+            @fn016.r.title      := "velocity"
+            if fn016.a.value * 127.0 = 0.0
+                @fn016.r.text_data := "1"
+            else
+                @fn016.r.text_data := int(fn016.a.value * 127.0)
+            end if
+
+        case SEQ_TARGET_PITCH 
+            @fn016.r.title      := "pitch"
+            if UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> key_shift = __ON
+                @fn016.r.text_data := round((fn016.a.value * 24.0 - 12.0)*100.0)/100.0
+            else
+                @fn016.r.text_data := int(fn016.a.value * 24.0 - 12.0)
+            end if
+
+        case SEQ_TARGET_OCTAVE
+            @fn016.r.title      := "octave"
+            if UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> key_shift = __ON
+                @fn016.r.text_data := round((fn016.a.value * 4.0 - 2.0)*100.0)/100.0
+            else
+                @fn016.r.text_data := int(fn016.a.value * 4.0 - 2.0)
+            end if
+
+        case SEQ_TARGET_PAN
+            @fn016.r.title      := "pan"
+            if fn016.a.value < 0.49
+                @fn016.r.text_data := int(100.0 - abs(fn016.a.value * 200.0)) & " L"
+            else
+                if fn016.a.value > 0.51
+                    @fn016.r.text_data := int(abs((fn016.a.value-0.5) * 200.0)) & " R"
+                else
+                    @fn016.r.text_data := "Center"
+                end if
+            end if
+
+        case SEQ_TARGET_FILTER
+            if fn016.a.value < 0.49 { low  pass }
+                set_engine_par(ENGINE_PAR_CUTOFF, int(fn016.a.value * 2000000.0), __NO_GROUP, __LP_FILTER_CA_SLOT, NI_BUS_OFFSET+15)
+                @fn016.r.title     := "Low Pass"
+                @fn016.r.text_data := get_engine_par_disp(ENGINE_PAR_CUTOFF, __NO_GROUP, __LP_FILTER_CA_SLOT, NI_BUS_OFFSET+15) & "hz"
+            else                   { high pass }
+                if fn016.a.value > 0.51
+                    set_engine_par(ENGINE_PAR_CUTOFF, int((fn016.a.value-0.5) * 2000000.0), __NO_GROUP, __HP_FILTER_CA_SLOT, NI_BUS_OFFSET+15)
+                    @fn016.r.title     := "High Pass"
+                    @fn016.r.text_data := get_engine_par_disp(ENGINE_PAR_CUTOFF, __NO_GROUP, __HP_FILTER_CA_SLOT, NI_BUS_OFFSET+15) & "hz"
+                else
+                    @fn016.r.title     := "Filter Off"
+                    @fn016.r.text_data := "Off"
+                end if
+            end if
+
+    end select
+end function
+
+function fn017_get_seq_target_data
+    if UIID_MAIN.seq.target_power [ fn017.a.side, SEQ_TARGET_VELO ] -> value = __ON
+        fn017.r.velocity := (126 *                                  ...
+            SEQ.data.i [                                            ...
+                fn017.a.side,                                       ...
+                SEQ_TARGET_VELO,                                    ...
+                fn017.a.step_counter + fn017.a.block_step_index * 8 ...
+            ] ) / 1000000 + 1
+    else
+        fn017.r.velocity := layers.note_velo [ fn017.a.side, fn017.a.key_note ]
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn017.a.side, SEQ_TARGET_PITCH ] -> value = __ON
+        fn017.r.pitch := (24 *                                      ...
+            SEQ.data.i [                                            ...
+                fn017.a.side,                                       ...
+                SEQ_TARGET_PITCH,                                   ...
+                fn017.a.step_counter + fn017.a.block_step_index * 8 ...
+            ] ) / 1000000 - 12
+    else
+        fn017.r.pitch := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn017.a.side, SEQ_TARGET_OCTAVE ] -> value = __ON
+        fn017.r.octave := (4 *                                      ...
+            SEQ.data.i [                                            ...
+                fn017.a.side,                                       ...
+                SEQ_TARGET_OCTAVE,                                  ...
+                fn017.a.step_counter + fn017.a.block_step_index * 8 ...
+            ] ) / 1000000 - 2
+    else
+        fn017.r.octave := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn017.a.side, SEQ_TARGET_PAN ] -> value = __ON
+        fn017.l.pan_data :=                                     ...
+        SEQ.data.i [                                            ...
+            fn017.a.side,                                       ...
+            SEQ_TARGET_PAN,                                     ...
+            fn017.a.step_counter + fn017.a.block_step_index * 8 ...
+        ]
+        if fn017.l.pan_data < 500000
+            fn017.r.pan := (-1) * (1000 - fn017.l.pan_data / 500)
+        else
+            fn017.r.pan := (fn017.l.pan_data-500000) / 500
+        end if
+    else
+        fn017.r.pan := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn017.a.side, SEQ_TARGET_FILTER ] -> value = __ON
+        fn017.r.filter_status := __ON
+        fn017.l.filter_data   :=                                ...
+        SEQ.data.i [                                            ...
+            fn017.a.side,                                       ...
+            SEQ_TARGET_FILTER,                                  ...
+            fn017.a.step_counter + fn017.a.block_step_index * 8 ...
+        ]
+        fn017.r.filter_value := fn017.l.filter_data
+        if fn017.l.filter_data < 490000  { low pass }
+            fn017.r.lp_filter_value := fn017.l.filter_data * 2
+            fn017.r.hp_filter_value := 0
+        else                             { high pass }
+            if fn017.l.filter_data > 510000
+                fn017.r.lp_filter_value := 1000000
+                fn017.r.hp_filter_value := (fn017.l.filter_data - 500000) * 2
+            else { center point, both filters off }
+                fn017.r.lp_filter_value := 1000000
+                fn017.r.hp_filter_value := 0
+            end if 
+        end if
+    else
+        fn017.r.filter_status := __OFF
+        fn017.r.filter_value  := 500000
+    end if
+end function
+
+function fn020_update_seq_target_off_label
+    if fn020.a.seq_power_state = __ON
+        if  fn020.a.target_power_uiid -> value = __OFF
+            UIID_MAIN.seq.off_label [ fn020.a.side ] -> picture := "label_FX.off"
+            UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_SHOW
+            UIID_MAIN.seq.off_label [ fn020.a.side ] -> text := "TARGET " & SEQ.target_names [ fn020.a.target_index ] & " IS OFF"
+        else
+            UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_HIDE
+        end if
+    else
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> UI_SHOW
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> picture := "label_seq_steps_bg"
+        UIID_MAIN.seq.off_label [ fn020.a.side ] -> text := "SEQUENCER IS OFF"
+    end if
+end function
+
+function fn21_get_seq_target_active_activator
+    for fn021.l.counter := 0 to 4 { 5 activator buttons per side }
+        if  UIID_MAIN.seq.target_activators [ fn021.a.side, fn021.l.counter ] -> value = __ON
+            fn021.r.active_index := fn021.l.counter
+            exit
+        end if
+    end for
+end function
+
+{ this will be called when a block is about to start }
+function fn022_get_flux_values
+    if  UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+        UIID_MAIN.seq.flux_rand_power [ fn022.a.side ] -> value = __ON
+
+        {{ FLUX RAND VELOCITY }}
+        // if  fn017.a.step_counter = 0 { in case you want to do the randomization per block, not per step }
+        { would still need the logic to populate all steps }
+
+        if UIID_MAIN.seq.target_power [ fn022.a.side, SEQ_TARGET_VELO ] -> value = __ON
+            { first get the seed based on the flux randomizer intensity amount }
+            fn022.l.flux_velo_seed := int(127.0 * ...
+                (float(SEQ.flux_rand_intensity [ fn022.a.side, SEQ_TARGET_VELO ] )/100.0) )
+            { generate the actual flux offset value }
+            fn022.l.flux_velo      := random( -1 * fn022.l.flux_velo_seed, fn022.l.flux_velo_seed)
+            { add to the base value }
+            fn022.r.step_velocity := fn022.a.step_velocity + fn022.l.flux_velo
+            { clam if needed }
+            if fn022.r.step_velocity > 127
+                fn022.r.step_velocity := 127
+            end if
+            if fn022.r.step_velocity < 1
+                fn022.r.step_velocity := 1
+            end if
+        end if
+
+        {{ FLUX RAND PITCH }}
+        if UIID_MAIN.seq.target_power [ fn022.a.side, SEQ_TARGET_PITCH ] -> value = __ON
+            { flux rand intensity is 0:100, }
+            fn022.l.flux_pitch_seed := int(12.0 * ...
+                (float(SEQ.flux_rand_intensity [ fn022.a.side, SEQ_TARGET_PITCH ] )))
+            fn022.l.flux_pitch      := random( -1000 * fn022.l.flux_pitch_seed, fn022.l.flux_pitch_seed * 1000)
+            fn022.r.step_pitch := fn022.a.step_pitch + fn022.l.flux_pitch
+            if fn022.r.step_pitch > 1200000
+                fn022.r.step_pitch := 1200000
+            end if
+            if fn022.r.step_pitch < -1200000
+                fn022.r.step_pitch := -1200000
+            end if
+        end if
+
+        {{ FLUX RAND OCTAVE }}
+        if UIID_MAIN.seq.target_power [ fn022.a.side, SEQ_TARGET_OCTAVE ] -> value = __ON
+            fn022.l.flux_octave_seed := int(2.0 * ...
+                (float(SEQ.flux_rand_intensity [ fn022.a.side, SEQ_TARGET_OCTAVE ] )/100.0) )
+            fn022.l.flux_octave      := random( -1 * fn022.l.flux_octave_seed, fn022.l.flux_octave_seed)
+            fn022.r.step_octave := fn022.a.step_octave + fn022.l.flux_octave
+            if fn022.r.step_octave > 2
+                fn022.r.step_octave := 2
+            end if
+            if fn022.r.step_octave < -2
+                fn022.r.step_octave := -2
+            end if
+        end if
+        
+        {{ FLUX RAND PAN }}
+        if UIID_MAIN.seq.target_power [ fn022.a.side, SEQ_TARGET_PAN ] -> value = __ON
+            fn022.l.flux_pan_seed := int(1000.0 * ...
+                (float(SEQ.flux_rand_intensity [ fn022.a.side, SEQ_TARGET_PAN ] )/100.0) )
+            fn022.l.flux_pan      := random( -1 * fn022.l.flux_pan_seed, fn022.l.flux_pan_seed)
+            fn022.r.step_pan := fn022.a.step_pan + fn022.l.flux_pan
+            if fn022.r.step_pan > 1000
+                fn022.r.step_pan := 1000
+            end if
+            if fn022.r.step_pan < -1000
+                fn022.r.step_pan := -1000
+            end if
+        end if
+
+        {{ FLUX RAND PAN }}
+        if UIID_MAIN.seq.target_power [ fn022.a.side, SEQ_TARGET_FILTER ] -> value = __ON
+            { not scaling by /100 because the extreme values of the filter just completely close the sound
+            so scaling by 150 instead of 100 }
+            // message("REPORT ________________")
+            // message("SEQ.step_filter: " & SEQ.step_filter)
+            fn022.l.flux_filter_seed := int(1000000.0 * ...
+                (float(SEQ.flux_rand_intensity [ fn022.a.side, SEQ_TARGET_FILTER ] )/150.0) )
+            fn022.l.flux_filter      := random( -1 * fn022.l.flux_filter_seed, fn022.l.flux_filter_seed)
+            fn022.r.step_filter := fn022.a.step_filter + fn022.l.flux_filter
+            // message("SEQ.flux_filter: " & SEQ.flux_filter)
+            if fn022.r.step_filter > 850000
+                fn022.r.step_filter := 850000
+            end if
+            if fn022.r.step_filter < 150000
+                fn022.r.step_filter := 150000
+            end if
+            // message("fn022.r.step_filter: " & fn022.r.step_filter)
+            if fn022.r.step_filter > 500000 { high pass }
+                fn022.r.step_lp_filter := 1000000
+                fn022.r.step_hp_filter := ( fn022.r.step_filter - 500000 ) * 2
+            else                        { low pass }
+                fn022.r.step_lp_filter := fn022.r.step_filter * 2
+                fn022.r.step_hp_filter := 0
+            end if
+            // message("SEQ.step_lp_filter: " & SEQ.step_lp_filter)
+            // message("SEQ.step_hp_filter: " & SEQ.step_hp_filter)
+        end if
+
+        { update the step picture only }
+        if UIID_MAIN.seq.target_power [ fn022.a.side, SEQ.showing_target [ fn022.a.side ] ] -> value = __ON
+            select(SEQ.showing_target [ fn022.a.side ])
+                case SEQ_TARGET_VELO
+                    fn018.a.value      := float(fn022.r.step_velocity)/127.0
+                case SEQ_TARGET_PITCH
+                    fn018.a.value      := float(fn022.r.step_pitch + 1200000)/2400000.0
+                case SEQ_TARGET_OCTAVE
+                    fn018.a.value      := float(fn022.r.step_octave + 2)/4.0
+                case SEQ_TARGET_PAN
+                    fn018.a.value      := float(fn022.r.step_pan + 1000)/2000.0
+                case SEQ_TARGET_FILTER
+                    fn018.a.value      := float(fn022.r.step_filter)/850000.0
+            end select
+            
+            fn018.a.side       := fn022.a.side
+            fn018.a.step_index := fn022.a.step_counter + fn022.a.block_step_index * 8
+            call fn018_set_seq_step_picture_state
+        end if
+
+    end if
+end function 
+
+function fn029_clear_arp_mode_btns
+    for fn029.l.counter := 0 to 5
+        UIID_MAIN.seq.arp_menu_items [ fn029.a.side, fn029.l.counter ] -> value := __OFF
+    end for
+    UIID_MAIN.seq.arp_menu_items [ fn029.a.side, fn029.a.index ] -> value := __ON
+end function
+
+function fn030_set_seq_step_dyn_value
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        fn030.l.mode_side := fn030.a.side
+    else
+        fn030.l.mode_side := __LEFT
+    end if
+
+    fn030.l.dyn_value := ...
+        get_control_par_real_arr(                       ...
+            UIID_MAIN.seq.dyn_slider [ fn030.a.side ], ...
+            CONTROL_PAR_VALUE,                          ...
+            1                                           ...
+        )
+    
+    if fn030.l.dyn_value >= 0.5
+        fn030.l.dyn_transf_value := abs(2.0 * fn030.l.dyn_value - 1.0 )
+    else
+        fn030.l.dyn_transf_value := 2.0 * fn030.l.dyn_value
+    end if
+
+    if fn030.l.dyn_value >= 0.5
+        fn030.l.delta_max        := 1.0 - fn030.a.value
+        fn030.r.transf_value     := fn030.a.value + fn030.l.delta_max * fn030.l.dyn_transf_value
+    else
+        fn030.r.transf_value     := fn030.a.value * fn030.l.dyn_transf_value
+    end if
+
+    SEQ.data.dyn.i [                              ...
+        fn030.a.side,                             ...
+        SEQ.showing_target [ fn030.l.mode_side ], ...
+        fn030.a.step_index                        ...
+    ] := int( 1000000.0 * fn030.r.transf_value )
+
+    SEQ.data.dyn.f [                                  ...
+        fn030.a.side,                             ...
+        SEQ.showing_target [ fn030.l.mode_side ], ...
+        fn030.a.step_index                        ...
+    ] := fn030.r.transf_value
 end function
 
 
-
-{{ play engine }}
+{{ play engine ____________________________________________________________________ }}
 function fn007_update_block_and_steps_ts
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
-        inc(SEQ.DUAL.current_block [ fn007.a.side ])
-        if SEQ.DUAL.current_block [ fn007.a.side ] > 3
-            SEQ.DUAL.current_block [ fn007.a.side ] := 0
+
+        if  seq.direction_status [ fn007.a.side ] = SEQ_DIRECTION_FORWARD
+            inc(SEQ.DUAL.current_block [ fn007.a.side ])
+
+            { block start, update the flux values and UI }
+            if SEQ.DUAL.current_block [ fn007.a.side ] > 3
+                { check the actual selected direction button }
+                if  layers.seq_play_direction [ fn007.a.side ] = SEQ_DIRECTION_FWBW
+                    SEQ.DUAL.current_block [ fn007.a.side ] := 3
+                    seq.direction_status [ fn007.a.side ] := SEQ_DIRECTION_BACKWARD
+                else { regular forward motion }
+                    SEQ.DUAL.current_block [ fn007.a.side ] := 0
+                end if
+            end if
+
+            SEQ.DUAL.step_duration [ fn007.a.side ] := ...
+                SEQ.rate [ fn007.a.side ] / ( SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ] + 1 )
+
+            for s.i := 0 to SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ]
+                SEQ.DUAL.steps_timestamps [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ], s.i ] := ...
+                    ENGINE_UPTIME + s.i * SEQ.DUAL.step_duration [ fn007.a.side ]
+            end for
+
+        else
+            if  seq.direction_status [ fn007.a.side ] = SEQ_DIRECTION_BACKWARD 
+                dec(SEQ.DUAL.current_block [ fn007.a.side ])
+                if SEQ.DUAL.current_block [ fn007.a.side ] < 0
+                    if layers.seq_play_direction [ fn007.a.side ] = SEQ_DIRECTION_FWBW
+                        SEQ.DUAL.current_block [ fn007.a.side ] := 0
+                        seq.direction_status [ fn007.a.side ] := SEQ_DIRECTION_FORWARD
+                    else { regular backward motion }
+                        SEQ.DUAL.current_block [ fn007.a.side ] := 3 
+                    end if
+                end if
+
+                SEQ.DUAL.step_duration [ fn007.a.side ] := ...
+                    SEQ.rate [ fn007.a.side ] / ( SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ] + 1 )
+
+                for s.i := 0 to SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ]
+                    SEQ.DUAL.steps_timestamps [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ], s.i ] := ...
+                        ENGINE_UPTIME + s.i * SEQ.DUAL.step_duration [ fn007.a.side ]
+                end for
+            end if
+
         end if
 
-        SEQ.DUAL.step_duration [ fn007.a.side ] := ...
-            SEQ.rate [ fn007.a.side ] / ( SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ] + 1 )
-
-        for s.i := 0 to SEQ.DUAL.step_count [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ] ]
-            SEQ.DUAL.steps_timestamps [ fn007.a.side, SEQ.DUAL.current_block [ fn007.a.side ], s.i ] := ...
-                ENGINE_UPTIME + s.i * SEQ.DUAL.step_duration [ fn007.a.side ]
-        end for
+        {{ UPDATES WHOLE BLOCK FLUX DATA and UI STEPS ACCORDING TO FLUX RANDOMIZER INFLUENCE }}
+        fn025.a.side := fn007.a.side
+        call fn025_update_all_block_steps
 
     else { JOIN sequencer }
 
@@ -355,9 +844,330 @@ function fn007_update_block_and_steps_ts
         end for
 
     end if 
-
-
 end function
+
+{ not really being used }
+function fn023_check_block_start
+    fn023.r.check := 0
+    if fn023.a.counter = 0
+        fn023.r.check := fn023.r.check .or. __STEP_COUNTER_0 // 1
+    end if
+    if UIID_MAIN.seq.direction_btns [ fn023.a.side, 0 ] -> value = __ON
+        fn023.r.check := fn023.r.check .or. __DIR_BTN_FORWARD //2
+    end if
+    if UIID_MAIN.seq.direction_btns [ fn023.a.side, 1 ] -> value = __ON
+        fn023.r.check := fn023.r.check .or. __DIR_BTN_BACKWARD //4
+    end if
+    if UIID_MAIN.seq.direction_btns [ fn023.a.side, 2 ] -> value = __ON
+        fn023.r.check := fn023.r.check .or. __DIR_BTN_FWBW //8
+    end if
+    if SEQ.ts_counter = SEQ.DUAL.step_count [ fn023.a.side, SEQ.DUAL.current_block [ fn023.a.side ] ]
+        fn023.r.check := fn023.r.check .or. __STEP_COUNTER_LAST //16
+    end if
+    if seq.direction_status [ fn023.a.side ] = SEQ_DIRECTION_FORWARD
+        fn023.r.check := fn023.r.check .or. __DIR_PLAY_FORWARD //32
+    end if
+    if seq.direction_status [ fn023.a.side ] = SEQ_DIRECTION_BACKWARD
+        fn023.r.check := fn023.r.check .or. __DIR_PLAY_BACKWARD //64
+    end if
+end function
+
+{ this function will update the SEQ.data.flux.i/f arrays and the steps height on th UI in the current block }
+function fn024_update_flux_data_and_ui
+    {{ VELOCITY }}
+    SEQ.data.flux.i [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_VELO,                                    ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := fn024.a.step_velocity
+
+    SEQ.data.flux.f [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_VELO,                                    ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := float(fn024.a.step_velocity)/127.0
+
+    {{ PITCH }}
+    SEQ.data.flux.i [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_PITCH,                                   ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := fn024.a.step_pitch
+
+    SEQ.data.flux.f [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_PITCH,                                   ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := float(fn024.a.step_pitch + 1200000)/2400000.0
+
+    {{ OCTAVE }}
+    SEQ.data.flux.i [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_OCTAVE,                                  ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := fn024.a.step_octave
+
+    SEQ.data.flux.f [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_OCTAVE,                                  ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := float(fn024.a.step_octave + 2)/4.0
+
+    {{ PAN }}
+    SEQ.data.flux.i [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_PAN,                                     ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := fn024.a.step_pan
+
+    SEQ.data.flux.f [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_PAN,                                     ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := float(fn024.a.step_pan+1000)/2000.0
+
+    {{ FILTER }}
+    SEQ.data.flux.i [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_FILTER,                                  ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := fn024.a.step_filter
+
+    SEQ.data.flux.f [                                       ...
+        fn024.a.side,                                       ...
+        SEQ_TARGET_FILTER,                                  ...
+        fn024.a.step_counter + fn024.a.block_step_index * 8 ...
+    ] := float(fn024.a.step_filter)/1000000.0
+
+    select(SEQ.showing_target [ fn024.a.side ])
+        case SEQ_TARGET_VELO
+            fn024.l.picture_state := float(fn024.a.step_velocity)/127.0
+        case SEQ_TARGET_PITCH
+            fn024.l.picture_state := float(fn024.a.step_pitch + 1200000)/2400000.0
+        case SEQ_TARGET_OCTAVE
+            fn024.l.picture_state := float(fn024.a.step_octave + 2)/4.0
+        case SEQ_TARGET_PAN
+            fn024.l.picture_state := float(fn024.a.step_pan+1000)/2000.0
+        case SEQ_TARGET_FILTER
+            fn024.l.picture_state := float(fn024.a.step_filter)/1000000.0
+    end select
+
+    { update ui step picture value }
+    UIID_MAIN.seq.step [ fn024.a.side, fn024.a.step_counter + fn024.a.block_step_index * 8 ] -> picture_state := ...
+        int(float(SEQ_XY_H-1) * fn024.l.picture_state)
+end function
+
+function fn025_update_all_block_steps
+    if  SEQ.DUAL.current_block [ fn025.a.side ] = 0 and seq.direction_status [ fn025.a.side ] = SEQ_DIRECTION_FORWARD or ...
+        SEQ.DUAL.current_block [ fn025.a.side ] = 3  and seq.direction_status [ fn025.a.side ] = SEQ_DIRECTION_BACKWARD
+
+        for fn025.l.counter2 := 0 to 3
+            if  UIID_MAIN.seq.flux_rand_btns  [ fn025.a.side, fn025.l.counter2 ] -> value = __ON
+                for fn025.l.counter := 0 to SEQ.DUAL.step_count [ fn025.a.side, fn025.l.counter2 ]
+                    fn017.a.side             := fn025.a.side
+                    fn017.a.step_counter     := fn025.l.counter
+                    fn017.a.block_step_index := fn025.l.counter2
+                    call fn017_get_seq_target_data
+                    { return values from fn017_get_seq_target_data() }
+                    fn022.a.side             := fn025.a.side
+                    fn022.a.step_counter     := fn025.l.counter
+                    fn022.a.block_step_index := fn025.l.counter2
+                    fn022.a.step_velocity    := fn017.r.velocity
+                    fn022.a.step_pitch       := fn017.r.pitch
+                    fn022.a.step_octave      := fn017.r.octave
+                    fn022.a.step_pan         := fn017.r.pan
+                    fn022.a.step_filter      := fn017.r.filter_value
+                    call fn022_get_flux_values 
+
+                    fn024.a.step_velocity    := fn022.r.step_velocity
+                    fn024.a.step_pitch       := fn022.r.step_pitch
+                    fn024.a.step_octave      := fn022.r.step_octave
+                    fn024.a.step_pan         := fn022.r.step_pan
+                    fn024.a.step_filter      := fn022.r.step_filter
+                    fn024.a.step_lp_filter   := fn022.r.step_lp_filter
+                    fn024.a.step_hp_filter   := fn022.r.step_hp_filter
+                    fn024.a.side             := fn025.a.side
+                    fn024.a.step_counter     := fn025.l.counter
+                    fn024.a.block_step_index := fn025.l.counter2
+                    call fn024_update_flux_data_and_ui
+                end for
+            end if
+        end for
+    end if
+end function
+
+function fn026_get_seq_fluxxed_target_data
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_VELO ] -> value = __ON
+        fn026.r.velocity := (                                       ...
+            SEQ.data.flux.i [                                       ...
+                fn026.a.side,                                       ...
+                SEQ_TARGET_VELO,                                    ...
+                fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+            ] )
+    else
+        fn026.r.velocity := layers.note_velo [ fn026.a.side, fn026.a.key_note ]
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_PITCH ] -> value = __ON
+        fn026.r.pitch := (                                          ...
+            SEQ.data.flux.i [                                       ...
+                fn026.a.side,                                       ...
+                SEQ_TARGET_PITCH,                                   ...
+                fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+            ] )
+    else
+        fn026.r.pitch := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_OCTAVE ] -> value = __ON
+        fn026.r.octave := (                                         ...
+            SEQ.data.flux.i [                                       ...
+                fn026.a.side,                                       ...
+                SEQ_TARGET_OCTAVE,                                  ...
+                fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+            ] )
+    else
+        fn026.r.octave := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_PAN ] -> value = __ON
+        fn026.l.pan_data :=                                     ...
+        SEQ.data.flux.i [                                       ...
+            fn026.a.side,                                       ...
+            SEQ_TARGET_PAN,                                     ...
+            fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+        ]
+
+        fn026.r.pan := fn026.l.pan_data 
+    else
+        fn026.r.pan := 0
+    end if
+
+    if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_FILTER ] -> value = __ON
+        fn026.r.filter_status := __ON
+        fn026.l.filter_data   :=                                ...
+        SEQ.data.flux.i [                                       ...
+            fn026.a.side,                                       ...
+            SEQ_TARGET_FILTER,                                  ...
+            fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+        ]
+        fn026.r.filter_value := fn026.l.filter_data
+        if fn026.l.filter_data < 490000  { low pass }
+            fn026.r.lp_filter_value := fn026.l.filter_data * 2
+            fn026.r.hp_filter_value := 0
+        else                             { high pass }
+            if fn026.l.filter_data > 510000
+                fn026.r.lp_filter_value := 1000000
+                fn026.r.hp_filter_value := (fn026.l.filter_data - 500000) * 2
+            else { center point, both filters off }
+                fn026.r.lp_filter_value := 1000000
+                fn026.r.hp_filter_value := 0
+            end if 
+        end if
+    else
+        fn026.r.filter_status := __OFF
+        fn026.r.filter_value  := 500000
+    end if
+end function
+
+function fn028_update_arp_note_buffers
+    if fn028.a.side = __LEFT
+        ARP.i := 0
+        while (ARP.i <= 127)
+            if (ARP.i < ARP.cursor [ fn028.a.side ] )
+                ARP.sorted_buffer_LEFT      [ ARP.i ] := ARP.note_buffer_LEFT [ ARP.i ]
+                ARP.sorted_vel_buffer_LEFT  [ ARP.i ] := ARP.vel_buffer_LEFT  [ ARP.i ]
+            else
+                ARP.sorted_buffer_LEFT     [ ARP.i ] := 0
+                ARP.sorted_vel_buffer_LEFT [ ARP.i ] := -1
+                ARP.note_buffer_LEFT       [ ARP.i ] := 0
+                ARP.vel_buffer_LEFT        [ ARP.i ] := -1
+            end if
+
+            inc(ARP.i)
+        end while
+        { using insertion sort here because the velocity buffer needs to follow the sorting of the note buffer }
+        ARP.o := 1
+        while ( ARP.o < num_elements(ARP.sorted_buffer_LEFT))
+            ARP.temp1 := ARP.sorted_buffer_LEFT     [ ARP.o]
+            ARP.temp2 := ARP.sorted_vel_buffer_LEFT [ ARP.o]
+
+            ARP.p :=  ARP.o - 1
+            while ( ARP.p >= 0 and ( ARP.sorted_buffer_LEFT [ ARP.p ] <  ARP.temp1 ) )
+                ARP.sorted_buffer_LEFT     [ ARP.p + 1] := ARP.sorted_buffer_LEFT     [ ARP.p ]
+                ARP.sorted_vel_buffer_LEFT [ ARP.p + 1] := ARP.sorted_vel_buffer_LEFT [ ARP.p ]
+                dec( ARP.p )
+            end while
+
+            ARP.sorted_buffer_LEFT     [ ARP.p + 1 ] :=  ARP.temp1
+            ARP.sorted_vel_buffer_LEFT [ ARP.p + 1 ] :=  ARP.temp2
+
+            inc( ARP.o)
+        end while
+
+        { create play buffers }
+        ARP.i := 0
+        while ( ARP.i <  ARP.cursor [ fn028.a.side ] )
+            ARP.play_buffer_LEFT          [ ARP.i ] := ARP.note_buffer_LEFT       [ ARP.i ]
+            ARP.play_up_buffer_LEFT       [ ARP.i ] := ARP.sorted_buffer_LEFT     [ ARP.cursor [ fn028.a.side ] - 1 -  ARP.i ]
+            ARP.play_down_buffer_LEFT     [ ARP.i ] := ARP.sorted_buffer_LEFT     [ ARP.i ]
+            ARP.play_vel_buffer_LEFT      [ ARP.i ] := ARP.vel_buffer_LEFT        [ ARP.i ]
+            ARP.play_up_vel_buffer_LEFT   [ ARP.i ] := ARP.sorted_vel_buffer_LEFT [ ARP.cursor [ fn028.a.side ] - 1 -  ARP.i ]
+            ARP.play_down_vel_buffer_LEFT [ ARP.i ] := ARP.sorted_vel_buffer_LEFT [ ARP.i ]
+
+            inc( ARP.i )
+        end while
+
+    else
+        ARP.i := 0
+        while (ARP.i <= 127)
+            if (ARP.i < ARP.cursor [ fn028.a.side ])
+                ARP.sorted_buffer_RIGHT      [ ARP.i ] := ARP.note_buffer_RIGHT [ ARP.i ]
+                ARP.sorted_vel_buffer_RIGHT  [ ARP.i ] := ARP.vel_buffer_RIGHT  [ ARP.i ]
+            else
+                ARP.sorted_buffer_RIGHT     [ ARP.i ] := 0
+                ARP.sorted_vel_buffer_RIGHT [ ARP.i ] := -1
+                ARP.note_buffer_RIGHT       [ ARP.i ] := 0
+                ARP.vel_buffer_RIGHT        [ ARP.i ] := -1
+            end if
+
+            inc(ARP.i)
+        end while
+        { using insertion sort here because the velocity buffer needs to follow the sorting of the note buffer }
+        ARP.o := 1
+        while ( ARP.o < num_elements(ARP.sorted_buffer_RIGHT))
+            ARP.temp1 := ARP.sorted_buffer_RIGHT     [ ARP.o]
+            ARP.temp2 := ARP.sorted_vel_buffer_RIGHT [ ARP.o]
+
+            ARP.p :=  ARP.o - 1
+            while ( ARP.p >= 0 and ( ARP.sorted_buffer_RIGHT [ ARP.p ] <  ARP.temp1 ) )
+                ARP.sorted_buffer_RIGHT     [ ARP.p + 1] := ARP.sorted_buffer_RIGHT     [ ARP.p ]
+                ARP.sorted_vel_buffer_RIGHT [ ARP.p + 1] := ARP.sorted_vel_buffer_RIGHT [ ARP.p ]
+                dec( ARP.p )
+            end while
+
+            ARP.sorted_buffer_RIGHT     [ ARP.p + 1 ] :=  ARP.temp1
+            ARP.sorted_vel_buffer_RIGHT [ ARP.p + 1 ] :=  ARP.temp2
+
+            inc( ARP.o)
+        end while
+
+        { create play buffers }
+        ARP.i := 0
+        while ( ARP.i <  ARP.cursor [ fn028.a.side ] )
+            ARP.play_buffer_RIGHT          [ ARP.i ] := ARP.note_buffer_RIGHT       [ ARP.i ]
+            ARP.play_up_buffer_RIGHT       [ ARP.i ] := ARP.sorted_buffer_RIGHT     [ ARP.cursor [ fn028.a.side ] - 1 -  ARP.i ]
+            ARP.play_down_buffer_RIGHT     [ ARP.i ] := ARP.sorted_buffer_RIGHT     [ ARP.i ]
+            ARP.play_vel_buffer_RIGHT      [ ARP.i ] := ARP.vel_buffer_RIGHT        [ ARP.i ]
+            ARP.play_up_vel_buffer_RIGHT   [ ARP.i ] := ARP.sorted_vel_buffer_RIGHT [ ARP.cursor [ fn028.a.side ] - 1 -  ARP.i ]
+            ARP.play_down_vel_buffer_RIGHT [ ARP.i ] := ARP.sorted_vel_buffer_RIGHT [ ARP.i ]
+
+            inc( ARP.i )
+        end while
+    end if
+end function
+
+
 
 function PLAY_NOTE_NCB
     layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ] := play_note(pn_ncb.a.note, pn_ncb.a.velo, -1, -1)
@@ -366,44 +1176,275 @@ function PLAY_NOTE_NCB
     set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __ON,  pn_ncb.a.side)
 end function
 
+function fn027_play_lcb_core
+    if SEQ.step_velocity > 1
+        layers.note_events [ fn027.a.side, fn027.a.note ] := ...
+            play_note(                      ...
+                fn027.a.note,              ...
+                SEQ.step_velocity,          ...
+                -1,                         ...
+                SEQ.DUAL.step_duration [ fn027.a.side ] * 500     ...
+            )                               ...
+
+        set_event_par_arr(layers.note_events [ fn027.a.side, fn027.a.note ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
+        { PENDING: group here is just for testing example -> side }
+        set_event_par_arr(layers.note_events [ fn027.a.side, fn027.a.note ], EVENT_PAR_ALLOW_GROUP, __ON,  fn027.a.side)
+
+        { adjust event according to seq modulations }
+        change_tune( ...
+            layers.note_events [ fn027.a.side, fn027.a.note ], ...
+            SEQ.step_pitch + SEQ.step_octave * 1200000, 0)
+
+        change_pan( ...
+            layers.note_events [ fn027.a.side, fn027.a.note ], ...
+            SEQ.step_pan, 0 )
+
+        { filter seq setting }
+        if fn026.r.filter_status = __ON
+            set_engine_par(ENGINE_PAR_CUTOFF, SEQ.step_lp_filter, __NO_GROUP, __LP_FILTER_SLOT, NI_BUS_OFFSET+fn027.a.side)
+            set_engine_par(ENGINE_PAR_CUTOFF, SEQ.step_hp_filter, __NO_GROUP, __HP_FILTER_SLOT, NI_BUS_OFFSET+fn027.a.side)
+        else
+            set_engine_par(ENGINE_PAR_CUTOFF, 1000000, __NO_GROUP, __LP_FILTER_SLOT, NI_BUS_OFFSET+fn027.a.side)
+            set_engine_par(ENGINE_PAR_CUTOFF,       0, __NO_GROUP, __HP_FILTER_SLOT, NI_BUS_OFFSET+fn027.a.side)
+        end if
+
+    end if
+end function
+
 function PLAY_LCB
+    select(seq.direction_status [ p_lcb.a.side ])
+        case SEQ_DIRECTION_FORWARD  
+            p_lcb.l.ts_counter := SEQ.ts_counter
+
+        case SEQ_DIRECTION_BACKWARD 
+            if  switch_MAIN.SEQ.combine = __SEQ_DUAL
+                { inverts the steps }
+                p_lcb.l.ts_counter := ...
+                    SEQ.DUAL.step_count [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] - SEQ.ts_counter
+            end if
+    end select
+
     if  switch_MAIN.SEQ.combine = __SEQ_DUAL and ...
-        SEQ.DUAL.steps_timestamps [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ], SEQ.ts_counter ] = ENGINE_UPTIME
-        
-        if switch_MAIN.FLUXX.LEFT.arp.power = __OFF
+        SEQ.DUAL.steps_timestamps [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ], p_lcb.l.ts_counter ] = ENGINE_UPTIME
+        // message(lcb_play_side & " | play LCB -----> step : " & SEQ.ts_counter & ...
+        //                             " | block: " & SEQ.DUAL.current_block [ lcb_play_side ] & " play dir: " & layers.seq_play_direction [ lcb_play_side ])
+        // message("    PLAY LCB: dir BACKW | step inv " & p_lcb.l.ts_counter)
+        // message("    SEQ.DUAL.step_count: " & SEQ.DUAL.step_count [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ])
+        // message("    step counter: " & SEQ.ts_counter)
+        { update step leds - has to be here, at the timestamp of each step }
+        for lcb_block_counter := 0 to 3
+            if lcb_block_counter = SEQ.DUAL.current_block [ lcb_play_side ]
+                UIID_MAIN.seq.step_leds [                    ...
+                    lcb_play_side,                           ...
+                    SEQ.DUAL.current_block [ lcb_play_side ] ...
+                ] -> picture_state := SEQ.ts_counter + 1
+            else
+                UIID_MAIN.seq.step_leds [                    ...
+                    lcb_play_side,                           ...
+                    lcb_block_counter                        ...
+                ] -> picture_state := 0
+            end if
+        end for
+
+        { play }
+        if UIID_MAIN.seq.arp_power [ p_lcb.a.side ] -> value = __OFF
             for SEQ.key_count := 0 to 127
                 if KEY_DOWN[ SEQ.key_count ] = 1
                     // message(SEQ.key_count & " <-- key pressed")
                     { first kill the note we are about to play (in case it is still there from NCB or something else )}
                     if layers.note_events [ p_lcb.a.side, SEQ.key_count ] > 0
                         fade_out( layers.note_events [ p_lcb.a.side, SEQ.key_count ], 2000, 1)
-                        // message("    Killing note:  " & SEQ.key_count & " | UT: " & ENGINE_UPTIME)
                     end if
-                    SEQ.step_velocity := (126 *                         ...
-                        SEQ.data.i [                                    ...
-                            p_lcb.a.side,                                     ...
-                            SEQ_TARGET_VELO,                            ...
-                            SEQ.ts_counter + SEQ.DUAL.current_block [ p_lcb.a.side ] * 8 ...
-                        ] ) / 1000000 + 1
 
-                    // message("    " & SEQ.DUAL.current_block [ p_lcb.a.side ] & " | " & SEQ.ts_counter & " | step velo: " & SEQ.step_velocity)
-                    if SEQ.step_velocity > 1
-                        layers.note_events [ p_lcb.a.side, SEQ.key_count ] := ...
-                            play_note(                      ...
-                                SEQ.key_count,              ...
-                                SEQ.step_velocity,          ...
-                                -1,                         ...
-                                SEQ.DUAL.step_duration [ p_lcb.a.side ] * 500     ...
-                            )                               ...
+                    { this check's if we are at a block start in all situations with different play directions }
+                    // if  fn023.r.check .and. __COUNTER_0_BTN_FORWARD         = __COUNTER_0_BTN_FORWARD         or ...
+                    //     fn023.r.check .and. __COUNTER_0_BTN_FWBW_PLAY_FW    = __COUNTER_0_BTN_FWBW_PLAY_FW    or ...
+                    //     fn023.r.check .and. __COUNTER_LAST_BTN_FWBW_PLAY_BW = __COUNTER_LAST_BTN_FWBW_PLAY_BW or ...
+                    //     fn023.r.check .and. __COUNTER_LAST_BTN_BW_PLAY_BW   = __COUNTER_LAST_BTN_BW_PLAY_BW
 
-                        set_event_par_arr(layers.note_events [ p_lcb.a.side, SEQ.key_count ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
-                        { PENDING: group here is just for testing example -> side }
-                        set_event_par_arr(layers.note_events [ p_lcb.a.side, SEQ.key_count ], EVENT_PAR_ALLOW_GROUP, __ON,  p_lcb.a.side)
-                    end if
+                    // end if
+
+                    fn026.a.side             := fn027.a.side
+                    fn026.a.key_note         := fn027.a.note
+                    fn026.a.step_counter     := fn027.a.step_counter
+                    fn026.a.block_step_index := SEQ.DUAL.current_block [ fn026.a.side ]
+                    call fn026_get_seq_fluxxed_target_data
+                    { return values from fn017_get_seq_target_data() }
+                    SEQ.step_velocity  := fn026.r.velocity
+                    SEQ.step_pitch     := fn026.r.pitch
+                    SEQ.step_octave    := fn026.r.octave
+                    SEQ.step_pan       := fn026.r.pan
+                    SEQ.step_filter    := fn026.r.filter_value
+                    SEQ.step_lp_filter := fn026.r.lp_filter_value
+                    SEQ.step_hp_filter := fn026.r.hp_filter_value
+
+                    fn027.a.side         := p_lcb.a.side
+                    fn027.a.note         := SEQ.key_count
+                    fn027.a.step_counter := SEQ.ts_counter
+                    call fn027_play_lcb_core
                 end if
             end for
 
         else { Arpeggiated notes here }
+            fn028.a.side := p_lcb.a.side
+            call fn028_update_arp_note_buffers
+            
+            {{ get played note from buffer according to play mode }}
+            select (arp_mode[ p_lcb.a.side ])
+                case __ARP_MODE_AS_PLAYED
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ]     := ARP.play_buffer_LEFT [ ARP.play_counter [ p_lcb.a.side ] ]{ + ($ARP.oct_counter * 12)}
+                    else
+                        ARP.played_note [ p_lcb.a.side ]     := ARP.play_buffer_RIGHT [ ARP.play_counter [ p_lcb.a.side ] ]{ + ($ARP.oct_counter * 12)}
+                    end if
+
+                case __ARP_MODE_UP
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_up_buffer_LEFT [ ARP.play_counter [ p_lcb.a.side ] ]
+                    else
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_up_buffer_RIGHT [ ARP.play_counter [ p_lcb.a.side ] ]
+                    end if
+
+                case __ARP_MODE_DOWN
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_down_buffer_LEFT [ ARP.play_counter [ p_lcb.a.side ] ]
+                    else
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_down_buffer_RIGHT [ ARP.play_counter [ p_lcb.a.side ] ]
+                    end if
+
+                case __ARP_MODE_UP_DOWN
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_up_buffer_LEFT [ ARP.up_down_counter [ p_lcb.a.side ] ]
+                    else
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_up_buffer_RIGHT [ ARP.up_down_counter [ p_lcb.a.side ] ]
+                    end if
+
+                case __ARP_MODE_RANDOM
+                    if p_lcb.a.side = __LEFT
+                        ARP.temp3 := random(0, ARP.cursor [ p_lcb.a.side ] - 1)
+                        // while (ARP.last_random_note [ p_lcb.a.side ] = ARP.played_note [ p_lcb.a.side ])
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_buffer_LEFT [ ARP.temp3 ]
+                        // end while
+                    else
+                        ARP.temp4 := random(0, ARP.cursor [ p_lcb.a.side ] - 1)
+                        // while (ARP.last_random_note [ p_lcb.a.side ] = ARP.played_note [ p_lcb.a.side ])
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_buffer_RIGHT [ ARP.temp4 ]
+                        // end while
+                    end if
+
+                case __ARP_MODE_CHORD { treated directly at the play level }
+
+            end select
+
+            {{ Actual note generation }}
+            if arp_mode [ p_lcb.a.side ] # __ARP_MODE_CHORD
+                ARP.played_duration [ p_lcb.a.side ] := SEQ.DUAL.step_duration [ p_lcb.a.side ] * 500
+                ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
+
+                fn026.a.side             := p_lcb.a.side
+                fn026.a.key_note         := ARP.played_note [ p_lcb.a.side ]
+                fn026.a.step_counter     := SEQ.ts_counter
+                fn026.a.block_step_index := SEQ.DUAL.current_block [ p_lcb.a.side ]
+                call fn026_get_seq_fluxxed_target_data
+                { return values from fn017_get_seq_target_data() }
+                SEQ.step_velocity  := fn026.r.velocity
+                SEQ.step_pitch     := fn026.r.pitch
+                SEQ.step_octave    := fn026.r.octave
+                SEQ.step_pan       := fn026.r.pan
+                SEQ.step_filter    := fn026.r.filter_value
+                SEQ.step_lp_filter := fn026.r.lp_filter_value
+                SEQ.step_hp_filter := fn026.r.hp_filter_value
+
+                if layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ] > 0
+                    fade_out( layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ], 2000, 1)
+                end if
+
+                if (in_range(ARP.played_note [ p_lcb.a.side ], 0, 127))
+                    fn027.a.side         := p_lcb.a.side
+                    fn027.a.note         := ARP.played_note [ p_lcb.a.side ]
+                    fn027.a.step_counter := SEQ.ts_counter
+                    call fn027_play_lcb_core
+                end if
+
+            else { CHORD MODE HERE }
+                ARP.i := 0
+                while (ARP.i < ARP.cursor [ p_lcb.a.side ] )
+                    if p_lcb.a.side = __LEFT
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_buffer_LEFT [ ARP.i ]
+                    else
+                        ARP.played_note [ p_lcb.a.side ] := ARP.play_buffer_RIGHT [ ARP.i ]
+                    end if
+
+                    ARP.played_duration [ p_lcb.a.side ] := SEQ.DUAL.step_duration [ p_lcb.a.side ] * 500
+                    ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
+
+                    fn026.a.side             := p_lcb.a.side
+                    fn026.a.key_note         := ARP.played_note [ p_lcb.a.side ]
+                    fn026.a.step_counter     := SEQ.ts_counter
+                    fn026.a.block_step_index := SEQ.DUAL.current_block [ p_lcb.a.side ]
+                    call fn026_get_seq_fluxxed_target_data
+                    { return values from fn017_get_seq_target_data() }
+                    SEQ.step_velocity  := fn026.r.velocity
+                    SEQ.step_pitch     := fn026.r.pitch
+                    SEQ.step_octave    := fn026.r.octave
+                    SEQ.step_pan       := fn026.r.pan
+                    SEQ.step_filter    := fn026.r.filter_value
+                    SEQ.step_lp_filter := fn026.r.lp_filter_value
+                    SEQ.step_hp_filter := fn026.r.hp_filter_value
+
+                    if layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ] > 0
+                        fade_out( layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ], 2000, 1)
+                    end if
+
+                    if (in_range(ARP.played_note [ p_lcb.a.side ], 0, 127))
+                        fn027.a.side         := p_lcb.a.side
+                        fn027.a.note         := ARP.played_note [ p_lcb.a.side ]
+                        fn027.a.step_counter := SEQ.ts_counter
+                        call fn027_play_lcb_core
+                    end if
+
+                    inc(ARP.i)
+                end while
+
+            end if
+
+            if arp_mode [ p_lcb.a.side ] = __ARP_MODE_UP_DOWN
+                if (ARP.cursor  [ p_lcb.a.side ] = 2)
+                    inc( ARP.up_down_counter [ p_lcb.a.side ] )
+                    if ( ARP.up_down_counter [ p_lcb.a.side ] = 2)
+                        ARP.up_down_counter [ p_lcb.a.side ] := 0
+                    end if
+                end if
+
+
+                if (ARP.cursor  [ p_lcb.a.side ] > 2)
+                    if (ARP.up_down_counter  [ p_lcb.a.side ] >= ARP.cursor  [ p_lcb.a.side ] - 1)
+                        ARP.up_down_direction  [ p_lcb.a.side ] := 1  { go down }
+                    end if
+
+                    if (ARP.up_down_counter  [ p_lcb.a.side ] <= 0)
+                        ARP.up_down_direction  [ p_lcb.a.side ] := 0  { go up }
+                    end if
+
+                    if ARP.up_down_direction  [ p_lcb.a.side ] = 1 
+                        dec( ARP.up_down_counter [ p_lcb.a.side ] )
+                    else
+                        inc( ARP.up_down_counter [ p_lcb.a.side ] )
+                    end if
+                end if
+            end if
+
+            if arp_mode [ p_lcb.a.side ] = __ARP_MODE_RANDOM
+                ARP.last_random_note [ p_lcb.a.side ] := ARP.played_note [ p_lcb.a.side ]
+            end if
+
+            { advance play counter }
+            inc( ARP.play_counter [ p_lcb.a.side ] )
+            if ( ARP.play_counter [ p_lcb.a.side ] >= ARP.cursor [ p_lcb.a.side ] )  { we have finished a cycle }
+                 ARP.play_counter [ p_lcb.a.side ] := 0
+            end if
+
+
 
         end if
     end if
@@ -411,7 +1452,6 @@ function PLAY_LCB
     if  switch_MAIN.SEQ.combine = __SEQ_JOIN and ...
         SEQ.JOIN.steps_timestamps [ SEQ.JOIN.current_block, SEQ.ts_counter ] = ENGINE_UPTIME
 
-        message("    playing SEQ in JOIN mode, block: "&SEQ.JOIN.current_block &" step: " & SEQ.ts_counter)
         if switch_MAIN.FLUXX.LEFT.arp.power = __OFF
             for SEQ.key_count := 0 to 127
                 if KEY_DOWN[ SEQ.key_count ] = 1
@@ -430,14 +1470,14 @@ function PLAY_LCB
                             SEQ.data.i [                                    ...
                                 __LEFT,                                     ...
                                 SEQ_TARGET_VELO,                            ...
-                                SEQ.ts_counter + SEQ.JOIN.current_block * 8 ...
+                                SEQ.ts_counter + (SEQ.JOIN.current_block mod 4) * 8 ...
                             ] ) / 1000000 + 1
                     else                          { rightt side }
                         SEQ.step_velocity := (126 *                         ...
                             SEQ.data.i [                                    ...
                                 __RIGHT,                                     ...
                                 SEQ_TARGET_VELO,                            ...
-                                SEQ.ts_counter + SEQ.JOIN.current_block * 8 ...
+                                SEQ.ts_counter + (SEQ.JOIN.current_block mod 4) * 8 ...
                             ] ) / 1000000 + 1
                     end if
 
@@ -462,7 +1502,6 @@ function PLAY_LCB
 
         end if
     end if
-
 end function
 
 
