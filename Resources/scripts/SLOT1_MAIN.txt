@@ -1,4 +1,4 @@
-{ Compiled on Fri Mar 14 15:04:11 2025 }
+{ Compiled on Fri Mar 14 15:40:58 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -3208,13 +3208,7 @@ end function
 
 function fn026_get_seq_target_data
   if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn026__a__side+0],$CONTROL_PAR_VALUE)=1)
-    if ($fn026__a__data_type=0)
-      $fn026__r__velocity := %_SEQ__data__flux__i[32*5*$fn026__a__side+(32*0)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
-    else
-      if ($fn026__a__data_type=1)
-        $fn026__r__velocity := %_SEQ__data__dyn__i[32*5*$fn026__a__side+(32*0)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
-      end if
-    end if
+    $fn026__r__velocity := %_SEQ__data__dyn__i[32*5*$fn026__a__side+(32*0)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
     $fn034__a__target_index := 0
     $fn034__a__value := $fn026__r__velocity
     call fn034_transform_data_according_to_seq_target
@@ -3226,7 +3220,8 @@ function fn026_get_seq_target_data
     if ($fn026__a__data_type=0)
       $fn026__r__pitch := %_SEQ__data__flux__i[32*5*$fn026__a__side+(32*1)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
     else
-      if ($fn026__a__data_type=1)
+      if ($fn026__a__data_type=2)
+        message("we are here!!!!")
         $fn026__r__pitch := %_SEQ__data__i[32*5*$fn026__a__side+(32*1)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
       end if
     end if
@@ -3241,7 +3236,7 @@ function fn026_get_seq_target_data
     if ($fn026__a__data_type=0)
       $fn026__r__octave := %_SEQ__data__flux__i[32*5*$fn026__a__side+(32*2)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
     else
-      if ($fn026__a__data_type=1)
+      if ($fn026__a__data_type=2)
         $fn026__r__octave := %_SEQ__data__i[32*5*$fn026__a__side+(32*2)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
       end if
     end if
@@ -3256,7 +3251,7 @@ function fn026_get_seq_target_data
     if ($fn026__a__data_type=0)
       $fn026__r__pan := %_SEQ__data__flux__i[32*5*$fn026__a__side+(32*3)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
     else
-      if ($fn026__a__data_type=1)
+      if ($fn026__a__data_type=2)
         $fn026__r__pan := %_SEQ__data__i[32*5*$fn026__a__side+(32*3)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
       end if
     end if
@@ -3272,7 +3267,7 @@ function fn026_get_seq_target_data
     if ($fn026__a__data_type=0)
       $fn026__r__pan := %_SEQ__data__flux__i[32*5*$fn026__a__side+(32*4)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
     else
-      if ($fn026__a__data_type=1)
+      if ($fn026__a__data_type=2)
         $fn026__r__filter_value := %_SEQ__data__i[32*5*$fn026__a__side+(32*4)+$fn026__a__step_counter+($fn026__a__block_step_index*8)]
       end if
     end if
@@ -3332,11 +3327,6 @@ function PLAY_LCB
           if (%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count]>0)
             fade_out(%_layers__note_events[128*$p_lcb__a__side+$SEQ__key_count],2000,1)
           end if
-          if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__seq__flux_rand_power[$p_lcb__a__side],$CONTROL_PAR_VALUE)=1))
-            $fn026__a__data_type := 0
-          else
-            $fn026__a__data_type := 1
-          end if
           $fn026__a__side := $p_lcb__a__side
           $fn026__a__key_note := $SEQ__key_count
           $fn026__a__step_counter := $SEQ__ts_counter
@@ -3363,10 +3353,10 @@ function PLAY_LCB
       if (%arp_mode[$p_lcb__a__side] # 5)
         %ARP__played_duration[$p_lcb__a__side] := %SEQ__DUAL__step_duration[$p_lcb__a__side]*500
         %ARP__played_velocity[$p_lcb__a__side] := $SEQ__step_velocity
-        if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1 and (get_control_par(%UIID_MAIN__seq__flux_rand_power[$p_lcb__a__side],$CONTROL_PAR_VALUE)=1))
+        if (get_control_par(%UIID_MAIN__seq__flux_rand_power[$p_lcb__a__side],$CONTROL_PAR_VALUE)=1 and (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1))
           $fn026__a__data_type := 0
         else
-          $fn026__a__data_type := 1
+          $fn026__a__data_type := 2
         end if
         $fn026__a__side := $p_lcb__a__side
         $fn026__a__key_note := %ARP__played_note[$p_lcb__a__side]
@@ -3399,6 +3389,11 @@ function PLAY_LCB
           end if
           %ARP__played_duration[$p_lcb__a__side] := %SEQ__DUAL__step_duration[$p_lcb__a__side]*500
           %ARP__played_velocity[$p_lcb__a__side] := $SEQ__step_velocity
+          if (get_control_par(%UIID_MAIN__seq__flux_rand_power[$p_lcb__a__side],$CONTROL_PAR_VALUE)=1 and (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$p_lcb__a__side+%SEQ__DUAL__current_block[$p_lcb__a__side]],$CONTROL_PAR_VALUE)=1))
+            $fn026__a__data_type := 0
+          else
+            $fn026__a__data_type := 2
+          end if
           $fn026__a__side := $p_lcb__a__side
           $fn026__a__key_note := %ARP__played_note[$p_lcb__a__side]
           $fn026__a__step_counter := $SEQ__ts_counter

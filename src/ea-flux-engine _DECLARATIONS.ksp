@@ -68,8 +68,9 @@
     define __CALLER_SEQ_XY  := 0
     define __CALLER_SEQ_DYN := 1
 
-    define __FLUX_DATA := 0
-    define __DYN_DATA  := 1
+    define __FLUX_DATA     := 0
+    define __DYN_DATA      := 1
+    define __ORIGINAL_DATA := 2
 
     
 

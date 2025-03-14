@@ -1257,24 +1257,14 @@ function fn025_update_flux_on_all_block_steps
 end function
 
 function fn026_get_seq_target_data
+    { PENDING velocity is correct here original and flux data end up in the SEQ.data.dyn table. }
     if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_VELO ] -> value = __ON
-        if fn026.a.data_type = __FLUX_DATA
-            fn026.r.velocity := (                                       ...
-                SEQ.data.flux.i [                                       ...
-                    fn026.a.side,                                       ...
-                    SEQ_TARGET_VELO,                                    ...
-                    fn026.a.step_counter + fn026.a.block_step_index * 8 ...
-                ] )
-        else
-            if fn026.a.data_type = __DYN_DATA
-                fn026.r.velocity := ...
-                    SEQ.data.dyn.i [                                        ...
-                        fn026.a.side,                                       ...
-                        SEQ_TARGET_VELO,                                    ...
-                        fn026.a.step_counter + fn026.a.block_step_index * 8 ...
-                    ]
-            end if
-        end if
+        fn026.r.velocity := ...
+            SEQ.data.dyn.i [                                        ...
+                fn026.a.side,                                       ...
+                SEQ_TARGET_VELO,                                    ...
+                fn026.a.step_counter + fn026.a.block_step_index * 8 ...
+            ]
 
         fn034.a.target_index := SEQ_TARGET_VELO
         fn034.a.value        := fn026.r.velocity
@@ -1285,6 +1275,7 @@ function fn026_get_seq_target_data
         fn026.r.velocity := layers.note_velo [ fn026.a.side, fn026.a.key_note ]
     end if
 
+    { PENDING - fix the data retrieval at play time HERE }
     if UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_PITCH ] -> value = __ON
         if fn026.a.data_type = __FLUX_DATA
             fn026.r.pitch := (                                          ...
@@ -1295,7 +1286,8 @@ function fn026_get_seq_target_data
                 ] )
         else
             { DYN is only for Velocity, here used to differentiate from FLUX }
-            if fn026.a.data_type = __DYN_DATA 
+            if fn026.a.data_type = __ORIGINAL_DATA 
+                message("we are here!!!!")
                 fn026.r.pitch := ...
                     SEQ.data.i [                                            ...
                         fn026.a.side,                                       ...
@@ -1324,7 +1316,7 @@ function fn026_get_seq_target_data
                 ] )
         else
             { DYN is only for Velocity, here used to differentiate from FLUX }
-            if fn026.a.data_type = __DYN_DATA
+            if fn026.a.data_type = __ORIGINAL_DATA
                 fn026.r.octave := ...
                     SEQ.data.i [                                            ...
                         fn026.a.side,                                       ...
@@ -1353,7 +1345,7 @@ function fn026_get_seq_target_data
                 ] )
         else
             { DYN is only for Velocity, here used to differentiate from FLUX }
-            if fn026.a.data_type = __DYN_DATA
+            if fn026.a.data_type = __ORIGINAL_DATA
                 fn026.r.pan := ...
                     SEQ.data.i [                                            ...
                         fn026.a.side,                                       ...
@@ -1383,7 +1375,7 @@ function fn026_get_seq_target_data
                 ] )
         else
             { DYN is only for Velocity, here used to differentiate from FLUX }
-            if fn026.a.data_type = __DYN_DATA
+            if fn026.a.data_type = __ORIGINAL_DATA
                 fn026.r.filter_value := ...
                     SEQ.data.i [                                            ...
                         fn026.a.side,                                       ...
@@ -1639,18 +1631,6 @@ function PLAY_LCB
                         fade_out( layers.note_events [ p_lcb.a.side, SEQ.key_count ], 2000, 1)
                     end if
 
-                    if  UIID_MAIN.seq.flux_rand_btns  [             ...
-                            p_lcb.a.side,                           ...
-                            SEQ.DUAL.current_block [ p_lcb.a.side ] ...
-                        ] -> value = __ON and                       ...
-                        UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON
-                        
-                        fn026.a.data_type := __FLUX_DATA
-                        // message(f'<SEQ.ts_counter> | fn26 is reading FLUX')
-                    else
-                        fn026.a.data_type := __DYN_DATA
-                        // message(f'<SEQ.ts_counter> | fn26 is reading DYN')
-                    end if
                     fn026.a.side             := p_lcb.a.side
                     fn026.a.key_note         := SEQ.key_count
                     fn026.a.step_counter     := SEQ.ts_counter
@@ -1693,24 +1673,22 @@ function PLAY_LCB
                 ARP.played_duration [ p_lcb.a.side ] := SEQ.DUAL.step_duration [ p_lcb.a.side ] * 500
                 ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
 
-                if  UIID_MAIN.seq.flux_rand_btns  [             ...
-                        p_lcb.a.side,                           ...
-                        SEQ.DUAL.current_block [ p_lcb.a.side ] ...
-                    ] -> value = __ON and                       ...
-                    UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON
-                    
-                    fn026.a.data_type := __FLUX_DATA
-                else
-                    fn026.a.data_type := __DYN_DATA
-                end if
+                if  UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON and ...
+                    UIID_MAIN.seq.flux_rand_btns [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] -> value = __ON
 
+                    fn026.a.data_type        := __FLUX_DATA
+
+                else
+                    fn026.a.data_type        := __ORIGINAL_DATA
+                    
+                end if
                 fn026.a.side             := p_lcb.a.side
                 fn026.a.key_note         := ARP.played_note [ p_lcb.a.side ]
                 fn026.a.step_counter     := SEQ.ts_counter
                 fn026.a.block_step_index := SEQ.DUAL.current_block [ p_lcb.a.side ]
                 call fn026_get_seq_target_data
-                { return values from fn026_get_seq_target_data() }
 
+                { return values from fn026_get_seq_target_data() }
                 SEQ.step_velocity  := fn026.r.velocity
                 SEQ.step_pitch     := fn026.r.pitch
                 SEQ.step_octave    := fn026.r.octave
@@ -1742,6 +1720,15 @@ function PLAY_LCB
                     ARP.played_duration [ p_lcb.a.side ] := SEQ.DUAL.step_duration [ p_lcb.a.side ] * 500
                     ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
 
+                    if  UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON and ...
+                    UIID_MAIN.seq.flux_rand_btns [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] -> value = __ON
+
+                        fn026.a.data_type        := __FLUX_DATA
+
+                    else
+                        fn026.a.data_type        := __ORIGINAL_DATA
+                        
+                    end if
                     fn026.a.side             := p_lcb.a.side
                     fn026.a.key_note         := ARP.played_note [ p_lcb.a.side ]
                     fn026.a.step_counter     := SEQ.ts_counter
