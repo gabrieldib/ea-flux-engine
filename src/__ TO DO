@@ -1,0 +1,5 @@
+TO DO:
+- recalling of step values/picture states needs to be according to DYN and or FLUX
+
+BUGS:
+- sometimes Flux off, Arp On, we will get sustained notes along with the arpeggiated notes

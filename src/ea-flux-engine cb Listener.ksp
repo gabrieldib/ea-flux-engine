@@ -26,11 +26,6 @@ on listener
                 for lcb_play_side := __LEFT to __RIGHT
                     if SEQ.DUAL.current_block [ lcb_play_side ] > -1 and note_held_count > 0
                         { counter behavior will depend on the mode }
-                        // select(layers.seq_play_direction [ lcb_play_side ])
-                        //     case SEQ_DIRECTION_FORWARD  
-                        //     case SEQ_DIRECTION_BACKWARD
-                        //     case SEQ_DIRECTION_FWBW
-                        // end select
                         if  seq.direction_status [ lcb_play_side ] = SEQ_DIRECTION_FORWARD  
                             lcb_step_counter_start     := 0
                             lcb_step_counter_end       := ...

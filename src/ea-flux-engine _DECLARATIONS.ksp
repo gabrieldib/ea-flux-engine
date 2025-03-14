@@ -1,6 +1,8 @@
 { DEFINES   _____________________________________________________________________________________ }
     define __OFF               := 0
     define __ON                := 1
+    define __NO                := 0
+    define __YES               := 1
     define __LEFT              := 0
     define __RIGHT             := 1
     define __SEQ_DUAL          := 0
@@ -63,8 +65,13 @@
     define __NOT_PRESSED := 0
     define __PRESSED     := 1
 
-    declare __CALLER_SEQ_XY  := 0
-    declare __CALLER_SEQ_DYN := 1
+    define __CALLER_SEQ_XY  := 0
+    define __CALLER_SEQ_DYN := 1
+
+    define __FLUX_DATA := 0
+    define __DYN_DATA  := 1
+
+    
 
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
@@ -161,6 +168,10 @@
         declare const SEQ_JOIN_RIGHT_GAP_STEP7     := 447 - SEQ_JOIN_LEFT_START_PX
         declare const SEQ_JOIN_RIGHT_GAP_STEP8     := 445 - SEQ_JOIN_LEFT_START_PX
 
+        declare const __SEQ_ORIGINAL_TABLE   := 1
+        declare const __SEQ_DYN_TRANSF_TABLE := 2
+        declare const __SEQ_BOTH_TABLES      := __SEQ_ORIGINAL_TABLE .or. __SEQ_DYN_TRANSF_TABLE
+
         declare !SEQ.target_names [ 5 ]
             !SEQ.target_names [ 0 ] := 'VELOCITY'
             !SEQ.target_names [ 1 ] := 'PITCH'
@@ -185,7 +196,8 @@
             SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_BIPOLAR
 
     {{ LFO }}
-        declare !beat_rates_display [ 19 ]
+        declare const __RATE_ELEMENTS_COUNT := 22
+        declare !beat_rates_display [ __RATE_ELEMENTS_COUNT ]
             beat_rates_display [ 00 ] := "1/128"  { 128               }
             beat_rates_display [ 01 ] := "1/64 T" { 64th  triplet     }
             beat_rates_display [ 02 ] := "1/64"   { 64th              }
@@ -205,8 +217,11 @@
             beat_rates_display [ 16 ] := "1/2 D"  { half dotted       }
             beat_rates_display [ 17 ] := "1 T"    { whole triplet     }
             beat_rates_display [ 18 ] := "1"      { whole             }
+            beat_rates_display [ 19 ] := "2"      { 2 x whole         }
+            beat_rates_display [ 20 ] := "3"      { 3 x whole         }
+            beat_rates_display [ 21 ] := "4"      { 4 x whole         }
 
-        declare beat_rates [ 19 ]
+        declare beat_rates [ __RATE_ELEMENTS_COUNT ]
             beat_rates [ 00 ] := (DURATION_SIXTEENTH/8)/1000
             beat_rates [ 01 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
             beat_rates [ 02 ] := (DURATION_SIXTEENTH/4)/1000
@@ -226,8 +241,11 @@
             beat_rates [ 16 ] := (DURATION_QUARTER * 3)/1000
             beat_rates [ 17 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
             beat_rates [ 18 ] := (DURATION_QUARTER * 4)/1000
+            beat_rates [ 19 ] := (DURATION_QUARTER * 8)/1000
+            beat_rates [ 20 ] := (DURATION_QUARTER * 12)/1000
+            beat_rates [ 21 ] := (DURATION_QUARTER * 16)/1000
 
-        declare const __BEAT_RATE_DIVISOR := 1000000 / 18
+        declare const __BEAT_RATE_DIVISOR := 1000000 / (__RATE_ELEMENTS_COUNT-1)
 
         declare !rate_mode_sync_ms.text [2]
             !rate_mode_sync_ms.text [0] := "sync"
@@ -416,6 +434,7 @@
     declare uics_block_index
     declare ~uics_r_value
     declare uics_i_value
+    declare uics_result
     declare @uics_title
     declare @uics_text_data
     declare uics_loop_range_min
@@ -457,8 +476,9 @@
     declare fn001.r.step_index
 
     //fn002_update_seq_step_value
-    declare fn002.a.caller
+    declare fn002.a.table_to_update
     declare fn002.a.side
+    declare fn002.a.target
     declare fn002.a.step_index
     declare ~fn002.a.value
     declare fn002.l.mode_side
@@ -531,15 +551,17 @@
 
     //fn016_set_data_display_from_seq_xy
     declare ~fn016.a.value
-    declare fn016.a.target_index
+    declare fn016.a.side
     declare @fn016.r.title
     declare @fn016.r.text_data
 
     //fn017_get_seq_target_data
+    declare fn017.a.transform_value
     declare fn017.a.side
     declare fn017.a.step_counter
     declare fn017.a.key_note
     declare fn017.a.block_step_index
+    declare fn017.l.seq_data
     declare fn017.l.pan_data
     declare fn017.l.filter_data
     declare fn017.r.velocity
@@ -559,6 +581,7 @@
 
     //fn002_set_seq_step_value_and_ps
     declare fn019.a.side
+    declare fn019.a.target
     declare fn019.a.step_index
     declare fn019.l.mode_side
     declare ~fn019.a.value
@@ -619,15 +642,21 @@
     declare  fn024.a.side            
     declare  fn024.a.step_counter    
     declare  fn024.a.block_step_index
+    declare ~fn024.l.step_velocity_flux
+    declare ~fn024.l.step_pitch_flux
+    declare ~fn024.l.step_octave_flux
+    declare ~fn024.l.step_pan_flux
+    declare ~fn024.l.step_filter_flux
     declare ~fn024.l.picture_state
     declare  fn024.l.pan_data
 
-    //fn025_update_all_block_steps
+    //fn025_update_flux_on_all_block_steps
     declare fn025.a.side
     declare fn025.l.counter2
     declare fn025.l.counter
 
-    //fn026_get_seq_fluxxed_target_data
+    //fn026_get_seq_target_data
+    declare fn026.a.data_type // if flux or pre-flux -> SEQ.data.flux.i or SEQ.data.dyn.i
     declare fn026.a.side
     declare fn026.a.key_note
     declare fn026.a.step_counter
@@ -658,6 +687,7 @@
 
     //fn030_set_seq_step_dyn_value
     declare  fn030.a.side
+    declare  fn030.a.target
     declare  fn030.a.step_index
     declare ~fn030.a.value
     declare  fn030.l.mode_side
@@ -665,3 +695,37 @@
     declare ~fn030.l.dyn_transf_value
     declare ~fn030.l.delta_max
     declare ~fn030.r.transf_value
+
+    //fn031_set_dyn_sliders_picture
+    declare fn031.a.reset
+    declare fn031.a.side
+    declare fn031.a.block_index
+    declare fn031.l.step_index
+
+    //fn032_set_seq_step_value_and_ui_via_dyn_slider
+    declare fn032.a.side
+    declare fn032.l.block_index
+    declare fn032.l.step_index
+
+    //fn033_transform_step_value_into_dynamic
+    declare fn033.a.source
+    declare fn033.a.side
+    declare ~fn033.a.step_value
+    declare ~fn033.a.dyn_value
+    declare fn033.l.block_index
+    declare fn033.l.step_index
+
+    declare ~fn033.l.delta_max
+    declare ~fn033.l.dyn_transf_value
+    declare ~fn033.r.transf_value.r
+    declare  fn033.r.transf_value.i
+
+    //fn034_transform_data_according_to_seq_target
+    declare  fn034.a.target_index
+    declare  fn034.a.value
+    declare  fn034.r.transf_value.i
+    declare  fn034.r.transf_value.i_lp
+    declare  fn034.r.transf_value.i_hp
+    declare ~fn034.r.transf_value.r
+    declare ~fn034.r.transf_value.r_lp
+    declare ~fn034.r.transf_value.r_hp

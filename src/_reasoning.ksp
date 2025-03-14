@@ -1,3 +1,56 @@
+Flux data generation flow chart:
+
+LCB ->
+we reach a block start when the condition below is met:
+    lcb_ms_counter mod SEQ.rate [ SIDE ] = 0
+
+call 
+    fn007_update_block_and_steps_ts() 
+
+    fn007 :
+        - updates the block index
+        - updates step duration
+        - generates block steps timestamps
+        if flux = ON
+            call fn025_update_all_block_steps
+
+    fn025:
+        - only runs if it is start of the blocks loop
+        - loops over all blocks and steps
+        - code only runs on a step if flux power = on and block flux = on
+            - call fn017_get_seq_target_data to get step's
+            data on velo, pitch, octave, pan and filter
+            from SEQ.data
+
+            - using fn017's return values, 
+            call fn022_get_flux_values to transform each value
+            according to the randomization specified for each
+            target
+            fn022 transforms the values from fn017
+            * fn024 will store these flux values into SEQ.data.flux <- here we should adjust the data to the dyn slider
+
+LCB: update seq.direction_status[SIDE]
+LCB:
+    loop over all steps on the current block
+    calling PLAY_LCB
+
+PLAY_LCB:
+    - update local counter to evaluate current timestamp
+    against recorded steps' timestamps
+    - when we reach a step timestamp:
+        - update leds states
+        ARP OFF:
+            check if flux is on and
+            if the current block's flux is ON
+                yes: fn026.a.data_type := __FLUX_DATA
+                no : fn026.a.data_type := __DYN_DATA
+            call fn026_get_seq_target_data() { on the current block and step }
+
+            here we have a distinction:
+            the data inside the flux table is not adjusted for the dyn slider.
+            we have to correct that.
+
+
 {{ XY PAD }}
 
 { we will have 4 blocks that can have from 1 - 8 steps 

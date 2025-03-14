@@ -37,6 +37,13 @@ on persistence_changed
     fn011.a.index := SEQ_TARGET_VELO
     call fn011_clear_target_activators
 
+    { dyn sliders }
+    fn031.a.reset := __OFF
+    fn031.a.side := __LEFT
+    call fn031_set_dyn_sliders_picture
+    fn031.a.side := __RIGHT
+    call fn031_set_dyn_sliders_picture
+
     
 
     { change text alignment on target selectors }

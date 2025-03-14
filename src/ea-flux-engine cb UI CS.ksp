@@ -1,4 +1,5 @@
 on ui_controls
+
     {{ GLOBAL LAYER POWER }}
     if NI_UI_ID = UIID_MAIN.seq.power [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
         uics_seq_side := __LEFT
@@ -26,9 +27,8 @@ on ui_controls
         end if
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.block_steps [ 0, 0 ]
         uics_seq_side   := int(float(uics_uiid_index)*0.25)
-        message("uics_seq_side: " & uics_seq_side)
 
-        { this code could be optimized / simplifyed }
+        { this code could be optimized / simplifyed, maybe }
         if uics_alt_key = 0
             fn003.a.side := uics_seq_side
             fn003.a.mode := switch_MAIN.SEQ.combine
@@ -127,63 +127,110 @@ on ui_controls
 
     {{ SEQ XY PADS }}
     if NI_UI_ID = UIID_MAIN.SEQ.xypads [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.xypads [ 1 ]
-        uics_uiid_index := NI_UI_ID - UIID_MAIN.SEQ.xypads [ 0 ]
+        uics_seq_side := NI_UI_ID - UIID_MAIN.SEQ.xypads [ 0 ]
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN
             { capture the step index on click }
             call get_seq_dual_step_index
 
-            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_uiid_index ], CONTROL_PAR_KEY_SHIFT) = __ON
-                UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> mouse_behaviour_y := 100
+            { make the mouse movement slower in case SHIFT is pressed }
+            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_seq_side ], CONTROL_PAR_KEY_SHIFT) = __ON
+                UIID_MAIN.SEQ.xypads [ uics_seq_side ] -> mouse_behaviour_y := 100
             end if
+
+            uics_r_value := ...
+                get_control_par_real_arr( ...
+                    UIID_MAIN.SEQ.xypads [ uics_seq_side ],   ...
+                    CONTROL_PAR_VALUE,                          ...
+                    1                                           ...
+                )
+
+            { fix the vertical movement to the first clicked value in case ALT is pressed }
             uics_alt_key := __OFF
-            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_uiid_index ], CONTROL_PAR_KEY_ALT) = __ON
+            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_seq_side ], CONTROL_PAR_KEY_ALT) = __ON
                 uics_alt_key := __ON
-                seq_xy_alt_y_coord := ...
-                    get_control_par_real_arr( ...
-                        UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
-                        CONTROL_PAR_VALUE,                          ...
-                        1                                           ...
-                    ) 
-            else
+                seq_xy_alt_y_coord := uics_r_value 
             end if
+
+            { Reset the dyn slider to center since we are defining a step value directly }
+            fn031.a.reset := __ON
+            fn031.a.side  := uics_seq_side
+            call fn031_set_dyn_sliders_picture
+
+            { update that value on both original and dyn tables }
+            fn002.a.side            := uics_seq_side
+            fn002.a.value           := uics_r_value
+            fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
+            fn002.a.table_to_update := __SEQ_BOTH_TABLES
+            fn002.a.step_index      := fn001.r.step_index
+            call fn002_set_seq_step_value
+
+            { update all steps since the user needs to see the original step values }
+            for uics_counter := 0 to 3
+                for uics_counter2 := 0 to 7
+                    fn018.a.side       := uics_seq_side
+                    fn018.a.step_index := uics_counter * 8 + uics_counter2
+                    fn018.a.value      :=                         ...
+                        SEQ.data.f [                              ...
+                            uics_seq_side,                        ...
+                            SEQ.showing_target [ uics_seq_side ], ...
+                            fn018.a.step_index                    ...
+                        ]
+                        // message("recalling picture state for entire seq")
+                    call fn018_set_seq_step_picture_state
+
+                    fn002.a.side            := uics_seq_side
+                    fn002.a.value           := fn018.a.value { values from the original steps table }
+                    fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
+                    fn002.a.table_to_update := __SEQ_DYN_TRANSF_TABLE
+                    fn002.a.step_index      := uics_counter * 8 + uics_counter2
+                    call fn002_set_seq_step_value
+                end for
+            end for
+
         end if
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
             {   if draw is off, we keep the step index recorded when we pressed the mouse button down 
                 if it is on, we update the step_index }
-            if UIID_MAIN.controls.draw [ uics_uiid_index ] -> value = __ON
+            if UIID_MAIN.controls.draw [ uics_seq_side ] -> value = __ON
                 call get_seq_dual_step_index
             end if
-        end if
+            if uics_alt_key = __ON
+                uics_r_value := seq_xy_alt_y_coord
+            else
+                uics_r_value := get_control_par_real_arr( ...
+                    UIID_MAIN.SEQ.xypads [ uics_seq_side ],   ...
+                    CONTROL_PAR_VALUE,                          ...
+                    1                                           ...
+                ) 
+            end if
 
-        if uics_alt_key = __ON
-            uics_r_value := seq_xy_alt_y_coord
-        else
-            uics_r_value := get_control_par_real_arr( ...
-                UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
-                CONTROL_PAR_VALUE,                          ...
-                1                                           ...
-            ) 
-        end if
+            fn002.a.side            := uics_seq_side
+            fn002.a.value           := uics_r_value
+            fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
+            fn002.a.table_to_update := __SEQ_BOTH_TABLES
+            fn002.a.step_index      := fn001.r.step_index
+            call fn002_set_seq_step_value
 
-        fn002.a.caller     := __CALLER_SEQ_XY
-        fn002.a.step_index := fn001.r.step_index
-        fn002.a.side       := uics_uiid_index
-        fn002.a.value      := uics_r_value
-        call fn002_set_seq_step_value_and_ps
+            fn018.a.side       := uics_seq_side
+            fn018.a.step_index := fn001.r.step_index
+            fn018.a.value      := uics_r_value
+            call fn018_set_seq_step_picture_state
+        
+        end if
 
         { update display data }
         // depends on the side
-        fn016.a.target_index := uics_uiid_index
-        fn016.a.value        := uics_r_value
+        fn016.a.side  := uics_seq_side
+        fn016.a.value := uics_r_value
         call fn016_set_data_display_from_seq_xy
 
         UIID_MAIN.display_title -> text := @fn016.r.title
         UIID_MAIN.display_value -> text := @fn016.r.text_data
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_UP
-            UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> mouse_behaviour_y := 1000
+            UIID_MAIN.SEQ.xypads [ uics_seq_side ] -> mouse_behaviour_y := 1000
         end if
     end if
 
@@ -550,6 +597,7 @@ on ui_controls
         call fn029_clear_arp_mode_btns
     end if
 
+
     {{ SEQ DYN SLIDERS }}
     if NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __RIGHT ] 
         uics_seq_side := __LEFT
@@ -557,60 +605,40 @@ on ui_controls
             uics_seq_side := __RIGHT
         end if
 
-        { update the ui label for the dyn slider }
-        if  UIID_MAIN.seq.dyn_slider [ uics_seq_side ] -> key_control = __OFF
-            UIID_MAIN.seq.dyn_slider.label [ uics_seq_side ] -> picture_state := int ( ...
-                get_control_par_real_arr(                       ...
-                    UIID_MAIN.seq.dyn_slider [ uics_seq_side ], ...
-                    CONTROL_PAR_VALUE,                          ...
-                    1                                           ...
-                ) * 132.0 )
-        else
-            UIID_MAIN.seq.dyn_slider.label [ uics_seq_side ] -> picture_state := 66
-            set_control_par_real_arr(                       ...
+        { updates the label overlay of this XY pad }
+        fn031.a.reset := __OFF
+        fn031.a.side := uics_seq_side
+        call fn031_set_dyn_sliders_picture
+
+        { updates the seq data values for velocity }
+        fn032.a.side := uics_seq_side
+        call fn032_set_seq_step_value_and_ui_via_dyn_slider
+
+        { update data viewer }
+        uics_r_value := ...
+            get_control_par_real_arr( ...
                 UIID_MAIN.seq.dyn_slider [ uics_seq_side ], ...
                 CONTROL_PAR_VALUE,                          ...
-                0.5,                                        ...
                 1                                           ...
-            )
-            // set_control_par_arr(ui_id, control_parameter, value, index)
+            ) 
+
+        if  uics_r_value > 0.5
+            uics_result    := int ( 100.0 * (2.0 * uics_r_value - 1.0))
+            uics_text_data := f'+<uics_result>%'
+        else
+            if  uics_r_value < 0.5
+                uics_result := 100 - int ( 100.0 * (2.0 * uics_r_value))
+                uics_text_data := f'-<uics_result>%'
+            else
+                uics_text_data := f'Center'
+            end if
         end if
 
-        {
-            - a step has int and float values stored
-            - when we press mouse down any subsequent update in the
-            slider (y axis) will 
-                - read from SEQ.data.f and update the sequencer steps pictures
-                - the new step values will be stored in 
-                    SEQ.data.dyn.i
-                    SEQ.data.dyn.f
+        UIID_MAIN.display_title -> text := "Dynamics"
+        UIID_MAIN.display_value -> text := uics_text_data
 
-                but what does it mean? 
-                means that when the flux rand runs, it will update its 
-                arrays based on these dyn slider arrays rather than the original arrays
-                
-
-                update the SEQ.data.dyn.f with the new values calculated from
-                the SEQ.data.i and the current slider value
-                what's the calculation?
-        }
-
-        for uics_counter := 0 to 3
-            for uics_counter2 := 0 to 7
-                fn002.a.caller     := __CALLER_SEQ_DYN
-                fn002.a.step_index := uics_counter * 8 + uics_counter2
-                fn002.a.side       := uics_seq_side
-                fn002.a.value      := ...
-                SEQ.data.f [                              ...
-                    uics_seq_side,                        ...
-                    SEQ.showing_target [ uics_seq_side ], ...
-                    uics_counter * 8 + uics_counter2      ...
-                ]
-                call fn002_set_seq_step_value_and_ps
-
-            end for
-        end for
-        message(f'fn030.l.dyn_transf_value: <fn030.l.dyn_transf_value>')
-        message(f'    <uics_counter-1> | <uics_counter2-1> | fn030.r.transf_value: <fn030.r.transf_value>')
+        // message(f'fn030.l.dyn_transf_value: <fn030.l.dyn_transf_value>')
+        // message(f'    <uics_counter-1> | <uics_counter2-1> | fn030.r.transf_value: <fn030.r.transf_value>')
     end if
+
 end on
