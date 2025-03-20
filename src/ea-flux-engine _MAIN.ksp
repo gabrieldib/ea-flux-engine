@@ -21,7 +21,24 @@ on init
 
     declare ui_button hide_bg
     
-    
+      // panel_MAIN.FX.RIGHT.layer          -> UI_HIDE
+      // panel_MAIN.FX.LEFT.layer           -> UI_HIDE
+      panel_MAIN.FX.RIGHT.reverb.menu    -> UI_HIDE
+      panel_MAIN.FX.LEFT.reverb.menu     -> UI_HIDE
+      panel_MAIN.FX.RIGHT.saturation     -> UI_HIDE
+      panel_MAIN.FX.LEFT.saturation      -> UI_HIDE
+      panel_MAIN.FX.RIGHT.distortion     -> UI_HIDE
+      panel_MAIN.FX.LEFT.distortion      -> UI_HIDE
+      panel_MAIN.FX.RIGHT.lofi           -> UI_HIDE
+      panel_MAIN.FX.LEFT.lofi            -> UI_HIDE
+      panel_MAIN.FX.RIGHT.tapeSaturation -> UI_HIDE
+      panel_MAIN.FX.LEFT.tapeSaturation  -> UI_HIDE
+      panel_MAIN.FX.RIGHT.chorus         -> UI_HIDE
+      panel_MAIN.FX.LEFT.chorus          -> UI_HIDE
+      panel_MAIN.FX.RIGHT.delay          -> UI_HIDE
+      panel_MAIN.FX.LEFT.delay           -> UI_HIDE
+      panel_MAIN.FX.RIGHT.reverb         -> UI_HIDE
+      panel_MAIN.FX.LEFT.reverb          -> UI_HIDE
 
 end on // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 

@@ -74,10 +74,49 @@ end on
 
 
 {{ LFO }}
-on ui_control (slider_MAIN.LFO.rate)
-    call update_lfo_ms_rates
-    label_MAIN.LFO.rate -> text := beat_rates_display [ slider_MAIN.LFO.rate / __BEAT_RATE_DIVISOR ]
-end on
+    on ui_control (slider_MAIN.LFO.rate)
+        { direct rate values updates based on DURATION CONSTANTS }
+        call update_lfo_rate
+        { ui updates }
+        message(f'index: <( slider_MAIN.LFO.rate) / __BEAT_RATE_DIVISOR>')
+        call update_lfo_viz
+
+        call update_lfo_aux_data
+
+        if switch_MAIN.LFO.lock = __OFF
+            call fn047_update_all_lfo_controls_data_and_ui
+        else
+            fn046.a.caller       := __LFO_GLOBAL_DEPTH
+            fn046.a.target_value := slider_MAIN.LFO.depth
+            call fn046_set_lfo_depth_globally
+        end if
+    end on
+
+    on ui_control ( slider_MAIN.LFO.depth )
+        label_MAIN.LFO.visualRate  -> picture_state := ...
+        (slider_MAIN.LFO.depth/31250) * 64 + (slider_MAIN.LFO.rate/15873)
+
+        label_MAIN.LFO.visualDepth  -> picture_state := ...
+        (slider_MAIN.LFO.depth/31250) * 64 + (slider_MAIN.LFO.rate/15873)
+
+        ~GLOBAL_LFO.depth_float_pct := float(slider_MAIN.LFO.depth)/1000000.0
+        
+        label_MAIN.LFO.depth -> text := slider_MAIN.LFO.depth / 10000 & "%"
+
+        { when the LFO lock is on, all LFO amounts in the whole instruments are set together }
+        if switch_MAIN.LFO.lock = __OFF
+            call fn047_update_all_lfo_controls_data_and_ui
+        else
+            fn046.a.caller       := __LFO_GLOBAL_DEPTH
+            fn046.a.target_value := slider_MAIN.LFO.depth
+            call fn046_set_lfo_depth_globally
+        end if 
+    end on
+
+    on ui_control (switch_MAIN.LFO.sync)
+        label_MAIN.LFO.sync -> text := rate_mode_sync_hz.text [ switch_MAIN.LFO.sync ]
+        call update_lfo_aux_data
+    end on
 
 {{ DEMO MODE }}
 on ui_control (button_demo.mode)
@@ -89,29 +128,4 @@ on ui_control (button_demo.mode)
     end if
 end on
 
-on ui_control ( slider_MAIN.FX.LEFT.layer.volume)
-    set_engine_par(ENGINE_PAR_VOLUME, slider_MAIN.FX.LEFT.layer.volume, -1, -1, NI_BUS_OFFSET+0)
-    UIID_MAIN.display_title -> text := "Volume"
-    UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_VOLUME, -1, -1, NI_BUS_OFFSET+0) & "dB"
-end on
-on ui_control ( slider_MAIN.FX.LEFT.layer.pan)
-    set_engine_par(ENGINE_PAR_PAN, slider_MAIN.FX.LEFT.layer.pan, -1, -1, NI_BUS_OFFSET+0)
-    UIID_MAIN.display_title -> text := "Pan"
-    UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_PAN, -1, -1, NI_BUS_OFFSET+0)
-end on
-on ui_control ( slider_MAIN.FX.LEFT.layer.width)
-    // set_engine_par(parameter, value, group, slot, generic)
-end on
-on ui_control ( slider_MAIN.FX.RIGHT.layer.volume)
-    set_engine_par(ENGINE_PAR_VOLUME, slider_MAIN.FX.RIGHT.layer.volume, -1, -1, NI_BUS_OFFSET+1)
-    UIID_MAIN.display_title -> text := "Volume"
-    UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_VOLUME, -1, -1, NI_BUS_OFFSET+1) & "dB"
-end on
-on ui_control ( slider_MAIN.FX.RIGHT.layer.pan)
-    set_engine_par(ENGINE_PAR_PAN, slider_MAIN.FX.RIGHT.layer.pan, -1, -1, NI_BUS_OFFSET+1)
-    UIID_MAIN.display_title -> text := "Pan"
-    UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_PAN, -1, -1, NI_BUS_OFFSET+1)
-end on
-on ui_control ( slider_MAIN.FX.RIGHT.layer.width)
-    // set_engine_par(parameter, value, group, slot, generic)
-end on
+

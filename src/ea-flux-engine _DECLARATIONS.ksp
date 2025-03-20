@@ -7,14 +7,16 @@
     define __RIGHT             := 1
     define __SEQ_DUAL          := 0
     define __SEQ_JOIN          := 1
+    define __X_AXIS            := 0
+    define __Y_AXIS            := 1
 
     define LFO_RATE_MODE       := 0
     define LFO_RATE            := 1
     define LFO_DEPTH           := 2
     define LFO_WAVESHAPE       := 3
 
-    define LFO_WAVESHAPE_SIN   := 0
-    define LFO_WAVESHAPE_TRI   := 1
+    define LFO_WAVESHAPE_TRI   := 0
+    define LFO_WAVESHAPE_SIN   := 1
     define LFO_WAVESHAPE_SQR   := 2
     define LFO_WAVESHAPE_SAW   := 3
     define LFO_WAVESHAPE_RND   := 4
@@ -72,32 +74,69 @@
     define __DYN_DATA      := 1
     define __ORIGINAL_DATA := 2
 
-    
+    define __GROUP_LEVEL := -1
+    define __GROUP_NONE  := -1
+    define __SLOT_NONE   := -1
+
+    { group level }
+    define __SLOT_G_SATURATION  := 0
+    define __SLOT_G_DISTORTION  := 1
+
+    { bus level }
+    define __SLOT_B_LOFI        := 0
+    define __SLOT_B_TAPESAT     := 1
+    define __SLOT_B_LOPASS      := 2
+    define __SLOT_B_HIPASS      := 3
+    define __SLOT_B_DELAY       := 4
+    define __SLOT_B_CHORUS      := 5
+    define __SLOT_B_REVERB      := 6
+    define __SLOT_B_STEREO      := 7
+
+    define __BUS_LAYER_LEFT     := NI_BUS_OFFSET+0
+    define __BUS_LAYER_RIGHT    := NI_BUS_OFFSET+1
+
+    define __SYNC_BEAT  := 0
+    define __SYNC_HZ    := 1
+
+    define __LFO_GLOBAL_DEPTH_TARGET := -1
+    define __LFO_AMOUNT_CONTROL      := 0
+    define __LFO_GLOBAL_DEPTH        := 1
 
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
-    declare hide_constants [ 2 ]
-        hide_constants [ 0 ] := HIDE_PART_NOTHING
-        hide_constants [ 1 ] := HIDE_WHOLE_CONTROL
+        declare hide_constants [ 2 ]
+            hide_constants [ 0 ] := HIDE_PART_NOTHING
+            hide_constants [ 1 ] := HIDE_WHOLE_CONTROL
+
+        declare ~__TWO_PI := NI_MATH_PI * 2.0  { for some reason 'const' won't compile }
 
     {{ UI }}
-    // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
-    declare SEQ.common_elements_data [ 200, 7 ] 
+        // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
+        declare SEQ.common_elements_data [ 200, 7 ] 
 
-    declare const PANEL_DUAL_SEQ_PARENT_UIID := 0
-    declare const PANEL_JOIN_SEQ_PARENT_UIID := 1
-    declare const ELEMENT_UIID               := 2
-    declare const PANEL_DUAL_SEQ_X_COORD     := 3
-    declare const PANEL_DUAL_SEQ_Y_COORD     := 4
-    declare const PANEL_JOIN_SEQ_X_COORD     := 5
-    declare const PANEL_JOIN_SEQ_Y_COORD     := 6
+        declare const PANEL_DUAL_SEQ_PARENT_UIID := 0
+        declare const PANEL_JOIN_SEQ_PARENT_UIID := 1
+        declare const ELEMENT_UIID               := 2
+        declare const PANEL_DUAL_SEQ_X_COORD     := 3
+        declare const PANEL_DUAL_SEQ_Y_COORD     := 4
+        declare const PANEL_JOIN_SEQ_X_COORD     := 5
+        declare const PANEL_JOIN_SEQ_Y_COORD     := 6
 
-    declare SEQ.COMMON_ELEMENTS_COUNT
-    declare UIID_FLUX_RAND_RIGHT [ 4 ] 
-        UIID_FLUX_RAND_RIGHT [ 0 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.1)
-        UIID_FLUX_RAND_RIGHT [ 1 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.2)
-        UIID_FLUX_RAND_RIGHT [ 2 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.3)
-        UIID_FLUX_RAND_RIGHT [ 3 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.4)
+        declare SEQ.COMMON_ELEMENTS_COUNT
+        declare UIID_FLUX_RAND_RIGHT [ 4 ] 
+            UIID_FLUX_RAND_RIGHT [ 0 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.1)
+            UIID_FLUX_RAND_RIGHT [ 1 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.2)
+            UIID_FLUX_RAND_RIGHT [ 2 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.3)
+            UIID_FLUX_RAND_RIGHT [ 3 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.4)
+
+        declare random_sliders_x_pos [ 2 ]
+            random_sliders_x_pos [ 0 ] :=  10
+            random_sliders_x_pos [ 1 ] := 949
+
+    {{ LINK }}
+        declare MAIN.FX.aux_flip_link
+        declare MAIN.FX.aux_flip_side
+        declare MAIN.FX.aux_flip_bus
 
     {{ SEQ }}
         declare const SEQ_DUAL_XY_W           := 366
@@ -198,6 +237,7 @@
 
     {{ LFO }}
         declare const __RATE_ELEMENTS_COUNT := 22
+        declare const __LFO_RATE_FRAME := 1000000 / (__RATE_ELEMENTS_COUNT-1)
         declare !beat_rates_display [ __RATE_ELEMENTS_COUNT ]
             beat_rates_display [ 00 ] := "1/128"  { 128               }
             beat_rates_display [ 01 ] := "1/64 T" { 64th  triplet     }
@@ -262,13 +302,89 @@
 
         declare const ~__SEQ_STEP_VALUE_FRAMES := 94.0
 
+        declare LFO_targets_engine_pars [ 16 ] := (...
+            ENGINE_PAR_VOLUME,                     ... {  0  Volume       }
+            ENGINE_PAR_PAN,                        ... {  1  Pan          }
+            ENGINE_PAR_STEREO,                     ... {  2  Width        }
+            ENGINE_PAR_SHAPE,                      ... {  3  Saturation   }
+            ENGINE_PAR_DAMPING,                    ... {  4  Damp         }
+            ENGINE_PAR_DRIVE,                      ... {  5  Drive        }
+            ENGINE_PAR_BITS,                       ... {  6  Bits         }
+            ENGINE_PAR_FREQUENCY,                  ... {  7  Srate        }
+            ENGINE_PAR_NOISELEVEL,                 ... {  8  Noise        }
+            ENGINE_PAR_TP_GAIN,                    ... {  9  TP Gain      }
+            ENGINE_PAR_TP_WARMTH,                  ... { 10  TP Warmth    }
+            ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN,    ... { 11  Chorus Wet   }
+            ENGINE_PAR_CH_DEPTH,                   ... { 12  Chorus Depth }
+            ENGINE_PAR_CH_SPEED,                   ... { 13  Chorus Speed }
+            ENGINE_PAR_CH_PHASE,                   ... { 14  Chorus Phase }
+            ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN     ... { 15  Reverb       }
+            )
+
+        declare LFO_targets_GROUP [ 16 ] := ( ...
+            __GROUP_NONE, ... {  0  Volume       }
+            __GROUP_NONE, ... {  1  Pan          }
+            __GROUP_NONE, ... {  2  Width        }
+            __GROUP_NONE, ... {  3  Saturation   }
+            __GROUP_NONE, ... {  4  Damp         }
+            __GROUP_NONE, ... {  5  Drive        }
+            __GROUP_NONE, ... {  6  Bits         }
+            __GROUP_NONE, ... {  7  Srate        }
+            __GROUP_NONE, ... {  8  Noise        }
+            __GROUP_NONE, ... {  9  TP Gain      }
+            __GROUP_NONE, ... { 10  TP Warmth    }
+            __GROUP_NONE, ... { 11  Chorus Wet   }
+            __GROUP_NONE, ... { 12  Chorus Depth }
+            __GROUP_NONE, ... { 13  Chorus Speed }
+            __GROUP_NONE, ... { 14  Chorus Phase }
+            __GROUP_NONE  ... { 15  Reverb       }
+            )
+
+        declare LFO_targets_SLOT [ 16 ] := ( ...
+            __SLOT_NONE,        ... {  0  Volume       }
+            __SLOT_NONE,        ... {  1  Pan          }
+            __SLOT_B_STEREO,      ... {  2  Width        }
+            __SLOT_G_SATURATION,  ... {  3  Saturation   }
+            __SLOT_G_DISTORTION,  ... {  4  Damp         }
+            __SLOT_G_DISTORTION,  ... {  5  Drive        }
+            __SLOT_B_LOFI,        ... {  6  Bits         }
+            __SLOT_B_LOFI,        ... {  7  Srate        }
+            __SLOT_B_LOFI,        ... {  8  Noise        }
+            __SLOT_B_TAPESAT,     ... {  9  TP Gain      }
+            __SLOT_B_TAPESAT,     ... { 10  TP Warmth    }
+            __SLOT_B_CHORUS,      ... { 11  Chorus Wet   }
+            __SLOT_B_CHORUS,      ... { 12  Chorus Depth }
+            __SLOT_B_CHORUS,      ... { 13  Chorus Speed }
+            __SLOT_B_CHORUS,      ... { 14  Chorus Phase }
+            __SLOT_B_REVERB       ... { 15  Reverb       }
+            )
+
+        declare LFO_targets_BUS  [ 16 ] := ( ...
+            NI_BUS_OFFSET, ... {  0  Volume       }
+            NI_BUS_OFFSET, ... {  1  Pan          }
+            NI_BUS_OFFSET, ... {  2  Width        }
+            NI_BUS_OFFSET, ... {  3  Saturation   }
+            NI_BUS_OFFSET, ... {  4  Damp         }
+            NI_BUS_OFFSET, ... {  5  Drive        }
+            NI_BUS_OFFSET, ... {  6  Bits         }
+            NI_BUS_OFFSET, ... {  7  Srate        }
+            NI_BUS_OFFSET, ... {  8  Noise        }
+            NI_BUS_OFFSET, ... {  9  TP Gain      }
+            NI_BUS_OFFSET, ... { 10  TP Warmth    }
+            NI_BUS_OFFSET, ... { 11  Chorus Wet   }
+            NI_BUS_OFFSET, ... { 12  Chorus Depth }
+            NI_BUS_OFFSET, ... { 13  Chorus Speed }
+            NI_BUS_OFFSET, ... { 14  Chorus Phase }
+            NI_BUS_OFFSET  ... { 15  Reverb       }
+            )
+
     {{ ADSR }}
         declare ADSR_engine_pars [ 4 ]
             ADSR_engine_pars [ 0 ] := ENGINE_PAR_ATTACK
             ADSR_engine_pars [ 1 ] := ENGINE_PAR_DECAY
             ADSR_engine_pars [ 2 ] := ENGINE_PAR_SUSTAIN
             ADSR_engine_pars [ 3 ] := ENGINE_PAR_RELEASE
-        
+
 
 { VARIABLES _____________________________________________________________________________________ }
     { sketch ___________________________________________________________________________________ }
@@ -327,6 +443,7 @@
         declare ~z.r
     {{ GENERAL }}
         declare note_held_count
+        declare read SHOWING_PANEL
 
     {{ SEQ }}
         declare SEQ.LEFT.step_index
@@ -414,14 +531,72 @@
 
     {{ LFO }}
         declare read LFO_data [ 4 ]
-            LFO_data [ LFO_WAVESHAPE ] := LFO_WAVESHAPE_SIN
 
         declare read LFO_rate
-        declare read ~LFO_sine_step
+
+        { this exists in case certain targets will have a different max than 10^6 }
+        declare LFO_control_value_max [45]  := (500000)
+
+        { store the LFO amount value in the range 0 - 1.0 }
+        declare read ?LFO_amount_pct [ 45 ] // value per control 
+        declare read ~GLOBAL_LFO.depth_float_pct
+        declare ~LFO_depth_offset  { to help calculate values where global LFO depth != 100%  }
+        declare ~LFO_engine_min
+        declare ~LFO_engine_max
+        declare ~LFO_lcb_depth_offset  { to help calculate values where global LFO depth != 100%  }
+        declare ~LFO_lcb_ind_min
+        declare ~LFO_lcb_ind_max
+        declare ~LFO_lcb_cursor_calc
+        declare read ~LFO_rate_pct  // the LFO rate squished into 0 : 1 range
+        declare ~tau_hz_ms_rate_divisor
+        declare ~LFO_ms_rate_label_disp_value
+        declare LFO_target_MAIN.FX.LEFT.saturation
+        declare ~temp_real
+        declare ~LFO_target_MAIN.FX.LEFT.LFO_saturation_pct
+        define  LFO.MAIN.FX.LEFT.saturation.value_range := 1000000.0
+
+        declare read ?LFO_modulation_data     [ 44, 4 ] 
+        { rows = control value id, 
+          columns = control value (center), center in pct, mod min, mod max }
+        declare read LFO_modulation_ring_data [ 44, 4 ] 
+
+        declare read LFO_lcb_rate
+        declare lcb_control_counter
+        declare lcb_control_counter_adjusted // to access the right side and FX page 
+        declare LFO_lcb_rate_ms_counter
+        declare LFO_lcb_rate_beat_counter
         declare ~LFO_emitted_value
+        declare read ~LFO_sine_step
+        declare      ~LFO_sine_value
+        declare      ~LFO_emitted_value_phase_checked
+        declare ~LFO_mod_center
+        declare ~LFO_mod_amount
+        declare ~LFO_mod_min
+        declare ~LFO_mod_max
+        declare LFO_mod_ring_min
+        declare LFO_mod_ring_max
+        declare LFO_mod_ring_center
+        declare LFO_mod_ring_amount
+        declare LFO_target_array_idx
+        declare LFO_rate_cycles  { to be used with RECT and RAND waveforms }
+        { Triangle support }
+        declare ~LFO_TRI_range_const := 1.0
+        declare ~LFO_tri_step { the total cycle duration / rate }
+        declare ~LFO_tri_lcb_step { LFO_tri_step * lcb_step }
+        declare ~LFO_tri_period
+        declare LFO.depth.lock_mode_counter
+        declare LCB_update_blue_ring_indicator
+
+        declare LFO_bus_adjustment // in the LCB loop, to  access the right side and fx page
+        declare read LFO_waveform_selection
+
+        // for when the LFO lock is on, we can retrieve the states of each local LFO from here when it is off again
+        declare read LFO_global_local_recall [ 32 ]  
+
 
         { temp }
         declare LFO_seq_step_count
+
 
 { CB SPECIFIC ___________________________________________________________________________________ }
     declare uics_uiid_index
@@ -433,6 +608,11 @@
     declare uics_counter
     declare uics_counter2
     declare uics_block_index
+    declare uics_random
+    declare uics_random_delta
+    declare uics_current_value
+    declare ~uics_random_delta.r
+    declare ~uics_current_value.r
     declare ~uics_r_value
     declare uics_i_value
     declare uics_result
@@ -440,6 +620,8 @@
     declare @uics_text_data
     declare uics_loop_range_min
     declare uics_loop_range_max
+    declare uicbs_custom_id
+    declare uicbs_control_par_value
 
     declare pccb_counter
 
@@ -468,6 +650,9 @@
 
     //draw_seq
     declare ds.counter
+
+    //UICBS_MAIN.FX.modules.power | UICBS_MAIN.FX.modules.links
+    declare uicbs_fx_panel_side
 
     //fn001_get_seq_step_index
     declare fn001.a.side // 0 left 1 right
@@ -503,6 +688,8 @@
     //fn006_recall_seq_values
     declare fn006.a.side
     declare fn006.l.mode_side
+    declare fn006.l.counter_block
+    declare fn006.l.counter_step
 
     //fn007_update_block_and_steps_ts
     declare fn007.a.side
@@ -730,3 +917,80 @@
     declare ~fn034.r.transf_value.r
     declare ~fn034.r.transf_value.r_lp
     declare ~fn034.r.transf_value.r_hp
+
+    //fn035_update_random_labels
+    declare  fn035.a.side
+    declare ~fn035.a.value
+
+    //fn036_set_control_param_slider
+    declare fn036.a.side
+    declare fn036.a.target
+    declare fn036.a.control_value
+
+    //fn037_LFO.update_intensity_ring
+    declare fn037.a.side
+    declare fn037.a.target
+    declare fn037.a.control_value
+    declare fn037.a.LFO_amount
+    declare fn037.a.link
+    declare fn037.l.counter
+    declare fn037.l.target
+    declare fn037.l.picture_state_start
+    declare fn037.l.picture_state_end
+
+    //fn038_LFO_store_LFO_mod_data
+    declare fn038.a.side
+    declare fn038.a.target
+    declare fn038.a.control_value
+    declare fn038.a.LFO_amount
+    declare fn038.a.link
+    declare fn038.l.target
+    declare fn038.l.counter
+
+    //fn039_set_FX_engine_par
+    declare fn039.a.side
+    declare fn039.a.target
+    declare fn039.a.control_value
+    declare fn039.a.link
+
+    //fn040_set_MATRIX_slider_ps
+    declare fn040.a.side
+
+    //fn041_LFO_off_restore_buffer_value
+    declare fn041.a.target { uses the LFO control values target constants }
+    declare fn041.a.side
+    declare fn041.l.target
+
+    //fn042_show_hide_fx_panels
+    declare fn042.a.side
+    declare fn042.a.other_side
+    declare fn042.a.panel
+    declare fn042.l.panel
+
+    //fn043_show_hide_fx_panels
+    declare fn043.a.panel
+    declare fn043.a.other_side
+    declare fn043.a.side
+    declare fn043.l.panel
+
+    //fn044_LFO_calculate_engine_value
+    declare  fn044.a.target { uses the LFO control values target constants }
+    declare ~fn044.a.sine_value { uses the LFO control values target constants }
+    declare  fn044.a.left_or_right
+    declare ~fn044.l.calc  { for clarity  }
+    declare  fn044.l.target
+    declare  fn044.r.engine_value
+
+    //fn045_set_lfo_waveshape_selectors
+    declare fn045.a.index
+    declare fn045.l.counter
+
+    //fn046_set_lfo_depth_globally
+    declare fn046.a.caller
+    declare fn046.a.target
+    declare fn046.a.target_value
+    declare fn046.l.global_value
+
+    // fn047_update_all_lfo_controls_data_and_ui
+    declare fn047.l.counter
+    declare fn047.l.side_counter
