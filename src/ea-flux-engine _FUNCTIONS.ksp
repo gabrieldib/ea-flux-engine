@@ -59,6 +59,11 @@ function pccb_init_instrument
         fn043.a.side  := i.i
         fn043.a.panel := __LAYER
         call fn043_show_hide_fx_panels
+
+        UIID_lfp_delay_labels [ i.i, __FX_DELAY_LABEL_PINGPONG ] -> font_type := ...
+            FX_switches_fonts [ UIID_lfp_delay_controls [ i.i, __FX_DELAY_LABEL_PINGPONG ] -> value ] { ping pong }
+        UIID_lfp_delay_labels [ i.i, __FX_DELAY_LABEL_SYNC     ] -> font_type := ...
+            FX_switches_fonts [ UIID_lfp_delay_controls [ i.i, __FX_DELAY_LABEL_SYNC ] -> value ] { sync }
     end for
 
     { change text alignment on target selectors }
@@ -70,7 +75,7 @@ function pccb_init_instrument
     call update_lfo_aux_data
     call update_lfo_viz
     call update_lfo_viz_picture
-    
+
     if switch_MAIN.LFO.lock = __OFF
         call fn047_update_all_lfo_controls_data_and_ui
     else
@@ -1234,6 +1239,15 @@ function fn045_set_lfo_waveshape_selectors
 
     {data update }
 end function
+
+function fn048_set_fx_saturation_mode
+    for fn048.l.counter := 0 to 2
+        UIID_lfp_sat_modes [ fn048.a.side, fn048.l.counter ] -> value := __OFF
+    end for
+    UIID_lfp_sat_modes [ fn048.a.side, fn048.a.index ] -> value := __ON
+end function
+
+
 
 {{ LFO Functions }}
 function fn037_LFO.update_intensity_ring()

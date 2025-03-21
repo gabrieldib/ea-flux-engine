@@ -39,4 +39,7 @@ on persistence_changed
     call pccb_init_instrument()
 
     message("ea-flux-engine loaded successfully")
+
+    message(f'UIID_lfp_delay_controls  [ __RIGHT, 0 ] < UIID_lfp_delay_controls  [ __RIGHT, 0 ] >')
+    message(f'UIID_lfp_delay_controls  [ __RIGHT, 1 ] < UIID_lfp_delay_controls  [ __RIGHT, 1 ] >')
 end on

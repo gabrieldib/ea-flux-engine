@@ -943,7 +943,131 @@ on ui_controls
         end select
     end if
 
-    {{ LAYER AND FX PANELS CONTROLS }}
+
+    {{ LAYER AND FX PANELS CONTROLS NOT Modulated by LFOs }}
+    {{ FX Saturation Modes }}
+    if  in_range(NI_UI_ID, UIID_lfp_sat_modes [ __LEFT,  0 ], UIID_lfp_sat_modes [ __LEFT,  2 ] ) or ...
+        in_range(NI_UI_ID, UIID_lfp_sat_modes [ __RIGHT, 0 ], UIID_lfp_sat_modes [ __RIGHT, 2 ] )
+    
+        uics_seq_side := __LEFT
+        if in_range(NI_UI_ID, UIID_lfp_sat_modes [ __RIGHT, 0 ], UIID_lfp_sat_modes [ __RIGHT, 2 ])
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_lfp_sat_modes [ __RIGHT,  0 ]
+        else
+            uics_uiid_index := NI_UI_ID - UIID_lfp_sat_modes [ __LEFT, 0 ]
+        end if
+
+        fn048.a.side  := uics_seq_side
+        fn048.a.index := uics_uiid_index
+        call fn048_set_fx_saturation_mode
+
+        set_engine_par(ENGINE_PAR_SHAPE_TYPE, FX_saturation_type [ uics_uiid_index ], uics_seq_side, __SLOT_G_SATURATION, __GROUP_LEVEL)
+        UIID_MAIN.display_title -> text := "Saturation Type"
+        UIID_MAIN.display_value -> text := !FX_saturation_type_txt [ uics_uiid_index ]
+    end if
+
+
+    {{ FX Distortion Modes }}
+    if  NI_UI_ID = UIID_lfp_dst_modes [ __LEFT ] or NI_UI_ID = UIID_lfp_dst_modes [ __RIGHT ]
+        if NI_UI_ID = UIID_lfp_dst_modes [ __LEFT ]
+            uics_seq_side   := __LEFT
+        else
+            uics_seq_side := __RIGHT
+        end if
+        uics_uiid_index := NI_UI_ID -> value
+
+        set_engine_par(ENGINE_PAR_DISTORTION_TYPE, FX_distortion_type [ uics_uiid_index ], uics_seq_side, __SLOT_G_DISTORTION, __GROUP_LEVEL)
+        UIID_MAIN.display_title -> text := "Distortion Type"
+        UIID_MAIN.display_value -> text := !FX_distortion_type_txt [ uics_uiid_index ]
+    end if
+
+
+    {{ FX Tape Saturator HF Cut }}
+    if  NI_UI_ID = UIID_lfp_tape_sat.hf_cut [ __LEFT ] or NI_UI_ID = UIID_lfp_tape_sat.hf_cut [ __RIGHT ]
+        if NI_UI_ID = UIID_lfp_tape_sat.hf_cut [ __LEFT ]
+            uics_seq_side   := __LEFT
+        else
+            uics_seq_side := __RIGHT
+        end if
+        set_engine_par(ENGINE_PAR_TP_HF_ROLLOFF, NI_UI_ID -> value, __GROUP_NONE, __SLOT_B_TAPESAT, NI_BUS_OFFSET+uics_seq_side)
+        UIID_MAIN.display_title -> text := "HF Cut"
+        UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_TP_HF_ROLLOFF, __GROUP_NONE, __SLOT_B_TAPESAT, NI_BUS_OFFSET+uics_seq_side) & "Hz"
+    end if
+
+
+    {{ FX Delay Controls - Switches }}
+    if  in_range(NI_UI_ID, UIID_lfp_delay_controls [ __LEFT,  0 ], UIID_lfp_delay_controls [ __LEFT,  1 ] ) or ...
+        in_range(NI_UI_ID, UIID_lfp_delay_controls [ __RIGHT, 0 ], UIID_lfp_delay_controls [ __RIGHT, 1 ] )
+
+        if in_range(NI_UI_ID, UIID_lfp_delay_controls [ __LEFT,  0 ], UIID_lfp_delay_controls [ __LEFT,  1 ] )
+            uics_seq_side   := __LEFT
+            uics_uiid_index := NI_UI_ID - UIID_lfp_delay_controls [ __LEFT,  0 ]
+        else
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_lfp_delay_controls [ __RIGHT, 0 ]
+        end if
+
+        uics_engine_par := FX_delay_engine_par [ uics_uiid_index ]
+        uics_slot       := __SLOT_B_DELAY
+        uics_generic    := NI_BUS_OFFSET+uics_seq_side
+
+        UIID_lfp_delay_labels [ uics_seq_side, uics_uiid_index ] -> font_type := FX_switches_fonts [ NI_UI_ID -> value ]
+
+        if  uics_uiid_index = __FX_DELAY_PINGPONG
+            set_engine_par(uics_engine_par, NI_UI_ID -> value, __GROUP_NONE, uics_slot, uics_generic)
+            UIID_MAIN.display_title -> text := "Pingpong"
+            UIID_MAIN.display_value -> text := FX_switch_state [ NI_UI_ID -> value ]
+        else
+            UIID_MAIN.display_title -> text := "Sync"
+            UIID_MAIN.display_value -> text := FX_sync_mode [ NI_UI_ID -> value ]
+            { change time unit }
+            if  NI_UI_ID -> value = __OFF
+                { ms }
+                set_engine_par(ENGINE_PAR_RDL_TIME_UNIT, NI_SYNC_UNIT_ABS, __GROUP_NONE, uics_slot, uics_generic)
+            else
+                set_engine_par(               ...
+                    ENGINE_PAR_RDL_TIME_UNIT, ...
+                    fx_delay_units [ (UIID_lfp_delay_controls [ uics_seq_side, __FX_DELAY_TIME ] -> value)/FX_DELAY_SYNC_DIVISOR ], ...
+                    __GROUP_NONE,             ...
+                    uics_slot,                ...
+                    uics_generic              ...
+                )
+                set_engine_par(               ...
+                    ENGINE_PAR_RDL_TIME, ...
+                    fx_delay_sync [ (UIID_lfp_delay_controls [ uics_seq_side, __FX_DELAY_TIME ] -> value)/FX_DELAY_SYNC_DIVISOR ], ...
+                    __GROUP_NONE,             ...
+                    uics_slot,                ...
+                    uics_generic              ...
+                )
+                message(f' time index: < (UIID_lfp_delay_controls [ uics_seq_side, __FX_DELAY_TIME ] -> value)/17 >')
+            end if
+        end if
+
+        // UIID_MAIN.display_title -> text := "HF Cut"
+        // UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_TP_HF_ROLLOFF, __GROUP_NONE, __SLOT_B_TAPESAT, NI_BUS_OFFSET+uics_seq_side) & "Hz"
+    end if
+
+
+    {{ FX Delay Controls - sliders }}
+    if  in_range(NI_UI_ID, UIID_lfp_delay_controls [ __LEFT,  2 ], UIID_lfp_delay_controls [ __LEFT,  6 ] ) or ...
+        in_range(NI_UI_ID, UIID_lfp_delay_controls [ __RIGHT, 2 ], UIID_lfp_delay_controls [ __RIGHT, 6 ] )
+
+        if in_range(NI_UI_ID, UIID_lfp_delay_controls [ __LEFT,  2 ], UIID_lfp_delay_controls [ __LEFT,  5 ] )
+            uics_seq_side   := __LEFT
+            uics_uiid_index := NI_UI_ID - UIID_lfp_delay_controls [ __LEFT,  2 ]
+        else
+            uics_seq_side   := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_lfp_delay_controls [ __RIGHT,  2 ]
+        end if
+
+        select(uics_uiid_index)
+            case 0
+        end select
+
+    end if
+
+
+    {{ LAYER AND FX PANELS CONTROLS Modulated by LFOs }}
     macro set_engine_par_fx(#title#, #engine_par#, #data_type#, #target_index#, #target_group#, #target_slot#, #target_bus#)
         if  NI_UI_ID = UIID_controls [ #target_index# ] or ...
             NI_UI_ID = UIID_controls [ #target_index# + __MAIN.FX.RIGHT.OFFSET ]
@@ -960,7 +1084,6 @@ on ui_controls
 
         end if
     end macro
- 
 
     set_engine_par_fx("Volume",     ENGINE_PAR_VOLUME,      "dB", __MAIN.FX.LAYER.VOLUME,      __GROUP_NONE, __SLOT_NONE,          NI_BUS_OFFSET+uics_seq_side)
     set_engine_par_fx("Pan",        ENGINE_PAR_PAN,         "",   __MAIN.FX.LAYER.PAN,         __GROUP_NONE, __SLOT_NONE,          NI_BUS_OFFSET+uics_seq_side)

@@ -143,6 +143,50 @@ UIID_LFO.waveshape_selectors [ 2 ] := get_ui_id(switch_MAIN.LFO.waveform_select.
 UIID_LFO.waveshape_selectors [ 3 ] := get_ui_id(switch_MAIN.LFO.waveform_select.saw)
 UIID_LFO.waveshape_selectors [ 4 ] := get_ui_id(switch_MAIN.LFO.waveform_select.rand)
 
+UIID_lfp_sat_modes [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.type.classic)
+UIID_lfp_sat_modes [ __LEFT,  1 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.type.enhanced)
+UIID_lfp_sat_modes [ __LEFT,  2 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.type.drums)
+UIID_lfp_sat_modes [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.type.classic)
+UIID_lfp_sat_modes [ __RIGHT, 1 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.type.enhanced)
+UIID_lfp_sat_modes [ __RIGHT, 2 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.type.drums)
+
+UIID_lfp_dst_modes [ __LEFT  ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.type)
+UIID_lfp_dst_modes [ __RIGHT ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.type)
+
+UIID_lfp_tape_sat.hf_cut [ __LEFT  ] := get_ui_id(slider_MAIN.FX.LEFT.tapeSat.HFCut.amount)
+UIID_lfp_tape_sat.hf_cut [ __RIGHT ] := get_ui_id(slider_MAIN.FX.RIGHT.tapeSat.HFCut.amount)
+
+UIID_lfp_delay_controls  [ __LEFT, 0 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.pingpong)
+UIID_lfp_delay_controls  [ __LEFT, 1 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.sync)
+UIID_lfp_delay_controls  [ __LEFT, 2 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.locut)
+UIID_lfp_delay_controls  [ __LEFT, 3 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.hicut)
+UIID_lfp_delay_controls  [ __LEFT, 4 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.drywet)
+UIID_lfp_delay_controls  [ __LEFT, 5 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.feedback)
+UIID_lfp_delay_controls  [ __LEFT, 6 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.time)
+
+UIID_lfp_delay_controls  [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.pingpong)
+UIID_lfp_delay_controls  [ __RIGHT, 1 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.sync)
+UIID_lfp_delay_controls  [ __RIGHT, 2 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.locut)
+UIID_lfp_delay_controls  [ __RIGHT, 3 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.hicut)
+UIID_lfp_delay_controls  [ __RIGHT, 4 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.drywet)
+UIID_lfp_delay_controls  [ __RIGHT, 5 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.feedback)
+UIID_lfp_delay_controls  [ __RIGHT, 6 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.time)
+
+UIID_lfp_rvb_controls    [ __LEFT,  0 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.size.amount)
+UIID_lfp_rvb_controls    [ __LEFT,  1 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.predelay.amount)
+UIID_lfp_rvb_controls    [ __LEFT,  2 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.LP.amount)
+UIID_lfp_rvb_controls    [ __LEFT,  3 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.HP.amount)
+
+UIID_lfp_rvb_controls    [ __RIGHT,  0 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.size.amount)
+UIID_lfp_rvb_controls    [ __RIGHT,  1 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.predelay.amount)
+UIID_lfp_rvb_controls    [ __RIGHT,  2 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.LP.amount)
+UIID_lfp_rvb_controls    [ __RIGHT,  3 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.HP.amount)
+
+UIID_lfp_delay_labels [ __LEFT,  0 ] := get_ui_id(label_MAIN.FX.LEFT.delay.pingpong)
+UIID_lfp_delay_labels [ __LEFT,  1 ] := get_ui_id(label_MAIN.FX.LEFT.delay.sync)
+UIID_lfp_delay_labels [ __RIGHT, 0 ] := get_ui_id(label_MAIN.FX.RIGHT.delay.pingpong)
+UIID_lfp_delay_labels [ __RIGHT, 1 ] := get_ui_id(label_MAIN.FX.RIGHT.delay.sync)
+
 
 {{ SETTING FONTS }}
     for i.i := 0 to 7

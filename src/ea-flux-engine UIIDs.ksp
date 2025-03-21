@@ -34,6 +34,15 @@ declare UIID_MAIN.seq_random_btn                [ 2 ]
 declare UIID_MAIN.FX_panel_selectors         [ 2, 8 ]
 declare UIID_MAIN.FX_panels                  [ 2, 8 ]
 declare UIID_LFO.waveshape_selectors            [ 5 ]
+{ controls not modulated by LFO }
+declare UIID_lfp_sat_modes                   [ 2, 3 ]
+declare UIID_lfp_dst_modes                      [ 2 ]
+declare UIID_lfp_tape_sat.hf_cut                [ 2 ]
+declare UIID_lfp_delay_controls              [ 2, 7 ]
+declare UIID_lfp_rvb_controls                [ 2, 4 ] // IR preset buttons are not included here
+
+declare UIID_lfp_delay_labels                [ 2, 2 ] 
+
 
 {{ LFO }}
 define __LAYER      := 0
