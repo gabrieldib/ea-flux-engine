@@ -82,8 +82,10 @@ end for
 UIID_MAIN.seq.flux_rand_power [ __LEFT  ] := get_ui_id(switch_MAIN.FLUXX.LEFT.randomPower)
 UIID_MAIN.seq.flux_rand_power [ __RIGHT ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.randomPower)
 
-UIID_MAIN.seq.off_label       [ __LEFT  ] := get_ui_id(label_MAIN.2SEQ.LEFT.off)
-UIID_MAIN.seq.off_label       [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.off)
+UIID_MAIN.seq.off_label       [ __LEFT  ] := get_ui_id(slider_MAIN.2SEQ.LEFT.off)
+UIID_MAIN.seq.off_label       [ __RIGHT ] := get_ui_id(slider_MAIN.2SEQ.RIGHT.off)
+UIID_MAIN.seq.off_label_text  [ __LEFT  ] := get_ui_id(label_MAIN.2SEQ.LEFT.off)
+UIID_MAIN.seq.off_label_text  [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.off)
 
 UIID_MAIN.seq.arp_power [ __LEFT  ] := get_ui_id(switch_MAIN.FLUXX.LEFT.arp.power)
 UIID_MAIN.seq.arp_power [ __RIGHT ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.arp.power)
@@ -156,14 +158,13 @@ UIID_lfp_dst_modes [ __RIGHT ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.type
 UIID_lfp_tape_sat.hf_cut [ __LEFT  ] := get_ui_id(slider_MAIN.FX.LEFT.tapeSat.HFCut.amount)
 UIID_lfp_tape_sat.hf_cut [ __RIGHT ] := get_ui_id(slider_MAIN.FX.RIGHT.tapeSat.HFCut.amount)
 
-UIID_lfp_delay_controls  [ __LEFT, 0 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.pingpong)
-UIID_lfp_delay_controls  [ __LEFT, 1 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.sync)
-UIID_lfp_delay_controls  [ __LEFT, 2 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.locut)
-UIID_lfp_delay_controls  [ __LEFT, 3 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.hicut)
-UIID_lfp_delay_controls  [ __LEFT, 4 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.drywet)
-UIID_lfp_delay_controls  [ __LEFT, 5 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.feedback)
-UIID_lfp_delay_controls  [ __LEFT, 6 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.time)
-
+UIID_lfp_delay_controls  [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.pingpong)
+UIID_lfp_delay_controls  [ __LEFT,  1 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.sync)
+UIID_lfp_delay_controls  [ __LEFT,  2 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.locut)
+UIID_lfp_delay_controls  [ __LEFT,  3 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.hicut)
+UIID_lfp_delay_controls  [ __LEFT,  4 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.drywet)
+UIID_lfp_delay_controls  [ __LEFT,  5 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.feedback)
+UIID_lfp_delay_controls  [ __LEFT,  6 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.time)
 UIID_lfp_delay_controls  [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.pingpong)
 UIID_lfp_delay_controls  [ __RIGHT, 1 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.sync)
 UIID_lfp_delay_controls  [ __RIGHT, 2 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.locut)
@@ -172,13 +173,13 @@ UIID_lfp_delay_controls  [ __RIGHT, 4 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.
 UIID_lfp_delay_controls  [ __RIGHT, 5 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.feedback)
 UIID_lfp_delay_controls  [ __RIGHT, 6 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.time)
 
-UIID_lfp_rvb_controls    [ __LEFT,  0 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.size.amount)
-UIID_lfp_rvb_controls    [ __LEFT,  1 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.predelay.amount)
+UIID_lfp_rvb_controls    [ __LEFT,  0 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.predelay.amount)
+UIID_lfp_rvb_controls    [ __LEFT,  1 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.size.amount)
 UIID_lfp_rvb_controls    [ __LEFT,  2 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.LP.amount)
 UIID_lfp_rvb_controls    [ __LEFT,  3 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.HP.amount)
 
-UIID_lfp_rvb_controls    [ __RIGHT,  0 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.size.amount)
-UIID_lfp_rvb_controls    [ __RIGHT,  1 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.predelay.amount)
+UIID_lfp_rvb_controls    [ __RIGHT,  0 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.predelay.amount)
+UIID_lfp_rvb_controls    [ __RIGHT,  1 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.size.amount)
 UIID_lfp_rvb_controls    [ __RIGHT,  2 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.LP.amount)
 UIID_lfp_rvb_controls    [ __RIGHT,  3 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.HP.amount)
 
@@ -187,6 +188,12 @@ UIID_lfp_delay_labels [ __LEFT,  1 ] := get_ui_id(label_MAIN.FX.LEFT.delay.sync)
 UIID_lfp_delay_labels [ __RIGHT, 0 ] := get_ui_id(label_MAIN.FX.RIGHT.delay.pingpong)
 UIID_lfp_delay_labels [ __RIGHT, 1 ] := get_ui_id(label_MAIN.FX.RIGHT.delay.sync)
 
+UIID_lfp_power [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.power)
+UIID_lfp_power [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.power)
+for i.i := 1 to 7
+    UIID_lfp_power [ __LEFT,  i.i ] := UIID_lfp_power [ __LEFT,  0 ] + i.i
+    UIID_lfp_power [ __RIGHT, i.i ] := UIID_lfp_power [ __RIGHT, 0 ] + i.i
+end for
 
 {{ SETTING FONTS }}
     for i.i := 0 to 7

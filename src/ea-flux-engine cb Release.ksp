@@ -46,5 +46,6 @@ on release
                 seq.direction_status [ r.i ] := SEQ_DIRECTION_FORWARD
             end if
         end for
+        call clear_all_leds
     end if
 end on

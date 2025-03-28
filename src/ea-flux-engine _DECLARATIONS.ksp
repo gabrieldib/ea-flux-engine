@@ -30,8 +30,8 @@
     define SEQ_TARGET_PAN      := 3
     define SEQ_TARGET_FILTER   := 4
 
-    define __LP_FILTER_SLOT    := 5
-    define __HP_FILTER_SLOT    := 6
+    define __LP_FILTER_SLOT    := 2
+    define __HP_FILTER_SLOT    := 3
     define __LP_FILTER_CA_SLOT := 0 // code aux
     define __HP_FILTER_CA_SLOT := 1 // code aux
 
@@ -104,7 +104,11 @@
 
     define __FX_DELAY_PINGPONG       := 0
     define __FX_DELAY_TIME_UNIT      := 1
-    define __FX_DELAY_TIME           := 5
+    define __FX_DELAY_LOCUT          := 2
+    define __FX_DELAY_HICUT          := 3
+    define __FX_DELAY_DRYWET         := 4
+    define __FX_DELAY_FEEDBACK       := 5
+    define __FX_DELAY_TIME           := 6
     
     define __FX_DELAY_LABEL_PINGPONG := 0
     define __FX_DELAY_LABEL_SYNC     := 1
@@ -242,6 +246,8 @@
             SEQ.target_type [ SEQ_TARGET_PAN    ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_BIPOLAR
 
+        declare const __FLUX_ON_ALL_BLOCKS := -1
+
     {{ LFO }}
         declare const __RATE_ELEMENTS_COUNT := 22
         declare const __LFO_RATE_FRAME := 1000000 / (__RATE_ELEMENTS_COUNT-1)
@@ -269,6 +275,7 @@
             beat_rates_display [ 20 ] := "3"      { 3 x whole         }
             beat_rates_display [ 21 ] := "4"      { 4 x whole         }
 
+        declare      ~__LFO_RATE_INDEX_DIVIDER := 7.619047 { 160 / 21 }
         declare beat_rates [ __RATE_ELEMENTS_COUNT ]
             beat_rates [ 00 ] := (DURATION_SIXTEENTH/8)/1000
             beat_rates [ 01 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
@@ -359,8 +366,7 @@
             fx_delay_units [ 16 ] := NI_SYNC_UNIT_WHOLE           { whole triplet     }
             fx_delay_units [ 17 ] := NI_SYNC_UNIT_WHOLE_TRIPLET   { whole             }
 
-        
-
+        declare LFO_targets_type [ 32 ]
 
         declare !rate_mode_sync_ms.text [2]
             !rate_mode_sync_ms.text [0] := "sync"
@@ -388,10 +394,10 @@
             ENGINE_PAR_NOISELEVEL,                 ... {  8  Noise        }
             ENGINE_PAR_TP_GAIN,                    ... {  9  TP Gain      }
             ENGINE_PAR_TP_WARMTH,                  ... { 10  TP Warmth    }
-            ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN,    ... { 11  Chorus Wet   }
-            ENGINE_PAR_CH_DEPTH,                   ... { 12  Chorus Depth }
-            ENGINE_PAR_CH_SPEED,                   ... { 13  Chorus Speed }
-            ENGINE_PAR_CH_PHASE,                   ... { 14  Chorus Phase }
+            ENGINE_PAR_CHORAL_MIX,                 ... { 11  Chorus Wet   }
+            ENGINE_PAR_CHORAL_AMOUNT,              ... { 12  Chorus Depth }
+            ENGINE_PAR_CHORAL_RATE,                ... { 13  Chorus Speed }
+            ENGINE_PAR_CHORAL_FEEDBACK,            ... { 14  Chorus Phase }
             ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN     ... { 15  Reverb       }
             )
 
@@ -470,14 +476,55 @@
             "Tube",  ...
             "Transistor"  ...
         )
-        declare FX_delay_engine_par [ 6 ] := ( ...
+        declare FX_delay_engine_par [ 7 ] := ( ...
             ENGINE_PAR_RDL_PINGPONG,           ...
             ENGINE_PAR_RDL_TIME_UNIT,          ...
             ENGINE_PAR_RDL_LOWCUT,             ...
             ENGINE_PAR_RDL_HIGHCUT,            ...
+            ENGINE_PAR_SEND_EFFECT_DRY_LEVEL,  ...
             ENGINE_PAR_RDL_FEEDBACK,           ...
             ENGINE_PAR_RDL_TIME                ...
         )
+
+        declare !FX_delay_param_txt [ 7 ]
+            FX_delay_param_txt [ 0 ] := "Pingpong"
+            FX_delay_param_txt [ 1 ] := "Sync"
+            FX_delay_param_txt [ 2 ] := "Low Cut"
+            FX_delay_param_txt [ 3 ] := "High Cut"
+            FX_delay_param_txt [ 4 ] := "Dry | Wet"
+            FX_delay_param_txt [ 5 ] := "Feedback"
+            FX_delay_param_txt [ 6 ] := "Time"
+
+        declare !FX_delay_param_type_txt [ 7 ]
+            FX_delay_param_type_txt [ 0 ] := ""
+            FX_delay_param_type_txt [ 1 ] := ""
+            FX_delay_param_type_txt [ 2 ] := "hz"
+            FX_delay_param_type_txt [ 3 ] := "hz"
+            FX_delay_param_type_txt [ 4 ] := ""
+            FX_delay_param_type_txt [ 5 ] := "%"
+            FX_delay_param_type_txt [ 6 ] := "ms"
+
+        declare FX_reverb_engine_par [ 7 ] := ( ...
+            ENGINE_PAR_IRC_PREDELAY,         ...
+            ENGINE_PAR_IRC_LENGTH_RATIO_ER,  ...
+            ENGINE_PAR_IRC_FREQ_LOWPASS_ER,  ...
+            ENGINE_PAR_IRC_FREQ_HIGHPASS_ER, ...
+            ENGINE_PAR_IRC_LENGTH_RATIO_LR,  ...
+            ENGINE_PAR_IRC_FREQ_LOWPASS_LR,  ...
+            ENGINE_PAR_IRC_FREQ_HIGHPASS_LR  ...
+        )
+
+        declare !FX_reverb_param_txt [ 4 ]
+            FX_reverb_param_txt [ 0 ] := "Pre-Delay"
+            FX_reverb_param_txt [ 1 ] := "Size"
+            FX_reverb_param_txt [ 2 ] := "Low Cut"
+            FX_reverb_param_txt [ 3 ] := "High Cut"
+
+        declare !FX_reverb_param_type_txt [ 4 ]
+            FX_reverb_param_type_txt [ 0 ] := "ms"
+            FX_reverb_param_type_txt [ 1 ] := ""
+            FX_reverb_param_type_txt [ 2 ] := "hz"
+            FX_reverb_param_type_txt [ 3 ] := "hz"
 
         declare !FX_switch_state [ 2 ]
             FX_switch_state [ 0 ] := "Off"
@@ -493,8 +540,25 @@
             FX_switches_fonts [ FX_SWITCH_OFF_FONT ] := get_font_id("font_Roboto Regular Size 11 #8E7466 100p")
             FX_switches_fonts [ FX_SWITCH_ON_FONT  ] := get_font_id("font_Roboto Regular Size 11 #FFE4D6")
 
+        declare !MAIN_lfp_power_txt [ 8 ]
+            MAIN_lfp_power_txt [ 0 ] := 'Layer'
+            MAIN_lfp_power_txt [ 1 ] := 'Saturation'
+            MAIN_lfp_power_txt [ 2 ] := 'Distortion'
+            MAIN_lfp_power_txt [ 3 ] := 'Tape Saturation'
+            MAIN_lfp_power_txt [ 4 ] := 'Lofi'
+            MAIN_lfp_power_txt [ 5 ] := 'Delay'
+            MAIN_lfp_power_txt [ 6 ] := 'Chorus'
+            MAIN_lfp_power_txt [ 7 ] := 'Reverb'
 
-
+        declare MAIN_lfp_power_to_slot_mapping [ 8 ]
+            MAIN_lfp_power_to_slot_mapping [ 0 ] := -1 // this is the layer, won't be used
+            MAIN_lfp_power_to_slot_mapping [ 1 ] := __SLOT_G_SATURATION
+            MAIN_lfp_power_to_slot_mapping [ 2 ] := __SLOT_G_DISTORTION
+            MAIN_lfp_power_to_slot_mapping [ 3 ] := __SLOT_B_LOFI
+            MAIN_lfp_power_to_slot_mapping [ 4 ] := __SLOT_B_TAPESAT
+            MAIN_lfp_power_to_slot_mapping [ 5 ] := __SLOT_B_DELAY
+            MAIN_lfp_power_to_slot_mapping [ 6 ] := __SLOT_B_CHORUS
+            MAIN_lfp_power_to_slot_mapping [ 7 ] := __SLOT_B_REVERB
 
     {{ ADSR }}
         declare ADSR_engine_pars [ 4 ]
@@ -588,12 +652,31 @@
 
         declare SEQ.DUAL.current_block [ 2 ] := (-1)
         declare SEQ.JOIN.current_block       :=  -1
+        declare seq_join_side
+        declare play_layer_count
+
+        { sequencer target data  
+            there's 6 states:
+                1) SEQ DUAL, left  target OFF
+                2) SEQ DUAL, left  target ON
+                3) SEQ DUAL, right target OFF
+                4) SEQ DUAL, right target ON
+                5) SEQ JOIN, target OFF
+                6) SEQ JOIN, target ON
+
+                how to represent these states:
+                a single integer variable, with the index of the state
+        }
+        // declare seq_target_state [  ]
 
         { so we can have independent intensities per target }
         declare read SEQ.flux_rand_intensity [ 2, 5 ]
 
         declare read layers.seq_play_direction [ 2 ]
         declare read seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
+
+        declare read layers.seq_join_play_direction
+        declare read seq_join.direction_status
 
         declare read SEQ.rate [ 2 ] // one for each side
 
@@ -643,6 +726,8 @@
         declare lcb_step_counter_end
         declare lcb_counter1
         declare lcb_play_direction_index
+        declare LFO_target_group
+        declare lcb_lfo_group_counter
 
     {{ ARP }}
         declare read arp_mode [ 2 ]
@@ -654,6 +739,8 @@
 
         { this exists in case certain targets will have a different max than 10^6 }
         declare LFO_control_value_max [45]  := (500000)
+            LFO_control_value_max [2]   := (500000) // width
+            LFO_control_value_max [18]  := (500000) // width
 
         { store the LFO amount value in the range 0 - 1.0 }
         declare read ?LFO_amount_pct [ 45 ] // value per control 
@@ -736,6 +823,7 @@
     declare uics_result
     declare @uics_title
     declare @uics_text_data
+    declare @uics_text_data_type
     declare uics_loop_range_min
     declare uics_loop_range_max
     declare uicbs_custom_id
@@ -758,6 +846,9 @@
         declare uicb_combine_block
         declare uicb_combine_counter
 
+    {{xypad_MAIN.SEQ.join}}
+        declare uicb_jxy_side
+
 
 { FUNCTIONS   ___________________________________________________________________________________ }
     //PLAY_NOTE_NCB
@@ -771,6 +862,26 @@
 
     //draw_seq
     declare ds.counter
+
+    //convolution_predelay_label
+    declare ~conv_label_val 
+    declare $conv_label_res
+    declare conv_predelay_uiid
+    declare conv_freq_uiid
+    declare const ~CONV_LABEL_MIN_COEF    := 0.6931471805599453 
+    declare const ~CONV_LABEL_MAX_COEF    := 5.7104270173748696 
+    declare const ~CONV_LABEL_OFFSET      := 2.0 
+    declare const ~CONV_LABEL_MIN_EQ_COEF := 2.99573227355399 
+    declare const ~CONV_LABEL_MAX_EQ_COEF := 9.90348755253612 
+    declare const ~CONV_LABEL_RANGE       := ~CONV_LABEL_MAX_COEF - ~CONV_LABEL_MIN_COEF 
+    declare const ~CONV_LABEL_EQ_RANGE    := ~CONV_LABEL_MAX_EQ_COEF - ~CONV_LABEL_MIN_EQ_COEF 
+    declare @conv_label
+
+    //update_lfo_rate
+    declare seq.rate.left_value
+    declare seq.rate.right_value
+    declare seq.rate.left_calc
+    declare seq.rate.right_calc
 
     //UICBS_MAIN.FX.modules.power | UICBS_MAIN.FX.modules.links
     declare uicbs_fx_panel_side
@@ -797,6 +908,7 @@
     declare fn003.a.block_index
     declare fn003.l.block_index_mod
     declare fn003.l.counter
+    declare fn003.l.join_side
 
     //fn004_get_current_seq_block
     declare ~fn004.a.x_coord
@@ -961,8 +1073,9 @@
 
     //fn025_update_flux_on_all_block_steps
     declare fn025.a.side
-    declare fn025.l.counter2
     declare fn025.l.counter
+    declare fn025.l.counter2
+    declare fn025.l.join_side_counter
 
     //fn026_get_seq_target_data
     declare fn026.a.data_type // if flux or pre-flux -> SEQ.data.flux.i or SEQ.data.dyn.i
@@ -985,6 +1098,7 @@
     declare fn027.a.side
     declare fn027.a.note
     declare fn027.a.step_counter
+    declare fn027.l.step_duration
 
     //fn028_update_arp_note_buffers
     declare fn028.a.side
@@ -1065,6 +1179,7 @@
     declare fn038.a.control_value
     declare fn038.a.LFO_amount
     declare fn038.a.link
+    declare fn038.a.control_type
     declare fn038.l.target
     declare fn038.l.counter
 

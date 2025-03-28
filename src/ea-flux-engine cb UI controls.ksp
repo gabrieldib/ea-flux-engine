@@ -8,68 +8,151 @@ end on
 
 
 {{ MAIN }}
-on ui_control (switch_MAIN.SEQ.combine)
-    call draw_seq
-    
-    { recall block steps numbers and steps pictures }
-    fn003.a.mode := switch_MAIN.SEQ.combine
-    for uicb_combine_counter := 0 to 7
-        fn003.a.block_index := uicb_combine_counter
-        fn003.a.side := __LEFT
-        call fn003_set_block_step_count
-        fn003.a.side := __RIGHT
-        call fn003_set_block_step_count
-    end for
+    on ui_control (switch_MAIN.SEQ.combine)
+        call draw_seq
+        
+        { recall block steps numbers and steps pictures }
+        fn003.a.mode := switch_MAIN.SEQ.combine
+        for uicb_combine_counter := 0 to 3
+            message(f'----- switch_MAIN.SEQ.combine called | uicb_combine_counter: <uicb_combine_counter>')
+            fn003.a.block_index := uicb_combine_counter
+            fn003.a.side := __LEFT
+            call fn003_set_block_step_count
+            fn003.a.side := __RIGHT
+            call fn003_set_block_step_count
+        end for
 
-    { recall picture states for steps labels }
-    fn006.a.side := __LEFT
-    call fn006_recall_seq_values
-    fn006.a.side := __RIGHT
-    call fn006_recall_seq_values
+        { recall picture states for steps labels }
+        fn006.a.side := __LEFT
+        call fn006_recall_seq_values
+        fn006.a.side := __RIGHT
+        call fn006_recall_seq_values
 
+        { change text alignment on target selectors }
+        call set_seq_target_selectors_text_alignment
 
-    { change text alignment on target selectors }
-    call set_seq_target_selectors_text_alignment
+        panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
+        panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
 
-    // if switch_MAIN.SEQ.combine = __SEQ_DUAL
-    //     { mirror the right side, for whe }
-    //     fn011.a.side  := __RIGHT
-    //     fn011.a.index := SEQ.showing_target [ __LEFT ]
-    //     call fn011_clear_target_activators
-    //     SEQ.showing_target [ __RIGHT ] := SEQ.showing_target [ __LEFT ] 
-    // end if
+        for uicb_combine_counter := __LEFT to __RIGHT
+            if  uicb_combine_counter = __LEFT or (switch_MAIN.SEQ.combine = __SEQ_DUAL and uicb_combine_counter = __RIGHT)
+                fn021.a.side := uicb_combine_counter
+                call fn21_get_seq_target_active_activator
 
-    panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
-    panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
-end on
+                fn020.a.seq_power_state   := UIID_MAIN.seq.power [ uicb_combine_counter ] -> value
+                fn020.a.side              := uicb_combine_counter
+                fn020.a.target_index      := fn021.r.active_index
+                fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uicb_combine_counter, fn021.r.active_index ]
+                call fn020_update_seq_target_off_label
+            end if
+        end for
+            { if you want to mirror the right side }
+                // fn011.a.side  := __RIGHT
+                // fn011.a.index := SEQ.showing_target [ __LEFT ]
+                // call fn011_clear_target_activators
+                // SEQ.showing_target [ __RIGHT ] := SEQ.showing_target [ __LEFT ] 
+    end on
 
 {{ SEQ }}
-on ui_control (xypad_MAIN.SEQ.join)
-    if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN
-        { capture the step index on click }
-        call get_seq_join_step_index
-    end if
-
-    if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
-        {   if draw is off, we keep the step index recorded when we pressed the mouse button down 
-            if it is on, we update the step_index }
-        if UIID_MAIN.controls.draw [ 0 ] -> value = __ON { we are using the LEFT draw button on JOIN mode }
-            call get_seq_join_step_index
+    on ui_control (xypad_MAIN.SEQ.join)
+        uicb_jxy_side := __LEFT
+        if xypad_MAIN.SEQ.join [ __X_AXIS ] > 0.5
+            uicb_jxy_side := __RIGHT
         end if
-    end if
-    message("UICB XY JOIN ____________________________________")
-    message("Block: " & fn008.r.block_index)
-    message("Step Index: " & fn009.r.step_index & "   |   " & xypad_MAIN.SEQ.join[0])
+        if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN
+            { capture the step index on click }
+            call get_seq_step_index
 
-    if xypad_MAIN.SEQ.join [ 0 ] < 0.5
-        fn010.l.side := __LEFT
-    else
-        fn010.l.side := __RIGHT
-    end if
-    fn010.a.step_index := fn009.r.step_index
-    fn010.a.value      := xypad_MAIN.SEQ.join [ 1 ] // y coord 
-    call fn010_set_seq_step_value
-end on
+            { make the mouse movement slower in case SHIFT is pressed }
+            if get_control_par(xypad_MAIN.SEQ.join, CONTROL_PAR_KEY_SHIFT) = __ON
+                xypad_MAIN.SEQ.join -> mouse_behaviour_y := 100
+            end if
+
+
+            uics_r_value := ...
+                get_control_par_real_arr( ...
+                    xypad_MAIN.SEQ.join,  ...
+                    CONTROL_PAR_VALUE,    ...
+                    __Y_AXIS              ...
+                )
+
+            { fix the vertical movement to the first clicked value in case ALT is pressed }
+            uics_alt_key := __OFF
+            if get_control_par(xypad_MAIN.SEQ.join, CONTROL_PAR_KEY_ALT) = __ON
+                uics_alt_key := __ON
+                seq_xy_alt_y_coord := uics_r_value 
+            end if
+
+            { Reset the dyn slider to center since we are defining a step value directly }
+            fn031.a.reset := __ON
+            fn031.a.side  := __LEFT
+            call fn031_set_dyn_sliders_picture
+            message(f'XY JOIN ______________________ ')
+            message(f'    fn001.r.step_index <fn001.r.step_index >')
+            message(f'    uicb_jxy_side: <uicb_jxy_side >')
+            message(f'    uics_r_value : <uics_r_value >')
+            { update that value on both original and dyn tables }
+
+            { update all steps since the user needs to see the original step values }
+                // for uics_counter := 0 to 3
+                //     for uics_counter2 := 0 to 7
+                //         fn018.a.side       := uicb_jxy_side
+                //         fn018.a.step_index := uics_counter * 8 + uics_counter2
+                //         fn018.a.value      :=                         ...
+                //             SEQ.data.f [                              ...
+                //                 uicb_jxy_side,                        ...
+                //                 SEQ.showing_target [ uicb_jxy_side ], ...
+                //                 fn018.a.step_index                    ...
+                //             ]
+                //             // message("recalling picture state for entire seq")
+                //         call fn018_set_seq_step_picture_state
+
+                //         fn002.a.side            := uicb_jxy_side
+                //         fn002.a.value           := fn018.a.value { values from the original steps table }
+                //         fn002.a.target          := SEQ.showing_target [ uicb_jxy_side ]
+                //         fn002.a.table_to_update := __SEQ_DYN_TRANSF_TABLE
+                //         fn002.a.step_index      := uics_counter * 8 + uics_counter2
+                //         call fn002_set_seq_step_value
+                //     end for
+                // end for
+        end if
+
+        if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
+            {   if draw is off, we keep the step index recorded when we pressed the mouse button down 
+                if it is on, we update the step_index }
+            if UIID_MAIN.controls.draw [ __LEFT ] -> value = __ON { we are using the LEFT draw button on JOIN mode }
+                call get_seq_step_index
+            end if
+            if uics_alt_key = __ON
+                uics_r_value := seq_xy_alt_y_coord
+            else
+                uics_r_value := xypad_MAIN.SEQ.join [ __Y_AXIS ]
+            end if
+            message("UICB XY JOIN DRAGGING ____________________________________")
+            message("   Block: " & fn008.r.block_index)
+            message("   Step Index: " & fn009.r.step_index & "   |   " & xypad_MAIN.SEQ.join[__X_AXIS])
+        end if
+
+        fn002.a.side            := uicb_jxy_side
+        fn002.a.value           := uics_r_value
+        fn002.a.target          := SEQ.showing_target [ uicb_jxy_side ]
+        fn002.a.table_to_update := __SEQ_BOTH_TABLES
+        fn002.a.step_index      := fn001.r.step_index mod 32
+        call fn002_set_seq_step_value
+        fn018.a.side       := uicb_jxy_side
+        fn018.a.step_index := fn001.r.step_index mod 32
+        fn018.a.value      := uics_r_value
+        call fn018_set_seq_step_picture_state
+
+        // if xypad_MAIN.SEQ.join [ __X_AXIS ] < 0.5
+        //     fn010.l.side := __LEFT
+        // else
+        //     fn010.l.side := __RIGHT
+        // end if
+        // fn010.a.step_index := fn009.r.step_index
+        // fn010.a.value      := xypad_MAIN.SEQ.join [ __Y_AXIS ]
+        // call fn010_set_seq_step_value
+    end on
 
 
 
@@ -78,9 +161,9 @@ end on
         { direct rate values updates based on DURATION CONSTANTS }
         call update_lfo_rate
         { ui updates }
-        message(f'index: <( slider_MAIN.LFO.rate) / __BEAT_RATE_DIVISOR>')
-        call update_lfo_viz
+        message(f'index: <int(float( slider_MAIN.LFO.rate) / 7.619047)>')
 
+        call update_lfo_viz
         call update_lfo_aux_data
 
         if switch_MAIN.LFO.lock = __OFF
@@ -94,10 +177,10 @@ end on
 
     on ui_control ( slider_MAIN.LFO.depth )
         label_MAIN.LFO.visualRate  -> picture_state := ...
-        (slider_MAIN.LFO.depth/31250) * 64 + (slider_MAIN.LFO.rate/15873)
+        (slider_MAIN.LFO.depth/31250) * 64 + int(float(slider_MAIN.LFO.rate)/2.539682)
 
-        label_MAIN.LFO.visualDepth  -> picture_state := ...
-        (slider_MAIN.LFO.depth/31250) * 64 + (slider_MAIN.LFO.rate/15873)
+        // label_MAIN.LFO.visualDepth  -> picture_state := ...
+        // (slider_MAIN.LFO.depth/31250) * 64 + (slider_MAIN.LFO.rate/15873)
 
         ~GLOBAL_LFO.depth_float_pct := float(slider_MAIN.LFO.depth)/1000000.0
         
@@ -119,13 +202,13 @@ end on
     end on
 
 {{ DEMO MODE }}
-on ui_control (button_demo.mode)
-    if button_demo.mode = __OFF
-        fn006.a.side := __LEFT
-        call fn006_recall_seq_values
-        fn006.a.side := __RIGHT
-        call fn006_recall_seq_values
-    end if
-end on
+    on ui_control (button_demo.mode)
+        if button_demo.mode = __OFF
+            fn006.a.side := __LEFT
+            call fn006_recall_seq_values
+            fn006.a.side := __RIGHT
+            call fn006_recall_seq_values
+        end if
+    end on
 
 

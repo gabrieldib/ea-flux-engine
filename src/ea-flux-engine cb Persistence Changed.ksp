@@ -25,8 +25,8 @@ on persistence_changed
         panel_MAIN.2SEQ.LEFT.single.shot  -> UI_HIDE
         panel_MAIN.2SEQ.RIGHT.single.shot -> UI_HIDE
 
-        label_MAIN.2SEQ.RIGHT.off -> UI_HIDE
-        label_MAIN.2SEQ.LEFT.off  -> UI_HIDE
+        slider_MAIN.2SEQ.RIGHT.off -> UI_HIDE
+        slider_MAIN.2SEQ.LEFT.off  -> UI_HIDE
 
         panel_MAIN.FX.LEFT.reverb.menu   -> UI_HIDE
         panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
@@ -40,6 +40,6 @@ on persistence_changed
 
     message("ea-flux-engine loaded successfully")
 
-    message(f'UIID_lfp_delay_controls  [ __RIGHT, 0 ] < UIID_lfp_delay_controls  [ __RIGHT, 0 ] >')
-    message(f'UIID_lfp_delay_controls  [ __RIGHT, 1 ] < UIID_lfp_delay_controls  [ __RIGHT, 1 ] >')
+    message(f' time: < get_engine_par(ENGINE_PAR_RDL_TIME_UNIT, -1, 4, NI_BUS_OFFSET) >')
+
 end on

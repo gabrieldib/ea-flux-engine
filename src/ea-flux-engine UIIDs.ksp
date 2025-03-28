@@ -1,13 +1,14 @@
-declare UIID_MAIN.seq.off_label                  [ 2 ]
-declare UIID_MAIN.seq.step                   [ 2, 32 ]
+declare UIID_MAIN.seq.off_label                 [ 2 ]
+declare UIID_MAIN.seq.off_label_text            [ 2 ]
+declare UIID_MAIN.seq.step                  [ 2, 32 ]
 declare UIID_MAIN.seq.leds                   [ 2, 4 ]
 declare UIID_MAIN.seq.block_steps            [ 2, 4 ]
-declare UIID_MAIN.SEQ.xypads                 [ 2 ]
-declare UIID_MAIN.controls.draw              [ 2 ]
+declare UIID_MAIN.SEQ.xypads                    [ 2 ]
+declare UIID_MAIN.controls.draw                 [ 2 ]
 declare UIID_MAIN.ADSR_controls              [ 2, 4 ]
-declare UIID_MAIN.SEQ.rate_sliders           [ 2 ]
-declare UIID_MAIN.display_title     
-declare UIID_MAIN.display_value     
+declare UIID_MAIN.SEQ.rate_sliders              [ 2 ]
+declare UIID_MAIN.display_title
+declare UIID_MAIN.display_value
 declare UIID_MAIN.seq.step_leds              [ 2, 4 ]
 declare UIID_MAIN.seq.power                     [ 2 ]
 declare UIID_MAIN.layer.power                   [ 2 ]
@@ -40,8 +41,8 @@ declare UIID_lfp_dst_modes                      [ 2 ]
 declare UIID_lfp_tape_sat.hf_cut                [ 2 ]
 declare UIID_lfp_delay_controls              [ 2, 7 ]
 declare UIID_lfp_rvb_controls                [ 2, 4 ] // IR preset buttons are not included here
-
 declare UIID_lfp_delay_labels                [ 2, 2 ] 
+declare UIID_lfp_power                       [ 2, 8 ]
 
 
 {{ LFO }}

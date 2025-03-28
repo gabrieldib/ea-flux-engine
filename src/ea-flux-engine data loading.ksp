@@ -224,3 +224,16 @@ SEQ_STEP_COORD [ SEQ_MODE_JOIN, __RIGHT, 7, 7 ] := SEQ_STEP_COORD [ SEQ_MODE_JOI
 //         end for
 //     end for
 // end for
+
+define __LFO_CT_UNIP  := 0 
+define __LFO_CT_BIP   := 1 
+define __LFO_CT_WIDTH := 2 
+for i.i := 0 to 31
+    LFO_targets_type [ i.i ] := __LFO_CT_UNIP
+end for
+LFO_targets_type [ __MAIN.FX.LAYER.PAN   ] := __LFO_CT_BIP
+LFO_targets_type [ __MAIN.FX.LAYER.WIDTH ] := __LFO_CT_WIDTH
+LFO_targets_type [ __MAIN.FX.LAYER.PAN   + __MAIN.FX.RIGHT.OFFSET ] := __LFO_CT_BIP
+LFO_targets_type [ __MAIN.FX.LAYER.WIDTH + __MAIN.FX.RIGHT.OFFSET ] := __LFO_CT_WIDTH
+
+
