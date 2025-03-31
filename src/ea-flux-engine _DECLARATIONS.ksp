@@ -812,6 +812,7 @@
     declare uics_shift_key
     declare uics_counter
     declare uics_counter2
+    declare uics_counter3
     declare uics_block_index
     declare uics_random
     declare uics_random_delta
@@ -1028,6 +1029,7 @@
     declare  fn022.a.step_pan
     declare  fn022.a.step_filter
 
+    declare  fn022.l.seq_mode_side
     declare  fn022.l.flux_velo
     declare  fn022.l.flux_pitch
     declare  fn022.l.flux_octave
@@ -1127,8 +1129,12 @@
 
     //fn032_set_seq_step_value_and_ui_via_dyn_slider
     declare fn032.a.side
+    declare fn032.l.loop_process_side
     declare fn032.l.block_index
+    declare fn032.l.side_counter
     declare fn032.l.step_index
+    declare fn032.l.flux_rand_power
+    declare fn032.l.flux_rand_block_power
 
     //fn033_transform_step_value_into_dynamic
     declare fn033.a.source
@@ -1235,3 +1241,8 @@
     declare fn048.a.side
     declare fn048.a.index
     declare fn048.l.counter
+
+    //fn049_set_seq_values_to_original
+    declare fn49.a.side
+    declare fn49.a.step
+    declare fn49.a.block

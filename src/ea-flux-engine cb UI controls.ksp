@@ -46,11 +46,8 @@ end on
                 call fn020_update_seq_target_off_label
             end if
         end for
-            { if you want to mirror the right side }
-                // fn011.a.side  := __RIGHT
-                // fn011.a.index := SEQ.showing_target [ __LEFT ]
-                // call fn011_clear_target_activators
-                // SEQ.showing_target [ __RIGHT ] := SEQ.showing_target [ __LEFT ] 
+
+        message(f'xypad_MAIN.LEFT.dynamics x: <xypad_MAIN.LEFT.dynamics -> y >')
     end on
 
 {{ SEQ }}
@@ -87,10 +84,10 @@ end on
             fn031.a.reset := __ON
             fn031.a.side  := __LEFT
             call fn031_set_dyn_sliders_picture
-            message(f'XY JOIN ______________________ ')
-            message(f'    fn001.r.step_index <fn001.r.step_index >')
-            message(f'    uicb_jxy_side: <uicb_jxy_side >')
-            message(f'    uics_r_value : <uics_r_value >')
+            // message(f'XY JOIN ______________________ ')
+            // message(f'    fn001.r.step_index <fn001.r.step_index >')
+            // message(f'    uicb_jxy_side: <uicb_jxy_side >')
+            // message(f'    uics_r_value : <uics_r_value >')
             { update that value on both original and dyn tables }
 
             { update all steps since the user needs to see the original step values }
@@ -128,9 +125,10 @@ end on
             else
                 uics_r_value := xypad_MAIN.SEQ.join [ __Y_AXIS ]
             end if
-            message("UICB XY JOIN DRAGGING ____________________________________")
-            message("   Block: " & fn008.r.block_index)
-            message("   Step Index: " & fn009.r.step_index & "   |   " & xypad_MAIN.SEQ.join[__X_AXIS])
+            // message("UICB XY JOIN DRAGGING ____________________________________")
+            // message(f'    Block: <fn008.r.block_index>'')
+            // message(f'    Step Index: <fn009.r.step_index> | <xypad_MAIN.SEQ.join[__X_AXIS]>')
+            // message(f'    uics_r_value : <uics_r_value >')
         end if
 
         fn002.a.side            := uicb_jxy_side
@@ -139,6 +137,7 @@ end on
         fn002.a.table_to_update := __SEQ_BOTH_TABLES
         fn002.a.step_index      := fn001.r.step_index mod 32
         call fn002_set_seq_step_value
+        
         fn018.a.side       := uicb_jxy_side
         fn018.a.step_index := fn001.r.step_index mod 32
         fn018.a.value      := uics_r_value
