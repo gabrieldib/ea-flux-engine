@@ -97,6 +97,16 @@ function pccb_init_instrument
             fn020.a.target_index       := SEQ_TARGET_VELO
             call fn020_update_seq_target_off_label
         end if
+
+        fn051.a.side := pccb_counter
+        call fn051_set_seq_on_off_panels
+
+        fn052.a.side  := pccb_counter
+        fn052.a.value := float(UIID_MAIN.single_shot_controls [ pccb_counter, __SINGLE_SHOT_SAMPLE_START ] -> value)*0.000001
+        if fn052.a.value > 0.995
+            fn052.a.value := 0.995
+        end if
+        call fn052_set_wf_cursor_and_overlay
     end for
 
     UIID_MAIN.seq.arp_menu [ __LEFT  ] -> text := arp_menu_items_text [ arp_mode [ __LEFT ] ]
@@ -177,9 +187,9 @@ function draw_seq
     panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
     panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
-        message(f'Showing Sequencer DUAL ')
+        message(f'DRAW: Showing Sequencer DUAL ')
     else
-        message(f'Showing Sequencer JOIN ')
+        message(f'DRAW: Showing Sequencer JOIN ')
     end if
 
     if switch_MAIN.SEQ.combine = 0 { dual seq }
@@ -208,6 +218,7 @@ function draw_seq
             end if
 
         else                           { join seq }
+            message(f'DRAW SEQ: updating coordinates for element <ds.counter > | show status: <SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ]-> hide>')
             SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_x := ...
                 SEQ.common_elements_data [ ds.counter, PANEL_JOIN_SEQ_X_COORD ]
 
@@ -416,9 +427,6 @@ function fn013_update_seq_step_pictures
 end function
 
 function fn003_set_block_step_count
-    { PENDING OPTIMIZE CODE }
-
-    { needed for the seq xy }
     // message("FN003 block_index: " & fn003.a.block_index & " side: " & fn003.a.side)
     fn013.a.side        := fn003.a.side
     fn013.a.block_index := fn003.a.block_index
@@ -452,7 +460,7 @@ function fn003_set_block_step_count
         end for
 
     else  { SEQ JOIN }
-
+        message(f'FN003: Processing SEQ JOIN - moving ui controls to JOIN position')
         SEQ.JOIN.step_width [ fn003.a.block_index + fn003.a.side * 4 ] := ...
             SEQ_XY_JOIN_BLOCK_W / float(SEQ.JOIN.step_count [ fn003.a.block_index + fn003.a.side * 4  ] + 1)
 
@@ -851,7 +859,7 @@ function fn020_update_seq_target_off_label
             UIID_MAIN.seq.off_label      [ fn020.a.side ] -> UI_SHOW
             UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> UI_SHOW
             UIID_MAIN.seq.off_label      [ fn020.a.side ] -> picture := "label_seq_steps_bg"
-            UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> text    := "SEQUENCER IS OFF"
+            UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> text    := ""
         end if
     else
         // message(f'    SEQ JOIN')
@@ -868,7 +876,7 @@ function fn020_update_seq_target_off_label
         else
             label_MAIN.SEQjoin.off -> UI_SHOW
             label_MAIN.SEQjoin.off -> picture := "label_seq_join_steps_bg"
-            label_MAIN.SEQjoin.off -> text    := "SEQUENCER IS OFF"
+            label_MAIN.SEQjoin.off -> text    := ""
         end if
 
     end if
@@ -1443,6 +1451,36 @@ function fn049_set_seq_values_to_original
         ]
         call fn030_set_seq_step_dyn_value
     end if
+end function
+
+function fn051_set_seq_on_off_panels
+    if uics_value = __OFF
+        UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_SHOW
+        UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_SHOW
+        UIID_MAIN.seq.flux_panels       [ fn051.a.side ] -> UI_HIDE
+        UIID_MAIN.seq.arp_mode_panels   [ fn051.a.side ] -> UI_HIDE
+        UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_SHOW
+        UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_SHOW
+        UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_SHOW
+    else
+        UIID_MAIN.seq.flux_panels       [ fn051.a.side ] -> UI_SHOW
+        UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_HIDE
+        UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_HIDE
+        UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_HIDE
+        UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_HIDE
+        UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_HIDE
+        // UIID_MAIN.seq.arp_mode_panels [ fn051.a.side ] -> UI_HIDE
+    end if
+end function
+
+function fn052_set_wf_cursor_and_overlay
+    UIID_MAIN.waveform_cursor [ fn052.a.side ] -> x := ...
+        WF_CURSOR_DATA [ fn052.a.side * 2 ] + int( ... 
+            fn052.a.value * float(WF_CURSOR_DATA [ fn052.a.side * 2 + 1]) ...
+        )
+    UIID_MAIN.waveform_overlay [ fn052.a.side ] -> width := int ( ...
+        fn052.a.value * WF_OVERLAY_WIDTH ...
+    )
 end function
 
 
@@ -2577,6 +2615,21 @@ function PLAY_NOTE_NCB
     set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
     { PENDING: group as side here is just for testing}
     set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __ON,  pn_ncb.a.side)
+    wait(1)
+    if pn_ncb.a.side = __LEFT
+        attach_zone( ...
+            waveform_MAIN.2SEQ.LEFT.display,   ...
+            get_event_par(layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ], EVENT_PAR_ZONE_ID), ...
+            0                                 ...
+        )
+    else
+        attach_zone( ...
+            waveform_MAIN.2SEQ.RIGHT.display,  ...
+            get_event_par(layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ], EVENT_PAR_ZONE_ID), ...
+            0                                 ...
+        )
+        
+    end if 
 end function
 
 function fn027_play_lcb_core

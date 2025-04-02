@@ -1,18 +1,18 @@
-xypad_MAIN.SEQ.LEFT         -> mouse_mode := 2
-xypad_MAIN.SEQ.RIGHT        -> mouse_mode := 2
-xypad_MAIN.SEQ.join         -> mouse_mode := 2
-xypad_MAIN.LEFT.dynamics    -> mouse_mode := 2
-xypad_MAIN.RIGHT.dynamics   -> mouse_mode := 2
-xypad_MAIN.LEFT.randomizer  -> mouse_mode := 2
-xypad_MAIN.RIGHT.randomizer -> mouse_mode := 2
+xypad_MAIN.SEQ.LEFT              -> mouse_mode := 2
+xypad_MAIN.SEQ.RIGHT             -> mouse_mode := 2
+xypad_MAIN.SEQ.join              -> mouse_mode := 2
+xypad_MAIN.LEFT.dynamics         -> mouse_mode := 2
+xypad_MAIN.RIGHT.dynamics        -> mouse_mode := 2
+xypad_MAIN.LEFT.randomizer       -> mouse_mode := 2
+xypad_MAIN.RIGHT.randomizer      -> mouse_mode := 2
 
-xypad_MAIN.SEQ.LEFT         -> cursor_picture := "label_xy.cursor"
-xypad_MAIN.SEQ.RIGHT        -> cursor_picture := "label_xy.cursor"
-xypad_MAIN.SEQ.join         -> cursor_picture := "label_xy.cursor"
-xypad_MAIN.LEFT.dynamics    -> cursor_picture := "label_xy.transparent"
-xypad_MAIN.RIGHT.dynamics   -> cursor_picture := "label_xy.transparent"
-xypad_MAIN.LEFT.randomizer  -> cursor_picture := "label_xy.transparent"
-xypad_MAIN.RIGHT.randomizer -> cursor_picture := "label_xy.transparent"
+xypad_MAIN.SEQ.LEFT              -> cursor_picture := "label_xy.cursor"
+xypad_MAIN.SEQ.RIGHT             -> cursor_picture := "label_xy.cursor"
+xypad_MAIN.SEQ.join              -> cursor_picture := "label_xy.cursor"
+xypad_MAIN.LEFT.dynamics         -> cursor_picture := "label_xy.transparent"
+xypad_MAIN.RIGHT.dynamics        -> cursor_picture := "label_xy.transparent"
+xypad_MAIN.LEFT.randomizer       -> cursor_picture := "label_xy.transparent"
+xypad_MAIN.RIGHT.randomizer      -> cursor_picture := "label_xy.transparent"
 
 declare MAIN.SEQ.TARGETS.FONT_OFF   := get_font_id("font_Roboto Regular Size 10 #47403C")
 declare MAIN.SEQ.TARGETS.FONT_ON    := get_font_id("font_Roboto Regular Size 10 #FFE4D6")
@@ -28,4 +28,5 @@ declare MAIN.FX_SELECTOR.FONT_OFF   := get_font_id("font_Roboto Regular Size 11 
 declare MAIN.FX_SELECTOR.FONT_ON    := get_font_id("font_Roboto Regular Size 11 #FFCBAE 100p underline")
 declare MAIN.FX_SELECTOR.FONT_OFF_H := get_font_id("font_Roboto Regular Size 11 #8E7466 100p underline")
 declare MAIN.FX_SELECTOR.FONT_ON_H  := get_font_id("font_Roboto Regular Size 11 #FFCBAE 100p underline")
+
 

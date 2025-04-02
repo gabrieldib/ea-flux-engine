@@ -44,7 +44,12 @@ declare UIID_lfp_delay_controls              [ 2, 7 ]
 declare UIID_lfp_rvb_controls                [ 2, 4 ] // IR preset buttons are not included here
 declare UIID_lfp_delay_labels                [ 2, 2 ] 
 declare UIID_lfp_power                       [ 2, 8 ]
-
+declare UIID_MAIN.single_hit_panel              [ 2 ]
+declare UIID_MAIN.waveforms                     [ 2 ]
+declare UIID_MAIN.single_shot_controls       [ 2, 6 ]
+declare UIID_MAIN.waveform_cursor               [ 2 ]
+declare UIID_MAIN.waveform_overlay              [ 2 ]
+declare UIID_MAIN.waveform_xypad_cursor         [ 2 ]
 
 {{ LFO }}
 define __LAYER      := 0

@@ -113,6 +113,16 @@
     define __FX_DELAY_LABEL_PINGPONG := 0
     define __FX_DELAY_LABEL_SYNC     := 1
 
+    define __SINGLE_SHOT_SAMPLE_START := 0
+    define __SINGLE_SHOT_TUNE         := 1
+    define __SINGLE_SHOT_LP_CUT       := 2
+    define __SINGLE_SHOT_LP_RES       := 3
+    define __SINGLE_SHOT_HP_CUT       := 4
+    define __SINGLE_SHOT_HP_RES       := 5
+
+    define __INTEGER := 0
+    define __REAL    := 1
+
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
         declare hide_constants [ 2 ]
@@ -247,6 +257,17 @@
             SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_BIPOLAR
 
         declare const __FLUX_ON_ALL_BLOCKS := -1
+
+        declare const WF_CURSOR_LEFT_START  :=  66
+        declare const WF_CURSOR_RIGHT_START := 570
+
+        declare WF_CURSOR_DATA [ 4 ]
+            WF_CURSOR_DATA [ 0 ] :=  66
+            WF_CURSOR_DATA [ 1 ] := 429 - WF_CURSOR_LEFT_START
+            WF_CURSOR_DATA [ 2 ] := 570
+            WF_CURSOR_DATA [ 3 ] := 933 - WF_CURSOR_RIGHT_START
+
+        declare const ~WF_OVERLAY_WIDTH := 364.0
 
     {{ LFO }}
         declare const __RATE_ELEMENTS_COUNT := 22
@@ -841,6 +862,7 @@
     declare uics_engine_par
     declare uics_slot
     declare uics_generic
+    declare uics_dual_join_side
 
     declare pccb_counter
 
@@ -1259,3 +1281,11 @@
 
     //fn050_seq.arp.get_play_note_from_buffer
     declare fn50.a.side
+
+    //fn051_set_seq_on_off_panels
+    declare fn051.a.side
+
+    //fn052_set_wf_cursor_and_overlay
+    declare fn052.a.value_type
+    declare fn052.a.side
+    declare ~fn052.a.value

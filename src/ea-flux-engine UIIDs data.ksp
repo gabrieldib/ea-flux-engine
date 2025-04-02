@@ -200,6 +200,44 @@ for i.i := 1 to 7
     UIID_lfp_power [ __RIGHT, i.i ] := UIID_lfp_power [ __RIGHT, 0 ] + i.i
 end for
 
+UIID_MAIN.single_hit_panel [ __LEFT  ] := get_ui_id(panel_MAIN.2SEQ.LEFT.single.shot)
+UIID_MAIN.single_hit_panel [ __RIGHT ] := get_ui_id(panel_MAIN.2SEQ.RIGHT.single.shot)
+UIID_MAIN.waveforms [ __LEFT  ] := get_ui_id(waveform_MAIN.2SEQ.LEFT.display)
+UIID_MAIN.waveforms [ __RIGHT ] := get_ui_id(waveform_MAIN.2SEQ.RIGHT.display)
+
+for i.i := __LEFT to __RIGHT
+    UIID_MAIN.waveforms [ i.i ] -> bg_alpha   := 0
+    UIID_MAIN.waveforms [ i.i ] -> wave_color := WAVEFORM_COLOR
+    UIID_MAIN.waveforms [ i.i ] -> picture    := 'label_transparent'
+end for
+
+{{ TEMP }}
+// attach_zone(waveform_MAIN.2SEQ.LEFT.display, 1, 0)
+// attach_zone(waveform_MAIN.2SEQ.RIGHT.display, 6, 0)
+
+UIID_MAIN.single_shot_controls [ __LEFT,  0 ] := get_ui_id(slider_MAIN.FX.LEFT.single.shot.start.amount)
+UIID_MAIN.single_shot_controls [ __RIGHT, 0 ] := get_ui_id(slider_MAIN.FX.RIGHT.single.shot.start.amount)
+for i.i := 0 to 5
+    UIID_MAIN.single_shot_controls [ __LEFT,  i.i ] := UIID_MAIN.single_shot_controls [ __LEFT,  0 ] + i.i
+    UIID_MAIN.single_shot_controls [ __RIGHT, i.i ] := UIID_MAIN.single_shot_controls [ __RIGHT, 0 ] + i.i
+end for
+
+UIID_MAIN.waveform_cursor [ __LEFT   ] := get_ui_id(label_MAIN.LEFT.waveform.cursor)
+UIID_MAIN.waveform_cursor [ __RIGHT  ] := get_ui_id(label_MAIN.RIGHT.waveform.cursor)
+
+UIID_MAIN.waveform_overlay [ __LEFT   ] := get_ui_id(label_MAIN.LEFT.waveform.overlay)
+UIID_MAIN.waveform_overlay [ __RIGHT  ] := get_ui_id(label_MAIN.RIGHT.waveform.overlay)
+
+UIID_MAIN.waveform_xypad_cursor [ 0 ] := get_ui_id(xypad_MAIN.LEFT.waveform.cursor)
+UIID_MAIN.waveform_xypad_cursor [ 1 ] := get_ui_id(xypad_MAIN.RIGHT.waveform.cursor)
+
+xypad_MAIN.LEFT.waveform.cursor  -> mouse_mode := 2
+xypad_MAIN.RIGHT.waveform.cursor -> mouse_mode := 2
+xypad_MAIN.LEFT.waveform.cursor  -> picture := 'label_transparent'
+xypad_MAIN.RIGHT.waveform.cursor -> picture := 'label_transparent'
+xypad_MAIN.LEFT.waveform.cursor  -> cursor_picture := "label_xy.transparent"
+xypad_MAIN.RIGHT.waveform.cursor -> cursor_picture := "label_xy.transparent"
+
 {{ SETTING FONTS }}
     switch_MAIN.ARP.LEFT.modeMenu -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON  
     switch_MAIN.ARP.LEFT.modeMenu -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   

@@ -7,6 +7,11 @@ on ui_controls
             uics_seq_side := __RIGHT
         end if
 
+        uics_value := NI_UI_ID -> value
+        
+        fn051.a.side := uics_seq_side
+        call fn051_set_seq_on_off_panels
+
         fn021.a.side := uics_seq_side
         call fn21_get_seq_target_active_activator
 
@@ -779,46 +784,69 @@ on ui_controls
                 { randomize step count if not locked }
                 if UIID_MAIN.seq.step_lock [ uics_seq_side ] -> value = __OFF
                     for uics_counter := 0 to 3
-                        uics_current_value := UIID_MAIN.seq.block_steps [ uics_seq_side, uics_counter ] -> value
-                        uics_random_delta  := int(float(random (-7, 7)) * uics_r_value)
-                       
-                        UIID_MAIN.seq.block_steps [ uics_seq_side, uics_counter ] -> value := uics_random_delta + uics_current_value
-                        if uics_current_value + uics_random_delta > 7 
-                            UIID_MAIN.seq.block_steps [ uics_seq_side, uics_counter ] -> value := 7
-                        else
-                            if uics_current_value + uics_random_delta < 0
-                                UIID_MAIN.seq.block_steps [ uics_seq_side, uics_counter ] -> value := 0
+                        for uics_counter2 := __LEFT to __RIGHT
+                            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                                uics_dual_join_side := uics_seq_side
+                            else
+                                uics_dual_join_side := uics_counter2
                             end if
-                        end if
 
-                        fn003.a.side        := uics_seq_side
-                        fn003.a.mode        := switch_MAIN.SEQ.combine
-                        fn003.a.block_index := uics_counter
-                        call fn003_set_block_step_count
+                            if  switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter2 = __LEFT or ...
+                                switch_MAIN.SEQ.combine = __SEQ_JOIN
+
+                                uics_current_value := UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value
+                                uics_random_delta  := int(float(random (-7, 7)) * uics_r_value)
+                               
+                                UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := uics_random_delta + uics_current_value
+                                SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]          := uics_random_delta + uics_current_value
+                                SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]     := uics_random_delta + uics_current_value
+                                
+                                if uics_current_value + uics_random_delta > 7 
+                                    UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := 7
+                                else
+                                    if uics_current_value + uics_random_delta < 0
+                                        UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := 0
+                                    end if
+                                end if
+
+                                fn003.a.side        := uics_dual_join_side
+                                fn003.a.mode        := switch_MAIN.SEQ.combine
+                                fn003.a.block_index := uics_counter
+                                call fn003_set_block_step_count
+                            end if
+
+                        end for
                     end for
                 end if
 
                 { randomize step values }
                 for uics_counter := 0 to 3
+
                     for uics_counter2 := 0 to 7
+
                         uics_current_value.r := ...
                             SEQ.data.dyn.f [                          ...
                                 uics_seq_side,                        ...
                                 SEQ.showing_target [ uics_seq_side ], ...
                                 fn018.a.step_index                    ...
                             ]
+
                         uics_random_delta.r := (float(random(-10000,10000))/10000.0) * uics_r_value
+                        
                         SEQ.data.dyn.f [                          ...
                                 uics_seq_side,                        ...
                                 SEQ.showing_target [ uics_seq_side ], ...
                                 fn018.a.step_index                    ...
                             ] := uics_current_value.r + uics_random_delta.r
+
+                        { clamping values out of range }
                         if uics_current_value.r + uics_random_delta.r > 1.0
                             SEQ.data.dyn.f [                          ...
                                 uics_seq_side,                        ...
                                 SEQ.showing_target [ uics_seq_side ], ...
                                 fn018.a.step_index                    ...
                             ] := 1.0
+
                         else
                             if uics_current_value.r + uics_random_delta.r < 0.0
                                 SEQ.data.dyn.f [                          ...
@@ -827,6 +855,7 @@ on ui_controls
                                     fn018.a.step_index                    ...
                                 ] := 0.0
                             end if
+
                         end if
 
                         fn018.a.side       := uics_seq_side
@@ -891,6 +920,69 @@ on ui_controls
         message(f'changed waveshape')
     end if
 
+
+    {{ SINGLE SHOT CONTROLS }}
+    if  in_range(NI_UI_ID, UIID_MAIN.single_shot_controls [ __LEFT,  0 ], UIID_MAIN.single_shot_controls [ __LEFT,  5 ]) or ...
+        in_range(NI_UI_ID, UIID_MAIN.single_shot_controls [ __RIGHT, 0 ], UIID_MAIN.single_shot_controls [ __RIGHT, 5 ])
+
+        uics_seq_side := __LEFT
+        if in_range(NI_UI_ID, UIID_MAIN.single_shot_controls [ __RIGHT, 0 ], UIID_MAIN.single_shot_controls [ __RIGHT, 5 ])
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.single_shot_controls [ __RIGHT,  0 ]
+        else
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.single_shot_controls [ __LEFT, 0 ]
+        end if
+        uics_value := NI_UI_ID -> value
+
+        select(uics_uiid_index)
+            case __SINGLE_SHOT_SAMPLE_START
+                fn052.a.side       := uics_seq_side
+                fn052.a.value      := float(uics_value) * 0.000001
+                if fn052.a.value > 0.995
+                    fn052.a.value := 0.995
+                end if
+                call fn052_set_wf_cursor_and_overlay
+                set_control_par_real_arr(                              ...
+                    UIID_MAIN.waveform_xypad_cursor [ uics_seq_side ], ...
+                    CONTROL_PAR_VALUE,                                 ...
+                    fn052.a.value,                                     ...
+                    0                                                  ...
+                )
+
+            case __SINGLE_SHOT_TUNE
+
+            case __SINGLE_SHOT_LP_CUT
+
+            case __SINGLE_SHOT_LP_RES
+
+            case __SINGLE_SHOT_HP_CUT
+
+            case __SINGLE_SHOT_HP_RES
+
+        end select
+    end if
+
+
+    {{ SINGLE SHOW WAVEFORM CURSOR XY }}
+    if  NI_UI_ID = UIID_MAIN.waveform_xypad_cursor [ __LEFT ] or NI_UI_ID = UIID_MAIN.waveform_xypad_cursor [ __RIGHT ]
+        uics_seq_side := __LEFT
+        if in_range(NI_UI_ID, UIID_MAIN.waveform_xypad_cursor [ __RIGHT ], UIID_MAIN.waveform_xypad_cursor [ __RIGHT ])
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.waveform_xypad_cursor [ __RIGHT ]
+        else
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.waveform_xypad_cursor [ __LEFT ]
+        end if
+        uics_r_value := get_control_par_real_arr(NI_UI_ID, CONTROL_PAR_VALUE, 0)
+        if uics_r_value > 0.995
+            uics_r_value := 0.995
+        end if
+
+        fn052.a.side       := uics_seq_side
+        fn052.a.value      := uics_r_value
+        call fn052_set_wf_cursor_and_overlay
+        UIID_MAIN.single_shot_controls [ uics_seq_side, __SINGLE_SHOT_SAMPLE_START ] -> value := int(uics_r_value * 1000000.0)
+
+    end if
 
     {{ LFO CONTROLS }}
     uicbs_custom_id         := get_control_par($NI_UI_ID, $CONTROL_PAR_CUSTOM_ID)

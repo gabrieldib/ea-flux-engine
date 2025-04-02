@@ -1,10 +1,10 @@
 // import "ARP/__ARP 04 ui cb.ksp"
 {{ DEBUG }}
 
-on ui_control (hide_bg)
-    label_SEQjoin.background   -> hide := hide_bg * 16
-    label_MAIN.2SEQ.background -> hide := hide_bg * 16
-end on
+// on ui_control (hide_bg)
+//     label_SEQjoin.background   -> hide := hide_bg * 16
+//     label_MAIN.2SEQ.background -> hide := hide_bg * 16
+// end on
 
 
 {{ MAIN }}
