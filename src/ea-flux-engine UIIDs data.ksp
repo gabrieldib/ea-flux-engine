@@ -93,6 +93,11 @@ UIID_MAIN.seq.arp_power [ __RIGHT ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.arp.pow
 UIID_MAIN.seq.arp_menu [ __LEFT  ] := get_ui_id(switch_MAIN.ARP.LEFT.modeMenu)
 UIID_MAIN.seq.arp_menu [ __RIGHT ] := get_ui_id(switch_MAIN.ARP.RIGHT.modeMenu)
 
+UIID_MAIN.seq.join_arp_menu_items [ 0 ] := get_ui_id(switch_MAIN.FX.JOIN.arp.menu.0)
+for i.i := 1 to 5
+    UIID_MAIN.seq.join_arp_menu_items [ i.i ] := UIID_MAIN.seq.join_arp_menu_items [ 0 ] + i.i
+end for
+
 UIID_MAIN.seq.flux_panels     [ __LEFT  ] := get_ui_id(panel_MAIN.2SEQ.LEFT.fluxxArp)
 UIID_MAIN.seq.flux_panels     [ __RIGHT ] := get_ui_id(panel_MAIN.2SEQ.RIGHT.fluxxArp)
 UIID_MAIN.seq.arp_mode_panels [ __LEFT  ] := get_ui_id(panel_MAIN.2SEQ.LEFT.arpModes)
@@ -196,6 +201,13 @@ for i.i := 1 to 7
 end for
 
 {{ SETTING FONTS }}
+    switch_MAIN.ARP.LEFT.modeMenu -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON  
+    switch_MAIN.ARP.LEFT.modeMenu -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+    for i.i := 0 to 1
+        UIID_MAIN.seq.arp_menu[i.i] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+        UIID_MAIN.seq.arp_menu[i.i] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+    end for
+
     for i.i := 0 to 7
         UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
         UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H   
@@ -227,6 +239,13 @@ end for
         UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
         UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
         UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> disable_text_shifting := __ON
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> disable_text_shifting := __ON
     end for
 
     for i.i := 0 to 4

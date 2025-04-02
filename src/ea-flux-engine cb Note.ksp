@@ -75,6 +75,15 @@ on note
             call PLAY_NOTE_NCB
         end if
 
+        {{ ARP }}
+        ARP.note_buffer_LEFT  [ ARP.cursor [ __LEFT  ] ] := EVENT_NOTE
+        ARP.vel_buffer_LEFT   [ ARP.cursor [ __LEFT  ] ] := EVENT_VELOCITY
+        inc( ARP.cursor [ __LEFT  ])
+        if ( ARP.cursor [ __LEFT ] < 2 and ARP.seq_running = 0)
+            message("Starting the ARP")
+            call ARP.StartSeq()
+        end if
+
     end if
 
 

@@ -345,6 +345,7 @@ on ui_controls
 
         { restore the value for the UI control slider }
         UIID_MAIN.seq.flux_rand_intensity [ uics_seq_side ] -> value := SEQ.flux_rand_intensity [ uics_seq_side, SEQ.showing_target [ uics_seq_side ] ]
+        slider_MAIN.FLRNDjoin.amount := SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]
     end if
 
 
@@ -394,6 +395,7 @@ on ui_controls
         { restore the value for the UI control slider }
         UIID_MAIN.seq.flux_rand_intensity [ __LEFT  ] -> value := SEQ.flux_rand_intensity [ __LEFT , SEQ.showing_target [ __LEFT  ] ]
         UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ] -> value := SEQ.flux_rand_intensity [ __RIGHT, SEQ.showing_target [ __RIGHT ] ]
+        slider_MAIN.FLRNDjoin.amount := SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]
     end if
 
 
@@ -428,31 +430,34 @@ on ui_controls
         { The code below should only run when:
             - target power is turned OFF and if the randomizer is ON
         }
-        if  NI_UI_ID -> value = __OFF and ...
-            UIID_MAIN.seq.flux_rand_power [ uics_seq_side  ] -> value = __ON 
-
-            { OPTIMIZATION: EXHIBIT A - code that could/should be combined into a function }
-
-            { process only the related clicked block in case ALT is not pressed }
-            uics_loop_range_min := uics_uiid_index
-            uics_loop_range_max := uics_uiid_index
+        if  NI_UI_ID -> value = __OFF and UIID_MAIN.seq.flux_rand_power [ uics_seq_side  ] -> value = __ON and ...
+            SEQ.showing_target [ uics_seq_side ] = uics_uiid_index
 
             uics_loop_range_min := 0
             uics_loop_range_max := 3
 
             if uics_value = __OFF
-                { counter 2 is block index }
-                for uics_counter2 := uics_loop_range_min to uics_loop_range_max { optimization to not write this loop twice }
-                    { counter 1 is step index }
+
+                for uics_counter2 := uics_loop_range_min to uics_loop_range_max
                     for uics_counter := 0 to 7
-                        fn018.a.side       := uics_seq_side
-                        fn018.a.step_index := uics_counter + 8 * uics_counter2
-                        fn018.a.value      := SEQ.data.f [        ...
-                            uics_seq_side,                        ...
-                            SEQ.showing_target [ uics_seq_side ], ...
-                            uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
-                        ]
-                        call fn018_set_seq_step_picture_state
+                        for uics_counter3 := __LEFT to __RIGHT
+
+                            if switch_MAIN.SEQ.combine = __SEQ_JOIN
+                                fn018.a.side := uics_counter3
+                            else
+                                if switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter3 # __RIGHT { so we run the block only once }
+                                    fn018.a.side := uics_seq_side
+                                end if
+                            end if
+                            fn018.a.side       := uics_counter3
+                            fn018.a.step_index := uics_counter + 8 * uics_counter2
+                            fn018.a.value      := SEQ.data.f [        ...
+                                uics_counter3,                        ...
+                                SEQ.showing_target [ uics_counter3 ], ...
+                                uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
+                            ]
+                            call fn018_set_seq_step_picture_state
+                        end for
                     end for
                 end for
             end if
@@ -490,7 +495,7 @@ on ui_controls
         if NI_UI_ID = UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ]
             uics_seq_side := __RIGHT
         else
-            slider_MAIN.FLRNDjoin.amount -> value := NI_UI_ID -> value
+            SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ] := NI_UI_ID -> value
         end if
         
         SEQ.flux_rand_intensity [ uics_seq_side, SEQ.showing_target [ uics_seq_side ] ] := NI_UI_ID -> value
@@ -499,7 +504,10 @@ on ui_controls
     end if
 
     if NI_UI_ID = get_ui_id(slider_MAIN.FLRNDjoin.amount)
-        SEQ.flux_rand_intensity [ __LEFT, SEQ.showing_target [ __LEFT ] ] := NI_UI_ID -> value
+        { store the value for each target on both DUAL and JOIN }
+        SEQ.flux_rand_intensity      [ __LEFT, SEQ.showing_target [ __LEFT ] ] := NI_UI_ID -> value
+        SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]         := NI_UI_ID -> value
+        { update UI }
         UIID_MAIN.seq.flux_rand_intensity [ __LEFT ] -> value := NI_UI_ID -> value
         UIID_MAIN.display_title -> text := "Flux Randomizer"
         UIID_MAIN.display_value -> text := NI_UI_ID -> value & "%"
@@ -635,10 +643,20 @@ on ui_controls
         if NI_UI_ID = UIID_MAIN.seq.arp_menu [ __RIGHT ] 
             uics_uiid_index := __RIGHT
         end if
-        
-        UIID_MAIN.seq.arp_menu        [ uics_uiid_index  ] -> value := __OFF
-        UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
-        UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
+
+        UIID_MAIN.seq.arp_menu [ uics_uiid_index  ] -> value := __OFF
+        if switch_MAIN.SEQ.combine = __SEQ_DUAL
+            UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
+            UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
+        else
+            panel_MAIN.2JOIN.arpModes        -> UI_SHOW
+            label_SEQjoin.arp.rate           -> UI_HIDE
+            slider_MAIN.ARPjoin.amount       -> UI_HIDE
+            switch_MAIN.ARP.LEFT.modeMenu    -> UI_HIDE
+            switch_MAIN.FLUXX.LEFT.arp.power -> UI_HIDE
+            label_SEQjoin.arp.background     -> UI_HIDE
+
+        end if
     end if
 
 
@@ -652,6 +670,26 @@ on ui_controls
         
         UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
         UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
+    end if
+
+    {{ ARP MODES JOIN SEQ Menu }}
+    if  in_range(NI_UI_ID, UIID_MAIN.seq.join_arp_menu_items [ 0 ], UIID_MAIN.seq.join_arp_menu_items [ 5 ] )
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.join_arp_menu_items [ 0 ]
+        fn029.a.index   :=  uics_uiid_index
+        call fn029_clear_arp_mode_btns
+        arp_mode [ __LEFT ] := uics_uiid_index
+    end if
+
+
+    {{ ARP MODES MENU CLOSE BTN  }}
+    if NI_UI_ID = get_ui_id(switch_MAIN.FX.JOIN.arp.menu.close)
+        panel_MAIN.2JOIN.arpModes        -> UI_HIDE
+        label_SEQjoin.arp.rate           -> UI_SHOW
+        slider_MAIN.ARPjoin.amount       -> UI_SHOW
+        switch_MAIN.ARP.LEFT.modeMenu    -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.arp.power -> UI_SHOW
+        label_SEQjoin.arp.background     -> UI_SHOW
+        message(f' label_SEQjoin.arp.background hide state <label_SEQjoin.arp.background -> hide >')
     end if
 
 
@@ -713,6 +751,7 @@ on ui_controls
         UIID_MAIN.display_title -> text := "Dynamics"
         UIID_MAIN.display_value -> text := uics_text_data
     end if
+
 
     {{ RANDOM SLIDERS }}
     if NI_UI_ID = UIID_random.xypads [ __LEFT ] or NI_UI_ID = UIID_random.xypads [ __RIGHT ]

@@ -560,6 +560,14 @@
             MAIN_lfp_power_to_slot_mapping [ 6 ] := __SLOT_B_CHORUS
             MAIN_lfp_power_to_slot_mapping [ 7 ] := __SLOT_B_REVERB
 
+        declare !arp_menu_items_text [ 6 ]
+            arp_menu_items_text [ 0 ] := "as played"
+            arp_menu_items_text [ 1 ] := "up"
+            arp_menu_items_text [ 2 ] := "down"
+            arp_menu_items_text [ 3 ] := "up-down"
+            arp_menu_items_text [ 4 ] := "random"
+            arp_menu_items_text [ 5 ] := "chord"
+
     {{ ADSR }}
         declare ADSR_engine_pars [ 4 ]
             ADSR_engine_pars [ 0 ] := ENGINE_PAR_ATTACK
@@ -671,6 +679,7 @@
 
         { so we can have independent intensities per target }
         declare read SEQ.flux_rand_intensity [ 2, 5 ]
+        declare read SEQ.join.flux_rand_intensity [ 5 ]
 
         declare read layers.seq_play_direction [ 2 ]
         declare read seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
@@ -1030,6 +1039,7 @@
     declare  fn022.a.step_filter
 
     declare  fn022.l.seq_mode_side
+    declare  fn022.l.flux_intensity
     declare  fn022.l.flux_velo
     declare  fn022.l.flux_pitch
     declare  fn022.l.flux_octave
@@ -1246,3 +1256,6 @@
     declare fn49.a.side
     declare fn49.a.step
     declare fn49.a.block
+
+    //fn050_seq.arp.get_play_note_from_buffer
+    declare fn50.a.side

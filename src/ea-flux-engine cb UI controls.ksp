@@ -10,7 +10,7 @@ end on
 {{ MAIN }}
     on ui_control (switch_MAIN.SEQ.combine)
         call draw_seq
-        
+        call clear_all_leds
         { recall block steps numbers and steps pictures }
         fn003.a.mode := switch_MAIN.SEQ.combine
         for uicb_combine_counter := 0 to 3
