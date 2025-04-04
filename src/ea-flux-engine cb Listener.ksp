@@ -2,6 +2,44 @@ on listener
     // import "ARP/__ARP 07 listener cb.ksp"
 
     if (NI_SIGNAL_TYPE = NI_SIGNAL_TIMER_MS)
+        {{ WAVEFORM CURSOR UPDATE }}
+        lcb_wf_left_cursor_pos := -1
+        if  UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and ...
+            event_status(layers.note_events [ __LEFT, last_played_note ]) # EVENT_STATUS_INACTIVE and ...
+            note_held_count > 0
+
+            lcb_wf_left_cursor_pos := get_event_par(layers.note_events [ __LEFT, last_played_note ], EVENT_PAR_PLAY_POS)
+            if  lcb_wf_left_cursor_pos = 0
+                lcb_wf_left_cursor_pos := -1
+            end if
+        end if
+
+        set_ui_wf_property(                  ...
+            waveform_MAIN.2SEQ.LEFT.display, ...
+            UI_WF_PROP_PLAY_CURSOR,          ...
+            0,                               ...
+            lcb_wf_left_cursor_pos           ...
+        )
+
+        lcb_wf_right_cursor_pos := -1 // reset the cursor variable 
+        if  UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF and ...
+            event_status(layers.note_events [ __RIGHT, last_played_note ]) # EVENT_STATUS_INACTIVE and ...
+            note_held_count > 0
+
+            lcb_wf_right_cursor_pos      := get_event_par(layers.note_events [ __RIGHT, last_played_note ], EVENT_PAR_PLAY_POS)
+            if  lcb_wf_right_cursor_pos = 0
+                lcb_wf_right_cursor_pos := -1
+            end if
+        end if
+
+        set_ui_wf_property(                   ...
+            waveform_MAIN.2SEQ.RIGHT.display, ...
+            UI_WF_PROP_PLAY_CURSOR,           ...
+            0,                                ...
+            lcb_wf_right_cursor_pos           ...
+        )
+
+
         {{ SEQUENCER }}
         if note_held_count > 0 
             if switch_MAIN.SEQ.combine = __SEQ_DUAL
@@ -167,6 +205,15 @@ on listener
                             CONTROL_PAR_PICTURE_STATE, ...
                             int(LFO_lcb_cursor_calc) ...
                         )
+
+                        if lcb_control_counter mod 16 = 0
+                            UIID_MAIN.matrix_sides    [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc)
+                            if lcb_control_counter / 16 = __LEFT
+                                UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := 255 - int(LFO_lcb_cursor_calc)
+                            else
+                                UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc)
+                            end if
+                        end if
 
                         { debug }
                             // if lcb_ms_counter mod 447 = 0

@@ -1,1 +1,3 @@
 define WAVEFORM_COLOR := 9FFDECCh
+
+define HMZ_DIVISOR := 28571 { 1000000 / 35 ( milliseconds )}

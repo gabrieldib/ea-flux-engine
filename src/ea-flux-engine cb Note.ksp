@@ -49,7 +49,6 @@ on note
             call ARP.StartSeq()
         end if
 
-
     else { sequencer is in JOIN mode }
 
         { in this case the sequencer power check uses the LEFT power for both layers }
@@ -86,12 +85,29 @@ on note
 
     end if
 
+    last_played_note := EVENT_NOTE
+    for ncb_counter := __LEFT to __RIGHT
+        if UIID_MAIN.seq.power [ ncb_counter ] -> value = __OFF
 
+            UIID_MAIN.single_shot_controls [ ncb_counter,  __SINGLE_SHOT_SAMPLE_START ] -> value := ...
+                int ( sample_starts [ ncb_counter, EVENT_NOTE ] * 1000000.0 )
 
+            fn052.a.side       := ncb_counter
+            fn052.a.value      := sample_starts [ ncb_counter, EVENT_NOTE ]
+            if fn052.a.value > 0.995
+                fn052.a.value := 0.995
+            end if
+            call fn052_set_wf_cursor_and_overlay
+
+            ncb_tune_knob := sample_tuning [ ncb_counter, last_played_note ]
+
+            UIID_MAIN.single_shot_controls [ ncb_counter,  __SINGLE_SHOT_TUNE ] -> value := ...
+                int((1000000.0 * ncb_tune_knob)/72.0 + 500000.0)
+        end if
+    end for
 end on
 
 {
-
     combine on ?
         no  - 
             is layer 1 on?
@@ -148,7 +164,4 @@ end on
                                 no  - do nothing, wait until next rate cycle in LCB
                 no
                     play one shots
-
-
-
 }

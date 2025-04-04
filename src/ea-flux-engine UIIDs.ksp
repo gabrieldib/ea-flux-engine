@@ -50,6 +50,10 @@ declare UIID_MAIN.single_shot_controls       [ 2, 6 ]
 declare UIID_MAIN.waveform_cursor               [ 2 ]
 declare UIID_MAIN.waveform_overlay              [ 2 ]
 declare UIID_MAIN.waveform_xypad_cursor         [ 2 ]
+declare UIID_MAIN.matrix_sides                  [ 2 ]
+declare UIID_MAIN.matrix_LFO_orbs               [ 2 ]
+declare UIID_MAIN.hmz_sliders                   [ 2 ]
+
 
 {{ LFO }}
 define __LAYER      := 0

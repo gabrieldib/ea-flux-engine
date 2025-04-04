@@ -123,6 +123,10 @@
     define __INTEGER := 0
     define __REAL    := 1
 
+    define __TARGET_ACTIVATOR := 0
+    define __TARGET_POWER     := 1
+    define __TARGET_SELECTOR  := 2
+
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
         declare hide_constants [ 2 ]
@@ -130,6 +134,7 @@
             hide_constants [ 1 ] := HIDE_WHOLE_CONTROL
 
         declare ~__TWO_PI := NI_MATH_PI * 2.0  { for some reason 'const' won't compile }
+        declare const ~__TUNING_STEP := 13888.888888
 
     {{ UI }}
         // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
@@ -236,7 +241,7 @@
         declare !SEQ.target_names [ 5 ]
             !SEQ.target_names [ 0 ] := 'VELOCITY'
             !SEQ.target_names [ 1 ] := 'PITCH'
-            !SEQ.target_names [ 2 ] := 'OCTAVE'
+            !SEQ.target_names [ 2 ] := 'LENGTH'
             !SEQ.target_names [ 3 ] := 'PAN'
             !SEQ.target_names [ 4 ] := 'FILTER'
 
@@ -261,11 +266,9 @@
         declare const WF_CURSOR_LEFT_START  :=  66
         declare const WF_CURSOR_RIGHT_START := 570
 
-        declare WF_CURSOR_DATA [ 4 ]
-            WF_CURSOR_DATA [ 0 ] :=  66
-            WF_CURSOR_DATA [ 1 ] := 429 - WF_CURSOR_LEFT_START
-            WF_CURSOR_DATA [ 2 ] := 570
-            WF_CURSOR_DATA [ 3 ] := 933 - WF_CURSOR_RIGHT_START
+        declare WF_CURSOR_PROPERTIES [ 2 ]
+            WF_CURSOR_PROPERTIES [ 0 ] :=  66
+            WF_CURSOR_PROPERTIES [ 1 ] := 570
 
         declare const ~WF_OVERLAY_WIDTH := 364.0
 
@@ -684,6 +687,10 @@
         declare seq_join_side
         declare play_layer_count
 
+        declare read targets_power_state [ 2, 5 ] // 2 sides, 5 diferent targets 
+
+        declare read SEQ.humanize [ 2 ]
+
         { sequencer target data  
             there's 6 states:
                 1) SEQ DUAL, left  target OFF
@@ -746,6 +753,11 @@
     {{ PLAY ENGINE }}
         declare layers.note_events [ 2, 128 ]
         declare layers.note_velo   [ 2, 128 ] // stores played velocities
+        declare last_played_note              // to use as index for sample start data
+        declare read ?sample_starts [ 2, 128 ]
+        declare read ?sample_tuning [ 2, 128 ]
+        declare ~ncb_tune_knob
+        declare  ncb_counter
 
     {{ LCB }}
         declare read ~__BPM
@@ -758,6 +770,10 @@
         declare lcb_play_direction_index
         declare LFO_target_group
         declare lcb_lfo_group_counter
+        declare lcb_wf_left_cursor_pos
+        declare lcb_wf_left_last_cursor_pos
+        declare lcb_wf_right_cursor_pos
+        declare lcb_wf_right_last_cursor_pos
 
     {{ ARP }}
         declare read arp_mode [ 2 ]
@@ -1284,6 +1300,7 @@
 
     //fn051_set_seq_on_off_panels
     declare fn051.a.side
+    declare fn051.a.seq_state
 
     //fn052_set_wf_cursor_and_overlay
     declare fn052.a.value_type

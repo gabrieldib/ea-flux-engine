@@ -39,6 +39,7 @@ on init
       panel_MAIN.FX.LEFT.delay           -> UI_HIDE
       panel_MAIN.FX.RIGHT.reverb         -> UI_HIDE
       panel_MAIN.FX.LEFT.reverb          -> UI_HIDE
+      panel_MAIN.matrix.controls         -> UI_HIDE
 
 end on // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 

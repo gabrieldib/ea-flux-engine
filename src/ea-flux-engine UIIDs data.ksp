@@ -42,7 +42,7 @@ UIID_MAIN.seq.target_activators [ __LEFT,  0 ] := get_ui_id(switch_MAIN.SEQ.LEFT
 UIID_MAIN.seq.target_activators [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.select.velocity)
 UIID_MAIN.seq.target_selectors           [ 0 ] := get_ui_id(switch_MAIN.SEQ.center.select.velocity)
 
-for i.i := 0 to 4
+for i.i := 1 to 4
     UIID_MAIN.seq.target_activators [ __LEFT,  i.i ] := UIID_MAIN.seq.target_activators [ __LEFT,  0 ] + i.i
     UIID_MAIN.seq.target_activators [ __RIGHT, i.i ] := UIID_MAIN.seq.target_activators [ __RIGHT, 0 ] + i.i
     UIID_MAIN.seq.target_selectors           [ i.i ] := UIID_MAIN.seq.target_selectors           [ 0 ] + i.i
@@ -237,6 +237,18 @@ xypad_MAIN.LEFT.waveform.cursor  -> picture := 'label_transparent'
 xypad_MAIN.RIGHT.waveform.cursor -> picture := 'label_transparent'
 xypad_MAIN.LEFT.waveform.cursor  -> cursor_picture := "label_xy.transparent"
 xypad_MAIN.RIGHT.waveform.cursor -> cursor_picture := "label_xy.transparent"
+
+UIID_MAIN.matrix_sides [ 0 ] := get_ui_id(label_MAIN.matrix.left)
+UIID_MAIN.matrix_sides [ 1 ] := get_ui_id(label_MAIN.matrix.right)
+
+UIID_MAIN.matrix_LFO_orbs [ 0 ] := get_ui_id(label_MAIN.matrix.center.mod.RL)
+UIID_MAIN.matrix_LFO_orbs [ 1 ] := get_ui_id(label_MAIN.matrix.center.mod.LR)
+
+UIID_MAIN.hmz_sliders [ 0 ] := get_ui_id(slider_MAIN.LEFT.hmz)
+UIID_MAIN.hmz_sliders [ 1 ] := get_ui_id(slider_MAIN.RIGHT.hmz)
+
+
+
 
 {{ SETTING FONTS }}
     switch_MAIN.ARP.LEFT.modeMenu -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON  
