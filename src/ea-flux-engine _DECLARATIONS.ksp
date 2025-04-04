@@ -26,7 +26,7 @@
 
     define SEQ_TARGET_VELO     := 0
     define SEQ_TARGET_PITCH    := 1
-    define SEQ_TARGET_OCTAVE   := 2
+    define SEQ_TARGET_LENGTH   := 2
     define SEQ_TARGET_PAN      := 3
     define SEQ_TARGET_FILTER   := 4
 
@@ -257,7 +257,7 @@
         declare SEQ.target_type [ 5 ]
             SEQ.target_type [ SEQ_TARGET_VELO   ] := SEQ_TYPE_UNIPOLAR
             SEQ.target_type [ SEQ_TARGET_PITCH  ] := SEQ_TYPE_BIPOLAR
-            SEQ.target_type [ SEQ_TARGET_OCTAVE ] := SEQ_TYPE_BIPOLAR
+            SEQ.target_type [ SEQ_TARGET_LENGTH ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_PAN    ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_BIPOLAR
 
@@ -659,6 +659,8 @@
         declare note_held_count
         declare read SHOWING_PANEL
 
+        declare MATRIX.matrix.center.mouseON [2] // 0 is the state, 1 is the quadrant start index
+
     {{ SEQ }}
         declare SEQ.LEFT.step_index
         declare read SEQ.DUAL.step_count  [ 2, 4 ] // side, step count
@@ -732,7 +734,7 @@
         declare SEQ.key_count
         declare SEQ.step_velocity
         declare SEQ.step_pitch
-        declare SEQ.step_octave
+        declare SEQ.step_length
         declare SEQ.step_pan
         declare SEQ.step_lp_filter
         declare SEQ.step_hp_filter
@@ -741,8 +743,8 @@
         declare SEQ.flux_velo
         declare SEQ.flux_pitch_seed
         declare SEQ.flux_pitch
-        declare SEQ.flux_octave_seed
-        declare SEQ.flux_octave
+        declare SEQ.flux_length_seed
+        declare SEQ.flux_length
         declare SEQ.flux_pan_seed
         declare SEQ.flux_pan
         declare SEQ.flux_filter_seed
@@ -879,6 +881,9 @@
     declare uics_slot
     declare uics_generic
     declare uics_dual_join_side
+
+    declare uicb_counter
+    declare uicb_counter2
 
     declare pccb_counter
 
@@ -1035,7 +1040,7 @@
     declare fn017.l.filter_data
     declare fn017.r.velocity
     declare fn017.r.pitch
-    declare fn017.r.octave
+    declare fn017.r.length
     declare fn017.r.pan
     declare fn017.r.lp_filter_value
     declare fn017.r.hp_filter_value
@@ -1072,7 +1077,7 @@
     declare  fn022.a.block_step_index
     declare  fn022.a.step_velocity
     declare  fn022.a.step_pitch
-    declare  fn022.a.step_octave
+    declare  fn022.a.step_length
     declare  fn022.a.step_pan
     declare  fn022.a.step_filter
 
@@ -1080,18 +1085,18 @@
     declare  fn022.l.flux_intensity
     declare  fn022.l.flux_velo
     declare  fn022.l.flux_pitch
-    declare  fn022.l.flux_octave
+    declare  fn022.l.flux_length
     declare  fn022.l.flux_pan
     declare  fn022.l.flux_filter
     declare  fn022.l.flux_velo_seed
     declare  fn022.l.flux_pitch_seed
-    declare  fn022.l.flux_octave_seed
+    declare  fn022.l.flux_length_seed
     declare  fn022.l.flux_pan_seed
     declare  fn022.l.flux_filter_seed
 
     declare  fn022.r.step_velocity
     declare  fn022.r.step_pitch
-    declare  fn022.r.step_octave
+    declare  fn022.r.step_length
     declare  fn022.r.step_pan
     declare  fn022.r.step_filter
     declare  fn022.r.step_lp_filter
@@ -1105,7 +1110,7 @@
     //fn024_update_flux_data_and_ui
     declare  fn024.a.step_velocity   
     declare  fn024.a.step_pitch      
-    declare  fn024.a.step_octave     
+    declare  fn024.a.step_length     
     declare  fn024.a.step_pan        
     declare  fn024.a.step_filter     
     declare  fn024.a.step_lp_filter  
@@ -1115,7 +1120,7 @@
     declare  fn024.a.block_step_index
     declare ~fn024.l.step_velocity_flux
     declare ~fn024.l.step_pitch_flux
-    declare ~fn024.l.step_octave_flux
+    declare ~fn024.l.step_length_flux
     declare ~fn024.l.step_pan_flux
     declare ~fn024.l.step_filter_flux
     declare ~fn024.l.picture_state
@@ -1137,7 +1142,7 @@
     declare fn026.l.filter_data
     declare fn026.r.velocity
     declare fn026.r.pitch
-    declare fn026.r.octave
+    declare fn026.r.length
     declare fn026.r.pan
     declare fn026.r.filter_value
     declare fn026.r.lp_filter_value
@@ -1306,3 +1311,8 @@
     declare fn052.a.value_type
     declare fn052.a.side
     declare ~fn052.a.value
+
+    //fn053_update_single_shot_controls
+    declare  fn053.a.side
+    declare  fn053.a.note
+    declare ~fn053.l.tune_knob

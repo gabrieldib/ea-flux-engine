@@ -6,6 +6,12 @@ on persistence_changed
 
     button_demo.mode := __OFF
 
+    { natural init state }
+    panel_MAIN.2SEQ.RIGHT.arpModes    -> UI_HIDE
+    panel_MAIN.2SEQ.LEFT.arpModes     -> UI_HIDE
+    panel_MAIN.FX.LEFT.reverb.menu   -> UI_HIDE
+    panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
+
     // development ------------------------------------------------------------------------------- 
         { work on these as the development goes until there's nothing here }
         label_MAIN.SEQ.LEFT.linked        -> UI_HIDE
@@ -16,30 +22,16 @@ on persistence_changed
         label_MAIN.ADSR.RIGHT.linked      -> UI_HIDE
         label_MAIN.FX.LEFT.linked         -> UI_HIDE
         label_MAIN.FX.RIGHT.linked        -> UI_HIDE
-        waveform_MAIN.2SEQ.LEFT.display   -> UI_HIDE
-        waveform_MAIN.2SEQ.RIGHT.display  -> UI_HIDE
-        // panel_MAIN.2SEQ.LEFT.fluxxArp     -> UI_HIDE
-        // panel_MAIN.2SEQ.RIGHT.fluxxArp    -> UI_HIDE
-        panel_MAIN.2SEQ.RIGHT.arpModes    -> UI_HIDE
-        panel_MAIN.2SEQ.LEFT.arpModes     -> UI_HIDE
-        panel_MAIN.2SEQ.LEFT.single.shot  -> UI_HIDE
-        panel_MAIN.2SEQ.RIGHT.single.shot -> UI_HIDE
-
-        slider_MAIN.2SEQ.RIGHT.off -> UI_HIDE
-        slider_MAIN.2SEQ.LEFT.off  -> UI_HIDE
-
-        panel_MAIN.FX.LEFT.reverb.menu   -> UI_HIDE
-        panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
 
         { I may use this in the combined SEQ }
         label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
         label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+
     // END development --------------------------------------------------------------------------- 
 
     call pccb_init_instrument()
 
     message("ea-flux-engine loaded successfully")
-
     message(f' time: < get_engine_par(ENGINE_PAR_RDL_TIME_UNIT, -1, 4, NI_BUS_OFFSET) >')
 
 end on

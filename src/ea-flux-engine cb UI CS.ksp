@@ -61,7 +61,7 @@ on ui_controls
             fn020.a.side              := uics_seq_side
             fn020.a.target_index      := fn021.r.active_index
             fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
-            call fn020_update_seq_target_off_label
+            call fn020_update_seq_target_state
 
         else
             { turn off target activators, power and selectors as they have no effect on single shots }
@@ -366,9 +366,9 @@ on ui_controls
 
         SEQ.showing_target [ uics_seq_side ] := uics_uiid_index mod 5 
 
-        if UIID_MAIN.seq.power [ uics_seq_side ] -> value = __ON
+        if  UIID_MAIN.seq.power [ uics_seq_side ] -> value = __ON
             { store the control state in a buffer for later use }
-
+            message(f'Got here!')
             fn011.a.side  := uics_seq_side
             fn011.a.index := uics_uiid_index mod 5
             call fn011_clear_target_activators
@@ -379,15 +379,16 @@ on ui_controls
 
             { clean all mid selectors first, assuming the activators are not a matching pair }
             { light the middle selector in case both sides match }
+            fn005.a.selector_index := -1
             if  UIID_MAIN.seq.target_activators [ __RIGHT, uics_uiid_index mod 5 ] -> value = __ON and ...
-                UIID_MAIN.seq.target_activators [ __LEFT,  uics_uiid_index mod 5 ] -> value = __ON or  ...
-                UIID_MAIN.seq.target_selectors [ uics_uiid_index mod 5 ] -> value = __OFF
+                UIID_MAIN.seq.target_activators [ __LEFT,  uics_uiid_index mod 5 ] -> value = __ON and ...
+                UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __ON                       or  ...
+                UIID_MAIN.seq.target_selectors [ uics_uiid_index mod 5 ] -> value = __OFF          and ...
+                UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
 
                 fn005.a.selector_index := uics_uiid_index mod 5
-                call fn005_set_seq_target_selector
-            else
-
             end if
+            call fn005_set_seq_target_selector
 
             { update target off label state }
             fn021.a.side := uics_seq_side
@@ -398,7 +399,7 @@ on ui_controls
                 fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ uics_seq_side, uics_uiid_index mod 5 ]
                 fn020.a.side               := uics_seq_side
                 fn020.a.target_index       := uics_uiid_index mod 5
-                call fn020_update_seq_target_off_label
+                call fn020_update_seq_target_state
             end if
 
             { restore the value for the UI control slider }
@@ -453,7 +454,7 @@ on ui_controls
                     fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ uics_counter, uics_uiid_index ]
                     fn020.a.side               := uics_counter
                     fn020.a.target_index       := uics_uiid_index
-                    call fn020_update_seq_target_off_label
+                    call fn020_update_seq_target_state
                 end if
             end if
         end for
@@ -496,7 +497,7 @@ on ui_controls
                 fn020.a.target_power_uiid  := NI_UI_ID
                 fn020.a.side               := uics_seq_side
                 fn020.a.target_index       := uics_uiid_index
-                call fn020_update_seq_target_off_label
+                call fn020_update_seq_target_state
             end if
 
             { The code below should only run when:
@@ -1042,15 +1043,27 @@ on ui_controls
 
             case __SINGLE_SHOT_LP_CUT
                 set_engine_par(ENGINE_PAR_CUTOFF, uics_value, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                UIID_MAIN.display_title -> text := "Low Pass Cutoff"
+                UIID_MAIN.display_value -> text := ...
+                    get_engine_par_disp(ENGINE_PAR_CUTOFF, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "hz"
 
             case __SINGLE_SHOT_LP_RES
                 set_engine_par(ENGINE_PAR_RESONANCE, uics_value, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                UIID_MAIN.display_title -> text := "Low Pass Reso"
+                UIID_MAIN.display_value -> text := ...
+                    get_engine_par_disp(ENGINE_PAR_RESONANCE, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "%"
 
             case __SINGLE_SHOT_HP_CUT
                 set_engine_par(ENGINE_PAR_CUTOFF, uics_value, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                UIID_MAIN.display_title -> text := "Hi Pass Cutoff"
+                UIID_MAIN.display_value -> text := ...
+                    get_engine_par_disp(ENGINE_PAR_CUTOFF, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "hz"
 
             case __SINGLE_SHOT_HP_RES
                 set_engine_par(ENGINE_PAR_RESONANCE, uics_value, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                UIID_MAIN.display_title -> text := "Hi Pass Reso"
+                UIID_MAIN.display_value -> text := ...
+                    get_engine_par_disp(ENGINE_PAR_RESONANCE, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "%"
 
         end select
     end if
@@ -1208,9 +1221,7 @@ on ui_controls
                 call fn041_LFO_off_restore_buffer_value
 
                 { behaviour when linked }
-                if UIID_MAIN.FX.links [ ...
-                    UIID_FX.parameter_to_module [ uicbs_custom_id - UICTRL_LFO_POWER_OFFSET ] ...
-                ] -> value = __ON
+                if UIID_MAIN.FX.links [ UIID_FX.parameter_to_module [ uicbs_custom_id - UICTRL_LFO_POWER_OFFSET ] ] -> value = __ON
                     { there are 16 elements on the each side }
                     if  uics_seq_side = __LEFT
                         MAIN.FX.aux_flip_link := 16 { add 8 to get to right side }

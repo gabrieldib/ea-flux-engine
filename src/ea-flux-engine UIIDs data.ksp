@@ -211,10 +211,6 @@ for i.i := __LEFT to __RIGHT
     UIID_MAIN.waveforms [ i.i ] -> picture    := 'label_transparent'
 end for
 
-{{ TEMP }}
-// attach_zone(waveform_MAIN.2SEQ.LEFT.display, 1, 0)
-// attach_zone(waveform_MAIN.2SEQ.RIGHT.display, 6, 0)
-
 UIID_MAIN.single_shot_controls [ __LEFT,  0 ] := get_ui_id(slider_MAIN.FX.LEFT.single.shot.start.amount)
 UIID_MAIN.single_shot_controls [ __RIGHT, 0 ] := get_ui_id(slider_MAIN.FX.RIGHT.single.shot.start.amount)
 for i.i := 0 to 5
@@ -247,7 +243,28 @@ UIID_MAIN.matrix_LFO_orbs [ 1 ] := get_ui_id(label_MAIN.matrix.center.mod.LR)
 UIID_MAIN.hmz_sliders [ 0 ] := get_ui_id(slider_MAIN.LEFT.hmz)
 UIID_MAIN.hmz_sliders [ 1 ] := get_ui_id(slider_MAIN.RIGHT.hmz)
 
+UIID_BROSER_source.select.btn [ __LEFT,  0 ] := get_ui_id(switch_BROWSER.LEFT.sound0)
+UIID_BROSER_source.select.btn [ __RIGHT, 0 ] := get_ui_id(switch_BROWSER.RIGHT.sound0)
+for i.i := 0 to 17
+    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] := UIID_BROSER_source.select.btn [ __LEFT,  0 ] + i.i
+    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] := UIID_BROSER_source.select.btn [ __RIGHT, 0 ] + i.i
 
+    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
+    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
+    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> disable_text_shifting := __ON    
+
+    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
+    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
+    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> disable_text_shifting := __ON    
+end for
 
 
 {{ SETTING FONTS }}

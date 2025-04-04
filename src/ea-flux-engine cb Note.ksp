@@ -87,24 +87,11 @@ on note
 
     last_played_note := EVENT_NOTE
     for ncb_counter := __LEFT to __RIGHT
-        if UIID_MAIN.seq.power [ ncb_counter ] -> value = __OFF
-
-            UIID_MAIN.single_shot_controls [ ncb_counter,  __SINGLE_SHOT_SAMPLE_START ] -> value := ...
-                int ( sample_starts [ ncb_counter, EVENT_NOTE ] * 1000000.0 )
-
-            fn052.a.side       := ncb_counter
-            fn052.a.value      := sample_starts [ ncb_counter, EVENT_NOTE ]
-            if fn052.a.value > 0.995
-                fn052.a.value := 0.995
-            end if
-            call fn052_set_wf_cursor_and_overlay
-
-            ncb_tune_knob := sample_tuning [ ncb_counter, last_played_note ]
-
-            UIID_MAIN.single_shot_controls [ ncb_counter,  __SINGLE_SHOT_TUNE ] -> value := ...
-                int((1000000.0 * ncb_tune_knob)/72.0 + 500000.0)
-        end if
+        fn053.a.side := ncb_counter
+        fn053.a.note := last_played_note
+        call fn053_update_single_shot_controls
     end for
+    
 end on
 
 {

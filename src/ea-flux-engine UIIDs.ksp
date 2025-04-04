@@ -54,6 +54,8 @@ declare UIID_MAIN.matrix_sides                  [ 2 ]
 declare UIID_MAIN.matrix_LFO_orbs               [ 2 ]
 declare UIID_MAIN.hmz_sliders                   [ 2 ]
 
+declare UIID_BROSER_source.select.btn       [ 2, 18 ]
+
 
 {{ LFO }}
 define __LAYER      := 0
