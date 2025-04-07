@@ -1,18 +1,22 @@
 { DEFINES   _____________________________________________________________________________________ }
     define __OFF               := 0
     define __ON                := 1
+    define __NO                := 0
+    define __YES               := 1
     define __LEFT              := 0
     define __RIGHT             := 1
     define __SEQ_DUAL          := 0
     define __SEQ_JOIN          := 1
+    define __X_AXIS            := 0
+    define __Y_AXIS            := 1
 
     define LFO_RATE_MODE       := 0
     define LFO_RATE            := 1
     define LFO_DEPTH           := 2
     define LFO_WAVESHAPE       := 3
 
-    define LFO_WAVESHAPE_SIN   := 0
-    define LFO_WAVESHAPE_TRI   := 1
+    define LFO_WAVESHAPE_TRI   := 0
+    define LFO_WAVESHAPE_SIN   := 1
     define LFO_WAVESHAPE_SQR   := 2
     define LFO_WAVESHAPE_SAW   := 3
     define LFO_WAVESHAPE_RND   := 4
@@ -22,12 +26,12 @@
 
     define SEQ_TARGET_VELO     := 0
     define SEQ_TARGET_PITCH    := 1
-    define SEQ_TARGET_OCTAVE   := 2
+    define SEQ_TARGET_LENGTH   := 2
     define SEQ_TARGET_PAN      := 3
     define SEQ_TARGET_FILTER   := 4
 
-    define __LP_FILTER_SLOT    := 5
-    define __HP_FILTER_SLOT    := 6
+    define __LP_FILTER_SLOT    := 2
+    define __HP_FILTER_SLOT    := 3
     define __LP_FILTER_CA_SLOT := 0 // code aux
     define __HP_FILTER_CA_SLOT := 1 // code aux
 
@@ -63,33 +67,105 @@
     define __NOT_PRESSED := 0
     define __PRESSED     := 1
 
-    declare __CALLER_SEQ_XY  := 0
-    declare __CALLER_SEQ_DYN := 1
+    define __CALLER_SEQ_XY  := 0
+    define __CALLER_SEQ_DYN := 1
+
+    define __FLUX_DATA     := 0
+    define __DYN_DATA      := 1
+    define __ORIGINAL_DATA := 2
+
+    define __GROUP_LEVEL := -1
+    define __GROUP_NONE  := -1
+    define __SLOT_NONE   := -1
+
+    { group level }
+    define __SLOT_G_SATURATION  := 0
+    define __SLOT_G_DISTORTION  := 1
+
+    { bus level }
+    define __SLOT_B_LOFI        := 0
+    define __SLOT_B_TAPESAT     := 1
+    define __SLOT_B_LOPASS      := 2
+    define __SLOT_B_HIPASS      := 3
+    define __SLOT_B_DELAY       := 4
+    define __SLOT_B_CHORUS      := 5
+    define __SLOT_B_REVERB      := 6
+    define __SLOT_B_STEREO      := 7
+
+    define __BUS_LAYER_LEFT     := NI_BUS_OFFSET+0
+    define __BUS_LAYER_RIGHT    := NI_BUS_OFFSET+1
+
+    define __SYNC_BEAT  := 0
+    define __SYNC_HZ    := 1
+
+    define __LFO_GLOBAL_DEPTH_TARGET := -1
+    define __LFO_AMOUNT_CONTROL      := 0
+    define __LFO_GLOBAL_DEPTH        := 1
+
+    define __FX_DELAY_PINGPONG       := 0
+    define __FX_DELAY_TIME_UNIT      := 1
+    define __FX_DELAY_LOCUT          := 2
+    define __FX_DELAY_HICUT          := 3
+    define __FX_DELAY_DRYWET         := 4
+    define __FX_DELAY_FEEDBACK       := 5
+    define __FX_DELAY_TIME           := 6
+    
+    define __FX_DELAY_LABEL_PINGPONG := 0
+    define __FX_DELAY_LABEL_SYNC     := 1
+
+    define __SINGLE_SHOT_SAMPLE_START := 0
+    define __SINGLE_SHOT_TUNE         := 1
+    define __SINGLE_SHOT_LP_CUT       := 2
+    define __SINGLE_SHOT_LP_RES       := 3
+    define __SINGLE_SHOT_HP_CUT       := 4
+    define __SINGLE_SHOT_HP_RES       := 5
+
+    define __INTEGER := 0
+    define __REAL    := 1
+
+    define __TARGET_ACTIVATOR := 0
+    define __TARGET_POWER     := 1
+    define __TARGET_SELECTOR  := 2
+
+    define __SOURCE_PREV := 0
+    define __SOURCE_NEXT := 1
 
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
-    declare hide_constants [ 2 ]
-        hide_constants [ 0 ] := HIDE_PART_NOTHING
-        hide_constants [ 1 ] := HIDE_WHOLE_CONTROL
+        declare hide_constants [ 2 ]
+            hide_constants [ 0 ] := HIDE_PART_NOTHING
+            hide_constants [ 1 ] := HIDE_WHOLE_CONTROL
+
+        declare ~__TWO_PI := NI_MATH_PI * 2.0  { for some reason 'const' won't compile }
+        declare const ~__TUNING_STEP := 13888.888888
 
     {{ UI }}
-    // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
-    declare SEQ.common_elements_data [ 200, 7 ] 
+        // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
+        declare SEQ.common_elements_data [ 200, 7 ] 
 
-    declare const PANEL_DUAL_SEQ_PARENT_UIID := 0
-    declare const PANEL_JOIN_SEQ_PARENT_UIID := 1
-    declare const ELEMENT_UIID               := 2
-    declare const PANEL_DUAL_SEQ_X_COORD     := 3
-    declare const PANEL_DUAL_SEQ_Y_COORD     := 4
-    declare const PANEL_JOIN_SEQ_X_COORD     := 5
-    declare const PANEL_JOIN_SEQ_Y_COORD     := 6
+        declare const PANEL_DUAL_SEQ_PARENT_UIID := 0
+        declare const PANEL_JOIN_SEQ_PARENT_UIID := 1
+        declare const ELEMENT_UIID               := 2
+        declare const PANEL_DUAL_SEQ_X_COORD     := 3
+        declare const PANEL_DUAL_SEQ_Y_COORD     := 4
+        declare const PANEL_JOIN_SEQ_X_COORD     := 5
+        declare const PANEL_JOIN_SEQ_Y_COORD     := 6
 
-    declare SEQ.COMMON_ELEMENTS_COUNT
-    declare UIID_FLUX_RAND_RIGHT [ 4 ] 
-        UIID_FLUX_RAND_RIGHT [ 0 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.1)
-        UIID_FLUX_RAND_RIGHT [ 1 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.2)
-        UIID_FLUX_RAND_RIGHT [ 2 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.3)
-        UIID_FLUX_RAND_RIGHT [ 3 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.4)
+        declare SEQ.COMMON_ELEMENTS_COUNT
+        declare UIID_FLUX_RAND_RIGHT [ 4 ] 
+            UIID_FLUX_RAND_RIGHT [ 0 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.1)
+            UIID_FLUX_RAND_RIGHT [ 1 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.2)
+            UIID_FLUX_RAND_RIGHT [ 2 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.3)
+            UIID_FLUX_RAND_RIGHT [ 3 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.4)
+
+        declare random_sliders_x_pos [ 2 ]
+            random_sliders_x_pos [ 0 ] :=  10
+            random_sliders_x_pos [ 1 ] := 949
+
+    {{ LINK }}
+        declare MAIN.FX.aux_flip_link
+        declare MAIN.FX.aux_flip_side
+        declare MAIN.FX.aux_flip_bus
 
     {{ SEQ }}
         declare const SEQ_DUAL_XY_W           := 366
@@ -161,10 +237,14 @@
         declare const SEQ_JOIN_RIGHT_GAP_STEP7     := 447 - SEQ_JOIN_LEFT_START_PX
         declare const SEQ_JOIN_RIGHT_GAP_STEP8     := 445 - SEQ_JOIN_LEFT_START_PX
 
+        declare const __SEQ_ORIGINAL_TABLE   := 1
+        declare const __SEQ_DYN_TRANSF_TABLE := 2
+        declare const __SEQ_BOTH_TABLES      := __SEQ_ORIGINAL_TABLE .or. __SEQ_DYN_TRANSF_TABLE
+
         declare !SEQ.target_names [ 5 ]
             !SEQ.target_names [ 0 ] := 'VELOCITY'
             !SEQ.target_names [ 1 ] := 'PITCH'
-            !SEQ.target_names [ 2 ] := 'OCTAVE'
+            !SEQ.target_names [ 2 ] := 'LENGTH'
             !SEQ.target_names [ 3 ] := 'PAN'
             !SEQ.target_names [ 4 ] := 'FILTER'
 
@@ -180,12 +260,25 @@
         declare SEQ.target_type [ 5 ]
             SEQ.target_type [ SEQ_TARGET_VELO   ] := SEQ_TYPE_UNIPOLAR
             SEQ.target_type [ SEQ_TARGET_PITCH  ] := SEQ_TYPE_BIPOLAR
-            SEQ.target_type [ SEQ_TARGET_OCTAVE ] := SEQ_TYPE_BIPOLAR
+            SEQ.target_type [ SEQ_TARGET_LENGTH ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_PAN    ] := SEQ_TYPE_BIPOLAR
             SEQ.target_type [ SEQ_TARGET_FILTER ] := SEQ_TYPE_BIPOLAR
 
+        declare const __FLUX_ON_ALL_BLOCKS := -1
+
+        declare const WF_CURSOR_LEFT_START  :=  66
+        declare const WF_CURSOR_RIGHT_START := 570
+
+        declare WF_CURSOR_PROPERTIES [ 2 ]
+            WF_CURSOR_PROPERTIES [ 0 ] :=  66
+            WF_CURSOR_PROPERTIES [ 1 ] := 570
+
+        declare const ~WF_OVERLAY_WIDTH := 364.0
+
     {{ LFO }}
-        declare !beat_rates_display [ 19 ]
+        declare const __RATE_ELEMENTS_COUNT := 22
+        declare const __LFO_RATE_FRAME := 1000000 / (__RATE_ELEMENTS_COUNT-1)
+        declare !beat_rates_display [ __RATE_ELEMENTS_COUNT ]
             beat_rates_display [ 00 ] := "1/128"  { 128               }
             beat_rates_display [ 01 ] := "1/64 T" { 64th  triplet     }
             beat_rates_display [ 02 ] := "1/64"   { 64th              }
@@ -205,8 +298,12 @@
             beat_rates_display [ 16 ] := "1/2 D"  { half dotted       }
             beat_rates_display [ 17 ] := "1 T"    { whole triplet     }
             beat_rates_display [ 18 ] := "1"      { whole             }
+            beat_rates_display [ 19 ] := "2"      { 2 x whole         }
+            beat_rates_display [ 20 ] := "3"      { 3 x whole         }
+            beat_rates_display [ 21 ] := "4"      { 4 x whole         }
 
-        declare beat_rates [ 19 ]
+        declare      ~__LFO_RATE_INDEX_DIVIDER := 7.619047 { 160 / 21 }
+        declare beat_rates [ __RATE_ELEMENTS_COUNT ]
             beat_rates [ 00 ] := (DURATION_SIXTEENTH/8)/1000
             beat_rates [ 01 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
             beat_rates [ 02 ] := (DURATION_SIXTEENTH/4)/1000
@@ -226,8 +323,77 @@
             beat_rates [ 16 ] := (DURATION_QUARTER * 3)/1000
             beat_rates [ 17 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
             beat_rates [ 18 ] := (DURATION_QUARTER * 4)/1000
+            beat_rates [ 19 ] := (DURATION_QUARTER * 8)/1000
+            beat_rates [ 20 ] := (DURATION_QUARTER * 12)/1000
+            beat_rates [ 21 ] := (DURATION_QUARTER * 16)/1000
 
-        declare const __BEAT_RATE_DIVISOR := 1000000 / 18
+        declare const __BEAT_RATE_DIVISOR := 1000000 / (__RATE_ELEMENTS_COUNT-1)
+
+        declare !fx_delay_rates_display [ 18 ]
+            fx_delay_rates_display [ 00 ] := "1/64 T" { 64th  triplet     }
+            fx_delay_rates_display [ 01 ] := "1/64"   { 64th              }
+            fx_delay_rates_display [ 02 ] := "1/32 T" { 32nd  triplet     }
+            fx_delay_rates_display [ 03 ] := "1/32"   { 32nd              }
+            fx_delay_rates_display [ 04 ] := "1/16 T" { sixteenth triplet }
+            fx_delay_rates_display [ 05 ] := "1/16"   { sixteenth         }
+            fx_delay_rates_display [ 06 ] := "1/8 T"  { eighth triplet    }
+            fx_delay_rates_display [ 07 ] := "1/16 D" { sixteenth dotted  }
+            fx_delay_rates_display [ 08 ] := "1/8"    { eighth            }
+            fx_delay_rates_display [ 09 ] := "1/4 T"  { quarter triplet   }
+            fx_delay_rates_display [ 10 ] := "1/8 D"  { eight dotted      }
+            fx_delay_rates_display [ 11 ] := "1/4"    { quarter           }
+            fx_delay_rates_display [ 12 ] := "1/2 T"  { half triplet      }
+            fx_delay_rates_display [ 13 ] := "1/4 D"  { quarter dotted    }
+            fx_delay_rates_display [ 14 ] := "1/2"    { half              }
+            fx_delay_rates_display [ 15 ] := "1/2 D"  { half dotted       }
+            fx_delay_rates_display [ 16 ] := "1 T"    { whole triplet     }
+            fx_delay_rates_display [ 17 ] := "1"      { whole             }
+
+        declare const ni_time_knob_unit := 90909
+
+        declare const FX_DELAY_SYNC_DIVISOR := 58523
+
+        declare fx_delay_sync [ 18 ]
+            fx_delay_sync [ 00 ] := ni_time_knob_unit * 0 { 64th  triplet     }
+            fx_delay_sync [ 01 ] := ni_time_knob_unit * 0 { 64th              }
+            fx_delay_sync [ 02 ] := ni_time_knob_unit * 0 { 32nd  triplet     }
+            fx_delay_sync [ 03 ] := ni_time_knob_unit * 0 { 32nd              }
+            fx_delay_sync [ 04 ] := ni_time_knob_unit * 0 { sixteenth triplet }
+            fx_delay_sync [ 05 ] := ni_time_knob_unit * 0 { sixteenth         }
+            fx_delay_sync [ 06 ] := ni_time_knob_unit * 0 { eighth triplet    }
+            fx_delay_sync [ 07 ] := ni_time_knob_unit * 2 { sixteenth dotted  }
+            fx_delay_sync [ 08 ] := ni_time_knob_unit * 0 { eighth            }
+            fx_delay_sync [ 09 ] := ni_time_knob_unit * 0 { quarter triplet   }
+            fx_delay_sync [ 10 ] := ni_time_knob_unit * 2 { eight dotted      }
+            fx_delay_sync [ 11 ] := ni_time_knob_unit * 0 { quarter           }
+            fx_delay_sync [ 12 ] := ni_time_knob_unit * 0 { half triplet      }
+            fx_delay_sync [ 13 ] := ni_time_knob_unit * 2 { quarter dotted    }
+            fx_delay_sync [ 14 ] := ni_time_knob_unit * 0 { half              }
+            fx_delay_sync [ 15 ] := ni_time_knob_unit * 2 { half dotted       }
+            fx_delay_sync [ 16 ] := ni_time_knob_unit * 0 { whole triplet     }
+            fx_delay_sync [ 17 ] := ni_time_knob_unit * 0 { whole             }
+
+         declare fx_delay_units [ 18 ]
+            fx_delay_units [ 00 ] := NI_SYNC_UNIT_64TH_TRIPLET    { 64th  triplet     }
+            fx_delay_units [ 01 ] := NI_SYNC_UNIT_64TH            { 64th              }
+            fx_delay_units [ 02 ] := NI_SYNC_UNIT_32ND_TRIPLET    { 32nd  triplet     }
+            fx_delay_units [ 03 ] := NI_SYNC_UNIT_32ND            { 32nd              }
+            fx_delay_units [ 04 ] := NI_SYNC_UNIT_16TH_TRIPLET    { sixteenth triplet }
+            fx_delay_units [ 05 ] := NI_SYNC_UNIT_16TH            { sixteenth         }
+            fx_delay_units [ 06 ] := NI_SYNC_UNIT_8TH_TRIPLET     { eighth triplet    }
+            fx_delay_units [ 07 ] := NI_SYNC_UNIT_32ND            { sixteenth dotted  }
+            fx_delay_units [ 08 ] := NI_SYNC_UNIT_8TH             { eighth            }
+            fx_delay_units [ 09 ] := NI_SYNC_UNIT_QUARTER_TRIPLET { quarter triplet   }
+            fx_delay_units [ 10 ] := NI_SYNC_UNIT_16TH            { eight dotted      }
+            fx_delay_units [ 11 ] := NI_SYNC_UNIT_QUARTER         { quarter           }
+            fx_delay_units [ 12 ] := NI_SYNC_UNIT_HALF_TRIPLET    { half triplet      }
+            fx_delay_units [ 13 ] := NI_SYNC_UNIT_8TH             { quarter dotted    }
+            fx_delay_units [ 14 ] := NI_SYNC_UNIT_HALF            { half              }
+            fx_delay_units [ 15 ] := NI_SYNC_UNIT_QUARTER         { half dotted       }
+            fx_delay_units [ 16 ] := NI_SYNC_UNIT_WHOLE           { whole triplet     }
+            fx_delay_units [ 17 ] := NI_SYNC_UNIT_WHOLE_TRIPLET   { whole             }
+
+        declare LFO_targets_type [ 32 ]
 
         declare !rate_mode_sync_ms.text [2]
             !rate_mode_sync_ms.text [0] := "sync"
@@ -243,13 +409,199 @@
 
         declare const ~__SEQ_STEP_VALUE_FRAMES := 94.0
 
+        declare LFO_targets_engine_pars [ 16 ] := (...
+            ENGINE_PAR_VOLUME,                     ... {  0  Volume       }
+            ENGINE_PAR_PAN,                        ... {  1  Pan          }
+            ENGINE_PAR_STEREO,                     ... {  2  Width        }
+            ENGINE_PAR_SHAPE,                      ... {  3  Saturation   }
+            ENGINE_PAR_DAMPING,                    ... {  4  Damp         }
+            ENGINE_PAR_DRIVE,                      ... {  5  Drive        }
+            ENGINE_PAR_BITS,                       ... {  6  Bits         }
+            ENGINE_PAR_FREQUENCY,                  ... {  7  Srate        }
+            ENGINE_PAR_NOISELEVEL,                 ... {  8  Noise        }
+            ENGINE_PAR_TP_GAIN,                    ... {  9  TP Gain      }
+            ENGINE_PAR_TP_WARMTH,                  ... { 10  TP Warmth    }
+            ENGINE_PAR_CHORAL_MIX,                 ... { 11  Chorus Wet   }
+            ENGINE_PAR_CHORAL_AMOUNT,              ... { 12  Chorus Depth }
+            ENGINE_PAR_CHORAL_RATE,                ... { 13  Chorus Speed }
+            ENGINE_PAR_CHORAL_FEEDBACK,            ... { 14  Chorus Phase }
+            ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN     ... { 15  Reverb       }
+            )
+
+        declare LFO_targets_GROUP [ 16 ] := ( ...
+            __GROUP_NONE, ... {  0  Volume       }
+            __GROUP_NONE, ... {  1  Pan          }
+            __GROUP_NONE, ... {  2  Width        }
+            __GROUP_NONE, ... {  3  Saturation   }
+            __GROUP_NONE, ... {  4  Damp         }
+            __GROUP_NONE, ... {  5  Drive        }
+            __GROUP_NONE, ... {  6  Bits         }
+            __GROUP_NONE, ... {  7  Srate        }
+            __GROUP_NONE, ... {  8  Noise        }
+            __GROUP_NONE, ... {  9  TP Gain      }
+            __GROUP_NONE, ... { 10  TP Warmth    }
+            __GROUP_NONE, ... { 11  Chorus Wet   }
+            __GROUP_NONE, ... { 12  Chorus Depth }
+            __GROUP_NONE, ... { 13  Chorus Speed }
+            __GROUP_NONE, ... { 14  Chorus Phase }
+            __GROUP_NONE  ... { 15  Reverb       }
+            )
+
+        declare LFO_targets_SLOT [ 16 ] := ( ...
+            __SLOT_NONE,        ... {  0  Volume       }
+            __SLOT_NONE,        ... {  1  Pan          }
+            __SLOT_B_STEREO,      ... {  2  Width        }
+            __SLOT_G_SATURATION,  ... {  3  Saturation   }
+            __SLOT_G_DISTORTION,  ... {  4  Damp         }
+            __SLOT_G_DISTORTION,  ... {  5  Drive        }
+            __SLOT_B_LOFI,        ... {  6  Bits         }
+            __SLOT_B_LOFI,        ... {  7  Srate        }
+            __SLOT_B_LOFI,        ... {  8  Noise        }
+            __SLOT_B_TAPESAT,     ... {  9  TP Gain      }
+            __SLOT_B_TAPESAT,     ... { 10  TP Warmth    }
+            __SLOT_B_CHORUS,      ... { 11  Chorus Wet   }
+            __SLOT_B_CHORUS,      ... { 12  Chorus Depth }
+            __SLOT_B_CHORUS,      ... { 13  Chorus Speed }
+            __SLOT_B_CHORUS,      ... { 14  Chorus Phase }
+            __SLOT_B_REVERB       ... { 15  Reverb       }
+            )
+
+        declare LFO_targets_BUS  [ 16 ] := ( ...
+            NI_BUS_OFFSET, ... {  0  Volume       }
+            NI_BUS_OFFSET, ... {  1  Pan          }
+            NI_BUS_OFFSET, ... {  2  Width        }
+            NI_BUS_OFFSET, ... {  3  Saturation   }
+            NI_BUS_OFFSET, ... {  4  Damp         }
+            NI_BUS_OFFSET, ... {  5  Drive        }
+            NI_BUS_OFFSET, ... {  6  Bits         }
+            NI_BUS_OFFSET, ... {  7  Srate        }
+            NI_BUS_OFFSET, ... {  8  Noise        }
+            NI_BUS_OFFSET, ... {  9  TP Gain      }
+            NI_BUS_OFFSET, ... { 10  TP Warmth    }
+            NI_BUS_OFFSET, ... { 11  Chorus Wet   }
+            NI_BUS_OFFSET, ... { 12  Chorus Depth }
+            NI_BUS_OFFSET, ... { 13  Chorus Speed }
+            NI_BUS_OFFSET, ... { 14  Chorus Phase }
+            NI_BUS_OFFSET  ... { 15  Reverb       }
+            )
+
+        declare FX_saturation_type [ 3 ] := ( ...
+            NI_SHAPE_TYPE_CLASSIC,  ...
+            NI_SHAPE_TYPE_ENHANCED, ...
+            NI_SHAPE_TYPE_DRUMS     ...
+        )
+        declare !FX_saturation_type_txt [ 3 ] := ( ...
+            "Classic",  ...
+            "Enhanced", ...
+            "Drums"     ...
+        )
+        declare FX_distortion_type [ 2 ] := ( ...
+            NI_DISTORTION_TYPE_TUBE,  ...
+            NI_DISTORTION_TYPE_TRANS  ...
+        )
+        declare !FX_distortion_type_txt [ 2 ] := ( ...
+            "Tube",  ...
+            "Transistor"  ...
+        )
+        declare FX_delay_engine_par [ 7 ] := ( ...
+            ENGINE_PAR_RDL_PINGPONG,           ...
+            ENGINE_PAR_RDL_TIME_UNIT,          ...
+            ENGINE_PAR_RDL_LOWCUT,             ...
+            ENGINE_PAR_RDL_HIGHCUT,            ...
+            ENGINE_PAR_SEND_EFFECT_DRY_LEVEL,  ...
+            ENGINE_PAR_RDL_FEEDBACK,           ...
+            ENGINE_PAR_RDL_TIME                ...
+        )
+
+        declare !FX_delay_param_txt [ 7 ]
+            FX_delay_param_txt [ 0 ] := "Pingpong"
+            FX_delay_param_txt [ 1 ] := "Sync"
+            FX_delay_param_txt [ 2 ] := "Low Cut"
+            FX_delay_param_txt [ 3 ] := "High Cut"
+            FX_delay_param_txt [ 4 ] := "Dry | Wet"
+            FX_delay_param_txt [ 5 ] := "Feedback"
+            FX_delay_param_txt [ 6 ] := "Time"
+
+        declare !FX_delay_param_type_txt [ 7 ]
+            FX_delay_param_type_txt [ 0 ] := ""
+            FX_delay_param_type_txt [ 1 ] := ""
+            FX_delay_param_type_txt [ 2 ] := "hz"
+            FX_delay_param_type_txt [ 3 ] := "hz"
+            FX_delay_param_type_txt [ 4 ] := ""
+            FX_delay_param_type_txt [ 5 ] := "%"
+            FX_delay_param_type_txt [ 6 ] := "ms"
+
+        declare FX_reverb_engine_par [ 7 ] := ( ...
+            ENGINE_PAR_IRC_PREDELAY,         ...
+            ENGINE_PAR_IRC_LENGTH_RATIO_ER,  ...
+            ENGINE_PAR_IRC_FREQ_LOWPASS_ER,  ...
+            ENGINE_PAR_IRC_FREQ_HIGHPASS_ER, ...
+            ENGINE_PAR_IRC_LENGTH_RATIO_LR,  ...
+            ENGINE_PAR_IRC_FREQ_LOWPASS_LR,  ...
+            ENGINE_PAR_IRC_FREQ_HIGHPASS_LR  ...
+        )
+
+        declare !FX_reverb_param_txt [ 4 ]
+            FX_reverb_param_txt [ 0 ] := "Pre-Delay"
+            FX_reverb_param_txt [ 1 ] := "Size"
+            FX_reverb_param_txt [ 2 ] := "Low Cut"
+            FX_reverb_param_txt [ 3 ] := "High Cut"
+
+        declare !FX_reverb_param_type_txt [ 4 ]
+            FX_reverb_param_type_txt [ 0 ] := "ms"
+            FX_reverb_param_type_txt [ 1 ] := ""
+            FX_reverb_param_type_txt [ 2 ] := "hz"
+            FX_reverb_param_type_txt [ 3 ] := "hz"
+
+        declare !FX_switch_state [ 2 ]
+            FX_switch_state [ 0 ] := "Off"
+            FX_switch_state [ 1 ] := "On"
+
+        declare !FX_sync_mode [ 2 ]
+            FX_sync_mode [ 0 ] := "ms"
+            FX_sync_mode [ 1 ] := "beat"
+
+        define FX_SWITCH_OFF_FONT := 0
+        define FX_SWITCH_ON_FONT  := 1
+        declare FX_switches_fonts [ 2 ]
+            FX_switches_fonts [ FX_SWITCH_OFF_FONT ] := get_font_id("font_Roboto Regular Size 11 #8E7466 100p")
+            FX_switches_fonts [ FX_SWITCH_ON_FONT  ] := get_font_id("font_Roboto Regular Size 11 #FFE4D6")
+
+        declare !MAIN_lfp_power_txt [ 8 ]
+            MAIN_lfp_power_txt [ 0 ] := 'Layer'
+            MAIN_lfp_power_txt [ 1 ] := 'Saturation'
+            MAIN_lfp_power_txt [ 2 ] := 'Distortion'
+            MAIN_lfp_power_txt [ 3 ] := 'Tape Saturation'
+            MAIN_lfp_power_txt [ 4 ] := 'Lofi'
+            MAIN_lfp_power_txt [ 5 ] := 'Delay'
+            MAIN_lfp_power_txt [ 6 ] := 'Chorus'
+            MAIN_lfp_power_txt [ 7 ] := 'Reverb'
+
+        declare MAIN_lfp_power_to_slot_mapping [ 8 ]
+            MAIN_lfp_power_to_slot_mapping [ 0 ] := -1 // this is the layer, won't be used
+            MAIN_lfp_power_to_slot_mapping [ 1 ] := __SLOT_G_SATURATION
+            MAIN_lfp_power_to_slot_mapping [ 2 ] := __SLOT_G_DISTORTION
+            MAIN_lfp_power_to_slot_mapping [ 3 ] := __SLOT_B_LOFI
+            MAIN_lfp_power_to_slot_mapping [ 4 ] := __SLOT_B_TAPESAT
+            MAIN_lfp_power_to_slot_mapping [ 5 ] := __SLOT_B_DELAY
+            MAIN_lfp_power_to_slot_mapping [ 6 ] := __SLOT_B_CHORUS
+            MAIN_lfp_power_to_slot_mapping [ 7 ] := __SLOT_B_REVERB
+
+        declare !arp_menu_items_text [ 6 ]
+            arp_menu_items_text [ 0 ] := "as played"
+            arp_menu_items_text [ 1 ] := "up"
+            arp_menu_items_text [ 2 ] := "down"
+            arp_menu_items_text [ 3 ] := "up-down"
+            arp_menu_items_text [ 4 ] := "random"
+            arp_menu_items_text [ 5 ] := "chord"
+
     {{ ADSR }}
         declare ADSR_engine_pars [ 4 ]
             ADSR_engine_pars [ 0 ] := ENGINE_PAR_ATTACK
             ADSR_engine_pars [ 1 ] := ENGINE_PAR_DECAY
             ADSR_engine_pars [ 2 ] := ENGINE_PAR_SUSTAIN
             ADSR_engine_pars [ 3 ] := ENGINE_PAR_RELEASE
-        
+
 
 { VARIABLES _____________________________________________________________________________________ }
     { sketch ___________________________________________________________________________________ }
@@ -308,6 +660,12 @@
         declare ~z.r
     {{ GENERAL }}
         declare note_held_count
+        declare read SHOWING_PANEL
+        declare MATRIX.matrix.center.mouseON [2] // 0 is the state, 1 is the quadrant start index
+
+    {{ SOURCES }}
+    declare read selected_source [ 2 ]
+    declare read source_page [ 2 ]
 
     {{ SEQ }}
         declare SEQ.LEFT.step_index
@@ -334,12 +692,36 @@
 
         declare SEQ.DUAL.current_block [ 2 ] := (-1)
         declare SEQ.JOIN.current_block       :=  -1
+        declare seq_join_side
+        declare play_layer_count
+
+        declare read targets_power_state [ 2, 5 ] // 2 sides, 5 diferent targets 
+
+        declare read SEQ.humanize [ 2 ]
+
+        { sequencer target data  
+            there's 6 states:
+                1) SEQ DUAL, left  target OFF
+                2) SEQ DUAL, left  target ON
+                3) SEQ DUAL, right target OFF
+                4) SEQ DUAL, right target ON
+                5) SEQ JOIN, target OFF
+                6) SEQ JOIN, target ON
+
+                how to represent these states:
+                a single integer variable, with the index of the state
+        }
+        // declare seq_target_state [  ]
 
         { so we can have independent intensities per target }
         declare read SEQ.flux_rand_intensity [ 2, 5 ]
+        declare read SEQ.join.flux_rand_intensity [ 5 ]
 
         declare read layers.seq_play_direction [ 2 ]
         declare read seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
+
+        declare read layers.seq_join_play_direction
+        declare read seq_join.direction_status
 
         declare read SEQ.rate [ 2 ] // one for each side
 
@@ -358,7 +740,7 @@
         declare SEQ.key_count
         declare SEQ.step_velocity
         declare SEQ.step_pitch
-        declare SEQ.step_octave
+        declare SEQ.step_length
         declare SEQ.step_pan
         declare SEQ.step_lp_filter
         declare SEQ.step_hp_filter
@@ -367,8 +749,8 @@
         declare SEQ.flux_velo
         declare SEQ.flux_pitch_seed
         declare SEQ.flux_pitch
-        declare SEQ.flux_octave_seed
-        declare SEQ.flux_octave
+        declare SEQ.flux_length_seed
+        declare SEQ.flux_length
         declare SEQ.flux_pan_seed
         declare SEQ.flux_pan
         declare SEQ.flux_filter_seed
@@ -379,6 +761,11 @@
     {{ PLAY ENGINE }}
         declare layers.note_events [ 2, 128 ]
         declare layers.note_velo   [ 2, 128 ] // stores played velocities
+        declare last_played_note              // to use as index for sample start data
+        declare read ?sample_starts [ 2, 128 ]
+        declare read ?sample_tuning [ 2, 128 ]
+        declare ~ncb_tune_knob
+        declare  ncb_counter
 
     {{ LCB }}
         declare read ~__BPM
@@ -389,20 +776,86 @@
         declare lcb_step_counter_end
         declare lcb_counter1
         declare lcb_play_direction_index
+        declare LFO_target_group
+        declare lcb_lfo_group_counter
+        declare lcb_wf_left_cursor_pos
+        declare lcb_wf_left_last_cursor_pos
+        declare lcb_wf_right_cursor_pos
+        declare lcb_wf_right_last_cursor_pos
 
     {{ ARP }}
         declare read arp_mode [ 2 ]
 
     {{ LFO }}
         declare read LFO_data [ 4 ]
-            LFO_data [ LFO_WAVESHAPE ] := LFO_WAVESHAPE_SIN
 
         declare read LFO_rate
-        declare read ~LFO_sine_step
+
+        { this exists in case certain targets will have a different max than 10^6 }
+        declare LFO_control_value_max [45]  := (500000)
+            LFO_control_value_max [2]   := (500000) // width
+            LFO_control_value_max [18]  := (500000) // width
+
+        { store the LFO amount value in the range 0 - 1.0 }
+        declare read ?LFO_amount_pct [ 45 ] // value per control 
+        declare read ~GLOBAL_LFO.depth_float_pct
+        declare ~LFO_depth_offset  { to help calculate values where global LFO depth != 100%  }
+        declare ~LFO_engine_min
+        declare ~LFO_engine_max
+        declare ~LFO_lcb_depth_offset  { to help calculate values where global LFO depth != 100%  }
+        declare ~LFO_lcb_ind_min
+        declare ~LFO_lcb_ind_max
+        declare ~LFO_lcb_cursor_calc
+        declare read ~LFO_rate_pct  // the LFO rate squished into 0 : 1 range
+        declare ~tau_hz_ms_rate_divisor
+        declare ~LFO_ms_rate_label_disp_value
+        declare LFO_target_MAIN.FX.LEFT.saturation
+        declare ~temp_real
+        declare ~LFO_target_MAIN.FX.LEFT.LFO_saturation_pct
+        define  LFO.MAIN.FX.LEFT.saturation.value_range := 1000000.0
+
+        declare read ?LFO_modulation_data     [ 44, 4 ] 
+        { rows = control value id, 
+          columns = control value (center), center in pct, mod min, mod max }
+        declare read LFO_modulation_ring_data [ 44, 4 ] 
+
+        declare read LFO_lcb_rate
+        declare lcb_control_counter
+        declare lcb_control_counter_adjusted // to access the right side and FX page 
+        declare LFO_lcb_rate_ms_counter
+        declare LFO_lcb_rate_beat_counter
         declare ~LFO_emitted_value
+        declare read ~LFO_sine_step
+        declare      ~LFO_sine_value
+        declare      ~LFO_emitted_value_phase_checked
+        declare ~LFO_mod_center
+        declare ~LFO_mod_amount
+        declare ~LFO_mod_min
+        declare ~LFO_mod_max
+        declare LFO_mod_ring_min
+        declare LFO_mod_ring_max
+        declare LFO_mod_ring_center
+        declare LFO_mod_ring_amount
+        declare LFO_target_array_idx
+        declare LFO_rate_cycles  { to be used with RECT and RAND waveforms }
+        { Triangle support }
+        declare ~LFO_TRI_range_const := 1.0
+        declare ~LFO_tri_step { the total cycle duration / rate }
+        declare ~LFO_tri_lcb_step { LFO_tri_step * lcb_step }
+        declare ~LFO_tri_period
+        declare LFO.depth.lock_mode_counter
+        declare LCB_update_blue_ring_indicator
+
+        declare LFO_bus_adjustment // in the LCB loop, to  access the right side and fx page
+        declare read LFO_waveform_selection
+
+        // for when the LFO lock is on, we can retrieve the states of each local LFO from here when it is off again
+        declare read LFO_global_local_recall [ 32 ]  
+
 
         { temp }
         declare LFO_seq_step_count
+
 
 { CB SPECIFIC ___________________________________________________________________________________ }
     declare uics_uiid_index
@@ -413,13 +866,30 @@
     declare uics_shift_key
     declare uics_counter
     declare uics_counter2
+    declare uics_counter3
     declare uics_block_index
+    declare uics_random
+    declare uics_random_delta
+    declare uics_current_value
+    declare ~uics_random_delta.r
+    declare ~uics_current_value.r
     declare ~uics_r_value
     declare uics_i_value
+    declare uics_result
     declare @uics_title
     declare @uics_text_data
+    declare @uics_text_data_type
     declare uics_loop_range_min
     declare uics_loop_range_max
+    declare uicbs_custom_id
+    declare uicbs_control_par_value
+    declare uics_engine_par
+    declare uics_slot
+    declare uics_generic
+    declare uics_dual_join_side
+
+    declare uicb_counter
+    declare uicb_counter2
 
     declare pccb_counter
 
@@ -435,6 +905,9 @@
         declare uicb_combine_block
         declare uicb_combine_counter
 
+    {{xypad_MAIN.SEQ.join}}
+        declare uicb_jxy_side
+
 
 { FUNCTIONS   ___________________________________________________________________________________ }
     //PLAY_NOTE_NCB
@@ -449,6 +922,29 @@
     //draw_seq
     declare ds.counter
 
+    //convolution_predelay_label
+    declare ~conv_label_val 
+    declare $conv_label_res
+    declare conv_predelay_uiid
+    declare conv_freq_uiid
+    declare const ~CONV_LABEL_MIN_COEF    := 0.6931471805599453 
+    declare const ~CONV_LABEL_MAX_COEF    := 5.7104270173748696 
+    declare const ~CONV_LABEL_OFFSET      := 2.0 
+    declare const ~CONV_LABEL_MIN_EQ_COEF := 2.99573227355399 
+    declare const ~CONV_LABEL_MAX_EQ_COEF := 9.90348755253612 
+    declare const ~CONV_LABEL_RANGE       := ~CONV_LABEL_MAX_COEF - ~CONV_LABEL_MIN_COEF 
+    declare const ~CONV_LABEL_EQ_RANGE    := ~CONV_LABEL_MAX_EQ_COEF - ~CONV_LABEL_MIN_EQ_COEF 
+    declare @conv_label
+
+    //update_lfo_rate
+    declare seq.rate.left_value
+    declare seq.rate.right_value
+    declare seq.rate.left_calc
+    declare seq.rate.right_calc
+
+    //UICBS_MAIN.FX.modules.power | UICBS_MAIN.FX.modules.links
+    declare uicbs_fx_panel_side
+
     //fn001_get_seq_step_index
     declare fn001.a.side // 0 left 1 right
     declare fn001.a.block_index
@@ -457,8 +953,9 @@
     declare fn001.r.step_index
 
     //fn002_update_seq_step_value
-    declare fn002.a.caller
+    declare fn002.a.table_to_update
     declare fn002.a.side
+    declare fn002.a.target
     declare fn002.a.step_index
     declare ~fn002.a.value
     declare fn002.l.mode_side
@@ -470,6 +967,7 @@
     declare fn003.a.block_index
     declare fn003.l.block_index_mod
     declare fn003.l.counter
+    declare fn003.l.join_side
 
     //fn004_get_current_seq_block
     declare ~fn004.a.x_coord
@@ -482,6 +980,8 @@
     //fn006_recall_seq_values
     declare fn006.a.side
     declare fn006.l.mode_side
+    declare fn006.l.counter_block
+    declare fn006.l.counter_step
 
     //fn007_update_block_and_steps_ts
     declare fn007.a.side
@@ -531,20 +1031,22 @@
 
     //fn016_set_data_display_from_seq_xy
     declare ~fn016.a.value
-    declare fn016.a.target_index
+    declare fn016.a.side
     declare @fn016.r.title
     declare @fn016.r.text_data
 
     //fn017_get_seq_target_data
+    declare fn017.a.transform_value
     declare fn017.a.side
     declare fn017.a.step_counter
     declare fn017.a.key_note
     declare fn017.a.block_step_index
+    declare fn017.l.seq_data
     declare fn017.l.pan_data
     declare fn017.l.filter_data
     declare fn017.r.velocity
     declare fn017.r.pitch
-    declare fn017.r.octave
+    declare fn017.r.length
     declare fn017.r.pan
     declare fn017.r.lp_filter_value
     declare fn017.r.hp_filter_value
@@ -559,6 +1061,7 @@
 
     //fn002_set_seq_step_value_and_ps
     declare fn019.a.side
+    declare fn019.a.target
     declare fn019.a.step_index
     declare fn019.l.mode_side
     declare ~fn019.a.value
@@ -580,24 +1083,26 @@
     declare  fn022.a.block_step_index
     declare  fn022.a.step_velocity
     declare  fn022.a.step_pitch
-    declare  fn022.a.step_octave
+    declare  fn022.a.step_length
     declare  fn022.a.step_pan
     declare  fn022.a.step_filter
 
+    declare  fn022.l.seq_mode_side
+    declare  fn022.l.flux_intensity
     declare  fn022.l.flux_velo
     declare  fn022.l.flux_pitch
-    declare  fn022.l.flux_octave
+    declare  fn022.l.flux_length
     declare  fn022.l.flux_pan
     declare  fn022.l.flux_filter
     declare  fn022.l.flux_velo_seed
     declare  fn022.l.flux_pitch_seed
-    declare  fn022.l.flux_octave_seed
+    declare  fn022.l.flux_length_seed
     declare  fn022.l.flux_pan_seed
     declare  fn022.l.flux_filter_seed
 
     declare  fn022.r.step_velocity
     declare  fn022.r.step_pitch
-    declare  fn022.r.step_octave
+    declare  fn022.r.step_length
     declare  fn022.r.step_pan
     declare  fn022.r.step_filter
     declare  fn022.r.step_lp_filter
@@ -611,7 +1116,7 @@
     //fn024_update_flux_data_and_ui
     declare  fn024.a.step_velocity   
     declare  fn024.a.step_pitch      
-    declare  fn024.a.step_octave     
+    declare  fn024.a.step_length     
     declare  fn024.a.step_pan        
     declare  fn024.a.step_filter     
     declare  fn024.a.step_lp_filter  
@@ -619,15 +1124,22 @@
     declare  fn024.a.side            
     declare  fn024.a.step_counter    
     declare  fn024.a.block_step_index
+    declare ~fn024.l.step_velocity_flux
+    declare ~fn024.l.step_pitch_flux
+    declare ~fn024.l.step_length_flux
+    declare ~fn024.l.step_pan_flux
+    declare ~fn024.l.step_filter_flux
     declare ~fn024.l.picture_state
     declare  fn024.l.pan_data
 
-    //fn025_update_all_block_steps
+    //fn025_update_flux_on_all_block_steps
     declare fn025.a.side
-    declare fn025.l.counter2
     declare fn025.l.counter
+    declare fn025.l.counter2
+    declare fn025.l.join_side_counter
 
-    //fn026_get_seq_fluxxed_target_data
+    //fn026_get_seq_target_data
+    declare fn026.a.data_type // if flux or pre-flux -> SEQ.data.flux.i or SEQ.data.dyn.i
     declare fn026.a.side
     declare fn026.a.key_note
     declare fn026.a.step_counter
@@ -636,7 +1148,7 @@
     declare fn026.l.filter_data
     declare fn026.r.velocity
     declare fn026.r.pitch
-    declare fn026.r.octave
+    declare fn026.r.length
     declare fn026.r.pan
     declare fn026.r.filter_value
     declare fn026.r.lp_filter_value
@@ -647,6 +1159,7 @@
     declare fn027.a.side
     declare fn027.a.note
     declare fn027.a.step_counter
+    declare fn027.l.step_duration
 
     //fn028_update_arp_note_buffers
     declare fn028.a.side
@@ -658,6 +1171,7 @@
 
     //fn030_set_seq_step_dyn_value
     declare  fn030.a.side
+    declare  fn030.a.target
     declare  fn030.a.step_index
     declare ~fn030.a.value
     declare  fn030.l.mode_side
@@ -665,3 +1179,158 @@
     declare ~fn030.l.dyn_transf_value
     declare ~fn030.l.delta_max
     declare ~fn030.r.transf_value
+
+    //fn031_set_dyn_sliders_picture
+    declare fn031.a.reset
+    declare fn031.a.side
+    declare fn031.a.block_index
+    declare fn031.l.step_index
+
+    //fn032_set_seq_step_value_and_ui_via_dyn_slider
+    declare fn032.a.side
+    declare fn032.l.loop_process_side
+    declare fn032.l.block_index
+    declare fn032.l.side_counter
+    declare fn032.l.step_index
+    declare fn032.l.flux_rand_power
+    declare fn032.l.flux_rand_block_power
+
+    //fn033_transform_step_value_into_dynamic
+    declare fn033.a.source
+    declare fn033.a.side
+    declare ~fn033.a.step_value
+    declare ~fn033.a.dyn_value
+    declare fn033.l.block_index
+    declare fn033.l.step_index
+
+    declare ~fn033.l.delta_max
+    declare ~fn033.l.dyn_transf_value
+    declare ~fn033.r.transf_value.r
+    declare  fn033.r.transf_value.i
+
+    //fn034_transform_data_according_to_seq_target
+    declare  fn034.a.target_index
+    declare  fn034.a.value
+    declare  fn034.r.transf_value.i
+    declare  fn034.r.transf_value.i_lp
+    declare  fn034.r.transf_value.i_hp
+    declare ~fn034.r.transf_value.r
+    declare ~fn034.r.transf_value.r_lp
+    declare ~fn034.r.transf_value.r_hp
+
+    //fn035_update_random_labels
+    declare  fn035.a.side
+    declare ~fn035.a.value
+
+    //fn036_set_control_param_slider
+    declare fn036.a.side
+    declare fn036.a.target
+    declare fn036.a.control_value
+
+    //fn037_LFO.update_intensity_ring
+    declare fn037.a.side
+    declare fn037.a.target
+    declare fn037.a.control_value
+    declare fn037.a.LFO_amount
+    declare fn037.a.link
+    declare fn037.l.counter
+    declare fn037.l.target
+    declare fn037.l.picture_state_start
+    declare fn037.l.picture_state_end
+
+    //fn038_LFO_store_LFO_mod_data
+    declare fn038.a.side
+    declare fn038.a.target
+    declare fn038.a.control_value
+    declare fn038.a.LFO_amount
+    declare fn038.a.link
+    declare fn038.a.control_type
+    declare fn038.l.target
+    declare fn038.l.counter
+
+    //fn039_set_FX_engine_par
+    declare fn039.a.side
+    declare fn039.a.target
+    declare fn039.a.control_value
+    declare fn039.a.link
+
+    //fn040_set_MATRIX_slider_ps
+    declare fn040.a.side
+
+    //fn041_LFO_off_restore_buffer_value
+    declare fn041.a.target { uses the LFO control values target constants }
+    declare fn041.a.side
+    declare fn041.l.target
+
+    //fn042_show_hide_fx_panels
+    declare fn042.a.side
+    declare fn042.a.other_side
+    declare fn042.a.panel
+    declare fn042.l.panel
+
+    //fn043_show_hide_fx_panels
+    declare fn043.a.panel
+    declare fn043.a.other_side
+    declare fn043.a.side
+    declare fn043.l.panel
+
+    //fn044_LFO_calculate_engine_value
+    declare  fn044.a.target { uses the LFO control values target constants }
+    declare ~fn044.a.sine_value { uses the LFO control values target constants }
+    declare  fn044.a.left_or_right
+    declare ~fn044.l.calc  { for clarity  }
+    declare  fn044.l.target
+    declare  fn044.r.engine_value
+
+    //fn045_set_lfo_waveshape_selectors
+    declare fn045.a.index
+    declare fn045.l.counter
+
+    //fn046_set_lfo_depth_globally
+    declare fn046.a.caller
+    declare fn046.a.target
+    declare fn046.a.target_value
+    declare fn046.l.global_value
+
+    // fn047_update_all_lfo_controls_data_and_ui
+    declare fn047.l.counter
+    declare fn047.l.side_counter
+
+    //fn048_set_fx_saturation_mode
+    declare fn048.a.side
+    declare fn048.a.index
+    declare fn048.l.counter
+
+    //fn049_set_seq_values_to_original
+    declare fn49.a.side
+    declare fn49.a.step
+    declare fn49.a.block
+
+    //fn050_seq.arp.get_play_note_from_buffer
+    declare fn50.a.side
+
+    //fn051_set_seq_on_off_panels
+    declare fn051.a.side
+    declare fn051.a.seq_state
+    declare fn051.a.layer_state
+
+    //fn052_set_wf_cursor_and_overlay
+    declare fn052.a.value_type
+    declare fn052.a.side
+    declare ~fn052.a.value
+
+    //fn053_update_single_shot_controls
+    declare  fn053.a.side
+    declare  fn053.a.note
+    declare ~fn053.l.tune_knob
+
+    //fn054_update_source_buttons
+    declare fn054.a.side
+    declare fn054.a.index
+    declare fn054.l.counter
+
+    // fn055_recall_source_buttons_page
+    declare fn055.l.counter
+
+    //fn056_single_shot_wf_preview
+    declare fn056.a.side

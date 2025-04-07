@@ -4,47 +4,13 @@ on persistence_changed
     import "ea-flux-engine data loading.ksp"
     // import "ARP/__ARP 02 pc cb.ksp"
 
-    { dual or joined sequencer }
-    call draw_seq
-
-    SEQ.showing_target [ __LEFT  ] := SEQ_TARGET_VELO
-    SEQ.showing_target [ __RIGHT ] := SEQ_TARGET_VELO
-
-    { recall block steps numbers and steps pictures }
-    fn003.a.mode := switch_MAIN.SEQ.combine
-    for pccb_counter := 0 to 7
-        fn003.a.block_index := pccb_counter
-        fn003.a.side := __LEFT
-        call fn003_set_block_step_count
-        fn003.a.side := __RIGHT
-        call fn003_set_block_step_count
-    end for
-
-    { recall picture states for steps labels }
-    fn006.a.side := __LEFT
-    call fn006_recall_seq_values
-    fn006.a.side := __RIGHT
-    call fn006_recall_seq_values
-
-    { target selectors and activators }
-    fn005.a.selector_index := SEQ_TARGET_VELO
-    call fn005_set_seq_target_selector
-
-    fn011.a.side  := __LEFT
-    fn011.a.index := SEQ_TARGET_VELO
-    call fn011_clear_target_activators
-    fn011.a.side  := __RIGHT
-    fn011.a.index := SEQ_TARGET_VELO
-    call fn011_clear_target_activators
-
-    
-
-    { change text alignment on target selectors }
-    call set_seq_target_selectors_text_alignment
-
-
-    message("ea-flux-engine loaded successfully")
     button_demo.mode := __OFF
+
+    { natural init state }
+    panel_MAIN.2SEQ.RIGHT.arpModes    -> UI_HIDE
+    panel_MAIN.2SEQ.LEFT.arpModes     -> UI_HIDE
+    panel_MAIN.FX.LEFT.reverb.menu   -> UI_HIDE
+    panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
 
     // development ------------------------------------------------------------------------------- 
         { work on these as the development goes until there's nothing here }
@@ -56,38 +22,18 @@ on persistence_changed
         label_MAIN.ADSR.RIGHT.linked      -> UI_HIDE
         label_MAIN.FX.LEFT.linked         -> UI_HIDE
         label_MAIN.FX.RIGHT.linked        -> UI_HIDE
-        waveform_MAIN.2SEQ.LEFT.display   -> UI_HIDE
-        waveform_MAIN.2SEQ.RIGHT.display  -> UI_HIDE
-        // panel_MAIN.2SEQ.LEFT.fluxxArp     -> UI_HIDE
-        // panel_MAIN.2SEQ.RIGHT.fluxxArp    -> UI_HIDE
-        panel_MAIN.2SEQ.RIGHT.arpModes    -> UI_HIDE
-        panel_MAIN.2SEQ.LEFT.arpModes     -> UI_HIDE
-        panel_MAIN.2SEQ.LEFT.single.shot  -> UI_HIDE
-        panel_MAIN.2SEQ.RIGHT.single.shot -> UI_HIDE
-
-        label_MAIN.2SEQ.RIGHT.off -> UI_HIDE
-        label_MAIN.2SEQ.LEFT.off  -> UI_HIDE
-
-        panel_MAIN.FX.LEFT.reverb.menu   -> UI_HIDE
-        panel_MAIN.FX.RIGHT.reverb.menu  -> UI_HIDE
 
         { I may use this in the combined SEQ }
         label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
         label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+
     // END development --------------------------------------------------------------------------- 
 
+    call pccb_init_instrument()
 
-    for pccb_counter := __LEFT to __RIGHT
-        fn021.a.side := pccb_counter
-        call fn21_get_seq_target_active_activator
-        { we only update the label if the power button pressed has the same index as the active target activator }
-        if fn021.r.active_index = SEQ_TARGET_VELO
-            fn020.a.seq_power_state    := UIID_MAIN.seq.power [ pccb_counter ] -> value
-            fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, SEQ_TARGET_VELO ]
-            fn020.a.side               := pccb_counter
-            fn020.a.target_index       := SEQ_TARGET_VELO
-            call fn020_update_seq_target_off_label
-        end if
-    end for
+    message("ea-flux-engine loaded successfully")
+    message(f' time: < get_engine_par(ENGINE_PAR_RDL_TIME_UNIT, -1, 4, NI_BUS_OFFSET) >')
+
+    message(f'__MAX_SOURCE_PAGES: <__MAX_SOURCE_PAGES >')
 
 end on

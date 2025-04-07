@@ -2,6 +2,44 @@ on listener
     // import "ARP/__ARP 07 listener cb.ksp"
 
     if (NI_SIGNAL_TYPE = NI_SIGNAL_TIMER_MS)
+        {{ WAVEFORM CURSOR UPDATE }}
+        lcb_wf_left_cursor_pos := -1
+        if  UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and ...
+            event_status(layers.note_events [ __LEFT, last_played_note ]) # EVENT_STATUS_INACTIVE and ...
+            note_held_count > 0
+
+            lcb_wf_left_cursor_pos := get_event_par(layers.note_events [ __LEFT, last_played_note ], EVENT_PAR_PLAY_POS)
+            if  lcb_wf_left_cursor_pos = 0
+                lcb_wf_left_cursor_pos := -1
+            end if
+        end if
+
+        set_ui_wf_property(                  ...
+            waveform_MAIN.2SEQ.LEFT.display, ...
+            UI_WF_PROP_PLAY_CURSOR,          ...
+            0,                               ...
+            lcb_wf_left_cursor_pos           ...
+        )
+
+        lcb_wf_right_cursor_pos := -1 // reset the cursor variable 
+        if  UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF and ...
+            event_status(layers.note_events [ __RIGHT, last_played_note ]) # EVENT_STATUS_INACTIVE and ...
+            note_held_count > 0
+
+            lcb_wf_right_cursor_pos      := get_event_par(layers.note_events [ __RIGHT, last_played_note ], EVENT_PAR_PLAY_POS)
+            if  lcb_wf_right_cursor_pos = 0
+                lcb_wf_right_cursor_pos := -1
+            end if
+        end if
+
+        set_ui_wf_property(                   ...
+            waveform_MAIN.2SEQ.RIGHT.display, ...
+            UI_WF_PROP_PLAY_CURSOR,           ...
+            0,                                ...
+            lcb_wf_right_cursor_pos           ...
+        )
+
+
         {{ SEQUENCER }}
         if note_held_count > 0 
             if switch_MAIN.SEQ.combine = __SEQ_DUAL
@@ -26,11 +64,6 @@ on listener
                 for lcb_play_side := __LEFT to __RIGHT
                     if SEQ.DUAL.current_block [ lcb_play_side ] > -1 and note_held_count > 0
                         { counter behavior will depend on the mode }
-                        // select(layers.seq_play_direction [ lcb_play_side ])
-                        //     case SEQ_DIRECTION_FORWARD  
-                        //     case SEQ_DIRECTION_BACKWARD
-                        //     case SEQ_DIRECTION_FWBW
-                        // end select
                         if  seq.direction_status [ lcb_play_side ] = SEQ_DIRECTION_FORWARD  
                             lcb_step_counter_start     := 0
                             lcb_step_counter_end       := ...
@@ -61,70 +94,218 @@ on listener
             end if  { SEQ Dual }
 
             if switch_MAIN.SEQ.combine = __SEQ_JOIN
+
                 if lcb_ms_counter mod SEQ.rate [ __LEFT ] = 0 { on JOIN we follow the left side }
                     fn007.a.side := __LEFT
                     call fn007_update_block_and_steps_ts
                 end if
 
                 if SEQ.JOIN.current_block > -1 and note_held_count > 0
-                    for SEQ.ts_counter := 0 to SEQ.JOIN.step_count [ SEQ.JOIN.current_block ]
-                        { left layer  }
-                        if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON and ...
-                            UIID_MAIN.layer.power [ __LEFT ] -> value = __ON
-                            p_lcb.a.side := __LEFT
+
+                    if  seq_join.direction_status = SEQ_DIRECTION_FORWARD  
+                        lcb_step_counter_start     := 0
+                        lcb_step_counter_end       := ...
+                            SEQ.JOIN.step_count [ SEQ.JOIN.current_block ] + 1
+                        SEQ.ts_counter_incrementor := 1
+                    end if
+                    if  seq_join.direction_status = SEQ_DIRECTION_BACKWARD 
+                        lcb_step_counter_start     := ...
+                            SEQ.JOIN.step_count [ SEQ.JOIN.current_block ]
+                        lcb_step_counter_end       :=  -1
+                        SEQ.ts_counter_incrementor := -1
+                    end if
+
+                    SEQ.ts_counter := lcb_step_counter_start
+                    while ( SEQ.ts_counter # lcb_step_counter_end )
+
+                        if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON
                             call PLAY_LCB
                         end if
-                        { right layer - sequencer power in JOIN is dictated by left power button }
-                        if  UIID_MAIN.seq.power   [ __LEFT ] -> value = __ON and ...
-                            UIID_MAIN.layer.power [ __RIGHT ] -> value = __ON
-                            p_lcb.a.side := __RIGHT
-                            call PLAY_LCB
-                        end if
-                    end for
+
+                        SEQ.ts_counter := SEQ.ts_counter + SEQ.ts_counter_incrementor
+                    end while
                 end if
 
             end if
-            
         end if
 
 
-
         {{ LFO }}
-        select(LFO_data [ LFO_WAVESHAPE ])
-            case LFO_WAVESHAPE_TRI
-                LFO_emitted_value := ...
-                    4.0 * abs( float(lcb_ms_counter)/float(LFO_rate) - ...
-                        floor( float(lcb_ms_counter)/float(LFO_rate) + 0.5 ) ) - 1.0;
+        if switch_MAIN.LFO.power = __ON
+            select(LFO_data [ LFO_WAVESHAPE ])
+                case LFO_WAVESHAPE_TRI
+                    LFO_emitted_value := ...
+                        2.0 * abs( float(lcb_ms_counter)/float(LFO_rate) - ...
+                            floor( float(lcb_ms_counter)/float(LFO_rate) + 0.5 ) );
+                        { if you want -1:1, use 4 instead of 2 and subtract one from the whole expression }
 
-            case LFO_WAVESHAPE_SIN to LFO_WAVESHAPE_SQR
-                LFO_emitted_value := ...
-                    sin( ...
-                        LFO_sine_step * (float(lcb_ms_counter) mod (float(LFO_rate)) ) ...
-                    ) {/ 2.0 + 0.5 } { the /2 + 0.5 is to adjust from -1 to 1 to return values from 0 to 1 }
+                case LFO_WAVESHAPE_SIN to LFO_WAVESHAPE_SQR
 
-                if LFO_data [ LFO_WAVESHAPE ] = LFO_WAVESHAPE_SQR
-                    if LFO_emitted_value <= 0.0
-                        LFO_emitted_value := -1.0
-                    else
-                        LFO_emitted_value := 1.0
+                    LFO_emitted_value := ...
+                        sin( ...
+                            LFO_sine_step * ((float(lcb_ms_counter) mod (float(LFO_rate))) - (NI_MATH_PI/2.0)) ...
+                        ) / 2.0 + 0.5 { the /2 + 0.5 is to adjust from -1 to 1 to return values from 0 to 1 }
+                    
+                    // if lcb_ms_counter mod 250 = 0
+                    //     message(f' LFO_emitted_value < LFO_emitted_value >')
+                    // end if
+                    if LFO_data [ LFO_WAVESHAPE ] = LFO_WAVESHAPE_SQR
+                        if LFO_emitted_value <= 0.5
+                            LFO_emitted_value := 0.0
+                        else
+                            LFO_emitted_value := 1.0
+                        end if
+                        if lcb_ms_counter mod 250 = 0
+                            // message(f' SQR! value:<LFO_emitted_value >')
+                        end if
                     end if
-                end if
 
-            case LFO_WAVESHAPE_SAW
-                LFO_emitted_value := 2.0 * float(lcb_ms_counter mod LFO_rate)/float(LFO_rate) - 1.0
+                case LFO_WAVESHAPE_SAW
+                    LFO_emitted_value := float(lcb_ms_counter mod LFO_rate)/float(LFO_rate)
+                    { for a -1:1 saw multiply the whole expression by 2 and subtract it by 1}
 
-            case LFO_WAVESHAPE_RND
-                if lcb_ms_counter mod LFO_rate = 0
-                    LFO_emitted_value := float(random(-1000, 1000))/1000.0
+                case LFO_WAVESHAPE_RND
+                    if lcb_ms_counter mod LFO_rate = 0
+                        LFO_emitted_value := float(random(0, 1000))/1000.0
+                    end if
+            end select
+
+            { loop that sets all the LFO target values and UI animations }
+            for lcb_control_counter := 0 to 31
+                if UIID_controls_LFO_power [ lcb_control_counter ] -> value = 1 and ...
+                   UIID_FX.modules.power [ UIID_FX.parameter_to_module [ lcb_control_counter ] ] -> value = 1
+
+                    {{ LFO phase }}
+                    if UIID_controls_LFO_phase [ lcb_control_counter ] -> value = 1
+                        LFO_emitted_value_phase_checked := 1.0 - LFO_emitted_value
+                    else
+                        LFO_emitted_value_phase_checked := LFO_emitted_value
+                    end if
+
+                    { UI LFO value cursor (indicator) update | the control % in this case acts as the LFO amount, or depth }
+                    { rebel way, goes over the max and min }
+                    { this will only update the UI on panel showing }
+
+                    LCB_update_blue_ring_indicator := __ON { it will be on because we are always on MAIN }
+
+                    if LCB_update_blue_ring_indicator = __ON
+                        if lcb_control_counter < 32 and (lcb_control_counter mod 16) # __MAIN.FX.LAYER.WIDTH
+                            
+                            LFO_lcb_ind_min      := float(LFO_modulation_ring_data [ lcb_control_counter, __LFO_MOD_MIN ])
+                            LFO_lcb_ind_max      := float(LFO_modulation_ring_data [ lcb_control_counter, __LFO_MOD_MAX ])
+                            LFO_lcb_depth_offset := (LFO_lcb_ind_max - LFO_lcb_ind_min)*(1.0-GLOBAL_LFO.depth_float_pct)
+                            
+                            LFO_lcb_cursor_calc := ...
+                                    (( LFO_lcb_ind_max - LFO_lcb_ind_min ) * ... 
+                                    LFO_emitted_value_phase_checked * GLOBAL_LFO.depth_float_pct) + ...
+                                    (LFO_lcb_depth_offset/2.0) + LFO_lcb_ind_min...
+
+                            set_control_par( ...
+                                UIID_controls_LFO_mod_cursor[ lcb_control_counter ], ...
+                                CONTROL_PAR_PICTURE_STATE, ...
+                                int(LFO_lcb_cursor_calc) ...
+                            )
+
+                            if lcb_control_counter mod 16 = 0
+                                UIID_MAIN.matrix_sides    [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc)
+                                if lcb_control_counter / 16 = __LEFT
+                                    UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := 255 - int(LFO_lcb_cursor_calc)
+                                else
+                                    UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc)
+                                end if
+                            end if
+
+                            { debug }
+                                // if lcb_ms_counter mod 447 = 0
+                                //     message(f'LFO_emitted_value: <LFO_emitted_value>')
+                                //     message(f'    phase_checked: <LFO_emitted_value_phase_checked>')
+                                //     message(f'    LFO_rate: <LFO_rate>')
+                                //     message(f'    LFO_lcb_cursor_calc: <int(LFO_lcb_cursor_calc)>')
+                                //     message(f'    LFO_lcb_ind_min: <LFO_lcb_ind_min>')
+                                //     message(f'    LFO_lcb_ind_max: <LFO_lcb_ind_max>')
+                                //     message(f'    LFO_lcb_depth_offset: <LFO_lcb_depth_offset>')
+                                // end if
+                                // if LFO_lcb_rate_ms_counter mod 250 = 0 and print_sine_lcb = 1
+                                //     if lcb_control_counter = 31 or lcb_control_counter = 15
+                                //         message("lcb_control_counter = " &lcb_control_counter&" | LFO_lcb_cursor_calc = " & int(LFO_lcb_cursor_calc))
+                                //     end if
+                                // end if
+
+                                // if lcb_control_counter = 1 and LFO_lcb_rate_ms_counter mod 250 = 0 and print_sine_lcb = 1
+                                //     message("updating VOL LFO values -> " & int(LFO_lcb_cursor_calc))
+                                // end if
+
+                        else { width indicator }
+                            set_control_par( ...
+                                UIID_controls_LFO_mod_cursor[ lcb_control_counter ], ...
+                                CONTROL_PAR_PICTURE_STATE, ...
+                                int ( ...
+                                        ( float (LFO_modulation_ring_data [ lcb_control_counter, __LFO_TARGET_CONTROL_VALUE ])/255.0 * ...
+                                            LFO_amount_pct [ lcb_control_counter ] ...
+                                        ) ...
+                                    * 255.0 * (LFO_emitted_value_phase_checked) * GLOBAL_LFO.depth_float_pct ...
+                                ) ...
+                            )
+
+                        end if
+                    end if 
+                    {monitors only the width on layer 1}
+
+                    // { smooth way }
+                        // label_MAIN.FX.LEFT.saturation.amount.LFOindicator -> picture_state :=  ...
+                        //     int(LFO_emitted_value_phase_checked * LFO_amount_pct [ __MAIN.FX.SATURATION ] * 255.0) + ... { offset }
+                        //     int( ...
+                        //         (LFO_modulation_data [ fn002.a.target, __LFO_TARGET_CONTROL_VALUE_PCT ] - ...
+                        //         LFO_modulation_data [ fn002.a.target, __LFO_TARGET_CONTROL_VALUE_PCT ] * ...
+                        //         LFO_amount_pct [ __MAIN.FX.SATURATION ]) * 255.0 ...
+                        //     )
+
+                    { calculated value to be set into the engine}
+                    fn044.a.target     := lcb_control_counter
+                    fn044.a.sine_value := LFO_emitted_value_phase_checked
+                    call fn044_LFO_calculate_engine_value
+
+                    select (lcb_control_counter)
+                        case  0 to 15
+                            LFO_bus_adjustment := 0
+                            lcb_control_counter_adjusted := lcb_control_counter { lands on volume layer A }
+                        case 16 to 31
+                            LFO_bus_adjustment := 1
+                            lcb_control_counter_adjusted := lcb_control_counter - 16 { lands on volume layer B }
+                    end select
+
+                    if  in_range(lcb_control_counter mod 16, __MAIN.FX.SATURATION, __MAIN.FX.DISTORTION.DRIVE)
+                        for lcb_lfo_group_counter := 0 to 1
+                            set_engine_par(...
+                                LFO_targets_engine_pars [ lcb_control_counter_adjusted ],               ...
+                                fn044.r.engine_value,                                                   ...
+                                lcb_lfo_group_counter,                                                  ...
+                                LFO_targets_SLOT  [ lcb_control_counter_adjusted ],                     ...
+                                LFO_targets_BUS   [ lcb_control_counter_adjusted ] + LFO_bus_adjustment ...
+                            )
+                        end for
+
+                    else { FX in the insert level}
+                        set_engine_par(...
+                            LFO_targets_engine_pars [ lcb_control_counter_adjusted ],               ...
+                            fn044.r.engine_value,                                                   ...
+                            LFO_targets_GROUP [ lcb_control_counter_adjusted ],                     ...
+                            LFO_targets_SLOT  [ lcb_control_counter_adjusted ],                     ...
+                            LFO_targets_BUS   [ lcb_control_counter_adjusted ] + LFO_bus_adjustment ...
+                        )
+                    end if
+
                 end if
-        end select
+            end for
+
+        end if
 
         {{ DEMO MODE }}
         if lcb_ms_counter mod 41 = 0 and button_demo.mode = __ON
             UIID_MAIN.seq.step [ __LEFT, LFO_seq_step_count ] -> picture_state := ...
-                int( (1.0 - (LFO_emitted_value / 2.0 + 0.5)) * __SEQ_STEP_VALUE_FRAMES)
+                int( (1.0 - LFO_emitted_value) * __SEQ_STEP_VALUE_FRAMES)
             UIID_MAIN.seq.step [ __RIGHT, 31 - LFO_seq_step_count ] -> picture_state := ...
-                int( (1.0 - (LFO_emitted_value / 2.0 + 0.5)) * __SEQ_STEP_VALUE_FRAMES)
+                int( (1.0 - LFO_emitted_value) * __SEQ_STEP_VALUE_FRAMES)
 
             inc(LFO_seq_step_count)
             if LFO_seq_step_count > 31

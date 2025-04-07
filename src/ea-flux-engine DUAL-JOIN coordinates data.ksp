@@ -1,4 +1,4 @@
-SEQ.COMMON_ELEMENTS_COUNT := 113
+SEQ.COMMON_ELEMENTS_COUNT := 115
 
 
 { button_MAIN.LEFT.controls.draw }
@@ -885,7 +885,7 @@ SEQ.common_elements_data [ 75, PANEL_JOIN_SEQ_Y_COORD     ] := 177
 { label_MAIN.display.value }
 SEQ.common_elements_data [ 76, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 76, PANEL_JOIN_SEQ_X_COORD     ] := 387
-SEQ.common_elements_data [ 76, PANEL_JOIN_SEQ_Y_COORD     ] := 196
+SEQ.common_elements_data [ 76, PANEL_JOIN_SEQ_Y_COORD     ] := 195
 { slider_MAIN.LEFT.move.range }
 SEQ.common_elements_data [ 77, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 77, PANEL_JOIN_SEQ_X_COORD     ] := 693

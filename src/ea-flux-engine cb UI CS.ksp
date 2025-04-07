@@ -1,67 +1,216 @@
 on ui_controls
-    {{ GLOBAL LAYER POWER }}
+    // message(f'UI CBS | NI_UI_ID: <NI_UI_ID>')
+
+    {{ SOURCE SELECT BUTTONS}}
+    if  in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __LEFT,  0 ] , UIID_BROWSER_source.select.btn [ __LEFT,  17 ]) or ...
+        in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] , UIID_BROWSER_source.select.btn [ __RIGHT, 17 ])
+
+        uics_uiid_index := NI_UI_ID - UIID_BROWSER_source.select.btn [ __LEFT, 0 ]
+        uics_seq_side    := __LEFT
+        if in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __RIGHT, 0 ], UIID_BROWSER_source.select.btn [ __RIGHT, 17 ])
+            uics_uiid_index := NI_UI_ID - UIID_BROWSER_source.select.btn [ __RIGHT, 0 ]
+            uics_seq_side    := __RIGHT
+        end if
+
+        fn054.a.side  := uics_seq_side
+        fn054.a.index := uics_uiid_index
+        call fn054_update_source_buttons
+        { store the source for the selected layer }
+        selected_source [ fn054.a.side ] := fn054.a.index + source_page [ fn054.a.side ] * __MAX_SOURCES_PER_PAGE
+    end if
+
+
+    {{ SOURCE PAGE PREV/NEXT BUTTONS }}
+    if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __LEFT ] or NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+
+        if source_page [ uics_seq_side ] > 0 
+            dec(source_page [ uics_seq_side ])
+            fn054.a.side  := uics_seq_side
+            if selected_source [ uics_seq_side ] / __MAX_SOURCES_PER_PAGE = source_page [ uics_seq_side ]
+                fn054.a.index := selected_source [ uics_seq_side ] mod __MAX_SOURCES_PER_PAGE
+            else
+                fn054.a.index := -1
+            end if
+            call fn054_update_source_buttons
+        end if
+        UIID_GLOBAL.page_number [ uics_seq_side ] -> text := source_page [ uics_seq_side ] + 1
+    end if
+
+    if NI_UI_ID = UIID_GLOBAL.page_next_btns [ __LEFT ] or NI_UI_ID = UIID_GLOBAL.page_next_btns [ __RIGHT ]
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_GLOBAL.page_next_btns [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+        if source_page [ uics_seq_side ] < __MAX_SOURCE_PAGES 
+            inc(source_page [ uics_seq_side ])
+            fn054.a.side  := uics_seq_side
+            if selected_source [ uics_seq_side ] / __MAX_SOURCES_PER_PAGE = source_page [ uics_seq_side ]
+                fn054.a.index := selected_source [ uics_seq_side ] mod __MAX_SOURCES_PER_PAGE
+            else
+                fn054.a.index := -1
+            end if
+            call fn054_update_source_buttons
+        end if
+        UIID_GLOBAL.page_number [ uics_seq_side ] -> text := source_page [ uics_seq_side ] + 1
+    end if
+
+
+    {{ SOURCES PREV }}
+    if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_PREV] or ...
+        NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_PREV]
+
+        uics_seq_side    := __LEFT
+        if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_PREV]
+            uics_seq_side    := __RIGHT
+        end if
+        if selected_source [ uics_seq_side ] > 0
+            dec(selected_source [ uics_seq_side ])
+            call fn055_recall_source_buttons_page
+        end if
+    end if
+
+
+    {{ SOURCES NEXT }}
+    if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_NEXT] or ...
+        NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_NEXT]
+
+        uics_seq_side    := __LEFT
+        if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_NEXT]
+            uics_seq_side    := __RIGHT
+        end if
+        if selected_source [ uics_seq_side ] < __SOURCE_COUNT-1
+            inc(selected_source [ uics_seq_side ])
+            call fn055_recall_source_buttons_page
+        end if
+    end if
+    
+
+    {{ LAYER POWER }}
+    if NI_UI_ID = UIID_MAIN.layer.power [ __LEFT ] or NI_UI_ID = UIID_MAIN.layer.power [ __RIGHT ] 
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_MAIN.layer.power [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+        uics_value := NI_UI_ID -> value
+
+        fn051.a.side        := uics_seq_side
+        fn051.a.seq_state   := UIID_MAIN.seq.power [ uics_seq_side ] -> value
+        fn051.a.layer_state := uics_value
+        call fn051_set_layer_panels_state
+        message(f'fn051.a.side        : <fn051.a.side >')
+        message(f'fn051.a.seq_state   : <fn051.a.seq_state >')
+        message(f'fn051.a.layer_state : <fn051.a.layer_state >')
+    end if
+
+
+    {{ SEQ POWER }}
     if NI_UI_ID = UIID_MAIN.seq.power [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
         uics_seq_side := __LEFT
         if NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
             uics_seq_side := __RIGHT
         end if
+        uics_value := NI_UI_ID -> value
+        fn051.a.side        := uics_seq_side
+        fn051.a.seq_state   := uics_value
+        fn051.a.layer_state := UIID_MAIN.layer.power [ uics_seq_side ] -> value
+        call fn051_set_layer_panels_state
 
-        fn021.a.side := uics_seq_side
-        call fn21_get_seq_target_active_activator
+        if UIID_MAIN.layer.power [ uics_seq_side ] -> value = __ON
+            {
+                logic for the activators
 
-        fn020.a.seq_power_state   := NI_UI_ID -> value
-        fn020.a.side              := uics_seq_side
-        fn020.a.target_index      := fn021.r.active_index
-        fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
-        call fn020_update_seq_target_off_label
+                when we turn the sequencer on there's 2 scenarios:
+                    the other side is ON or 
+                    the other side is OFF
+
+                    if it is OFF,
+                        we should activate the VELOCITY activator and selector, and the power according to the buffer
+
+                    if it is ON
+                        the activator that should turn on is the same as the one selected on the right side.
+            }
+
+            if uics_value = __ON
+                { restore all target control states}
+                for uics_counter := 0 to 4
+                    { recall power controls }
+                    UIID_MAIN.seq.target_power [ uics_seq_side, uics_counter ] -> value := ...
+                        targets_power_state [ uics_seq_side, uics_counter ]
+
+                    { set activator based on the target selector }
+                    if  UIID_MAIN.seq.target_selectors [ uics_counter ] -> value = __ON
+                        message(f'Selector on on side <abs(1-uics_seq_side)> = <uics_counter >')
+                        UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __ON
+                    else
+                        if  UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
+                            UIID_MAIN.seq.target_activators [ uics_seq_side, SEQ_TARGET_VELO ] -> value := __ON
+                            UIID_MAIN.seq.target_selectors [ SEQ_TARGET_VELO ]                 -> value := __ON
+                        end if
+                    end if
+
+                    if  UIID_MAIN.seq.target_activators [ __LEFT,  uics_counter ] -> value = __ON and ...
+                        UIID_MAIN.seq.target_activators [ __RIGHT, uics_counter ] -> value = __ON
+
+                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __ON
+                    else
+                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
+                    end if
+                end for
+
+                fn021.a.side := uics_seq_side
+                call fn21_get_seq_target_active_activator
+
+                fn020.a.seq_power_state   := NI_UI_ID -> value
+                fn020.a.side              := uics_seq_side
+                fn020.a.target_index      := fn021.r.active_index
+                fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
+                call fn020_update_seq_target_state
+
+            else
+                { turn off target activators, power and selectors as they have no effect on single shots }
+                for uics_counter := 0 to 4
+                    UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __OFF
+                    UIID_MAIN.seq.target_power      [ uics_seq_side, uics_counter ] -> value := __OFF
+                    if UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
+                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
+                    end if
+                end for 
+
+            end if
+
+        end if
     end if
 
 
     {{ MAIN SEQ Steps sliders }}
-    if in_range( NI_UI_ID, UIID_MAIN.seq.block_steps [ 0, 0 ], UIID_MAIN.seq.block_steps [ 1, 3 ])
-        // message("SEQ STEP SLIDERS _________________________________")
+    if in_range( NI_UI_ID, UIID_MAIN.seq.block_steps [ __LEFT, 0 ], UIID_MAIN.seq.block_steps [ __RIGHT, 3 ])
         uics_alt_key := 0
         if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_ALT) = 1
             uics_alt_key := 1
         end if
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.block_steps [ 0, 0 ]
-        uics_seq_side   := int(float(uics_uiid_index)*0.25)
-        message("uics_seq_side: " & uics_seq_side)
+        uics_seq_side   := int(float(uics_uiid_index)*0.25) // had to be fancy
+        uics_value      := UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
 
-        { this code could be optimized / simplifyed }
-        if uics_alt_key = 0
-            fn003.a.side := uics_seq_side
-            fn003.a.mode := switch_MAIN.SEQ.combine
+        { this code could be optimized / simplified, maybe }
+        if uics_alt_key = __NOT_PRESSED
+            SEQ.DUAL.step_count [ uics_seq_side, uics_uiid_index mod 4 ] := uics_value
+            SEQ.JOIN.step_count [ uics_uiid_index ]                      := uics_value
 
-            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                if uics_uiid_index < 4
-                    fn003.a.block_index := uics_uiid_index
-                else
-                    fn003.a.block_index := uics_uiid_index - 4
-                end if
-
-                SEQ.JOIN.step_count [ uics_uiid_index ] := ...
-                    UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index ] -> value
-
-                SEQ.DUAL.step_count [ uics_seq_side, fn003.a.block_index ] := ...
-                    UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index ] -> value
-
-            else
-                SEQ.JOIN.step_count [ uics_uiid_index ] := ...
-                    UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
-
-                SEQ.DUAL.step_count [ uics_seq_side, fn003.a.block_index mod 4 ] := ...
-                    UIID_MAIN.seq.block_steps [ uics_seq_side, fn003.a.block_index mod 4 ] -> value
-
-                fn003.a.block_index := uics_uiid_index
-            end if
-
+            fn003.a.side        := uics_seq_side
+            fn003.a.mode        := switch_MAIN.SEQ.combine
+            fn003.a.block_index := uics_uiid_index mod 4
             call fn003_set_block_step_count
 
         else { alt key is pressed }
             if switch_MAIN.SEQ.combine = __SEQ_DUAL
                 fn003.a.mode        := switch_MAIN.SEQ.combine
                 fn003.a.side        := uics_seq_side
+
                 if uics_uiid_index < 4
                     uics_block_index := uics_uiid_index
                 else
@@ -70,32 +219,32 @@ on ui_controls
 
                 for uics_counter := 0 to 3
                     SEQ.JOIN.step_count [ uics_counter + uics_seq_side * 4 ] := ...
-                        UIID_MAIN.seq.block_steps [ uics_seq_side, uics_block_index ] -> value
+                        UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
 
                     SEQ.DUAL.step_count [ uics_seq_side, uics_counter ] := ...
-                        UIID_MAIN.seq.block_steps [ uics_seq_side, uics_block_index ] -> value
+                        UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
 
-                    fn003.a.block_index := uics_block_index
+                    fn003.a.block_index := uics_uiid_index mod 4
                     { make all sliders the same value }
-                    if uics_counter # uics_block_index
+                    if uics_counter # uics_uiid_index mod 4
                         UIID_MAIN.seq.block_steps [ uics_seq_side, uics_counter ] -> value := ...
-                            UIID_MAIN.seq.block_steps [ uics_seq_side, uics_block_index ] -> value
+                            UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
 
-                        fn003.a.block_index := uics_counter
+                        fn003.a.block_index := uics_counter {+ uics_seq_side * 4}
                         
                     end if
                     { update the visible steps in each block }
                     call fn003_set_block_step_count
                 end for
 
-            else
+            else { JOIN SEQ }
                 fn003.a.mode := switch_MAIN.SEQ.combine
 
                 for uics_counter := 0 to 1
                     for uics_counter2 := 0 to 3
 
                         fn003.a.side := uics_counter
-                        fn003.a.block_index := uics_uiid_index
+                        fn003.a.block_index := uics_counter2
 
                         SEQ.JOIN.step_count [ uics_counter * 4 + uics_counter2 ] := ...
                             UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
@@ -104,17 +253,14 @@ on ui_controls
                             UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
 
                         { make all sliders the same value, update all step counts but the caller }
-                        if (uics_counter * 4 + uics_counter2) # uics_uiid_index
+                        // if uics_counter2 # fn003.a.block_index and uics_counter # uics_seq_side
                             UIID_MAIN.seq.block_steps [ uics_counter, uics_counter2 ] -> value := ...
                                 UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
 
-                            fn003.a.block_index := uics_counter * 4 + uics_counter2
+                            // fn003.a.block_index := uics_uiid_index mod 4
 
-                        end if
+                        // end if
                         { update the visible steps in each block }
-                        // message("STEP SLIDERS: SEQ JOIN step count [ "& uics_uiid_index &" ]: " & SEQ.JOIN.step_count [ uics_counter * 4 + uics_counter2 ])
-                        // message("    uics_uiid_index: " & uics_uiid_index)
-                        // message("    fn003.a.block_index = " & fn003.a.block_index)
                         call fn003_set_block_step_count
 
                     end for
@@ -127,69 +273,144 @@ on ui_controls
 
     {{ SEQ XY PADS }}
     if NI_UI_ID = UIID_MAIN.SEQ.xypads [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.xypads [ 1 ]
-        uics_uiid_index := NI_UI_ID - UIID_MAIN.SEQ.xypads [ 0 ]
+        // message(f'SEQ XY PADS called>')
+        uics_seq_side := NI_UI_ID - UIID_MAIN.SEQ.xypads [ 0 ]
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN
             { capture the step index on click }
-            call get_seq_dual_step_index
+            call get_seq_step_index
 
-            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_uiid_index ], CONTROL_PAR_KEY_SHIFT) = __ON
-                UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> mouse_behaviour_y := 100
+            { make the mouse movement slower in case SHIFT is pressed }
+            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_seq_side ], CONTROL_PAR_KEY_SHIFT) = __ON
+                UIID_MAIN.SEQ.xypads [ uics_seq_side ] -> mouse_behaviour_y := 100
             end if
+
+            uics_r_value := ...
+                get_control_par_real_arr( ...
+                    UIID_MAIN.SEQ.xypads [ uics_seq_side ],   ...
+                    CONTROL_PAR_VALUE,                        ...
+                    __Y_AXIS                                  ...
+                )
+
+            { fix the vertical movement to the first clicked value in case ALT is pressed }
             uics_alt_key := __OFF
-            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_uiid_index ], CONTROL_PAR_KEY_ALT) = __ON
+            if get_control_par(UIID_MAIN.SEQ.xypads [ uics_seq_side ], CONTROL_PAR_KEY_ALT) = __ON
                 uics_alt_key := __ON
-                seq_xy_alt_y_coord := ...
-                    get_control_par_real_arr( ...
-                        UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
-                        CONTROL_PAR_VALUE,                          ...
-                        1                                           ...
-                    ) 
-            else
+                seq_xy_alt_y_coord := uics_r_value 
             end if
+
+            { Reset the dyn slider to center since we are defining a step value directly }
+            fn031.a.reset := __ON
+            fn031.a.side  := uics_seq_side
+            call fn031_set_dyn_sliders_picture
+
+            { update that value on both original and dyn tables }
+            fn002.a.side            := uics_seq_side
+            fn002.a.value           := uics_r_value
+            fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
+            fn002.a.table_to_update := __SEQ_BOTH_TABLES
+            fn002.a.step_index      := fn001.r.step_index
+            call fn002_set_seq_step_value
+
+            { update all steps since the user needs to see the original step values }
+            for uics_counter := 0 to 3
+                for uics_counter2 := 0 to 7
+                    fn018.a.side       := uics_seq_side
+                    fn018.a.step_index := uics_counter * 8 + uics_counter2
+                    fn018.a.value      :=                         ...
+                        SEQ.data.f [                              ...
+                            uics_seq_side,                        ...
+                            SEQ.showing_target [ uics_seq_side ], ...
+                            fn018.a.step_index                    ...
+                        ]
+                        // message("recalling picture state for entire seq")
+                    call fn018_set_seq_step_picture_state
+
+                    fn002.a.side            := uics_seq_side
+                    fn002.a.value           := fn018.a.value { values from the original steps table }
+                    fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
+                    fn002.a.table_to_update := __SEQ_DYN_TRANSF_TABLE
+                    fn002.a.step_index      := uics_counter * 8 + uics_counter2
+                    call fn002_set_seq_step_value
+                end for
+            end for
+
         end if
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_DRAG
             {   if draw is off, we keep the step index recorded when we pressed the mouse button down 
                 if it is on, we update the step_index }
-            if UIID_MAIN.controls.draw [ uics_uiid_index ] -> value = __ON
-                call get_seq_dual_step_index
+            if UIID_MAIN.controls.draw [ uics_seq_side ] -> value = __ON
+                call get_seq_step_index
             end if
-        end if
+            if uics_alt_key = __ON
+                uics_r_value := seq_xy_alt_y_coord
+            else
+                uics_r_value := get_control_par_real_arr( ...
+                    UIID_MAIN.SEQ.xypads [ uics_seq_side ],   ...
+                    CONTROL_PAR_VALUE,                        ...
+                    __Y_AXIS                                  ...
+                ) 
+            end if
 
-        if uics_alt_key = __ON
-            uics_r_value := seq_xy_alt_y_coord
-        else
-            uics_r_value := get_control_par_real_arr( ...
-                UIID_MAIN.SEQ.xypads [ uics_uiid_index ],   ...
-                CONTROL_PAR_VALUE,                          ...
-                1                                           ...
-            ) 
-        end if
+            fn002.a.side            := uics_seq_side
+            fn002.a.value           := uics_r_value
+            fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
+            fn002.a.table_to_update := __SEQ_BOTH_TABLES
+            fn002.a.step_index      := fn001.r.step_index
+            call fn002_set_seq_step_value
 
-        fn002.a.caller     := __CALLER_SEQ_XY
-        fn002.a.step_index := fn001.r.step_index
-        fn002.a.side       := uics_uiid_index
-        fn002.a.value      := uics_r_value
-        call fn002_set_seq_step_value_and_ps
+            fn018.a.side       := uics_seq_side
+            fn018.a.step_index := fn001.r.step_index
+            fn018.a.value      := uics_r_value
+            call fn018_set_seq_step_picture_state
+        
+        end if
 
         { update display data }
         // depends on the side
-        fn016.a.target_index := uics_uiid_index
-        fn016.a.value        := uics_r_value
+        fn016.a.side  := uics_seq_side
+        fn016.a.value := uics_r_value
         call fn016_set_data_display_from_seq_xy
 
         UIID_MAIN.display_title -> text := @fn016.r.title
         UIID_MAIN.display_value -> text := @fn016.r.text_data
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_UP
-            UIID_MAIN.SEQ.xypads [ uics_uiid_index ] -> mouse_behaviour_y := 1000
+            UIID_MAIN.SEQ.xypads [ uics_seq_side ] -> mouse_behaviour_y := 1000
+
+            { update all steps since the user needs to see the original step values }
+            for uics_counter := 0 to 3
+                if  UIID_MAIN.seq.flux_rand_power [ uics_seq_side ] -> value = __ON and ...
+                    UIID_MAIN.seq.flux_rand_btns [ uics_seq_side, uics_counter ] -> value = __ON
+                    for uics_counter2 := 0 to 7
+                        fn018.a.side       := uics_seq_side
+                        fn018.a.step_index := uics_counter * 8 + uics_counter2
+                        fn018.a.value      :=                         ...
+                            SEQ.data.flux.f [                         ...
+                                uics_seq_side,                        ...
+                                SEQ.showing_target [ uics_seq_side ], ...
+                                fn018.a.step_index                    ...
+                            ]
+                            // message("recalling picture state for entire seq")
+                        call fn018_set_seq_step_picture_state
+
+                        fn002.a.side            := uics_seq_side
+                        fn002.a.value           := fn018.a.value { values from the original steps table }
+                        fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
+                        fn002.a.table_to_update := __SEQ_DYN_TRANSF_TABLE
+                        fn002.a.step_index      := uics_counter * 8 + uics_counter2
+                        call fn002_set_seq_step_value
+                    end for
+                end if
+            end for
         end if
     end if
 
 
     {{ ADSR CONTROLS }}
     if in_range(NI_UI_ID, UIID_MAIN.ADSR_controls [ 0, 0 ], UIID_MAIN.ADSR_controls [ 1, 3 ])
+        message(f'ADSR CONTROLS called>')
         uics_uiid_index := NI_UI_ID - UIID_MAIN.ADSR_controls [ 0, 0 ]
         if uics_uiid_index < 4
             uics_seq_side := __LEFT
@@ -201,7 +422,7 @@ on ui_controls
         set_engine_par(                                                               ...
             ADSR_engine_pars [ uics_uiid_index mod 4 ],                               ...
             UIID_MAIN.ADSR_controls[ uics_seq_side, uics_uiid_index mod 4 ] -> value, ...
-            uics_seq_side,                                                            ...
+            selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT,       ...
             get_mod_idx(uics_seq_side, "ENV_AHDSR"),                                  ...
             -1                                                                        ...
         )
@@ -209,11 +430,12 @@ on ui_controls
 
 
     {{ SEQ RATE }}
-    if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ 0 ] or NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ 1 ]
-        if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ 0 ]
-            uics_uiid_index := 0
+    if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ __LEFT ] or NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ __RIGHT ]
+        message(f'SEQ RATE called>')
+        if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ __LEFT ]
+            uics_uiid_index := __LEFT
         else
-            uics_uiid_index := 1
+            uics_uiid_index := __RIGHT
         end if
 
         message("rate side: " & uics_uiid_index)
@@ -223,121 +445,142 @@ on ui_controls
         
         SEQ.rate [ uics_uiid_index ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ uics_uiid_index ] -> value) / __BEAT_RATE_DIVISOR ]
 
-        if uics_uiid_index = 0
-            slider_MAIN.FLRNDjoin.amount := UIID_MAIN.SEQ.rate_sliders [ 0 ] -> value
+        if uics_uiid_index = __LEFT
+            slider_MAIN.ARPjoin.amount := UIID_MAIN.SEQ.rate_sliders [ __LEFT ] -> value
         end if
     end if 
 
 
     {{ SEQ JOIN Rate }}
-    if NI_UI_ID = get_ui_id(slider_MAIN.FLRNDjoin.amount)
+    if NI_UI_ID = get_ui_id(slider_MAIN.ARPjoin.amount)
+        message(f'SEQ JOIN Rate called>')
         UIID_MAIN.display_title -> text := "Rate"
         UIID_MAIN.display_value -> text := ...
-            beat_rates_display [ slider_MAIN.FLRNDjoin.amount / __BEAT_RATE_DIVISOR ]
+            beat_rates_display [ slider_MAIN.ARPjoin.amount / __BEAT_RATE_DIVISOR ]
 
-        SEQ.rate [ __LEFT ] := beat_rates [ slider_MAIN.FLRNDjoin.amount / __BEAT_RATE_DIVISOR ]
+        label_SEQjoin.arp.rate -> text := beat_rates_display [ slider_MAIN.ARPjoin.amount / __BEAT_RATE_DIVISOR ]
 
-        UIID_MAIN.SEQ.rate_sliders [ 0 ] -> value := slider_MAIN.FLRNDjoin.amount
+        SEQ.rate [ __LEFT ] := beat_rates [ slider_MAIN.ARPjoin.amount / __BEAT_RATE_DIVISOR ]
+
+        UIID_MAIN.SEQ.rate_sliders [ 0 ] -> value := slider_MAIN.ARPjoin.amount
     end if
     
 
     {{ SEQ MAIN target activators }}
     if in_range(NI_UI_ID, UIID_MAIN.seq.target_activators[ 0, 0], UIID_MAIN.seq.target_activators [ 1, 4])
+        message(f'SEQ MAIN target activators called>')
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.target_activators [ 0, 0 ]
         { this expression in the index returns 0 or 1 }
         uics_seq_side   := int(float(uics_uiid_index)*0.2) { 1/ 5 options }
 
         SEQ.showing_target [ uics_seq_side ] := uics_uiid_index mod 5 
 
-        fn011.a.side  := uics_seq_side
-        fn011.a.index := uics_uiid_index mod 5
-        call fn011_clear_target_activators
+        if  UIID_MAIN.seq.power [ uics_seq_side ] -> value = __ON
+            { store the control state in a buffer for later use }
+            message(f'Got here!')
+            fn011.a.side  := uics_seq_side
+            fn011.a.index := uics_uiid_index mod 5
+            call fn011_clear_target_activators
 
-        fn014.a.side         := uics_seq_side
-        fn014.a.target_index := uics_uiid_index mod 5
-        call fn014_seq_recall_target_steps_values_and_pictures
+            fn014.a.side         := uics_seq_side
+            fn014.a.target_index := uics_uiid_index mod 5
+            call fn014_seq_recall_target_steps_values_and_pictures
 
-        { clean all mid selectors first, assuming the activators are not a matching pair }
-        fn005.a.selector_index := -1
-        call fn005_set_seq_target_selector
-        { light the middle selector in case both sides match }
-        if uics_uiid_index < 5
-            if UIID_MAIN.seq.target_activators [ __RIGHT, uics_uiid_index ] -> value = __ON
-                fn005.a.selector_index := uics_uiid_index
-                call fn005_set_seq_target_selector
-            end if
-        else
-            if UIID_MAIN.seq.target_activators [ __LEFT, uics_uiid_index mod 5 ] -> value = __ON
+            { clean all mid selectors first, assuming the activators are not a matching pair }
+            { light the middle selector in case both sides match }
+            fn005.a.selector_index := -1
+            if  UIID_MAIN.seq.target_activators [ __RIGHT, uics_uiid_index mod 5 ] -> value = __ON and ...
+                UIID_MAIN.seq.target_activators [ __LEFT,  uics_uiid_index mod 5 ] -> value = __ON and ...
+                UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __ON                       or  ...
+                UIID_MAIN.seq.target_selectors [ uics_uiid_index mod 5 ] -> value = __OFF          and ...
+                UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
+
                 fn005.a.selector_index := uics_uiid_index mod 5
-                call fn005_set_seq_target_selector
             end if
-        end if
+            call fn005_set_seq_target_selector
 
-        { update target off label state }
-        fn021.a.side := uics_seq_side
-        call fn21_get_seq_target_active_activator
-        { we only update the label if the power button pressed has the same index as the active target activator }
-        if fn021.r.active_index = uics_uiid_index mod 5
-            fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_seq_side ] -> value
-            fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ uics_seq_side, uics_uiid_index mod 5 ]
-            fn020.a.side               := uics_seq_side
-            fn020.a.target_index       := uics_uiid_index mod 5
-            call fn020_update_seq_target_off_label
-        end if
+            { update target off label state }
+            fn021.a.side := uics_seq_side
+            call fn21_get_seq_target_active_activator
+            { we only update the label if the power button pressed has the same index as the active target activator }
+            if fn021.r.active_index = uics_uiid_index mod 5
+                fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_seq_side ] -> value
+                fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ uics_seq_side, uics_uiid_index mod 5 ]
+                fn020.a.side               := uics_seq_side
+                fn020.a.target_index       := uics_uiid_index mod 5
+                call fn020_update_seq_target_state
+            end if
 
-        { restore the value for the UI control slider }
-        UIID_MAIN.seq.flux_rand_intensity [ uics_seq_side ] -> value := SEQ.flux_rand_intensity [ uics_seq_side, SEQ.showing_target [ uics_seq_side ] ]
+            { restore the value for the UI control slider }
+            UIID_MAIN.seq.flux_rand_intensity [ uics_seq_side ] -> value := SEQ.flux_rand_intensity [ uics_seq_side, SEQ.showing_target [ uics_seq_side ] ]
+            slider_MAIN.FLRNDjoin.amount := SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]
+
+        else
+            NI_UI_ID -> value := __OFF
+
+        end if
     end if
 
 
     {{ SEQ MAIN TARGET SELECTORS }}
     if in_range(NI_UI_ID, UIID_MAIN.seq.target_selectors [ 0 ], UIID_MAIN.seq.target_selectors [ 4 ])
+        message(f'SEQ MAIN TARGET SELECTORS called>')
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.target_selectors [ 0 ]
+
+            { store the control state in a buffer for later use }
+
+        { update to the clicked selector }
         fn005.a.selector_index := uics_uiid_index
         call fn005_set_seq_target_selector
+        message(f'Setting target selector < uics_uiid_index >')
 
         SEQ.showing_target [ __LEFT  ] := uics_uiid_index
         SEQ.showing_target [ __RIGHT ] := uics_uiid_index
 
-        fn011.a.side  := __LEFT
-        fn011.a.index := uics_uiid_index
-        call fn011_clear_target_activators
-        fn011.a.side  := __RIGHT
-        fn011.a.index := uics_uiid_index
-        call fn011_clear_target_activators
-        message("Center target selector clicked, index: " & uics_uiid_index)
-        fn014.a.side         := __LEFT
-        fn014.a.target_index := uics_uiid_index
-        call fn014_seq_recall_target_steps_values_and_pictures
-
-        fn014.a.side         := __RIGHT
-        fn014.a.target_index := uics_uiid_index
-        call fn014_seq_recall_target_steps_values_and_pictures
-
         for uics_counter := __LEFT to __RIGHT
-            { update target off label state }
-            fn021.a.side := uics_counter
-            call fn21_get_seq_target_active_activator
-            { we only update the label if the power button pressed has the same index as the active target activator }
-            if fn021.r.active_index = uics_uiid_index
-                fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_seq_side ] -> value
-                fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ uics_counter, uics_uiid_index ]
-                fn020.a.side               := uics_counter
-                fn020.a.target_index       := uics_uiid_index
-                call fn020_update_seq_target_off_label
+            if  UIID_MAIN.seq.power [ uics_counter ] -> value = __ON
+                fn011.a.side  := uics_counter
+                fn011.a.index := uics_uiid_index
+                call fn011_clear_target_activators
+
+                fn014.a.side         := uics_counter
+                fn014.a.target_index := uics_uiid_index
+                call fn014_seq_recall_target_steps_values_and_pictures
+                { restore the value for the UI control slider }
+                UIID_MAIN.seq.flux_rand_intensity [ uics_counter  ] -> value := SEQ.flux_rand_intensity [ uics_counter , SEQ.showing_target [ uics_counter  ] ]
+            end if
+
+            { treat seq dual or join }
+            if  uics_counter = __LEFT and UIID_MAIN.seq.power [ __LEFT ] -> value = __ON or ...
+                (switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter = __RIGHT and UIID_MAIN.seq.power [ __RIGHT ] -> value = __ON)
+                { update target off label state }
+                fn021.a.side := uics_counter
+                call fn21_get_seq_target_active_activator
+                { we only update the label if the power button pressed has the same index as the active target activator }
+                if fn021.r.active_index = uics_uiid_index
+                    fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_counter ] -> value
+                    fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ uics_counter, uics_uiid_index ]
+                    fn020.a.side               := uics_counter
+                    fn020.a.target_index       := uics_uiid_index
+                    call fn020_update_seq_target_state
+                end if
             end if
         end for
 
-        { restore the value for the UI control slider }
-        UIID_MAIN.seq.flux_rand_intensity [ __LEFT  ] -> value := SEQ.flux_rand_intensity [ __LEFT , SEQ.showing_target [ __LEFT  ] ]
-        UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ] -> value := SEQ.flux_rand_intensity [ __RIGHT, SEQ.showing_target [ __RIGHT ] ]
+        slider_MAIN.FLRNDjoin.amount := SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]
+
+        if  UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
+            NI_UI_ID -> value := __OFF
+        end if
     end if
 
 
     {{ SEQ MAIN TARGET POWER }}
     if  in_range(NI_UI_ID, UIID_MAIN.seq.target_power [ __LEFT,  0 ], UIID_MAIN.seq.target_power [ __LEFT,  4  ] ) or ...
         in_range(NI_UI_ID, UIID_MAIN.seq.target_power [ __RIGHT, 0 ], UIID_MAIN.seq.target_power [ __RIGHT, 4 ] )
+        message(f'SEQ MAIN TARGET POWER called>')
 
+        { getting side and control index }
         if  in_range(NI_UI_ID, UIID_MAIN.seq.target_power [ __LEFT,  0 ], UIID_MAIN.seq.target_power [ __LEFT,  4  ] )
             uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.target_power [ __LEFT, 0 ]
             uics_seq_side := __LEFT
@@ -349,49 +592,61 @@ on ui_controls
             uics_value := UIID_MAIN.seq.target_power [ __RIGHT, uics_uiid_index ] -> value
         end if
 
+        if UIID_MAIN.seq.power [ uics_seq_side ] -> value = __ON
+            { store the control state in a buffer for later use }
+            targets_power_state [ uics_seq_side, uics_uiid_index ] := NI_UI_ID -> value
 
-        fn021.a.side := uics_seq_side
-        call fn21_get_seq_target_active_activator
-        { we only update the label if the power button pressed has the same index as the active target activator }
-        if fn021.r.active_index = uics_uiid_index
-            fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_seq_side ] -> value
-            fn020.a.target_power_uiid  := NI_UI_ID
-            fn020.a.side               := uics_seq_side
-            fn020.a.target_index       := uics_uiid_index
-            call fn020_update_seq_target_off_label
-        end if
-
-        { The code below should only run when:
-            - target power is turned OFF and if the randomizer is ON
-        }
-        if  NI_UI_ID -> value = __OFF and ...
-            UIID_MAIN.seq.flux_rand_power [ uics_seq_side  ] -> value = __ON 
-
-            { OPTIMIZATION: EXHIBIT A - code that could/should be combined into a function }
-
-            { process only the related clicked block in case ALT is not pressed }
-            uics_loop_range_min := uics_uiid_index
-            uics_loop_range_max := uics_uiid_index
-
-            uics_loop_range_min := 0
-            uics_loop_range_max := 3
-
-            if uics_value = __OFF
-                { counter 2 is block index }
-                for uics_counter2 := uics_loop_range_min to uics_loop_range_max { optimization to not write this loop twice }
-                    { counter 1 is step index }
-                    for uics_counter := 0 to 7
-                        fn018.a.side       := uics_seq_side
-                        fn018.a.step_index := uics_counter + 8 * uics_counter2
-                        fn018.a.value      := SEQ.data.f [        ...
-                            uics_seq_side,                        ...
-                            SEQ.showing_target [ uics_seq_side ], ...
-                            uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
-                        ]
-                        call fn018_set_seq_step_picture_state
-                    end for
-                end for
+            fn021.a.side := uics_seq_side
+            call fn21_get_seq_target_active_activator
+            { we only update the label if the power button pressed has the same index as the active target activator }
+            if fn021.r.active_index = uics_uiid_index
+                fn020.a.seq_power_state    := UIID_MAIN.seq.power [ uics_seq_side ] -> value
+                fn020.a.target_power_uiid  := NI_UI_ID
+                fn020.a.side               := uics_seq_side
+                fn020.a.target_index       := uics_uiid_index
+                call fn020_update_seq_target_state
             end if
+
+            { The code below should only run when:
+                - target power is turned OFF and if the randomizer is ON
+            }
+            if  NI_UI_ID -> value = __OFF and UIID_MAIN.seq.flux_rand_power [ uics_seq_side  ] -> value = __ON and ...
+                SEQ.showing_target [ uics_seq_side ] = uics_uiid_index
+
+                uics_loop_range_min := 0
+                uics_loop_range_max := 3
+
+                if uics_value = __OFF
+
+                    for uics_counter2 := uics_loop_range_min to uics_loop_range_max
+                        for uics_counter := 0 to 7
+                            for uics_counter3 := __LEFT to __RIGHT
+
+                                if switch_MAIN.SEQ.combine = __SEQ_JOIN
+                                    fn018.a.side := uics_counter3
+                                else
+                                    if switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter3 # __RIGHT { so we run the block only once }
+                                        fn018.a.side := uics_seq_side
+                                    end if
+                                end if
+                                fn018.a.side       := uics_counter3
+                                fn018.a.step_index := uics_counter + 8 * uics_counter2
+                                fn018.a.value      := SEQ.data.f [        ...
+                                    uics_counter3,                        ...
+                                    SEQ.showing_target [ uics_counter3 ], ...
+                                    uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
+                                ]
+                                call fn018_set_seq_step_picture_state
+                            end for
+                        end for
+                    end for
+
+                end if
+
+            end if
+
+        else
+            NI_UI_ID -> value := __OFF
         end if
     end if
 
@@ -400,18 +655,23 @@ on ui_controls
     if in_range(NI_UI_ID, UIID_MAIN.seq.direction_btns [ __LEFT, 0 ], UIID_MAIN.seq.direction_btns [ __RIGHT, 2 ])
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.direction_btns [ __LEFT, 0 ]
         if uics_uiid_index < 3
-            fn015.a.side := __LEFT
+            uics_seq_side := __LEFT
         else
-            fn015.a.side := __RIGHT
+            uics_seq_side := __RIGHT
         end if
-
+        fn015.a.side      := uics_seq_side
         fn015.a.btn_index := uics_uiid_index mod 3
         call fn015_set_seq_play_direction_btns
         
-        layers.seq_play_direction [ fn015.a.side ] := uics_uiid_index mod 3
+        layers.seq_play_direction [ uics_seq_side ] := uics_uiid_index mod 3
         
         { if dir is forward or backwards it stays that way, id it is dual direction then starts with forward }
-        seq.direction_status [ fn015.a.side ] := (uics_uiid_index mod 3) mod 2
+        seq.direction_status [ uics_seq_side ] := (uics_uiid_index mod 3) mod 2
+
+        if uics_seq_side = __LEFT
+            layers.seq_join_play_direction := layers.seq_play_direction [ uics_seq_side ]
+            seq_join.direction_status      := seq.direction_status      [ uics_seq_side ]
+        end if
     end if
 
 
@@ -420,6 +680,8 @@ on ui_controls
         uics_seq_side := __LEFT
         if NI_UI_ID = UIID_MAIN.seq.flux_rand_intensity [ __RIGHT ]
             uics_seq_side := __RIGHT
+        else
+            SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ] := NI_UI_ID -> value
         end if
         
         SEQ.flux_rand_intensity [ uics_seq_side, SEQ.showing_target [ uics_seq_side ] ] := NI_UI_ID -> value
@@ -427,6 +689,15 @@ on ui_controls
         UIID_MAIN.display_value -> text := UIID_MAIN.seq.flux_rand_intensity [ uics_seq_side ] -> value & "%"
     end if
 
+    if NI_UI_ID = get_ui_id(slider_MAIN.FLRNDjoin.amount)
+        { store the value for each target on both DUAL and JOIN }
+        SEQ.flux_rand_intensity      [ __LEFT, SEQ.showing_target [ __LEFT ] ] := NI_UI_ID -> value
+        SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]         := NI_UI_ID -> value
+        { update UI }
+        UIID_MAIN.seq.flux_rand_intensity [ __LEFT ] -> value := NI_UI_ID -> value
+        UIID_MAIN.display_title -> text := "Flux Randomizer"
+        UIID_MAIN.display_value -> text := NI_UI_ID -> value & "%"
+    end if
 
     {{ SEQ MAIN FLUX RAND BUTTONS }}
     if  in_range(NI_UI_ID, UIID_MAIN.seq.flux_rand_btns [ __LEFT,  0 ], UIID_MAIN.seq.flux_rand_btns [ __LEFT,  3  ] ) or ...
@@ -448,7 +719,7 @@ on ui_controls
         uics_loop_range_min := uics_uiid_index
         uics_loop_range_max := uics_uiid_index
 
-        if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_ALT) = __ON
+        if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_ALT) = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL
             for uics_counter := 0 to 3
                 UIID_MAIN.seq.flux_rand_btns [ uics_seq_side, uics_counter ] -> value := uics_value
             end for
@@ -456,20 +727,45 @@ on ui_controls
             uics_loop_range_min := 0
             uics_loop_range_max := 3
         end if
+        if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_ALT) = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
+            for uics_counter2 := 0 to 1
+                for uics_counter := 0 to 3
+                    UIID_MAIN.seq.flux_rand_btns [ uics_counter2, uics_counter ] -> value := uics_value
+                end for
+            end for
+            uics_loop_range_min := 0
+            uics_loop_range_max := 3
+
+        end if
 
         if uics_value = __OFF
             { counter 2 is block index }
-            for uics_counter2 := uics_loop_range_min to uics_loop_range_max { optimization to not write this loop twice }
+            for uics_counter2 := uics_loop_range_min to uics_loop_range_max
                 { counter 1 is step index }
                 for uics_counter := 0 to 7
-                    fn018.a.side       := uics_seq_side
-                    fn018.a.step_index := uics_counter + 8 * uics_counter2
-                    fn018.a.value      := SEQ.data.f [        ...
-                        uics_seq_side,                        ...
-                        SEQ.showing_target [ uics_seq_side ], ...
-                        uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
-                    ]
-                    call fn018_set_seq_step_picture_state
+                    for uics_counter3 := __LEFT to __RIGHT
+                        if switch_MAIN.SEQ.combine = __SEQ_JOIN
+                            fn018.a.side := uics_counter3
+                            fn49.a.side  := uics_counter3
+                        else
+                            if switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter3 # __RIGHT { so we run the block only once }
+                                fn018.a.side := uics_seq_side
+                                fn49.a.side  := uics_counter3
+                            end if
+                        end if
+
+                        fn018.a.step_index := uics_counter + 8 * uics_counter2
+                        fn018.a.value      := SEQ.data.f [       ...
+                            uics_seq_side,                       ...
+                            SEQ.showing_target [ fn018.a.side ], ...
+                            uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
+                        ]
+                        call fn018_set_seq_step_picture_state
+
+                        fn49.a.step  := uics_counter
+                        fn49.a.block := uics_counter2
+                        call fn049_set_seq_values_to_original
+                    end for
                 end for
             end for
         end if
@@ -478,7 +774,6 @@ on ui_controls
 
     {{  SEQ MAIN FLUX RAND POWER }}
     if NI_UI_ID = UIID_MAIN.seq.flux_rand_power [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.flux_rand_power [ __RIGHT ]
-
         { OPTIMIZATION: EXHIBIT A - code that could/should be combined into a function }
         uics_seq_side := __LEFT
         if NI_UI_ID = UIID_MAIN.seq.flux_rand_power [ __RIGHT ]
@@ -494,14 +789,32 @@ on ui_controls
             for uics_counter2 := uics_loop_range_min to uics_loop_range_max { optimization to not write this loop twice }
                 { counter 1 is step index }
                 for uics_counter := 0 to 7
-                    fn018.a.side       := uics_seq_side
-                    fn018.a.step_index := uics_counter + 8 * uics_counter2
-                    fn018.a.value      := SEQ.data.f [        ...
-                        uics_seq_side,                        ...
-                        SEQ.showing_target [ uics_seq_side ], ...
-                        uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
-                    ]
-                    call fn018_set_seq_step_picture_state
+                    for uics_counter3 := __LEFT to __RIGHT
+
+                        if switch_MAIN.SEQ.combine = __SEQ_JOIN
+                            fn018.a.side := uics_counter3
+                            fn49.a.side  := uics_counter3
+                        else
+                            if switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter3 # __RIGHT { so we run the block only once }
+                                fn018.a.side := uics_seq_side
+                                fn49.a.side  := uics_counter3
+                            end if
+
+                        end if
+
+                        fn018.a.step_index := uics_counter + 8 * uics_counter2
+                        fn018.a.value      := SEQ.data.f [        ...
+                            uics_counter3,                        ...
+                            SEQ.showing_target [ uics_counter3 ], ...
+                            uics_counter + 8 *  uics_counter2   ... // step index + block index * offset 
+                        ]
+                        call fn018_set_seq_step_picture_state
+
+                        fn49.a.step  := uics_counter
+                        fn49.a.block := uics_counter2
+                        call fn049_set_seq_values_to_original
+
+                    end for
                 end for
             end for
         end if
@@ -510,19 +823,31 @@ on ui_controls
 
     {{ ARP MODES MENU  }}
     if NI_UI_ID = UIID_MAIN.seq.arp_menu [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.arp_menu [ __RIGHT ] 
+        message(f'ARP MODES MENU called>')
         uics_uiid_index := __LEFT
         if NI_UI_ID = UIID_MAIN.seq.arp_menu [ __RIGHT ] 
             uics_uiid_index := __RIGHT
         end if
-        
-        UIID_MAIN.seq.arp_menu        [ uics_uiid_index  ] -> value := __OFF
-        UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
-        UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
+
+        UIID_MAIN.seq.arp_menu [ uics_uiid_index  ] -> value := __OFF
+        if switch_MAIN.SEQ.combine = __SEQ_DUAL
+            UIID_MAIN.seq.arp_mode_panels [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
+            UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_WHOLE_CONTROL
+        else
+            panel_MAIN.2JOIN.arpModes        -> UI_SHOW
+            label_SEQjoin.arp.rate           -> UI_HIDE
+            slider_MAIN.ARPjoin.amount       -> UI_HIDE
+            switch_MAIN.ARP.LEFT.modeMenu    -> UI_HIDE
+            switch_MAIN.FLUXX.LEFT.arp.power -> UI_HIDE
+            label_SEQjoin.arp.background     -> UI_HIDE
+
+        end if
     end if
 
 
     {{ ARP MODES MENU CLOSE BTN  }}
     if NI_UI_ID = UIID_MAIN.seq.arp_mode_panels_close_btn [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.arp_mode_panels_close_btn [ __RIGHT ] 
+        message(f'ARP MODES MENU CLOSE BTN called>')
         uics_uiid_index := __LEFT
         if NI_UI_ID = UIID_MAIN.seq.arp_mode_panels_close_btn [ __RIGHT ] 
             uics_uiid_index := __RIGHT
@@ -532,10 +857,31 @@ on ui_controls
         UIID_MAIN.seq.flux_panels     [ uics_uiid_index  ] -> hide := HIDE_PART_NOTHING
     end if
 
+    {{ ARP MODES JOIN SEQ Menu }}
+    if  in_range(NI_UI_ID, UIID_MAIN.seq.join_arp_menu_items [ 0 ], UIID_MAIN.seq.join_arp_menu_items [ 5 ] )
+        uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.join_arp_menu_items [ 0 ]
+        fn029.a.index   :=  uics_uiid_index
+        call fn029_clear_arp_mode_btns
+        arp_mode [ __LEFT ] := uics_uiid_index
+    end if
+
+
+    {{ ARP MODES MENU CLOSE BTN  }}
+    if NI_UI_ID = get_ui_id(switch_MAIN.FX.JOIN.arp.menu.close)
+        panel_MAIN.2JOIN.arpModes        -> UI_HIDE
+        label_SEQjoin.arp.rate           -> UI_SHOW
+        slider_MAIN.ARPjoin.amount       -> UI_SHOW
+        switch_MAIN.ARP.LEFT.modeMenu    -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.arp.power -> UI_SHOW
+        label_SEQjoin.arp.background     -> UI_SHOW
+        message(f' label_SEQjoin.arp.background hide state <label_SEQjoin.arp.background -> hide >')
+    end if
+
 
     {{ ARP MODES BTNS }}
     if  in_range(NI_UI_ID, UIID_MAIN.seq.arp_menu_items [ __LEFT, 0 ], UIID_MAIN.seq.arp_menu_items [ __LEFT, 5 ]) or ...
         in_range(NI_UI_ID, UIID_MAIN.seq.arp_menu_items [ __RIGHT, 0 ], UIID_MAIN.seq.arp_menu_items [ __RIGHT, 5 ])
+        message(f'ARP MODES BTNS called>')
         uics_uiid_index := NI_UI_ID - UIID_MAIN.seq.arp_menu_items [ __LEFT, 0 ]
         uics_seq_side    := __LEFT
         if in_range(NI_UI_ID, UIID_MAIN.seq.arp_menu_items [ __RIGHT, 0 ], UIID_MAIN.seq.arp_menu_items [ __RIGHT, 5 ])
@@ -550,67 +896,773 @@ on ui_controls
         call fn029_clear_arp_mode_btns
     end if
 
+
     {{ SEQ DYN SLIDERS }}
-    if NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __RIGHT ] 
+    if NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __RIGHT ]
         uics_seq_side := __LEFT
         if NI_UI_ID = UIID_MAIN.seq.dyn_slider [ __RIGHT ] 
             uics_seq_side := __RIGHT
         end if
 
-        { update the ui label for the dyn slider }
-        if  UIID_MAIN.seq.dyn_slider [ uics_seq_side ] -> key_control = __OFF
-            UIID_MAIN.seq.dyn_slider.label [ uics_seq_side ] -> picture_state := int ( ...
-                get_control_par_real_arr(                       ...
-                    UIID_MAIN.seq.dyn_slider [ uics_seq_side ], ...
-                    CONTROL_PAR_VALUE,                          ...
-                    1                                           ...
-                ) * 132.0 )
-        else
-            UIID_MAIN.seq.dyn_slider.label [ uics_seq_side ] -> picture_state := 66
-            set_control_par_real_arr(                       ...
+        { updates the label overlay of this XY pad }
+        fn031.a.reset := __OFF
+        fn031.a.side := uics_seq_side
+        call fn031_set_dyn_sliders_picture
+
+        { updates the seq data values for velocity }
+        fn032.a.side := uics_seq_side
+        call fn032_set_seq_step_value_and_ui_via_dyn_slider
+
+        { update data viewer }
+        uics_r_value := ...
+            get_control_par_real_arr( ...
                 UIID_MAIN.seq.dyn_slider [ uics_seq_side ], ...
                 CONTROL_PAR_VALUE,                          ...
-                0.5,                                        ...
-                1                                           ...
-            )
-            // set_control_par_arr(ui_id, control_parameter, value, index)
+                __Y_AXIS                                    ...
+            ) 
+
+        if  uics_r_value > 0.5
+            uics_result    := int ( 100.0 * (2.0 * uics_r_value - 1.0))
+            uics_text_data := f'+<uics_result>%'
+        else
+            if  uics_r_value < 0.5
+                uics_result := 100 - int ( 100.0 * (2.0 * uics_r_value))
+                uics_text_data := f'-<uics_result>%'
+            else
+                uics_text_data := f'Center'
+            end if
         end if
 
-        {
-            - a step has int and float values stored
-            - when we press mouse down any subsequent update in the
-            slider (y axis) will 
-                - read from SEQ.data.f and update the sequencer steps pictures
-                - the new step values will be stored in 
-                    SEQ.data.dyn.i
-                    SEQ.data.dyn.f
-
-                but what does it mean? 
-                means that when the flux rand runs, it will update its 
-                arrays based on these dyn slider arrays rather than the original arrays
-                
-
-                update the SEQ.data.dyn.f with the new values calculated from
-                the SEQ.data.i and the current slider value
-                what's the calculation?
-        }
-
-        for uics_counter := 0 to 3
-            for uics_counter2 := 0 to 7
-                fn002.a.caller     := __CALLER_SEQ_DYN
-                fn002.a.step_index := uics_counter * 8 + uics_counter2
-                fn002.a.side       := uics_seq_side
-                fn002.a.value      := ...
-                SEQ.data.f [                              ...
-                    uics_seq_side,                        ...
-                    SEQ.showing_target [ uics_seq_side ], ...
-                    uics_counter * 8 + uics_counter2      ...
-                ]
-                call fn002_set_seq_step_value_and_ps
-
-            end for
-        end for
-        message(f'fn030.l.dyn_transf_value: <fn030.l.dyn_transf_value>')
-        message(f'    <uics_counter-1> | <uics_counter2-1> | fn030.r.transf_value: <fn030.r.transf_value>')
+        UIID_MAIN.display_title -> text := "Dynamics"
+        UIID_MAIN.display_value -> text := uics_text_data
     end if
+
+
+    {{ RANDOM SLIDERS }}
+    if NI_UI_ID = UIID_random.xypads [ __LEFT ] or NI_UI_ID = UIID_random.xypads [ __RIGHT ]
+        message(f'RANDOM SLIDERS called>')
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_random.xypads [ __RIGHT ] 
+            uics_seq_side := __RIGHT
+        end if
+
+        uics_r_value := ...
+            get_control_par_real_arr(                 ...
+                UIID_random.xypads [ uics_seq_side ], ...
+                CONTROL_PAR_VALUE,                    ...
+                __Y_AXIS                              ...
+            )
+
+        fn035.a.side  := uics_seq_side
+        fn035.a.value := uics_r_value
+        call fn035_update_random_labels
+
+        if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_UP
+            {{ Randomize Sequencer }}
+            if UIID_MAIN.seq_random_btn [ uics_seq_side ] -> value = __ON
+
+                { randomize step count if not locked }
+                if UIID_MAIN.seq.step_lock [ uics_seq_side ] -> value = __OFF
+                    for uics_counter := 0 to 3
+                        for uics_counter2 := __LEFT to __RIGHT
+                            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                                uics_dual_join_side := uics_seq_side
+                            else
+                                uics_dual_join_side := uics_counter2
+                            end if
+
+                            if  switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter2 = __LEFT or ...
+                                switch_MAIN.SEQ.combine = __SEQ_JOIN
+
+                                uics_current_value := UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value
+                                uics_random_delta  := int(float(random (-7, 7)) * uics_r_value)
+                               
+                                UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := uics_random_delta + uics_current_value
+                                SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]          := uics_random_delta + uics_current_value
+                                SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]     := uics_random_delta + uics_current_value
+                                
+                                if uics_current_value + uics_random_delta > 7 
+                                    UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ]      -> value := 7
+                                    SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]               := 7
+                                    SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]          := 7
+                                else
+                                    if uics_current_value + uics_random_delta < 0
+                                        UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := 0
+                                        SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]               := 0
+                                        SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]          := 0
+                                    end if
+                                end if
+
+                                fn003.a.side        := uics_dual_join_side
+                                fn003.a.mode        := switch_MAIN.SEQ.combine
+                                fn003.a.block_index := uics_counter
+                                call fn003_set_block_step_count
+                            end if
+
+                        end for
+                    end for
+                end if
+
+                { randomize step values }
+                for uics_counter := 0 to 3
+
+                    for uics_counter2 := 0 to 7
+
+                        uics_current_value.r := ...
+                            SEQ.data.dyn.f [                          ...
+                                uics_seq_side,                        ...
+                                SEQ.showing_target [ uics_seq_side ], ...
+                                fn018.a.step_index                    ...
+                            ]
+
+                        uics_random_delta.r := (float(random(-10000,10000))/10000.0) * uics_r_value
+                        
+                        SEQ.data.dyn.f [                          ...
+                                uics_seq_side,                        ...
+                                SEQ.showing_target [ uics_seq_side ], ...
+                                fn018.a.step_index                    ...
+                            ] := uics_current_value.r + uics_random_delta.r
+
+                        { clamping values out of range }
+                        if uics_current_value.r + uics_random_delta.r > 1.0
+                            SEQ.data.dyn.f [                          ...
+                                uics_seq_side,                        ...
+                                SEQ.showing_target [ uics_seq_side ], ...
+                                fn018.a.step_index                    ...
+                            ] := 1.0
+
+                        else
+                            if uics_current_value.r + uics_random_delta.r < 0.0
+                                SEQ.data.dyn.f [                          ...
+                                    uics_seq_side,                        ...
+                                    SEQ.showing_target [ uics_seq_side ], ...
+                                    fn018.a.step_index                    ...
+                                ] := 0.0
+                            end if
+
+                        end if
+
+                        fn018.a.side       := uics_seq_side
+                        fn018.a.step_index := uics_counter * 8 + uics_counter2
+                        fn018.a.value      :=                         ...
+                            SEQ.data.dyn.f [                          ...
+                                uics_seq_side,                        ...
+                                SEQ.showing_target [ uics_seq_side ], ...
+                                fn018.a.step_index                    ...
+                            ]
+                        call fn018_set_seq_step_picture_state
+
+                        fn002.a.side            := uics_seq_side
+                        fn002.a.value           := fn018.a.value
+                        fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
+                        fn002.a.table_to_update := __SEQ_DYN_TRANSF_TABLE
+                        fn002.a.step_index      := uics_counter * 8 + uics_counter2
+                        call fn002_set_seq_step_value
+                    end for
+                end for
+
+            end if
+        end if
+    end if
+
+
+    {{ MAIN FX PANEL SELECTORS }}
+    if  in_range(NI_UI_ID, UIID_MAIN.FX_panel_selectors [ __LEFT,  0 ], UIID_MAIN.FX_panel_selectors [ __LEFT,  7 ]) or ...
+        in_range(NI_UI_ID, UIID_MAIN.FX_panel_selectors [ __RIGHT, 0 ], UIID_MAIN.FX_panel_selectors [ __RIGHT, 7 ])
+        message(f'MAIN FX PANEL SELECTORS called>')
+        uics_seq_side := __LEFT
+        if in_range(NI_UI_ID, UIID_MAIN.FX_panel_selectors [ __RIGHT, 0 ], UIID_MAIN.FX_panel_selectors [ __RIGHT, 7 ])
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.FX_panel_selectors [ __RIGHT,  0 ]
+        else
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.FX_panel_selectors [ __LEFT, 0 ]
+        end if
+
+        { update selector buttons }
+        fn042.a.side  := uics_seq_side
+        fn042.a.panel := uics_uiid_index
+        call fn042_update_fx_panel_selector_btns
+
+        { update panel visibility }
+        fn043.a.side  := uics_seq_side
+        fn043.a.panel := uics_uiid_index
+        call fn043_show_hide_fx_panels
+    end if
+
+
+    {{ LFO WAVESHAPE SELECTORS }}
+    if in_range(NI_UI_ID, UIID_LFO.waveshape_selectors [ LFO_WAVESHAPE_TRI ], UIID_LFO.waveshape_selectors [ LFO_WAVESHAPE_RND ])
+        uics_uiid_index := NI_UI_ID - UIID_LFO.waveshape_selectors [ LFO_WAVESHAPE_TRI ]
+        message(f'LFO WAVESHAPE SELECTORS called | index: <uics_uiid_index>')
+
+        { ui update and LFO_data [ WAVESHAPE ] update }
+        fn045.a.index := uics_uiid_index
+        call fn045_set_lfo_waveshape_selectors
+        { updates the step values for each waveform }
+        call update_lfo_aux_data
+        call fn047_update_all_lfo_controls_data_and_ui
+        message(f'changed waveshape')
+    end if
+
+
+    {{ SINGLE SHOT CONTROLS }}
+    if  in_range(NI_UI_ID, UIID_MAIN.single_shot_controls [ __LEFT,  0 ], UIID_MAIN.single_shot_controls [ __LEFT,  5 ]) or ...
+        in_range(NI_UI_ID, UIID_MAIN.single_shot_controls [ __RIGHT, 0 ], UIID_MAIN.single_shot_controls [ __RIGHT, 5 ])
+
+        uics_seq_side := __LEFT
+        if in_range(NI_UI_ID, UIID_MAIN.single_shot_controls [ __RIGHT, 0 ], UIID_MAIN.single_shot_controls [ __RIGHT, 5 ])
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.single_shot_controls [ __RIGHT,  0 ]
+        else
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.single_shot_controls [ __LEFT, 0 ]
+        end if
+        uics_value := NI_UI_ID -> value
+
+        select(uics_uiid_index)
+            case __SINGLE_SHOT_SAMPLE_START
+                fn052.a.side       := uics_seq_side
+                fn052.a.value      := float(uics_value) * 0.000001
+                if fn052.a.value > 0.995
+                    fn052.a.value := 0.995
+                end if
+                call fn052_set_wf_cursor_and_overlay
+                set_control_par_real_arr(                              ...
+                    UIID_MAIN.waveform_xypad_cursor [ uics_seq_side ], ...
+                    CONTROL_PAR_VALUE,                                 ...
+                    fn052.a.value,                                     ...
+                    0                                                  ...
+                )
+
+                sample_starts [ uics_seq_side, last_played_note ] := fn052.a.value
+                UIID_MAIN.display_title -> text := "Sample Start"
+                UIID_MAIN.display_value -> text := f'<int(round(fn052.a.value * 10000.0)/100.0)>%'
+
+            case __SINGLE_SHOT_TUNE
+                UIID_MAIN.display_title -> text := "Sample Tuning"
+                { value store and displaying on the UI }
+                if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_SHIFT) = __OFF
+                    sample_tuning [ uics_seq_side, last_played_note ] := round ( (float(uics_value - 500000) / __TUNING_STEP) )
+                    UIID_MAIN.display_value -> text := sample_tuning [ uics_seq_side, last_played_note ]
+                else
+                    sample_tuning [ uics_seq_side, last_played_note ] := round( 100.0 * ( (float(uics_value - 500000) / __TUNING_STEP)) )/100.0
+                    UIID_MAIN.display_value -> text := sample_tuning [ uics_seq_side, last_played_note ] & "st"
+                    message(f' shift step: < (float(uics_value) / __TUNING_STEP) * __TUNING_STEP >')
+                end if
+                { value will be used at the event level }
+
+            case __SINGLE_SHOT_LP_CUT
+                set_engine_par(ENGINE_PAR_CUTOFF, uics_value, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                UIID_MAIN.display_title -> text := "Low Pass Cutoff"
+                UIID_MAIN.display_value -> text := ...
+                    get_engine_par_disp(ENGINE_PAR_CUTOFF, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "hz"
+
+            case __SINGLE_SHOT_LP_RES
+                set_engine_par(ENGINE_PAR_RESONANCE, uics_value, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                UIID_MAIN.display_title -> text := "Low Pass Reso"
+                UIID_MAIN.display_value -> text := ...
+                    get_engine_par_disp(ENGINE_PAR_RESONANCE, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "%"
+
+            case __SINGLE_SHOT_HP_CUT
+                set_engine_par(ENGINE_PAR_CUTOFF, uics_value, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                UIID_MAIN.display_title -> text := "Hi Pass Cutoff"
+                UIID_MAIN.display_value -> text := ...
+                    get_engine_par_disp(ENGINE_PAR_CUTOFF, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "hz"
+
+            case __SINGLE_SHOT_HP_RES
+                set_engine_par(ENGINE_PAR_RESONANCE, uics_value, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                UIID_MAIN.display_title -> text := "Hi Pass Reso"
+                UIID_MAIN.display_value -> text := ...
+                    get_engine_par_disp(ENGINE_PAR_RESONANCE, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "%"
+
+        end select
+    end if
+
+
+    {{ SINGLE SHOW WAVEFORM CURSOR XY }}
+    if  NI_UI_ID = UIID_MAIN.waveform_xypad_cursor [ __LEFT ] or NI_UI_ID = UIID_MAIN.waveform_xypad_cursor [ __RIGHT ]
+        uics_seq_side := __LEFT
+        if in_range(NI_UI_ID, UIID_MAIN.waveform_xypad_cursor [ __RIGHT ], UIID_MAIN.waveform_xypad_cursor [ __RIGHT ])
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.waveform_xypad_cursor [ __RIGHT ]
+        else
+            uics_uiid_index := NI_UI_ID - UIID_MAIN.waveform_xypad_cursor [ __LEFT ]
+        end if
+        uics_r_value := get_control_par_real_arr(NI_UI_ID, CONTROL_PAR_VALUE, 0)
+        if uics_r_value > 0.995
+            uics_r_value := 0.995
+        end if
+
+        fn052.a.side       := uics_seq_side
+        fn052.a.value      := uics_r_value
+        call fn052_set_wf_cursor_and_overlay
+        UIID_MAIN.single_shot_controls [ uics_seq_side, __SINGLE_SHOT_SAMPLE_START ] -> value := int(uics_r_value * 1000000.0)
+
+        sample_starts [ uics_seq_side, last_played_note ] := uics_r_value
+    end if
+
+
+    {{ HUMANIZE SLIDERS }}
+    if NI_UI_ID = UIID_MAIN.hmz_sliders [ __LEFT ] or NI_UI_ID = UIID_MAIN.hmz_sliders [ __RIGHT ] 
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_MAIN.hmz_sliders [ __RIGHT ] 
+            uics_seq_side := __RIGHT
+        end if
+
+        SEQ.humanize [ uics_seq_side ] := NI_UI_ID -> value / HMZ_DIVISOR
+        UIID_MAIN.display_title -> text := "Humanizer"
+        UIID_MAIN.display_value -> text := f'Max: <NI_UI_ID -> value / HMZ_DIVISOR>ms '
+    end if
+
+
+    {{ LFO CONTROLS }}
+    uicbs_custom_id         := get_control_par($NI_UI_ID, $CONTROL_PAR_CUSTOM_ID)
+    uicbs_control_par_value := get_control_par($NI_UI_ID, $CONTROL_PAR_VALUE)
+    // message("UI CONTROLS ____ param index: " & uicbs_custom_id & " | value = " & uicbs_control_par_value)
+
+    if in_range(uicbs_custom_id, 0, 227)
+        message(f'called in_range(uicbs_custom_id, 0, 227) uicbs_custom_id: <uicbs_custom_id>')
+        select(uicbs_custom_id)
+            case __CUUID_FX_UIC_MIN to __CUUID_FX_UIC_MIN+15
+                uics_seq_side := __LEFT
+            case __CUUID_FX_UIC_MIN+16 to __CUUID_FX_UIC_MIN+31
+                uics_seq_side := __RIGHT
+        end select
+
+        select(uicbs_custom_id)
+            case __CUUID_FX_UIC_MIN  to __CUUID_FX_UIC_MAX { FX ui controls }
+                fn036.a.side          := uics_seq_side
+                fn036.a.target        := uicbs_custom_id
+                fn036.a.control_value := uicbs_control_par_value
+                call fn036_set_control_param_slider()
+
+            case __CUUID_LFO_A_MIN  to __CUUID_LFO_A_MAX { FX LFO amount  }
+                if switch_MAIN.LFO.lock = __OFF
+                    LFO_global_local_recall [ uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET ] := uicbs_control_par_value
+
+                    { update the LFO ring masks on the UI }
+                    fn037.a.side          := uics_seq_side
+                    fn037.a.target        := uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET
+                    fn037.a.control_value := UIID_controls [ fn037.a.target ] -> value
+                    fn037.a.LFO_amount    := uicbs_control_par_value  { LFO amount value }
+                    call fn037_LFO.update_intensity_ring
+
+                    { updates the LFO data for this control }
+                    fn038.a.side          := uics_seq_side
+                    fn038.a.target        := uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET
+                    fn038.a.control_value := UIID_controls [ fn038.a.target ] -> value
+                    fn038.a.LFO_amount    := uicbs_control_par_value  { LFO amount value }
+                    fn038.a.control_type  := LFO_targets_type [ uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET ]
+                    { PENDING link argument }
+                    call fn038_LFO_store_LFO_mod_data
+
+                    { behaviour when linked }
+                    if UIID_MAIN.FX.links [ ...
+                        UIID_FX.parameter_to_module [ uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET ] ...
+                      ] -> value = __ON
+                        { there are 16 elements on the each side }
+                        if uics_seq_side = __LEFT
+                            MAIN.FX.aux_flip_link := 16 { add 8 to get to right side }
+                            MAIN.FX.aux_flip_bus  := 1
+                        else                                                    { right side }
+                            MAIN.FX.aux_flip_link := -16 { subtract 8 to get to left side }
+                            MAIN.FX.aux_flip_bus  := 0
+                        end if
+
+                        { UI control update on the other side }
+                        set_control_par( ...
+                            UIID_controls_LFO_amount [ ...
+                                uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET + MAIN.FX.aux_flip_link ...
+                            ], ...
+                            CONTROL_PAR_VALUE, ...
+                            uicbs_control_par_value ... 
+                        )
+
+                        { actually these functions are not needed here, they could have a 
+                          link argument that will be processed inside them }
+
+                        fn037.a.target := uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET + MAIN.FX.aux_flip_link
+                        { we can keep the values from above since it is mirroring the other layer }
+                        // fn037.a.control_value := UIID_controls [ fn037.a.target ] -> value
+                        // fn037.a.LFO_amount    := UIID_controls_LFO_amount [ fn000.a.target ] -> value
+                        call fn037_LFO.update_intensity_ring
+
+                        fn038.a.target := fn037.a.target
+                        fn038.a.side   := MAIN.FX.aux_flip_bus
+                        { we can keep the values from above since it is mirroring the other layer }
+                        // fn002.a.LFO_amount    := fn000.a.LFO_amount
+                        // fn002.a.control_value := fn000.a.control_value { FX parameter value }
+                        call fn038_LFO_store_LFO_mod_data
+                    end if
+                else
+                    // fn046.a.target       := uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET
+                    fn046.a.caller       := __LFO_AMOUNT_CONTROL
+                    fn046.a.target_value := uicbs_control_par_value
+                    call fn046_set_lfo_depth_globally
+
+                end if
+
+            case  __CUUID_LFO_P_MIN  to  __CUUID_LFO_P_MAX { FX LFO phase   }
+                { behaviour when linked }
+                if UIID_MAIN.FX.links [ ...
+                    UIID_FX.parameter_to_module [ uicbs_custom_id - UICTRL_LFO_PHASE_OFFSET ] ...
+                ] -> value = __ON
+                    { there are 16 elements on the each side }
+                    if uics_seq_side = __LEFT
+                        MAIN.FX.aux_flip_link := 16 { add 8 to get to right side }
+                    else
+                        MAIN.FX.aux_flip_link := -16 { subtract 8 to get to left side }
+                    end if
+
+                    { UI control update on the other side }
+                    set_control_par( ...
+                        UIID_controls_LFO_phase [ ...
+                            uicbs_custom_id - UICTRL_LFO_PHASE_OFFSET + MAIN.FX.aux_flip_link ...
+                        ], ...
+                        CONTROL_PAR_VALUE, ...
+                        uicbs_control_par_value ... 
+                    )
+                end if
+
+            case __CUUID_LFO_PW_MIN  to  __CUUID_LFO_PW_MAX { FX LFO power   }
+                fn041.a.target := uicbs_custom_id - UICTRL_LFO_POWER_OFFSET
+                fn041.a.side   := uics_seq_side
+                call fn041_LFO_off_restore_buffer_value
+
+                { behaviour when linked }
+                if UIID_MAIN.FX.links [ UIID_FX.parameter_to_module [ uicbs_custom_id - UICTRL_LFO_POWER_OFFSET ] ] -> value = __ON
+                    { there are 16 elements on the each side }
+                    if  uics_seq_side = __LEFT
+                        MAIN.FX.aux_flip_link := 16 { add 8 to get to right side }
+                    else
+                        MAIN.FX.aux_flip_link := -16 { subtract 8 to get to left side }
+                    end if
+
+                    { UI control update on the other side }
+                    set_control_par( ...
+                        UIID_controls_LFO_power [ ...
+                            uicbs_custom_id - UICTRL_LFO_POWER_OFFSET + MAIN.FX.aux_flip_link ...
+                        ], ...
+                        CONTROL_PAR_VALUE, ...
+                        uicbs_control_par_value ... 
+                    )
+                end if
+
+            case __CUUID_FX_PW_MIN  to  __CUUID_FX_PW_MAX  { MAIN FX modules power }
+                // call UICBS_MAIN.FX.modules.power() { taken care directly, later here }
+
+            case __CUUID_FX_LINK_MIN  to __CUUID_FX_LINK_MAX  { MAIN FX modules links }
+                call UICBS_MAIN.FX.modules.links()
+
+        end select
+    end if
+
+
+    {{ LAYER AND FX PANELS CONTROLS NOT Modulated by LFOs }}
+    {{ FX Saturation Modes }}
+    if  in_range(NI_UI_ID, UIID_lfp_sat_modes [ __LEFT,  0 ], UIID_lfp_sat_modes [ __LEFT,  2 ] ) or ...
+        in_range(NI_UI_ID, UIID_lfp_sat_modes [ __RIGHT, 0 ], UIID_lfp_sat_modes [ __RIGHT, 2 ] )
+    
+        uics_seq_side := __LEFT
+        if in_range(NI_UI_ID, UIID_lfp_sat_modes [ __RIGHT, 0 ], UIID_lfp_sat_modes [ __RIGHT, 2 ])
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_lfp_sat_modes [ __RIGHT,  0 ]
+        else
+            uics_uiid_index := NI_UI_ID - UIID_lfp_sat_modes [ __LEFT, 0 ]
+        end if
+
+        fn048.a.side  := uics_seq_side
+        fn048.a.index := uics_uiid_index
+        call fn048_set_fx_saturation_mode
+
+        set_engine_par(ENGINE_PAR_SHAPE_TYPE, FX_saturation_type [ uics_uiid_index ], uics_seq_side, __SLOT_G_SATURATION, __GROUP_LEVEL)
+        UIID_MAIN.display_title -> text := "Saturation Type"
+        UIID_MAIN.display_value -> text := !FX_saturation_type_txt [ uics_uiid_index ]
+    end if
+
+
+    {{ FX Distortion Modes }}
+    if  NI_UI_ID = UIID_lfp_dst_modes [ __LEFT ] or NI_UI_ID = UIID_lfp_dst_modes [ __RIGHT ]
+        if NI_UI_ID = UIID_lfp_dst_modes [ __LEFT ]
+            uics_seq_side   := __LEFT
+        else
+            uics_seq_side := __RIGHT
+        end if
+        uics_uiid_index := NI_UI_ID -> value
+
+        set_engine_par(ENGINE_PAR_DISTORTION_TYPE, FX_distortion_type [ uics_uiid_index ], uics_seq_side, __SLOT_G_DISTORTION, __GROUP_LEVEL)
+        UIID_MAIN.display_title -> text := "Distortion Type"
+        UIID_MAIN.display_value -> text := !FX_distortion_type_txt [ uics_uiid_index ]
+    end if
+
+
+    {{ FX Tape Saturator HF Cut }}
+    if  NI_UI_ID = UIID_lfp_tape_sat.hf_cut [ __LEFT ] or NI_UI_ID = UIID_lfp_tape_sat.hf_cut [ __RIGHT ]
+        if NI_UI_ID = UIID_lfp_tape_sat.hf_cut [ __LEFT ]
+            uics_seq_side   := __LEFT
+        else
+            uics_seq_side := __RIGHT
+        end if
+        set_engine_par(ENGINE_PAR_TP_HF_ROLLOFF, NI_UI_ID -> value, __GROUP_NONE, __SLOT_B_TAPESAT, NI_BUS_OFFSET+uics_seq_side)
+        UIID_MAIN.display_title -> text := "HF Cut"
+        UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_TP_HF_ROLLOFF, __GROUP_NONE, __SLOT_B_TAPESAT, NI_BUS_OFFSET+uics_seq_side) & "Hz"
+    end if
+
+
+    {{ FX Delay Controls - Switches }}
+    if  in_range(NI_UI_ID, UIID_lfp_delay_controls [ __LEFT,  0 ], UIID_lfp_delay_controls [ __LEFT,  1 ] ) or ...
+        in_range(NI_UI_ID, UIID_lfp_delay_controls [ __RIGHT, 0 ], UIID_lfp_delay_controls [ __RIGHT, 1 ] )
+
+        if in_range(NI_UI_ID, UIID_lfp_delay_controls [ __LEFT,  0 ], UIID_lfp_delay_controls [ __LEFT,  1 ] )
+            uics_seq_side   := __LEFT
+            uics_uiid_index := NI_UI_ID - UIID_lfp_delay_controls [ __LEFT,  0 ]
+        else
+            uics_seq_side := __RIGHT
+            uics_uiid_index := NI_UI_ID - UIID_lfp_delay_controls [ __RIGHT, 0 ]
+        end if
+
+        uics_engine_par := FX_delay_engine_par [ uics_uiid_index ]
+        uics_slot       := __SLOT_B_DELAY
+        uics_generic    := NI_BUS_OFFSET+uics_seq_side
+
+        UIID_lfp_delay_labels [ uics_seq_side, uics_uiid_index ] -> font_type := FX_switches_fonts [ NI_UI_ID -> value ]
+
+        if  uics_uiid_index = __FX_DELAY_PINGPONG
+            set_engine_par(uics_engine_par, NI_UI_ID -> value, __GROUP_NONE, uics_slot, uics_generic)
+            UIID_MAIN.display_title -> text := "Pingpong"
+            UIID_MAIN.display_value -> text := FX_switch_state [ NI_UI_ID -> value ]
+        else
+            UIID_MAIN.display_title -> text := "Sync"
+            UIID_MAIN.display_value -> text := FX_sync_mode [ NI_UI_ID -> value ]
+            { change time unit }
+            if  NI_UI_ID -> value = __OFF
+                { ms }
+                set_engine_par(ENGINE_PAR_RDL_TIME_UNIT, NI_SYNC_UNIT_ABS, __GROUP_NONE, uics_slot, uics_generic)
+            else
+                set_engine_par(               ...
+                    ENGINE_PAR_RDL_TIME_UNIT, ...
+                    fx_delay_units [ (UIID_lfp_delay_controls [ uics_seq_side, __FX_DELAY_TIME ] -> value)/FX_DELAY_SYNC_DIVISOR ], ...
+                    __GROUP_NONE,             ...
+                    uics_slot,                ...
+                    uics_generic              ...
+                )
+                set_engine_par(               ...
+                    ENGINE_PAR_RDL_TIME, ...
+                    fx_delay_sync [ (UIID_lfp_delay_controls [ uics_seq_side, __FX_DELAY_TIME ] -> value)/FX_DELAY_SYNC_DIVISOR ], ...
+                    __GROUP_NONE,             ...
+                    uics_slot,                ...
+                    uics_generic              ...
+                )
+                message(f' time index: < (UIID_lfp_delay_controls [ uics_seq_side, __FX_DELAY_TIME ] -> value)/17 >')
+            end if
+        end if
+
+        // UIID_MAIN.display_title -> text := "HF Cut"
+        // UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_TP_HF_ROLLOFF, __GROUP_NONE, __SLOT_B_TAPESAT, NI_BUS_OFFSET+uics_seq_side) & "Hz"
+    end if
+
+
+    {{ FX Delay Controls - sliders }}
+    if  in_range(NI_UI_ID, UIID_lfp_delay_controls [ __LEFT,  2 ], UIID_lfp_delay_controls [ __LEFT,  6 ] ) or ...
+        in_range(NI_UI_ID, UIID_lfp_delay_controls [ __RIGHT, 2 ], UIID_lfp_delay_controls [ __RIGHT, 6 ] )
+
+        if in_range(NI_UI_ID, UIID_lfp_delay_controls [ __LEFT,  2 ], UIID_lfp_delay_controls [ __LEFT,  6 ] )
+            uics_seq_side   := __LEFT
+        else
+            uics_seq_side   := __RIGHT
+        end if
+        uics_uiid_index := NI_UI_ID - UIID_lfp_delay_controls [ uics_seq_side,  2 ] + 2 { offset from switches }
+        uics_value      := NI_UI_ID -> value
+        
+        @uics_title     := FX_delay_param_txt [ uics_uiid_index ]
+
+        if uics_uiid_index # __FX_DELAY_DRYWET and uics_uiid_index # __FX_DELAY_TIME
+            message("LOW, HIGH, FEEDBACK")
+            set_engine_par(                            ...
+                FX_delay_engine_par [uics_uiid_index], ...
+                uics_value,                            ...
+                __GROUP_NONE,                          ...
+                __SLOT_B_DELAY,                        ...
+                NI_BUS_OFFSET+uics_seq_side            ...
+            )
+            @uics_text_data_type := FX_delay_param_type_txt [ uics_uiid_index ]
+            @uics_text_data := get_engine_par_disp(FX_delay_engine_par [uics_uiid_index], __GROUP_NONE, __SLOT_B_DELAY, NI_BUS_OFFSET+uics_seq_side ) &@uics_text_data_type
+
+        else
+            if uics_uiid_index = __FX_DELAY_DRYWET
+                @uics_text_data := f'<uics_value/10000>%'
+                uics_value := int(float(uics_value)*0.63)
+                { dry }
+                // set_engine_par(                             ...
+                //     FX_delay_engine_par [uics_uiid_index],  ...
+                //     630000 - uics_value,                    ...
+                //     __GROUP_NONE,                           ...
+                //     __SLOT_B_DELAY,                         ...
+                //     NI_BUS_OFFSET+uics_seq_side             ...
+                // )
+                { wet }
+                set_engine_par(                          ...
+                    ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN,  ...
+                    uics_value,                          ...
+                    __GROUP_NONE,                        ...
+                    __SLOT_B_DELAY,                      ...
+                    NI_BUS_OFFSET+uics_seq_side          ...
+                )
+            end if
+            if uics_uiid_index = __FX_DELAY_TIME
+                if  get_engine_par(                 ...
+                        ENGINE_PAR_RDL_TIME_UNIT,   ...
+                        __GROUP_NONE,               ...
+                        __SLOT_B_DELAY,             ...
+                        NI_BUS_OFFSET+uics_seq_side ...
+                    ) = NI_SYNC_UNIT_ABS
+
+                    set_engine_par(                 ...
+                        ENGINE_PAR_RDL_TIME,        ...
+                        uics_value,                 ...
+                        __GROUP_NONE,               ...
+                        __SLOT_B_DELAY,             ...
+                        NI_BUS_OFFSET+uics_seq_side ...
+                    )
+                    @uics_title := @uics_title //& " (ms)"
+                    @uics_text_data := f'<(uics_value / 500)>ms'
+
+                else
+                    @uics_title := @uics_title //& " (beat)"
+                    set_engine_par(                                            ...
+                        ENGINE_PAR_RDL_TIME_UNIT,                              ...
+                        fx_delay_units [ uics_value / FX_DELAY_SYNC_DIVISOR ], ...
+                        __GROUP_NONE,                                          ...
+                        __SLOT_B_DELAY,                                        ...
+                        NI_BUS_OFFSET+uics_seq_side                            ...
+                    )
+                    set_engine_par(                                           ...
+                        ENGINE_PAR_RDL_TIME,                                  ...
+                        fx_delay_sync [ uics_value / FX_DELAY_SYNC_DIVISOR ], ...
+                        __GROUP_NONE,                                         ...
+                        __SLOT_B_DELAY,                                       ...
+                        NI_BUS_OFFSET+uics_seq_side                           ...
+                    )
+                    @uics_text_data := !fx_delay_rates_display [ uics_value / FX_DELAY_SYNC_DIVISOR ]
+                end if
+            end if
+        end if
+
+        
+        UIID_MAIN.display_title -> text := @uics_title
+        UIID_MAIN.display_value -> text := @uics_text_data
+    end if
+
+
+    {{ FX Reverb Controls - sliders }}
+    if  in_range(NI_UI_ID, UIID_lfp_rvb_controls [ __LEFT,  0 ], UIID_lfp_rvb_controls [ __LEFT,  3 ] ) or ...
+        in_range(NI_UI_ID, UIID_lfp_rvb_controls [ __RIGHT, 0 ], UIID_lfp_rvb_controls [ __RIGHT, 3 ] )
+
+        if in_range(NI_UI_ID, UIID_lfp_rvb_controls [ __LEFT, 0 ], UIID_lfp_rvb_controls [ __LEFT, 3 ] )
+            uics_seq_side   := __LEFT
+        else
+            uics_seq_side   := __RIGHT
+        end if
+        uics_uiid_index := NI_UI_ID - UIID_lfp_rvb_controls [ uics_seq_side, 0 ]
+        uics_value      := NI_UI_ID -> value
+        @uics_title     := !FX_reverb_param_txt [uics_uiid_index]
+        @uics_text_data_type := !FX_reverb_param_type_txt [ uics_uiid_index ]
+        
+        if uics_uiid_index = 0 { pre-delay }
+            conv_predelay_uiid := NI_UI_ID
+            call convolution_predelay_label
+            set_engine_par(ENGINE_PAR_IRC_PREDELAY, uics_value, __GROUP_NONE, __SLOT_B_REVERB, NI_BUS_OFFSET+uics_seq_side )
+            @uics_text_data := @conv_label
+        else
+            { set the EP and LP }
+            set_engine_par(FX_reverb_engine_par[uics_uiid_index],   uics_value, __GROUP_NONE, __SLOT_B_REVERB, NI_BUS_OFFSET+uics_seq_side )
+            set_engine_par(FX_reverb_engine_par[uics_uiid_index+3], uics_value, __GROUP_NONE, __SLOT_B_REVERB, NI_BUS_OFFSET+uics_seq_side )
+            if uics_uiid_index = 1 { size }
+                @uics_text_data := uics_value/10000 + 50 & "%"
+            else
+                conv_freq_uiid := NI_UI_ID
+                call convolution_filters_label
+                @uics_text_data := @conv_label & "hz"
+            end if
+
+        end if
+
+        // @uics_text_data := get_engine_par_disp(FX_reverb_engine_par [uics_uiid_index], __GROUP_NONE, __SLOT_B_REVERB, NI_BUS_OFFSET+uics_seq_side ) & @uics_text_data_type
+
+        UIID_MAIN.display_title -> text := @uics_title
+        UIID_MAIN.display_value -> text := @uics_text_data
+    end if
+
+
+    {{ Layer and FX power buttons  }}
+    if  in_range(NI_UI_ID, UIID_lfp_power [ __LEFT,  0 ], UIID_lfp_power [ __LEFT,  7 ] ) or ...
+        in_range(NI_UI_ID, UIID_lfp_power [ __RIGHT, 0 ], UIID_lfp_power [ __RIGHT, 7 ] )
+
+        if in_range(NI_UI_ID, UIID_lfp_power [ __LEFT,  0 ], UIID_lfp_power [ __LEFT,  7 ] )
+            uics_seq_side   := __LEFT
+        else
+            uics_seq_side   := __RIGHT
+        end if
+        uics_uiid_index := NI_UI_ID - UIID_lfp_power [ uics_seq_side, 0 ]
+        uics_value      := NI_UI_ID -> value
+
+        if uics_uiid_index < 3 { saturation and distortion }
+            uics_generic    := __GROUP_LEVEL
+            if uics_uiid_index = 1
+                uics_slot       := __SLOT_G_SATURATION
+            end if
+            if uics_uiid_index = 2
+                uics_slot       := __SLOT_G_DISTORTION
+            end if
+            { PENDING GROUP INDEX! }
+            set_engine_par(ENGINE_PAR_EFFECT_BYPASS, abs(1-uics_value), uics_seq_side, uics_slot, uics_generic)
+        else
+            set_engine_par(                                          ...
+                ENGINE_PAR_EFFECT_BYPASS,                            ...
+                abs(1-uics_value),                                   ...
+                __GROUP_NONE,                                        ...
+                MAIN_lfp_power_to_slot_mapping [ uics_uiid_index ] , ...
+                NI_BUS_OFFSET+uics_seq_side                          ...
+            )
+        end if
+
+        UIID_MAIN.display_title -> text := MAIN_lfp_power_txt [ uics_uiid_index ]
+        UIID_MAIN.display_value -> text := !FX_switch_state [ uics_value ]
+    end if
+
+    {{ LAYER AND FX PANELS CONTROLS Modulated by LFOs }}
+    macro set_engine_par_fx(#title#, #engine_par#, #data_type#, #target_index#, #target_group#, #target_slot#, #target_bus#)
+        if  NI_UI_ID = UIID_controls [ #target_index# ] or ...
+            NI_UI_ID = UIID_controls [ #target_index# + __MAIN.FX.RIGHT.OFFSET ]
+
+            uics_value    := NI_UI_ID -> value
+            uics_seq_side := __RIGHT
+            if NI_UI_ID = UIID_controls [ #target_index# ]
+                uics_seq_side := __LEFT
+            end if
+
+            UIID_MAIN.display_title -> text := #title#
+            UIID_MAIN.display_value -> text := get_engine_par_disp(#engine_par#, #target_group#, #target_slot#, #target_bus#) & #data_type#
+            set_engine_par(#engine_par#, uics_value, #target_group#, #target_slot#, #target_bus#)
+
+        end if
+    end macro
+
+    set_engine_par_fx("Volume",      ENGINE_PAR_VOLUME,      "dB", __MAIN.FX.LAYER.VOLUME,      __GROUP_NONE, __SLOT_NONE,          NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Pan",         ENGINE_PAR_PAN,         "",   __MAIN.FX.LAYER.PAN,         __GROUP_NONE, __SLOT_NONE,          NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Width",       ENGINE_PAR_STEREO,      "%",  __MAIN.FX.LAYER.WIDTH,       __GROUP_NONE, __SLOT_B_STEREO,      NI_BUS_OFFSET+uics_seq_side)
+    {{ PENDING GROUP WORK }}
+    set_engine_par_fx("Saturation",  ENGINE_PAR_SHAPE,                   "%",  __MAIN.FX.SATURATION,        uics_seq_side, __SLOT_G_SATURATION,  __GROUP_LEVEL)
+    set_engine_par_fx("Damping",     ENGINE_PAR_DAMPING,                 "%",  __MAIN.FX.DISTORTION.DAMP,   uics_seq_side, __SLOT_G_DISTORTION,  __GROUP_LEVEL)
+    set_engine_par_fx("Drive",       ENGINE_PAR_DRIVE,                   "%",  __MAIN.FX.DISTORTION.DRIVE,  uics_seq_side, __SLOT_G_DISTORTION,  __GROUP_LEVEL)
+    set_engine_par_fx("Bits",        ENGINE_PAR_BITS,                     "",  __MAIN.FX.LOFI.BITS,          __GROUP_NONE, __SLOT_B_LOFI,        NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Sample Rate", ENGINE_PAR_FREQUENCY,                "",  __MAIN.FX.LOFI.SRATE,         __GROUP_NONE, __SLOT_B_LOFI,        NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Noise",       ENGINE_PAR_NOISELEVEL,             "dB",  __MAIN.FX.LOFI.NOISE,         __GROUP_NONE, __SLOT_B_LOFI,        NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Gain",        ENGINE_PAR_TP_GAIN,                "dB",  __MAIN.FX.TAPESAT.GAIN,       __GROUP_NONE, __SLOT_B_TAPESAT,     NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Warmth",      ENGINE_PAR_TP_WARMTH,              "dB",  __MAIN.FX.TAPESAT.WARMTH,     __GROUP_NONE, __SLOT_B_TAPESAT,     NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Wet",         ENGINE_PAR_CHORAL_MIX,              "%",  __MAIN.FX.CHORUS.DRYWET,      __GROUP_NONE, __SLOT_B_CHORUS,      NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Depth",       ENGINE_PAR_CHORAL_AMOUNT,           "%",  __MAIN.FX.CHORUS.DEPTH,       __GROUP_NONE, __SLOT_B_CHORUS,      NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Speed",       ENGINE_PAR_CHORAL_RATE,            "hz",  __MAIN.FX.CHORUS.SPEED,       __GROUP_NONE, __SLOT_B_CHORUS,      NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Phase",       ENGINE_PAR_CHORAL_FEEDBACK,         "%",  __MAIN.FX.CHORUS.PHASE,       __GROUP_NONE, __SLOT_B_CHORUS,      NI_BUS_OFFSET+uics_seq_side)
+    set_engine_par_fx("Dry | Wet",   ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN, "%",  __MAIN.FX.REVERB.DRYWET,      __GROUP_NONE, __SLOT_B_REVERB,      NI_BUS_OFFSET+uics_seq_side)
+
 end on

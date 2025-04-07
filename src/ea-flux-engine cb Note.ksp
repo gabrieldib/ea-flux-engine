@@ -49,7 +49,6 @@ on note
             call ARP.StartSeq()
         end if
 
-
     else { sequencer is in JOIN mode }
 
         { in this case the sequencer power check uses the LEFT power for both layers }
@@ -57,7 +56,6 @@ on note
         if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
             ( ( switch_MAIN.SEQ.LEFT.power     = __ON  and note_held_count = 1) or ...
             ( switch_MAIN.SEQ.LEFT.power       = __OFF ) )
-            message(" NCB Playing Layer 1")
 
             pn_ncb.a.side := __LEFT
             pn_ncb.a.note := EVENT_NOTE
@@ -69,7 +67,6 @@ on note
         if  switch_MAIN.SoundSource.RIGHT.power = __ON  and ...
             ( ( switch_MAIN.SEQ.LEFT.power      = __ON  and note_held_count = 1) or ...
             ( switch_MAIN.SEQ.LEFT.power        = __OFF ) )
-            message(" NCB Playing Layer 2")
 
             pn_ncb.a.side := __RIGHT
             pn_ncb.a.note := EVENT_NOTE
@@ -77,14 +74,27 @@ on note
             call PLAY_NOTE_NCB
         end if
 
+        {{ ARP }}
+        ARP.note_buffer_LEFT  [ ARP.cursor [ __LEFT  ] ] := EVENT_NOTE
+        ARP.vel_buffer_LEFT   [ ARP.cursor [ __LEFT  ] ] := EVENT_VELOCITY
+        inc( ARP.cursor [ __LEFT  ])
+        if ( ARP.cursor [ __LEFT ] < 2 and ARP.seq_running = 0)
+            message("Starting the ARP")
+            call ARP.StartSeq()
+        end if
+
     end if
 
-
-
+    last_played_note := EVENT_NOTE
+    for ncb_counter := __LEFT to __RIGHT
+        fn053.a.side := ncb_counter
+        fn053.a.note := last_played_note
+        call fn053_update_single_shot_controls
+    end for
+    
 end on
 
 {
-
     combine on ?
         no  - 
             is layer 1 on?
@@ -141,7 +151,4 @@ end on
                                 no  - do nothing, wait until next rate cycle in LCB
                 no
                     play one shots
-
-
-
 }

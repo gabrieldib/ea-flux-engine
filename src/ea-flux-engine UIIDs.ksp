@@ -1,13 +1,14 @@
-declare UIID_MAIN.seq.off_label                  [ 2 ]
-declare UIID_MAIN.seq.step                   [ 2, 32 ]
+declare UIID_MAIN.seq.off_label                 [ 2 ]
+declare UIID_MAIN.seq.off_label_text            [ 2 ]
+declare UIID_MAIN.seq.step                  [ 2, 32 ]
 declare UIID_MAIN.seq.leds                   [ 2, 4 ]
 declare UIID_MAIN.seq.block_steps            [ 2, 4 ]
-declare UIID_MAIN.SEQ.xypads                 [ 2 ]
-declare UIID_MAIN.controls.draw              [ 2 ]
+declare UIID_MAIN.SEQ.xypads                    [ 2 ]
+declare UIID_MAIN.controls.draw                 [ 2 ]
 declare UIID_MAIN.ADSR_controls              [ 2, 4 ]
-declare UIID_MAIN.SEQ.rate_sliders           [ 2 ]
-declare UIID_MAIN.display_title     
-declare UIID_MAIN.display_value     
+declare UIID_MAIN.SEQ.rate_sliders              [ 2 ]
+declare UIID_MAIN.display_title
+declare UIID_MAIN.display_value
 declare UIID_MAIN.seq.step_leds              [ 2, 4 ]
 declare UIID_MAIN.seq.power                     [ 2 ]
 declare UIID_MAIN.layer.power                   [ 2 ]
@@ -21,11 +22,140 @@ declare UIID_MAIN.seq.flux_rand_btns         [ 2, 4 ]
 declare UIID_MAIN.seq.arp_power                 [ 2 ]
 declare UIID_MAIN.seq.arp_menu                  [ 2 ]
 declare UIID_MAIN.seq.arp_menu_items         [ 2, 6 ]
+declare UIID_MAIN.seq.join_arp_menu_items       [ 6 ]
 declare UIID_MAIN.seq.arp_mode_panels           [ 2 ]
 declare UIID_MAIN.seq.flux_panels               [ 2 ]
 declare UIID_MAIN.seq.arp_mode_panels_close_btn [ 2 ]
 declare UIID_MAIN.seq.dyn_slider                [ 2 ]
 declare UIID_MAIN.seq.dyn_slider.label          [ 2 ]
+declare UIID_random.value_labels                [ 2 ]
+declare UIID_random.picture_labels              [ 2 ]
+declare UIID_random.xypads                      [ 2 ]
+declare UIID_MAIN.seq.step_lock                 [ 2 ]
+declare UIID_MAIN.seq_random_btn                [ 2 ]
+declare UIID_MAIN.FX_panel_selectors         [ 2, 8 ]
+declare UIID_MAIN.FX_panels                  [ 2, 8 ]
+declare UIID_LFO.waveshape_selectors            [ 5 ]
+{ controls not modulated by LFO }
+declare UIID_lfp_sat_modes                   [ 2, 3 ]
+declare UIID_lfp_dst_modes                      [ 2 ]
+declare UIID_lfp_tape_sat.hf_cut                [ 2 ]
+declare UIID_lfp_delay_controls              [ 2, 7 ]
+declare UIID_lfp_rvb_controls                [ 2, 4 ] // IR preset buttons are not included here
+declare UIID_lfp_delay_labels                [ 2, 2 ] 
+declare UIID_lfp_power                       [ 2, 8 ]
+declare UIID_MAIN.single_hit_panel              [ 2 ]
+declare UIID_MAIN.waveforms                     [ 2 ]
+declare UIID_MAIN.single_shot_controls       [ 2, 6 ]
+declare UIID_MAIN.waveform_cursor               [ 2 ]
+declare UIID_MAIN.waveform_overlay              [ 2 ]
+declare UIID_MAIN.waveform_xypad_cursor         [ 2 ]
+declare UIID_MAIN.matrix_sides                  [ 2 ]
+declare UIID_MAIN.matrix_LFO_orbs               [ 2 ]
+declare UIID_MAIN.hmz_sliders                   [ 2 ]
+declare UIID_GLOBAL.source_btns                 [ 2 ]
+declare UIID_GLOBAL.page_prev_btns              [ 2 ]
+declare UIID_GLOBAL.page_next_btns              [ 2 ]
+declare UIID_GLOBAL.page_number                 [ 2 ]
+declare UIID_GLOBAL.sources_prev_next        [ 2, 2 ]
+declare UIID_BROWSER_source.select.btn       [ 2, 18 ]
 
+
+{{ LFO }}
+define __LAYER      := 0
+define __SATURATION := 1
+define __DISTORTION := 2
+define __LOFI       := 3
+define __TAPESAT    := 4
+define __DELAY      := 5
+define __CHORUS     := 6
+define __REVERB     := 7
+
+define __MAIN.FX.LAYER.VOLUME         :=  0
+define __MAIN.FX.LAYER.PAN            :=  1
+define __MAIN.FX.LAYER.WIDTH          :=  2
+define __MAIN.FX.SATURATION           :=  3
+define __MAIN.FX.DISTORTION.DAMP      :=  4
+define __MAIN.FX.DISTORTION.DRIVE     :=  5
+define __MAIN.FX.LOFI.BITS            :=  6
+define __MAIN.FX.LOFI.SRATE           :=  7
+define __MAIN.FX.LOFI.NOISE           :=  8
+define __MAIN.FX.TAPESAT.GAIN         :=  9
+define __MAIN.FX.TAPESAT.WARMTH       := 10
+define __MAIN.FX.CHORUS.DRYWET        := 11
+define __MAIN.FX.CHORUS.DEPTH         := 12
+define __MAIN.FX.CHORUS.SPEED         := 13
+define __MAIN.FX.CHORUS.PHASE         := 14
+define __MAIN.FX.REVERB.DRYWET        := 15
+
+define __MAIN.FX.RIGHT.OFFSET         := 16
+define __FX.PAGE.OFFSET               := 32
+
+define __FX.SATURATION                := 32
+define __FX.DISTORTION.DAMP           := 33
+define __FX.DISTORTION.DRIVE          := 34
+define __FX.LOFI.BITS                 := 35
+define __FX.LOFI.SRATE                := 36
+define __FX.LOFI.NOISE                := 37
+define __FX.TAPESAT.GAIN              := 38
+define __FX.TAPESAT.WARMTH            := 39
+define __FX.CHORUS.DRYWET             := 40
+define __FX.CHORUS.DEPTH              := 41
+define __FX.CHORUS.SPEED              := 42
+define __FX.CHORUS.PHASE              := 43
+define __FX.REVERB.DRYWET             := 44
+
+define __LFO_TARGET_CONTROL_VALUE     := 0
+define __LFO_TARGET_CONTROL_VALUE_PCT := 1
+define __LFO_MOD_MIN                  := 2
+define __LFO_MOD_MAX                  := 3
+
+define UICTRL_LFO_AMOUNT_OFFSET       := 45 * 1                               { 45  - 89 }
+define UICTRL_LFO_PHASE_OFFSET        := 45 * 2                               { 90  - 134 }
+define UICTRL_LFO_POWER_OFFSET        := 45 * 3                               { 135 - 179 }
+define UICTRL_FX_PANEL_OFFSET         := 45 * 4                               { 180 - 195 } 
+define UICTRL_FX_MODULES_POWER_OFFSET := UICTRL_FX_PANEL_OFFSET + 16          { 196 - 211 }
+define UICTRL_FX_MODULES_LINK_OFFSET  := UICTRL_FX_MODULES_POWER_OFFSET + 16  { 212 - 227 }
+// define UICTRL_MAIN_WAVFORM            := UICTRL_FX_MODULES_LINK_OFFSET  + 16  { 228 - 227 }
+
+// define  __CUSTOM_UIID_OFFSET := 100 // so we don't start at 0 and don't run 
+declare const __CUUID_FX_UIC_MIN  :=   0
+declare const __CUUID_FX_UIC_MAX  :=  31
+declare const __CUUID_LFO_A_MIN   :=  45
+declare const __CUUID_LFO_A_MAX   :=  89
+declare const __CUUID_LFO_P_MIN   :=  90
+declare const __CUUID_LFO_P_MAX   := 134
+declare const __CUUID_LFO_PW_MIN  := 135
+declare const __CUUID_LFO_PW_MAX  := 179
+declare const __CUUID_FX_PW_MIN   := 196
+declare const __CUUID_FX_PW_MAX   := 211
+declare const __CUUID_FX_LINK_MIN := 212
+declare const __CUUID_FX_LINK_MAX := 227
+
+
+{{ UIID_controls - indices are the parameters' ID }}
+declare UIID_controls                [ 50 ]
+{{ UIID_controls_LFO_amount }}
+declare UIID_controls_LFO_amount     [ 50 ]
+{{ UIID_controls_LFO_phase }}
+declare UIID_controls_LFO_phase      [ 50 ]
+{{ UIID_controls_LFO_power }}
+declare UIID_controls_LFO_power      [ 50 ]
+{{ UIID_controls_LFO_mod_start }}
+declare UIID_controls_LFO_mod_start  [ 50 ]
+{{ UIID_controls_LFO_mod_end }}
+declare UIID_controls_LFO_mod_end    [ 50 ]
+{{ UIID_controls_LFO_mod_cursor }}
+declare UIID_controls_LFO_mod_cursor [ 50 ]
+{{ UIID_MAIN.FX.panels }}
+declare UIID_MAIN.FX.panels          [ 16 ]
+{{ UIID_MAIN.FX.selectors }}
+declare UIID_MAIN.FX.selectors       [ 16 ]
+{{ UIID FX modules power }}
+declare UIID_FX.modules.power        [ 23 ]
+{{ UIID MAIN FX Links }}
+declare UIID_MAIN.FX.links           [ 16 ]
+{{ Conversion from FX parameter index to module power uiid to be used in the LCB for loop }}
+declare UIID_FX.parameter_to_module  [ 45 ]
 
 

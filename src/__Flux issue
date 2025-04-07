@@ -1,0 +1,34 @@
+
+
+PLAY:
+    query if it is FLUX or NOT
+
+
+
+1) we need data that starts from the original seq data (input by the user)
+
+2) if flux is on, we transform this data and store into the flux table
+    when? when playing, at each new group of blocks cycle 
+
+3) because we have the dynamic slider either original or flux data needs to
+be updated according to the dynamic slider value
+    when is the data updated by the slider value?
+        for the original data, only when the dyn slider value is changed
+        using function 
+            fn032_set_seq_step_value_and_ui_via_dyn_slider ()
+
+        for the flux data
+        - when the dyn slider changes (WIP)
+        - when the flux values are created!      
+
+
+
+    where does the dynamic transformed data land?
+        into the SEQ.data.dyn table
+            so this means that no matter if the data is original or fluxed
+            the data in the SEQ.data.dyn is the one that was transformed 
+            by the dynamic slider and is ready to be used for playing
+
+
+
+

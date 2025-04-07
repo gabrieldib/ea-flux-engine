@@ -1,0 +1,25 @@
+on init
+    declare COND_1       := 1
+    declare COND_2       := 2
+    declare COND_1_AND_2 := COND_1 .or. COND_2
+
+    declare ui_slider cond (1,3)
+
+end on
+
+function action_1
+    message("switch 1 action")
+end function
+function action_2
+    message("switch 2 action")
+end function
+
+on ui_control (cond)
+    if cond .and. COND_1_AND_2 = 3 or cond .and. COND_1 = 1
+        call action_1
+    end if
+    if cond .and. COND_1_AND_2 = 3 or cond .and. COND_2 = 2
+        call action_2
+    end if
+end on
+

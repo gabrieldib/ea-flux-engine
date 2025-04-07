@@ -1,3 +1,20 @@
+UIID_GLOBAL.source_btns [ __LEFT  ] := get_ui_id(switch_MAIN.LEFT.soundSource)
+UIID_GLOBAL.source_btns [ __RIGHT ] := get_ui_id(switch_MAIN.RIGHT.soundSource)
+
+UIID_GLOBAL.page_prev_btns [ __LEFT  ] := get_ui_id ( switch_BROWSER.LEFT.prevPage )
+UIID_GLOBAL.page_prev_btns [ __RIGHT ] := get_ui_id ( switch_BROWSER.RIGHT.prevPage )
+UIID_GLOBAL.page_next_btns [ __LEFT  ] := get_ui_id( switch_BROWSER.LEFT.nextPage )
+UIID_GLOBAL.page_next_btns [ __RIGHT ] := get_ui_id( switch_BROWSER.RIGHT.nextPage )
+
+UIID_GLOBAL.page_number [ __LEFT  ] := get_ui_id(  label_BROWSER.LEFT.pageNumber )
+UIID_GLOBAL.page_number [ __RIGHT ] := get_ui_id(  label_BROWSER.RIGHT.pageNumber )
+
+UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_PREV ] := get_ui_id( switch_MAIN.SoundSource.LEFT.prev )
+UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_NEXT ] := get_ui_id( switch_MAIN.SoundSource.LEFT.next )
+UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_PREV ] := get_ui_id( switch_MAIN.SoundSource.RIGHT.prev )
+UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_NEXT ] := get_ui_id( switch_MAIN.SoundSource.RIGHT.next )
+
+
 for i.i := 0 to 31
     UIID_MAIN.seq.step [ __LEFT, i.i ]  := get_ui_id(label_MAIN.LEFT.seq.step.0) + i.i
     UIID_MAIN.seq.step [ __RIGHT, i.i ] := get_ui_id(label_MAIN.RIGHT.seq.step.0) + i.i
@@ -42,7 +59,7 @@ UIID_MAIN.seq.target_activators [ __LEFT,  0 ] := get_ui_id(switch_MAIN.SEQ.LEFT
 UIID_MAIN.seq.target_activators [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.SEQ.RIGHT.select.velocity)
 UIID_MAIN.seq.target_selectors           [ 0 ] := get_ui_id(switch_MAIN.SEQ.center.select.velocity)
 
-for i.i := 0 to 4
+for i.i := 1 to 4
     UIID_MAIN.seq.target_activators [ __LEFT,  i.i ] := UIID_MAIN.seq.target_activators [ __LEFT,  0 ] + i.i
     UIID_MAIN.seq.target_activators [ __RIGHT, i.i ] := UIID_MAIN.seq.target_activators [ __RIGHT, 0 ] + i.i
     UIID_MAIN.seq.target_selectors           [ i.i ] := UIID_MAIN.seq.target_selectors           [ 0 ] + i.i
@@ -82,14 +99,21 @@ end for
 UIID_MAIN.seq.flux_rand_power [ __LEFT  ] := get_ui_id(switch_MAIN.FLUXX.LEFT.randomPower)
 UIID_MAIN.seq.flux_rand_power [ __RIGHT ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.randomPower)
 
-UIID_MAIN.seq.off_label       [ __LEFT  ] := get_ui_id(label_MAIN.2SEQ.LEFT.off)
-UIID_MAIN.seq.off_label       [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.off)
+UIID_MAIN.seq.off_label       [ __LEFT  ] := get_ui_id(slider_MAIN.2SEQ.LEFT.off)
+UIID_MAIN.seq.off_label       [ __RIGHT ] := get_ui_id(slider_MAIN.2SEQ.RIGHT.off)
+UIID_MAIN.seq.off_label_text  [ __LEFT  ] := get_ui_id(label_MAIN.2SEQ.LEFT.off)
+UIID_MAIN.seq.off_label_text  [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.off)
 
 UIID_MAIN.seq.arp_power [ __LEFT  ] := get_ui_id(switch_MAIN.FLUXX.LEFT.arp.power)
 UIID_MAIN.seq.arp_power [ __RIGHT ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.arp.power)
 
 UIID_MAIN.seq.arp_menu [ __LEFT  ] := get_ui_id(switch_MAIN.ARP.LEFT.modeMenu)
 UIID_MAIN.seq.arp_menu [ __RIGHT ] := get_ui_id(switch_MAIN.ARP.RIGHT.modeMenu)
+
+UIID_MAIN.seq.join_arp_menu_items [ 0 ] := get_ui_id(switch_MAIN.FX.JOIN.arp.menu.0)
+for i.i := 1 to 5
+    UIID_MAIN.seq.join_arp_menu_items [ i.i ] := UIID_MAIN.seq.join_arp_menu_items [ 0 ] + i.i
+end for
 
 UIID_MAIN.seq.flux_panels     [ __LEFT  ] := get_ui_id(panel_MAIN.2SEQ.LEFT.fluxxArp)
 UIID_MAIN.seq.flux_panels     [ __RIGHT ] := get_ui_id(panel_MAIN.2SEQ.RIGHT.fluxxArp)
@@ -110,33 +134,572 @@ UIID_MAIN.seq.dyn_slider [ 1 ] := get_ui_id(xypad_MAIN.RIGHT.dynamics)
 UIID_MAIN.seq.dyn_slider.label [ 0 ] := get_ui_id(label_MAIN.LEFT.dynamics)
 UIID_MAIN.seq.dyn_slider.label [ 1 ] := get_ui_id(label_MAIN.RIGHT.dynamics)
 
-{{ SETTING FONTS }}
-for i.i := 0 to 5
-    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
-    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
-    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
-    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
-    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
-    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
-    UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> disable_text_shifting := __ON
-    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
-    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
-    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
-    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
-    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
-    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
-    UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> disable_text_shifting := __ON
+UIID_random.value_labels   [ __LEFT ]  := get_ui_id(label_MAIN.LEFT.randomAmount)
+UIID_random.value_labels   [ __RIGHT ] := get_ui_id(label_MAIN.RIGHT.randomAmount)
+UIID_random.picture_labels [ __LEFT ]  := get_ui_id(label_MAIN.LEFT.randomizer)
+UIID_random.picture_labels [ __RIGHT ] := get_ui_id(label_MAIN.RIGHT.randomizer)
+UIID_random.xypads         [ __LEFT ]  := get_ui_id(xypad_MAIN.LEFT.randomizer)
+UIID_random.xypads         [ __RIGHT ] := get_ui_id(xypad_MAIN.RIGHT.randomizer)
+
+UIID_MAIN.seq.step_lock    [ __LEFT  ] := get_ui_id(switch_MAIN.2SEQ.LEFT.step.lock)
+UIID_MAIN.seq.step_lock    [ __RIGHT ] := get_ui_id(switch_MAIN.2SEQ.RIGHT.step.lock)
+
+UIID_MAIN.seq_random_btn   [ __LEFT  ] := get_ui_id(switch_MAIN.SEQ.LEFT.randomize)
+UIID_MAIN.seq_random_btn   [ __RIGHT ] := get_ui_id(switch_MAIN.SEQ.RIGHT.randomize)
+
+UIID_MAIN.FX_panel_selectors [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.selection)
+UIID_MAIN.FX_panel_selectors [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.selection)
+for i.i := 1 to 7
+    UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] := UIID_MAIN.FX_panel_selectors [ __LEFT,  0 ] + i.i
+    UIID_MAIN.FX_panel_selectors [ __RIGHT, i.i ] := UIID_MAIN.FX_panel_selectors [ __RIGHT, 0 ] + i.i
 end for
 
-for i.i := 0 to 4
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type             := MAIN.SEQ.TARGETS.FONT_OFF
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on          := MAIN.SEQ.TARGETS.FONT_ON
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_pressed := MAIN.SEQ.TARGETS.FONT_OFF_H
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.TARGETS.FONT_ON_H 
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_hover   := MAIN.SEQ.TARGETS.FONT_OFF_H
-    UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_hover    := MAIN.SEQ.TARGETS.FONT_ON_H 
-    UIID_MAIN.seq.target_selectors [ i.i ] -> disable_text_shifting := __ON
+UIID_MAIN.FX_panels [ __LEFT,  0 ] := get_ui_id(panel_MAIN.FX.LEFT.layer)
+UIID_MAIN.FX_panels [ __RIGHT, 0 ] := get_ui_id(panel_MAIN.FX.RIGHT.layer)
+for i.i := 1 to 7
+    UIID_MAIN.FX_panels [ __LEFT,  i.i ] := UIID_MAIN.FX_panels [ __LEFT,  0 ] + i.i
+    UIID_MAIN.FX_panels [ __RIGHT, i.i ] := UIID_MAIN.FX_panels [ __RIGHT, 0 ] + i.i
 end for
+
+UIID_LFO.waveshape_selectors [ 0 ] := get_ui_id(switch_MAIN.LFO.waveform_select.tri)
+UIID_LFO.waveshape_selectors [ 1 ] := get_ui_id(switch_MAIN.LFO.waveform_select.sine)
+UIID_LFO.waveshape_selectors [ 2 ] := get_ui_id(switch_MAIN.LFO.waveform_select.rect)
+UIID_LFO.waveshape_selectors [ 3 ] := get_ui_id(switch_MAIN.LFO.waveform_select.saw)
+UIID_LFO.waveshape_selectors [ 4 ] := get_ui_id(switch_MAIN.LFO.waveform_select.rand)
+
+UIID_lfp_sat_modes [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.type.classic)
+UIID_lfp_sat_modes [ __LEFT,  1 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.type.enhanced)
+UIID_lfp_sat_modes [ __LEFT,  2 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.type.drums)
+UIID_lfp_sat_modes [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.type.classic)
+UIID_lfp_sat_modes [ __RIGHT, 1 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.type.enhanced)
+UIID_lfp_sat_modes [ __RIGHT, 2 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.type.drums)
+
+UIID_lfp_dst_modes [ __LEFT  ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.type)
+UIID_lfp_dst_modes [ __RIGHT ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.type)
+
+UIID_lfp_tape_sat.hf_cut [ __LEFT  ] := get_ui_id(slider_MAIN.FX.LEFT.tapeSat.HFCut.amount)
+UIID_lfp_tape_sat.hf_cut [ __RIGHT ] := get_ui_id(slider_MAIN.FX.RIGHT.tapeSat.HFCut.amount)
+
+UIID_lfp_delay_controls  [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.pingpong)
+UIID_lfp_delay_controls  [ __LEFT,  1 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.sync)
+UIID_lfp_delay_controls  [ __LEFT,  2 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.locut)
+UIID_lfp_delay_controls  [ __LEFT,  3 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.hicut)
+UIID_lfp_delay_controls  [ __LEFT,  4 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.drywet)
+UIID_lfp_delay_controls  [ __LEFT,  5 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.feedback)
+UIID_lfp_delay_controls  [ __LEFT,  6 ] := get_ui_id(slider_MAIN.FX.LEFT.delay.time)
+UIID_lfp_delay_controls  [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.pingpong)
+UIID_lfp_delay_controls  [ __RIGHT, 1 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.sync)
+UIID_lfp_delay_controls  [ __RIGHT, 2 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.locut)
+UIID_lfp_delay_controls  [ __RIGHT, 3 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.hicut)
+UIID_lfp_delay_controls  [ __RIGHT, 4 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.drywet)
+UIID_lfp_delay_controls  [ __RIGHT, 5 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.feedback)
+UIID_lfp_delay_controls  [ __RIGHT, 6 ] := get_ui_id(slider_MAIN.FX.RIGHT.delay.time)
+
+UIID_lfp_rvb_controls    [ __LEFT,  0 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.predelay.amount)
+UIID_lfp_rvb_controls    [ __LEFT,  1 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.size.amount)
+UIID_lfp_rvb_controls    [ __LEFT,  2 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.LP.amount)
+UIID_lfp_rvb_controls    [ __LEFT,  3 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.HP.amount)
+
+UIID_lfp_rvb_controls    [ __RIGHT,  0 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.predelay.amount)
+UIID_lfp_rvb_controls    [ __RIGHT,  1 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.size.amount)
+UIID_lfp_rvb_controls    [ __RIGHT,  2 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.LP.amount)
+UIID_lfp_rvb_controls    [ __RIGHT,  3 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.HP.amount)
+
+UIID_lfp_delay_labels [ __LEFT,  0 ] := get_ui_id(label_MAIN.FX.LEFT.delay.pingpong)
+UIID_lfp_delay_labels [ __LEFT,  1 ] := get_ui_id(label_MAIN.FX.LEFT.delay.sync)
+UIID_lfp_delay_labels [ __RIGHT, 0 ] := get_ui_id(label_MAIN.FX.RIGHT.delay.pingpong)
+UIID_lfp_delay_labels [ __RIGHT, 1 ] := get_ui_id(label_MAIN.FX.RIGHT.delay.sync)
+
+UIID_lfp_power [ __LEFT,  0 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.power)
+UIID_lfp_power [ __RIGHT, 0 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.power)
+for i.i := 1 to 7
+    UIID_lfp_power [ __LEFT,  i.i ] := UIID_lfp_power [ __LEFT,  0 ] + i.i
+    UIID_lfp_power [ __RIGHT, i.i ] := UIID_lfp_power [ __RIGHT, 0 ] + i.i
+end for
+
+UIID_MAIN.single_hit_panel [ __LEFT  ] := get_ui_id(panel_MAIN.2SEQ.LEFT.single.shot)
+UIID_MAIN.single_hit_panel [ __RIGHT ] := get_ui_id(panel_MAIN.2SEQ.RIGHT.single.shot)
+UIID_MAIN.waveforms [ __LEFT  ] := get_ui_id(waveform_MAIN.2SEQ.LEFT.display)
+UIID_MAIN.waveforms [ __RIGHT ] := get_ui_id(waveform_MAIN.2SEQ.RIGHT.display)
+
+for i.i := __LEFT to __RIGHT
+    UIID_MAIN.waveforms [ i.i ] -> bg_alpha   := 0
+    UIID_MAIN.waveforms [ i.i ] -> wave_color := WAVEFORM_COLOR
+    UIID_MAIN.waveforms [ i.i ] -> picture    := 'label_transparent'
+end for
+
+UIID_MAIN.single_shot_controls [ __LEFT,  0 ] := get_ui_id(slider_MAIN.FX.LEFT.single.shot.start.amount)
+UIID_MAIN.single_shot_controls [ __RIGHT, 0 ] := get_ui_id(slider_MAIN.FX.RIGHT.single.shot.start.amount)
+for i.i := 0 to 5
+    UIID_MAIN.single_shot_controls [ __LEFT,  i.i ] := UIID_MAIN.single_shot_controls [ __LEFT,  0 ] + i.i
+    UIID_MAIN.single_shot_controls [ __RIGHT, i.i ] := UIID_MAIN.single_shot_controls [ __RIGHT, 0 ] + i.i
+end for
+
+UIID_MAIN.waveform_cursor [ __LEFT   ] := get_ui_id(label_MAIN.LEFT.waveform.cursor)
+UIID_MAIN.waveform_cursor [ __RIGHT  ] := get_ui_id(label_MAIN.RIGHT.waveform.cursor)
+
+UIID_MAIN.waveform_overlay [ __LEFT   ] := get_ui_id(label_MAIN.LEFT.waveform.overlay)
+UIID_MAIN.waveform_overlay [ __RIGHT  ] := get_ui_id(label_MAIN.RIGHT.waveform.overlay)
+
+UIID_MAIN.waveform_xypad_cursor [ 0 ] := get_ui_id(xypad_MAIN.LEFT.waveform.cursor)
+UIID_MAIN.waveform_xypad_cursor [ 1 ] := get_ui_id(xypad_MAIN.RIGHT.waveform.cursor)
+
+xypad_MAIN.LEFT.waveform.cursor  -> mouse_mode := 2
+xypad_MAIN.RIGHT.waveform.cursor -> mouse_mode := 2
+xypad_MAIN.LEFT.waveform.cursor  -> picture := 'label_transparent'
+xypad_MAIN.RIGHT.waveform.cursor -> picture := 'label_transparent'
+xypad_MAIN.LEFT.waveform.cursor  -> cursor_picture := "label_xy.transparent"
+xypad_MAIN.RIGHT.waveform.cursor -> cursor_picture := "label_xy.transparent"
+
+UIID_MAIN.matrix_sides [ 0 ] := get_ui_id(label_MAIN.matrix.left)
+UIID_MAIN.matrix_sides [ 1 ] := get_ui_id(label_MAIN.matrix.right)
+
+UIID_MAIN.matrix_LFO_orbs [ 0 ] := get_ui_id(label_MAIN.matrix.center.mod.RL)
+UIID_MAIN.matrix_LFO_orbs [ 1 ] := get_ui_id(label_MAIN.matrix.center.mod.LR)
+
+UIID_MAIN.hmz_sliders [ 0 ] := get_ui_id(slider_MAIN.LEFT.hmz)
+UIID_MAIN.hmz_sliders [ 1 ] := get_ui_id(slider_MAIN.RIGHT.hmz)
+
+UIID_BROWSER_source.select.btn [ __LEFT,  0 ] := get_ui_id(switch_BROWSER.LEFT.sound0)
+UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] := get_ui_id(switch_BROWSER.RIGHT.sound0)
+for i.i := 0 to 17
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] := UIID_BROWSER_source.select.btn [ __LEFT,  0 ] + i.i
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] := UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] + i.i
+
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> disable_text_shifting := __ON    
+
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> disable_text_shifting := __ON    
+end for
+
+
+{{ SETTING FONTS }}
+    switch_MAIN.ARP.LEFT.modeMenu -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON  
+    switch_MAIN.ARP.LEFT.modeMenu -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+    for i.i := 0 to 1
+        UIID_MAIN.seq.arp_menu[i.i] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+        UIID_MAIN.seq.arp_menu[i.i] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+    end for
+    for i.i := 0 to 1
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type             := GLOBAL.SOURCE.BTN_FONT
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_on          := GLOBAL.SOURCE.BTN_FONT
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_off_pressed := GLOBAL.SOURCE.BTN_FONT_H
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_on_pressed  := GLOBAL.SOURCE.BTN_FONT_H 
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_off_hover   := GLOBAL.SOURCE.BTN_FONT_H
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_on_hover    := GLOBAL.SOURCE.BTN_FONT_H 
+        UIID_GLOBAL.source_btns [ i.i ] -> disable_text_shifting := __ON    
+    end for
+
+    for i.i := 0 to 7
+        UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+        UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H   
+        UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.FX_panel_selectors [ __LEFT,  i.i ] -> disable_text_shifting := __ON    
+        UIID_MAIN.FX_panel_selectors [ __RIGHT, i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+        UIID_MAIN.FX_panel_selectors [ __RIGHT, i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H   
+        UIID_MAIN.FX_panel_selectors [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.FX_panel_selectors [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.FX_panel_selectors [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.FX_panel_selectors [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.FX_panel_selectors [ __RIGHT, i.i ] -> disable_text_shifting := __ON
+    end for
+    for i.i := 0 to 5
+        UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+        UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+        UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.seq.arp_menu_items [ __LEFT,  i.i ] -> disable_text_shifting := __ON
+        UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+        UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+        UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.seq.arp_menu_items [ __RIGHT, i.i ] -> disable_text_shifting := __ON
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_off_pressed := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_off_hover   := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF_H
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> font_type_on_hover    := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON_H 
+        UIID_MAIN.seq.join_arp_menu_items [ i.i ] -> disable_text_shifting := __ON
+    end for
+
+    for i.i := 0 to 4
+        UIID_MAIN.seq.target_selectors [ i.i ] -> font_type             := MAIN.SEQ.TARGETS.FONT_OFF
+        UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on          := MAIN.SEQ.TARGETS.FONT_ON
+        UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_pressed := MAIN.SEQ.TARGETS.FONT_OFF_H
+        UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_pressed  := MAIN.SEQ.TARGETS.FONT_ON_H 
+        UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_off_hover   := MAIN.SEQ.TARGETS.FONT_OFF_H
+        UIID_MAIN.seq.target_selectors [ i.i ] -> font_type_on_hover    := MAIN.SEQ.TARGETS.FONT_ON_H 
+        UIID_MAIN.seq.target_selectors [ i.i ] -> disable_text_shifting := __ON
+    end for
+
+
+{{ LFO }}
+
+{{ UIID_controls - indices are the parameters' ID }}
+    UIID_controls [ 00 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.volume             )
+    UIID_controls [ 01 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.pan                )
+    UIID_controls [ 02 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.width              )
+    UIID_controls [ 03 ] := get_ui_id(slider_MAIN.FX.LEFT.saturation.amount        )
+    UIID_controls [ 04 ] := get_ui_id(slider_MAIN.FX.LEFT.distortion.damp.amount   )
+    UIID_controls [ 05 ] := get_ui_id(slider_MAIN.FX.LEFT.distortion.drive.amount  )
+    UIID_controls [ 06 ] := get_ui_id(slider_MAIN.FX.LEFT.lofi.bits.amount         )
+    UIID_controls [ 07 ] := get_ui_id(slider_MAIN.FX.LEFT.lofi.srate.amount        )
+    UIID_controls [ 08 ] := get_ui_id(slider_MAIN.FX.LEFT.lofi.noise.amount        )
+    UIID_controls [ 09 ] := get_ui_id(slider_MAIN.FX.LEFT.tapeSat.gain.amount      )
+    UIID_controls [ 10 ] := get_ui_id(slider_MAIN.FX.LEFT.tapeSat.warmth.amount    )
+    UIID_controls [ 11 ] := get_ui_id(slider_MAIN.FX.LEFT.chorus.drywet.amount     )
+    UIID_controls [ 12 ] := get_ui_id(slider_MAIN.FX.LEFT.chorus.depth.amount      )
+    UIID_controls [ 13 ] := get_ui_id(slider_MAIN.FX.LEFT.chorus.speed.amount      )
+    UIID_controls [ 14 ] := get_ui_id(slider_MAIN.FX.LEFT.chorus.phase.amount      )
+    UIID_controls [ 15 ] := get_ui_id(slider_MAIN.FX.LEFT.reverb.drywet.amount     )
+    UIID_controls [ 16 ] := get_ui_id(slider_MAIN.FX.RIGHT.layer.volume            )
+    UIID_controls [ 17 ] := get_ui_id(slider_MAIN.FX.RIGHT.layer.pan               )
+    UIID_controls [ 18 ] := get_ui_id(slider_MAIN.FX.RIGHT.layer.width             )
+    UIID_controls [ 19 ] := get_ui_id(slider_MAIN.FX.RIGHT.saturation.amount       )
+    UIID_controls [ 20 ] := get_ui_id(slider_MAIN.FX.RIGHT.distortion.damp.amount  )
+    UIID_controls [ 21 ] := get_ui_id(slider_MAIN.FX.RIGHT.distortion.drive.amount )
+    UIID_controls [ 22 ] := get_ui_id(slider_MAIN.FX.RIGHT.lofi.bits.amount        )
+    UIID_controls [ 23 ] := get_ui_id(slider_MAIN.FX.RIGHT.lofi.srate.amount       )
+    UIID_controls [ 24 ] := get_ui_id(slider_MAIN.FX.RIGHT.lofi.noise.amount       )
+    UIID_controls [ 25 ] := get_ui_id(slider_MAIN.FX.RIGHT.tapeSat.gain.amount     )
+    UIID_controls [ 26 ] := get_ui_id(slider_MAIN.FX.RIGHT.tapeSat.warmth.amount   )
+    UIID_controls [ 27 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorus.drywet.amount    )
+    UIID_controls [ 28 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorus.depth.amount     )
+    UIID_controls [ 29 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorus.speed.amount     )
+    UIID_controls [ 30 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorus.phase.amount     )
+    UIID_controls [ 31 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.drywet.amount    )
+{{ UIID_controls_LFO_amount }}
+    UIID_controls_LFO_amount [ 00 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.volLFO.amount         )
+    UIID_controls_LFO_amount [ 01 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.panLFO.amount         )
+    UIID_controls_LFO_amount [ 02 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.widthLFO.amount       )
+    UIID_controls_LFO_amount [ 03 ] := get_ui_id(slider_MAIN.FX.LEFT.saturation.LFO.amount       )
+    UIID_controls_LFO_amount [ 04 ] := get_ui_id(slider_MAIN.FX.LEFT.distortion.dampLFO.amount   )
+    UIID_controls_LFO_amount [ 05 ] := get_ui_id(slider_MAIN.FX.LEFT.distortion.driveLFO.amount  )
+    UIID_controls_LFO_amount [ 06 ] := get_ui_id(slider_MAIN.FX.LEFT.lofi.bitsLFO.amount         )
+    UIID_controls_LFO_amount [ 07 ] := get_ui_id(slider_MAIN.FX.LEFT.lofi.srateLFO.amount        )
+    UIID_controls_LFO_amount [ 08 ] := get_ui_id(slider_MAIN.FX.LEFT.lofi.noiseLFO.amount        )
+    UIID_controls_LFO_amount [ 09 ] := get_ui_id(slider_MAIN.FX.LEFT.tapeSat.gainLFO.amount      )
+    UIID_controls_LFO_amount [ 10 ] := get_ui_id(slider_MAIN.FX.LEFT.tapeSat.warmthLFO.amount    )
+    UIID_controls_LFO_amount [ 11 ] := get_ui_id(slider_MAIN.FX.LEFT.chorusLFO.drywet.amount     )
+    UIID_controls_LFO_amount [ 12 ] := get_ui_id(slider_MAIN.FX.LEFT.chorusLFO.depth.amount      )
+    UIID_controls_LFO_amount [ 13 ] := get_ui_id(slider_MAIN.FX.LEFT.chorusLFO.speed.amount      )
+    UIID_controls_LFO_amount [ 14 ] := get_ui_id(slider_MAIN.FX.LEFT.chorusLFO.phase.amount      )
+    UIID_controls_LFO_amount [ 15 ] := get_ui_id(slider_MAIN.FX.LEFT.reverbLFO.drywet.amount     )
+    UIID_controls_LFO_amount [ 16 ] := get_ui_id(slider_MAIN.FX.RIGHT.layer.volLFO.amount        )
+    UIID_controls_LFO_amount [ 17 ] := get_ui_id(slider_MAIN.FX.RIGHT.layer.panLFO.amount        )
+    UIID_controls_LFO_amount [ 18 ] := get_ui_id(slider_MAIN.FX.RIGHT.layer.widthLFO.amount      )
+    UIID_controls_LFO_amount [ 19 ] := get_ui_id(slider_MAIN.FX.RIGHT.saturation.LFO.amount      )
+    UIID_controls_LFO_amount [ 20 ] := get_ui_id(slider_MAIN.FX.RIGHT.distortion.dampLFO.amount  )
+    UIID_controls_LFO_amount [ 21 ] := get_ui_id(slider_MAIN.FX.RIGHT.distortion.driveLFO.amount )
+    UIID_controls_LFO_amount [ 22 ] := get_ui_id(slider_MAIN.FX.RIGHT.lofi.bitsLFO.amount        )
+    UIID_controls_LFO_amount [ 23 ] := get_ui_id(slider_MAIN.FX.RIGHT.lofi.srateLFO.amount       )
+    UIID_controls_LFO_amount [ 24 ] := get_ui_id(slider_MAIN.FX.RIGHT.lofi.noiseLFO.amount       )
+    UIID_controls_LFO_amount [ 25 ] := get_ui_id(slider_MAIN.FX.RIGHT.tapeSat.gainLFO.amount     )
+    UIID_controls_LFO_amount [ 26 ] := get_ui_id(slider_MAIN.FX.RIGHT.tapeSat.warmthLFO.amount   )
+    UIID_controls_LFO_amount [ 27 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorusLFO.drywet.amount    )
+    UIID_controls_LFO_amount [ 28 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorusLFO.depth.amount     )
+    UIID_controls_LFO_amount [ 29 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorusLFO.speed.amount     )
+    UIID_controls_LFO_amount [ 30 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorusLFO.phase.amount     )
+    UIID_controls_LFO_amount [ 31 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverbLFO.drywet.amount    )
+{{ UIID_controls_LFO_phase }}
+    UIID_controls_LFO_phase [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.volLFO.phase         )
+    UIID_controls_LFO_phase [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.panLFO.phase         )
+    UIID_controls_LFO_phase [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.widthLFO.phase       )
+    UIID_controls_LFO_phase [ 03 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.LFO.phase       )
+    UIID_controls_LFO_phase [ 04 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.dampLFO.phase   )
+    UIID_controls_LFO_phase [ 05 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.driveLFO.phase  )
+    UIID_controls_LFO_phase [ 06 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.bitsLFO.phase         )
+    UIID_controls_LFO_phase [ 07 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.srateLFO.phase        )
+    UIID_controls_LFO_phase [ 08 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.noiseLFO.phase        )
+    UIID_controls_LFO_phase [ 09 ] := get_ui_id(switch_MAIN.FX.LEFT.tapeSat.gainLFO.phase      )
+    UIID_controls_LFO_phase [ 10 ] := get_ui_id(switch_MAIN.FX.LEFT.tapeSat.warmthLFO.phase    )
+    UIID_controls_LFO_phase [ 11 ] := get_ui_id(switch_MAIN.FX.LEFT.chorus.drywet.phase        )
+    UIID_controls_LFO_phase [ 12 ] := get_ui_id(switch_MAIN.FX.LEFT.chorus.depth.phase         )
+    UIID_controls_LFO_phase [ 13 ] := get_ui_id(switch_MAIN.FX.LEFT.chorus.speed.phase         )
+    UIID_controls_LFO_phase [ 14 ] := get_ui_id(switch_MAIN.FX.LEFT.chorus.phase.phase         )
+    UIID_controls_LFO_phase [ 15 ] := get_ui_id(switch_MAIN.FX.LEFT.reverbLFO.drywet.phase     )
+    UIID_controls_LFO_phase [ 16 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.volLFO.phase        )
+    UIID_controls_LFO_phase [ 17 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.panLFO.phase        )
+    UIID_controls_LFO_phase [ 18 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.widthLFO.phase      )
+    UIID_controls_LFO_phase [ 19 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.LFO.phase      )
+    UIID_controls_LFO_phase [ 20 ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.dampLFO.phase  )
+    UIID_controls_LFO_phase [ 21 ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.driveLFO.phase )
+    UIID_controls_LFO_phase [ 22 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.bitsLFO.phase        )
+    UIID_controls_LFO_phase [ 23 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.srateLFO.phase       )
+    UIID_controls_LFO_phase [ 24 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.noiseLFO.phase       )
+    UIID_controls_LFO_phase [ 25 ] := get_ui_id(switch_MAIN.FX.RIGHT.tapeSat.gainLFO.phase     )
+    UIID_controls_LFO_phase [ 26 ] := get_ui_id(switch_MAIN.FX.RIGHT.tapeSat.warmthLFO.phase   )
+    UIID_controls_LFO_phase [ 27 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.drywet.phase       )
+    UIID_controls_LFO_phase [ 28 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.depth.phase        )
+    UIID_controls_LFO_phase [ 29 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.speed.phase        )
+    UIID_controls_LFO_phase [ 30 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.phase.phase        )
+    UIID_controls_LFO_phase [ 31 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverbLFO.drywet.phase    )
+{{ UIID_controls_LFO_power }}
+    UIID_controls_LFO_power [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.volLFO.power         )
+    UIID_controls_LFO_power [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.panLFO.power         )
+    UIID_controls_LFO_power [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.widthLFO.power       )
+    UIID_controls_LFO_power [ 03 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.LFO.power       )
+    UIID_controls_LFO_power [ 04 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.dampLFO.power   )
+    UIID_controls_LFO_power [ 05 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.driveLFO.power  )
+    UIID_controls_LFO_power [ 06 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.bitsLFO.power         )
+    UIID_controls_LFO_power [ 07 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.srateLFO.power        )
+    UIID_controls_LFO_power [ 08 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.noiseLFO.power        )
+    UIID_controls_LFO_power [ 09 ] := get_ui_id(switch_MAIN.FX.LEFT.tapeSat.gainLFO.power      )
+    UIID_controls_LFO_power [ 10 ] := get_ui_id(switch_MAIN.FX.LEFT.tapeSat.warmthLFO.power    )
+    UIID_controls_LFO_power [ 11 ] := get_ui_id(switch_MAIN.FX.LEFT.chorusLFO.drywet.power     )
+    UIID_controls_LFO_power [ 12 ] := get_ui_id(switch_MAIN.FX.LEFT.chorusLFO.depth.power      )
+    UIID_controls_LFO_power [ 13 ] := get_ui_id(switch_MAIN.FX.LEFT.chorusLFO.speed.power      )
+    UIID_controls_LFO_power [ 14 ] := get_ui_id(switch_MAIN.FX.LEFT.chorusLFO.phase.power      )
+    UIID_controls_LFO_power [ 15 ] := get_ui_id(switch_MAIN.FX.LEFT.reverbLFO.drywet.power     )
+    UIID_controls_LFO_power [ 16 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.volLFO.power        )
+    UIID_controls_LFO_power [ 17 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.panLFO.power        )
+    UIID_controls_LFO_power [ 18 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.widthLFO.power      )
+    UIID_controls_LFO_power [ 19 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.LFO.power      )
+    UIID_controls_LFO_power [ 20 ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.dampLFO.power  )
+    UIID_controls_LFO_power [ 21 ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.driveLFO.power )
+    UIID_controls_LFO_power [ 22 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.bitsLFO.power        )
+    UIID_controls_LFO_power [ 23 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.srateLFO.power       )
+    UIID_controls_LFO_power [ 24 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.noiseLFO.power       )
+    UIID_controls_LFO_power [ 25 ] := get_ui_id(switch_MAIN.FX.RIGHT.tapeSat.gainLFO.power     )
+    UIID_controls_LFO_power [ 26 ] := get_ui_id(switch_MAIN.FX.RIGHT.tapeSat.warmthLFO.power   )
+    UIID_controls_LFO_power [ 27 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorusLFO.drywet.power    )
+    UIID_controls_LFO_power [ 28 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorusLFO.depth.power     )
+    UIID_controls_LFO_power [ 29 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorusLFO.speed.power     )
+    UIID_controls_LFO_power [ 30 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorusLFO.phase.power     )
+    UIID_controls_LFO_power [ 31 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverbLFO.drywet.power    )
+{{ UIID_controls_LFO_mod_start }}
+    UIID_controls_LFO_mod_start [ 00 ] := get_ui_id(label_MAIN.FX.LEFT.layer.volLFOmodStart            )
+    UIID_controls_LFO_mod_start [ 01 ] := get_ui_id(label_MAIN.FX.LEFT.layer.panLFOmodStart            )
+    UIID_controls_LFO_mod_start [ 02 ] := get_ui_id(label_MAIN.FX.LEFT.layer.widthLFOmodStart          )
+    UIID_controls_LFO_mod_start [ 03 ] := get_ui_id(label_MAIN.FX.LEFT.saturation.LFOmodStart          )
+    UIID_controls_LFO_mod_start [ 04 ] := get_ui_id(label_MAIN.FX.LEFT.distortion.damping.LFOmodStart  )
+    UIID_controls_LFO_mod_start [ 05 ] := get_ui_id(label_MAIN.FX.LEFT.distortion.drive.LFOmodStart    )
+    UIID_controls_LFO_mod_start [ 06 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.bits.LFOmodStart           )
+    UIID_controls_LFO_mod_start [ 07 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.srate.LFOmodStart          )
+    UIID_controls_LFO_mod_start [ 08 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.noise.LFOmodStart          )
+    UIID_controls_LFO_mod_start [ 09 ] := get_ui_id(label_MAIN.FX.LEFT.tapeSat.gain.LFOmodStart        )
+    UIID_controls_LFO_mod_start [ 10 ] := get_ui_id(label_MAIN.FX.LEFT.tapeSat.warmth.LFOmodStart      )
+    UIID_controls_LFO_mod_start [ 11 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.wetLFOmodStart           )
+    UIID_controls_LFO_mod_start [ 12 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.depthLFOmodStart         )
+    UIID_controls_LFO_mod_start [ 13 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.speedLFOmodStart         )
+    UIID_controls_LFO_mod_start [ 14 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.phaseLFOmodStart         )
+    UIID_controls_LFO_mod_start [ 15 ] := get_ui_id(label_MAIN.FX.LEFT.reverb.drywet.LFOmodStart       )
+    UIID_controls_LFO_mod_start [ 16 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.volLFOmodStart           )
+    UIID_controls_LFO_mod_start [ 17 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.panLFOmodStart           )
+    UIID_controls_LFO_mod_start [ 18 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.widthLFOmodStart         )
+    UIID_controls_LFO_mod_start [ 19 ] := get_ui_id(label_MAIN.FX.RIGHT.saturation.LFOmodStart         )
+    UIID_controls_LFO_mod_start [ 20 ] := get_ui_id(label_MAIN.FX.RIGHT.distortion.damping.LFOmodStart )
+    UIID_controls_LFO_mod_start [ 21 ] := get_ui_id(label_MAIN.FX.RIGHT.distortion.drive.LFOmodStart   )
+    UIID_controls_LFO_mod_start [ 22 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.bits.LFOmodStart          )
+    UIID_controls_LFO_mod_start [ 23 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.srate.LFOmodStart         )
+    UIID_controls_LFO_mod_start [ 24 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.noise.LFOmodStart         )
+    UIID_controls_LFO_mod_start [ 25 ] := get_ui_id(label_MAIN.FX.RIGHT.tapeSat.gain.LFOmodStart       )
+    UIID_controls_LFO_mod_start [ 26 ] := get_ui_id(label_MAIN.FX.RIGHT.tapeSat.warmth.LFOmodStart     )
+    UIID_controls_LFO_mod_start [ 27 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.wetLFOmodStart          )
+    UIID_controls_LFO_mod_start [ 28 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.depthLFOmodStart        )
+    UIID_controls_LFO_mod_start [ 29 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.speedLFOmodStart        )
+    UIID_controls_LFO_mod_start [ 30 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.phaseLFOmodStart        )
+    UIID_controls_LFO_mod_start [ 31 ] := get_ui_id(label_MAIN.FX.RIGHT.reverb.drywet.LFOmodStart      )
+{{ UIID_controls_LFO_mod_end }}
+    UIID_controls_LFO_mod_end [ 00 ] := get_ui_id(label_MAIN.FX.LEFT.layer.volLFOmodEnd            )
+    UIID_controls_LFO_mod_end [ 01 ] := get_ui_id(label_MAIN.FX.LEFT.layer.panLFOmodEnd            )
+    UIID_controls_LFO_mod_end [ 02 ] := get_ui_id(label_MAIN.FX.LEFT.layer.widthLFOmodEnd          )
+    UIID_controls_LFO_mod_end [ 03 ] := get_ui_id(label_MAIN.FX.LEFT.saturation.LFOmodEnd          )
+    UIID_controls_LFO_mod_end [ 04 ] := get_ui_id(label_MAIN.FX.LEFT.distortion.damping.LFOmodEnd  )
+    UIID_controls_LFO_mod_end [ 05 ] := get_ui_id(label_MAIN.FX.LEFT.distortion.drive.LFOmodEnd    )
+    UIID_controls_LFO_mod_end [ 06 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.bits.LFOmodEnd           )
+    UIID_controls_LFO_mod_end [ 07 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.srate.LFOmodEnd          )
+    UIID_controls_LFO_mod_end [ 08 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.noise.LFOmodEnd          )
+    UIID_controls_LFO_mod_end [ 09 ] := get_ui_id(label_MAIN.FX.LEFT.tapeSat.gain.LFOmodEnd        )
+    UIID_controls_LFO_mod_end [ 10 ] := get_ui_id(label_MAIN.FX.LEFT.tapeSat.warmth.LFOmodEnd      )
+    UIID_controls_LFO_mod_end [ 11 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.wetLFOmodEnd           )
+    UIID_controls_LFO_mod_end [ 12 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.depthLFOmodEnd         )
+    UIID_controls_LFO_mod_end [ 13 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.speedLFOmodEnd         )
+    UIID_controls_LFO_mod_end [ 14 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.phaseLFOmodEnd         )
+    UIID_controls_LFO_mod_end [ 15 ] := get_ui_id(label_MAIN.FX.LEFT.reverb.drywet.LFOmodEnd       )
+    UIID_controls_LFO_mod_end [ 16 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.volLFOmodEnd           )
+    UIID_controls_LFO_mod_end [ 17 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.panLFOmodEnd           )
+    UIID_controls_LFO_mod_end [ 18 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.widthLFOmodEnd         )
+    UIID_controls_LFO_mod_end [ 19 ] := get_ui_id(label_MAIN.FX.RIGHT.saturation.LFOmodEnd         )
+    UIID_controls_LFO_mod_end [ 20 ] := get_ui_id(label_MAIN.FX.RIGHT.distortion.damping.LFOmodEnd )
+    UIID_controls_LFO_mod_end [ 21 ] := get_ui_id(label_MAIN.FX.RIGHT.distortion.drive.LFOmodEnd   )
+    UIID_controls_LFO_mod_end [ 22 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.bits.LFOmodEnd          )
+    UIID_controls_LFO_mod_end [ 23 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.srate.LFOmodEnd         )
+    UIID_controls_LFO_mod_end [ 24 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.noise.LFOmodEnd         )
+    UIID_controls_LFO_mod_end [ 25 ] := get_ui_id(label_MAIN.FX.RIGHT.tapeSat.gain.LFOmodEnd       )
+    UIID_controls_LFO_mod_end [ 26 ] := get_ui_id(label_MAIN.FX.RIGHT.tapeSat.warmth.LFOmodEnd     )
+    UIID_controls_LFO_mod_end [ 27 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.wetLFOmodEnd          )
+    UIID_controls_LFO_mod_end [ 28 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.depthLFOmodEnd        )
+    UIID_controls_LFO_mod_end [ 29 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.speedLFOmodEnd        )
+    UIID_controls_LFO_mod_end [ 30 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.phaseLFOmodEnd        )
+    UIID_controls_LFO_mod_end [ 31 ] := get_ui_id(label_MAIN.FX.RIGHT.reverb.drywet.LFOmodEnd      )
+{{ UIID_controls_LFO_mod_cursor }}
+    UIID_controls_LFO_mod_cursor [ 00 ] := get_ui_id(label_MAIN.FX.LEFT.layer.vol.LFOindicator           )
+    UIID_controls_LFO_mod_cursor [ 01 ] := get_ui_id(label_MAIN.FX.LEFT.layer.pan.LFOindicator           )
+    UIID_controls_LFO_mod_cursor [ 02 ] := get_ui_id(label_MAIN.FX.LEFT.layer.width.LFOindicator         )
+    UIID_controls_LFO_mod_cursor [ 03 ] := get_ui_id(label_MAIN.FX.LEFT.saturation.amount.LFOindicator   )
+    UIID_controls_LFO_mod_cursor [ 04 ] := get_ui_id(label_MAIN.FX.LEFT.distortion.damping.LFOindicator  )
+    UIID_controls_LFO_mod_cursor [ 05 ] := get_ui_id(label_MAIN.FX.LEFT.distortion.drive.LFOindicator    )
+    UIID_controls_LFO_mod_cursor [ 06 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.bits.LFOindicator           )
+    UIID_controls_LFO_mod_cursor [ 07 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.srate.LFOindicator          )
+    UIID_controls_LFO_mod_cursor [ 08 ] := get_ui_id(label_MAIN.FX.LEFT.lofi.noise.LFOindicator          )
+    UIID_controls_LFO_mod_cursor [ 09 ] := get_ui_id(label_MAIN.FX.LEFT.tapeSat.gain.LFOindicator        )
+    UIID_controls_LFO_mod_cursor [ 10 ] := get_ui_id(label_MAIN.FX.LEFT.tapeSat.warmth.LFOindicator      )
+    UIID_controls_LFO_mod_cursor [ 11 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.wet.LFOindicator          )
+    UIID_controls_LFO_mod_cursor [ 12 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.speed.LFOindicator        )
+    UIID_controls_LFO_mod_cursor [ 13 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.depth.LFOindicator        )
+    UIID_controls_LFO_mod_cursor [ 14 ] := get_ui_id(label_MAIN.FX.LEFT.chorus.phase.LFOindicator        )
+    UIID_controls_LFO_mod_cursor [ 15 ] := get_ui_id(label_MAIN.FX.LEFT.reverb.drywet.LFOindicator       )
+    UIID_controls_LFO_mod_cursor [ 16 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.vol.LFOindicator          )
+    UIID_controls_LFO_mod_cursor [ 17 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.pan.LFOindicator          )
+    UIID_controls_LFO_mod_cursor [ 18 ] := get_ui_id(label_MAIN.FX.RIGHT.layer.width.LFOindicator        )
+    UIID_controls_LFO_mod_cursor [ 19 ] := get_ui_id(label_MAIN.FX.RIGHT.saturation.amount.LFOindicator  )
+    UIID_controls_LFO_mod_cursor [ 20 ] := get_ui_id(label_MAIN.FX.RIGHT.distortion.damping.LFOindicator )
+    UIID_controls_LFO_mod_cursor [ 21 ] := get_ui_id(label_MAIN.FX.RIGHT.distortion.drive.LFOindicator   )
+    UIID_controls_LFO_mod_cursor [ 22 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.bits.LFOindicator          )
+    UIID_controls_LFO_mod_cursor [ 23 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.srate.LFOindicator         )
+    UIID_controls_LFO_mod_cursor [ 24 ] := get_ui_id(label_MAIN.FX.RIGHT.lofi.noise.LFOindicator         )
+    UIID_controls_LFO_mod_cursor [ 25 ] := get_ui_id(label_MAIN.FX.RIGHT.tapeSat.gain.LFOindicator       )
+    UIID_controls_LFO_mod_cursor [ 26 ] := get_ui_id(label_MAIN.FX.RIGHT.tapeSat.warmth.LFOindicator     )
+    UIID_controls_LFO_mod_cursor [ 27 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.wet.LFOindicator         )
+    UIID_controls_LFO_mod_cursor [ 28 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.speed.LFOindicator       )
+    UIID_controls_LFO_mod_cursor [ 29 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.depth.LFOindicator       )
+    UIID_controls_LFO_mod_cursor [ 30 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.phase.LFOindicator       )
+    UIID_controls_LFO_mod_cursor [ 31 ] := get_ui_id(label_MAIN.FX.RIGHT.reverb.drywet.LFOindicator      )
+{{ UIID_MAIN.FX.panels }}
+    UIID_MAIN.FX.panels [ 00 ] := get_ui_id(panel_MAIN.FX.LEFT.layer           )
+    UIID_MAIN.FX.panels [ 01 ] := get_ui_id(panel_MAIN.FX.LEFT.saturation      )
+    UIID_MAIN.FX.panels [ 02 ] := get_ui_id(panel_MAIN.FX.LEFT.distortion      )
+    UIID_MAIN.FX.panels [ 03 ] := get_ui_id(panel_MAIN.FX.LEFT.lofi            )
+    UIID_MAIN.FX.panels [ 04 ] := get_ui_id(panel_MAIN.FX.LEFT.tapeSaturation  )
+    UIID_MAIN.FX.panels [ 05 ] := get_ui_id(panel_MAIN.FX.LEFT.delay           )
+    UIID_MAIN.FX.panels [ 06 ] := get_ui_id(panel_MAIN.FX.LEFT.chorus          )
+    UIID_MAIN.FX.panels [ 07 ] := get_ui_id(panel_MAIN.FX.LEFT.reverb          )
+    UIID_MAIN.FX.panels [ 08 ] := get_ui_id(panel_MAIN.FX.RIGHT.layer          )
+    UIID_MAIN.FX.panels [ 09 ] := get_ui_id(panel_MAIN.FX.RIGHT.saturation     )
+    UIID_MAIN.FX.panels [ 10 ] := get_ui_id(panel_MAIN.FX.RIGHT.distortion     )
+    UIID_MAIN.FX.panels [ 11 ] := get_ui_id(panel_MAIN.FX.RIGHT.lofi           )
+    UIID_MAIN.FX.panels [ 12 ] := get_ui_id(panel_MAIN.FX.RIGHT.tapeSaturation )
+    UIID_MAIN.FX.panels [ 13 ] := get_ui_id(panel_MAIN.FX.RIGHT.delay          )
+    UIID_MAIN.FX.panels [ 14 ] := get_ui_id(panel_MAIN.FX.RIGHT.chorus         )
+    UIID_MAIN.FX.panels [ 15 ] := get_ui_id(panel_MAIN.FX.RIGHT.reverb         )
+{{ UIID_MAIN.FX.selectors }}
+    UIID_MAIN.FX.selectors [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.selection           )
+    UIID_MAIN.FX.selectors [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.selection      )
+    UIID_MAIN.FX.selectors [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.selection      )
+    UIID_MAIN.FX.selectors [ 03 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.selection            )
+    UIID_MAIN.FX.selectors [ 04 ] := get_ui_id(switch_MAIN.FX.LEFT.tapeSaturation.selection  )
+    UIID_MAIN.FX.selectors [ 05 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.selection           )
+    UIID_MAIN.FX.selectors [ 06 ] := get_ui_id(switch_MAIN.FX.LEFT.chorus.selection          )
+    UIID_MAIN.FX.selectors [ 07 ] := get_ui_id(switch_MAIN.FX.LEFT.reverb.selection          )
+    UIID_MAIN.FX.selectors [ 08 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.selection          )
+    UIID_MAIN.FX.selectors [ 09 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.selection     )
+    UIID_MAIN.FX.selectors [ 10 ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.selection     )
+    UIID_MAIN.FX.selectors [ 11 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.selection           )
+    UIID_MAIN.FX.selectors [ 12 ] := get_ui_id(switch_MAIN.FX.RIGHT.tapeSaturation.selection )
+    UIID_MAIN.FX.selectors [ 13 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.selection          )
+    UIID_MAIN.FX.selectors [ 14 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.selection         )
+    UIID_MAIN.FX.selectors [ 15 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverb.selection         )
+{{ UIID FX modules power }}
+    UIID_FX.modules.power [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.power           )
+    UIID_FX.modules.power [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.power      )
+    UIID_FX.modules.power [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.power      )
+    UIID_FX.modules.power [ 03 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.power            )
+    UIID_FX.modules.power [ 04 ] := get_ui_id(switch_MAIN.FX.LEFT.tapeSaturation.power  )
+    UIID_FX.modules.power [ 05 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.power           )
+    UIID_FX.modules.power [ 06 ] := get_ui_id(switch_MAIN.FX.LEFT.chorus.power          )
+    UIID_FX.modules.power [ 07 ] := get_ui_id(switch_MAIN.FX.LEFT.reverb.power          )
+    UIID_FX.modules.power [ 08 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.power          )
+    UIID_FX.modules.power [ 09 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.power     )
+    UIID_FX.modules.power [ 10 ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.power     )
+    UIID_FX.modules.power [ 11 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.power           )
+    UIID_FX.modules.power [ 12 ] := get_ui_id(switch_MAIN.FX.RIGHT.tapeSaturation.power )
+    UIID_FX.modules.power [ 13 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.power          )
+    UIID_FX.modules.power [ 14 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.power         )
+    UIID_FX.modules.power [ 15 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverb.power         )
+{{ UIID MAIN FX Links }}
+    UIID_MAIN.FX.links [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.link           )
+    UIID_MAIN.FX.links [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.link      )
+    UIID_MAIN.FX.links [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.link      )
+    UIID_MAIN.FX.links [ 03 ] := get_ui_id(switch_MAIN.FX.LEFT.lofi.link            )
+    UIID_MAIN.FX.links [ 04 ] := get_ui_id(switch_MAIN.FX.LEFT.tapeSaturation.link  )
+    UIID_MAIN.FX.links [ 05 ] := get_ui_id(switch_MAIN.FX.LEFT.delay.link           )
+    UIID_MAIN.FX.links [ 06 ] := get_ui_id(switch_MAIN.FX.LEFT.chorus.link          )
+    UIID_MAIN.FX.links [ 07 ] := get_ui_id(switch_MAIN.FX.LEFT.reverb.link          )
+    UIID_MAIN.FX.links [ 08 ] := get_ui_id(switch_MAIN.FX.RIGHT.layer.link          )
+    UIID_MAIN.FX.links [ 09 ] := get_ui_id(switch_MAIN.FX.RIGHT.saturation.link     )
+    UIID_MAIN.FX.links [ 10 ] := get_ui_id(switch_MAIN.FX.RIGHT.distortion.link     )
+    UIID_MAIN.FX.links [ 11 ] := get_ui_id(switch_MAIN.FX.RIGHT.lofi.link           )
+    UIID_MAIN.FX.links [ 12 ] := get_ui_id(switch_MAIN.FX.RIGHT.tapeSaturation.link )
+    UIID_MAIN.FX.links [ 13 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.link          )
+    UIID_MAIN.FX.links [ 14 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.link         )
+    UIID_MAIN.FX.links [ 15 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverb.link         )
+{{ Conversion from FX parameter index to module power uiid to be used in the LCB for loop }}
+    UIID_FX.parameter_to_module [ __MAIN.FX.LAYER.VOLUME                              ] := __LAYER
+    UIID_FX.parameter_to_module [ __MAIN.FX.LAYER.PAN                                 ] := __LAYER
+    UIID_FX.parameter_to_module [ __MAIN.FX.LAYER.WIDTH                               ] := __LAYER
+    UIID_FX.parameter_to_module [ __MAIN.FX.SATURATION                                ] := __SATURATION
+    UIID_FX.parameter_to_module [ __MAIN.FX.DISTORTION.DAMP                           ] := __DISTORTION
+    UIID_FX.parameter_to_module [ __MAIN.FX.DISTORTION.DRIVE                          ] := __DISTORTION
+    UIID_FX.parameter_to_module [ __MAIN.FX.LOFI.BITS                                 ] := __LOFI
+    UIID_FX.parameter_to_module [ __MAIN.FX.LOFI.SRATE                                ] := __LOFI
+    UIID_FX.parameter_to_module [ __MAIN.FX.LOFI.NOISE                                ] := __LOFI
+    UIID_FX.parameter_to_module [ __MAIN.FX.TAPESAT.GAIN                              ] := __TAPESAT
+    UIID_FX.parameter_to_module [ __MAIN.FX.TAPESAT.WARMTH                            ] := __TAPESAT
+    UIID_FX.parameter_to_module [ __MAIN.FX.CHORUS.DRYWET                             ] := __CHORUS
+    UIID_FX.parameter_to_module [ __MAIN.FX.CHORUS.DEPTH                              ] := __CHORUS
+    UIID_FX.parameter_to_module [ __MAIN.FX.CHORUS.SPEED                              ] := __CHORUS
+    UIID_FX.parameter_to_module [ __MAIN.FX.CHORUS.PHASE                              ] := __CHORUS
+    UIID_FX.parameter_to_module [ __MAIN.FX.REVERB.DRYWET                             ] := __REVERB
+    UIID_FX.parameter_to_module [ __MAIN.FX.LAYER.VOLUME     + __MAIN.FX.RIGHT.OFFSET ] := __LAYER      + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.LAYER.PAN        + __MAIN.FX.RIGHT.OFFSET ] := __LAYER      + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.LAYER.WIDTH      + __MAIN.FX.RIGHT.OFFSET ] := __LAYER      + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.SATURATION       + __MAIN.FX.RIGHT.OFFSET ] := __SATURATION + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.DISTORTION.DAMP  + __MAIN.FX.RIGHT.OFFSET ] := __DISTORTION + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.DISTORTION.DRIVE + __MAIN.FX.RIGHT.OFFSET ] := __DISTORTION + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.LOFI.BITS        + __MAIN.FX.RIGHT.OFFSET ] := __LOFI       + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.LOFI.SRATE       + __MAIN.FX.RIGHT.OFFSET ] := __LOFI       + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.LOFI.NOISE       + __MAIN.FX.RIGHT.OFFSET ] := __LOFI       + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.TAPESAT.GAIN     + __MAIN.FX.RIGHT.OFFSET ] := __TAPESAT    + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.TAPESAT.WARMTH   + __MAIN.FX.RIGHT.OFFSET ] := __TAPESAT    + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.CHORUS.DRYWET    + __MAIN.FX.RIGHT.OFFSET ] := __CHORUS     + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.CHORUS.DEPTH     + __MAIN.FX.RIGHT.OFFSET ] := __CHORUS     + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.CHORUS.SPEED     + __MAIN.FX.RIGHT.OFFSET ] := __CHORUS     + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.CHORUS.PHASE     + __MAIN.FX.RIGHT.OFFSET ] := __CHORUS     + 8
+    UIID_FX.parameter_to_module [ __MAIN.FX.REVERB.DRYWET    + __MAIN.FX.RIGHT.OFFSET ] := __REVERB     + 8
+
+{{ UICBs link from UI IDs to NI_UI_ID }}
+for i.i := 0 to 31
+    set_control_par(UIID_controls            [i.i], CONTROL_PAR_CUSTOM_ID, i.i)
+    set_control_par(UIID_controls_LFO_amount [i.i], CONTROL_PAR_CUSTOM_ID, i.i + UICTRL_LFO_AMOUNT_OFFSET)
+    set_control_par(UIID_controls_LFO_phase  [i.i], CONTROL_PAR_CUSTOM_ID, i.i + UICTRL_LFO_PHASE_OFFSET)
+    set_control_par(UIID_controls_LFO_power  [i.i], CONTROL_PAR_CUSTOM_ID, i.i + UICTRL_LFO_POWER_OFFSET)
+end for
+for i.i := 0 to 15
+    set_control_par(UIID_MAIN.FX.selectors [i.i], CONTROL_PAR_CUSTOM_ID, i.i + UICTRL_FX_PANEL_OFFSET)
+    set_control_par(UIID_FX.modules.power  [i.i], CONTROL_PAR_CUSTOM_ID, i.i + UICTRL_FX_MODULES_POWER_OFFSET)
+    set_control_par(UIID_MAIN.FX.links     [i.i], CONTROL_PAR_CUSTOM_ID, i.i + UICTRL_FX_MODULES_LINK_OFFSET)
+end for
+
 
 { PENDING this has to go to nka files: }
 import "ea-flux-engine DUAL-JOIN coordinates data.ksp"

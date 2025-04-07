@@ -1,0 +1,31 @@
+on init
+    declare ~cpl_label_val 
+    declare $cpl_label_res
+    declare cpl_predelay_uiid
+    declare const ~CPL_LABEL_MIN_COEF    := 0.6931471805599453 
+    declare const ~CPL_LABEL_MAX_COEF    := 5.7104270173748696 
+    declare const ~CPL_LABEL_OFFSET      := 2.0 
+    declare const ~CPL_LABEL_MIN_EQ_COEF := 2.99573227355399 
+    declare const ~CPL_LABEL_MAX_EQ_COEF := 9.90348755253612 
+    declare const ~CPL_LABEL_RANGE       := ~CPL_LABEL_MAX_COEF - ~CPL_LABEL_MIN_COEF 
+    declare const ~CPL_LABEL_EQ_RANGE    := ~CPL_LABEL_MAX_EQ_COEF - ~CPL_LABEL_MIN_EQ_COEF 
+end on
+
+function convolution_predelay_label() 
+    ~cpl_label_val := real(get_control_par(cpl_predelay_uiid, $CONTROL_PAR_VALUE)) * 0.000001 { normalize to 0.0 ... 1.0 } 
+    ~cpl_label_val := (~cpl_label_val * ~CPL_LABEL_RANGE) + ~CPL_LABEL_MIN_COEF { linear interpolation between CPL_LABEL_MIN_COEF and MAX_COEF } 
+    ~cpl_label_val := pow(~NI_MATH_E, ~CPL_LABEL_VAL) - ~CPL_LABEL_OFFSET       { e^x - CPL_LABEL_OFFSET } 
+    $cpl_label_res := int(round(~cpl_label_val * 100.0))                        { convert to integer with two "decimals" } 
+   {  take care of value display (optional, can always just print with one less decimal of precision, then it"s simpler) } 
+    if ($cpl_label_res < 10) 
+        @conv_predelay_label := $cpl_label_res / 100 & ".0" & $cpl_label_res mod 100 & " ms"
+    else 
+        if ($cpl_label_res < 100) 
+            @conv_predelay_label := $cpl_label_res / 100 & "." & $cpl_label_res mod 100 & " ms"
+        else 
+            @conv_predelay_label := $cpl_label_res / 100 & "." & ($cpl_label_res / 10) mod 10 & " ms"
+        end if 
+    end if 
+    set_control_par_str(cpl_predelay_uiid, $CONTROL_PAR_LABEL, @conv_predelay_label ) 
+end function
+
