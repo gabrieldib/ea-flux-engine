@@ -1312,6 +1312,7 @@
     //fn051_set_seq_on_off_panels
     declare fn051.a.side
     declare fn051.a.seq_state
+    declare fn051.a.layer_state
 
     //fn052_set_wf_cursor_and_overlay
     declare fn052.a.value_type
@@ -1331,3 +1332,5 @@
     // fn055_recall_source_buttons_page
     declare fn055.l.counter
 
+    //fn056_single_shot_wf_preview
+    declare fn056.a.side

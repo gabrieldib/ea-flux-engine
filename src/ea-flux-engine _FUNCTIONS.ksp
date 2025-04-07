@@ -1,5 +1,16 @@
 import "ARP/__ARP 03 functions.ksp"
 
+function fn056_single_shot_wf_preview
+    pn_ncb.a.side := fn056.a.side
+    pn_ncb.a.note := 60
+    pn_ncb.a.velo := 1
+    call PLAY_NOTE_NCB
+    change_vol( layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ], -200000, 0)
+    fn053.a.side := fn056.a.side
+    fn053.a.note := 60
+    call fn053_update_single_shot_controls
+end function
+
 {{ PCCB Init Instrument }}
 function pccb_init_instrument
     { dual or joined sequencer }
@@ -90,7 +101,8 @@ function pccb_init_instrument
 
         fn051.a.seq_state  := UIID_MAIN.seq.power [ pccb_counter ] -> value
         fn051.a.side := pccb_counter
-        call fn051_set_seq_on_off_panels
+        fn051.a.layer_state := UIID_MAIN.layer.power [ pccb_counter ] -> value
+        call fn051_set_layer_panels_state
 
         fn020.a.seq_power_state    := UIID_MAIN.seq.power [ pccb_counter ] -> value
         fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, SEQ_TARGET_VELO ]
@@ -106,11 +118,8 @@ function pccb_init_instrument
         call fn052_set_wf_cursor_and_overlay
 
         if UIID_MAIN.seq.power [ pccb_counter ] -> value = __OFF
-            pn_ncb.a.side := pccb_counter
-            pn_ncb.a.note := 60
-            pn_ncb.a.velo := 1
-            call PLAY_NOTE_NCB
-            change_vol( layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ], -200000, 0)
+            fn056.a.side := pccb_counter
+            call fn056_single_shot_wf_preview
 
             UIID_MAIN.seq.target_activators [ pccb_counter, SEQ_TARGET_VELO ] -> value := __OFF
             UIID_MAIN.seq.target_power      [ pccb_counter, SEQ_TARGET_VELO ] -> value := __OFF
@@ -1488,46 +1497,56 @@ function fn049_set_seq_values_to_original
     end if
 end function
 
-function fn051_set_seq_on_off_panels
-    if fn051.a.seq_state = __OFF
-        UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_SHOW
-        UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_SHOW
-        UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_SHOW
-        UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_SHOW
-        UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_SHOW
+function fn051_set_layer_panels_state
+        { single shot elements }
+    UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_HIDE
+    UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_HIDE
+    UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_HIDE
+    UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_HIDE
+    UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_HIDE
+    UIID_MAIN.seq.off_label         [ fn051.a.side ] -> UI_HIDE
+    UIID_MAIN.seq.off_label_text    [ fn051.a.side ] -> UI_HIDE
+    UIID_MAIN.seq.off_label_text    [ fn051.a.side ] -> text := ''
+    UIID_MAIN.seq.flux_panels       [ fn051.a.side ] -> UI_HIDE
+    UIID_MAIN.seq.arp_mode_panels   [ fn051.a.side ] -> UI_HIDE
+    if fn051.a.side = __LEFT
+        panel_MAIN.2SEQ.LEFT.controls -> UI_HIDE
+        slider_MAIN.2SEQ.LEFT.off     -> UI_HIDE
+        label_MAIN.2SEQ.LEFT.off      -> UI_HIDE
+    else
+        panel_MAIN.2SEQ.RIGHT.controls -> UI_HIDE
+        slider_MAIN.2SEQ.RIGHT.off     -> UI_HIDE
+        label_MAIN.2SEQ.RIGHT.off      -> UI_HIDE
+    end if
 
-        if fn051.a.side = __LEFT
-            panel_MAIN.2SEQ.LEFT.controls -> UI_HIDE
-            slider_MAIN.2SEQ.LEFT.off     -> UI_HIDE
-            label_MAIN.2SEQ.LEFT.off      -> UI_HIDE
-        else
-            panel_MAIN.2SEQ.RIGHT.controls -> UI_HIDE
-            slider_MAIN.2SEQ.RIGHT.off     -> UI_HIDE
-            label_MAIN.2SEQ.RIGHT.off      -> UI_HIDE
+    if fn051.a.layer_state = __ON
+
+        if fn051.a.seq_state = __OFF { Single hit }
+            fn056.a.side := fn051.a.side
+            call fn056_single_shot_wf_preview
+
+            UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_SHOW
+            UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_SHOW
+            UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_SHOW
+            UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_SHOW
+            UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_SHOW
+
+        else    { SEQ is ON }
+            if fn051.a.side = __LEFT
+                panel_MAIN.2SEQ.LEFT.controls -> UI_SHOW
+                label_MAIN.2SEQ.LEFT.off      -> UI_SHOW
+            else
+                panel_MAIN.2SEQ.RIGHT.controls -> UI_SHOW
+                label_MAIN.2SEQ.RIGHT.off      -> UI_SHOW
+            end if
+            UIID_MAIN.seq.flux_panels       [ fn051.a.side ] -> UI_SHOW
+
         end if
-        UIID_MAIN.seq.flux_panels       [ fn051.a.side ] -> UI_HIDE
-        UIID_MAIN.seq.arp_mode_panels   [ fn051.a.side ] -> UI_HIDE
-
-
-
-    else    { SEQ is ON }
-        if fn051.a.side = __LEFT
-            panel_MAIN.2SEQ.LEFT.controls -> UI_SHOW
-            slider_MAIN.2SEQ.LEFT.off     -> UI_SHOW
-            label_MAIN.2SEQ.LEFT.off      -> UI_SHOW
-        else
-            panel_MAIN.2SEQ.RIGHT.controls -> UI_SHOW
-            slider_MAIN.2SEQ.RIGHT.off     -> UI_SHOW
-            label_MAIN.2SEQ.RIGHT.off      -> UI_SHOW
-        end if
-        UIID_MAIN.seq.flux_panels       [ fn051.a.side ] -> UI_SHOW
-
-        UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_HIDE
-        UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_HIDE
-        UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_HIDE
-        UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_HIDE
-        UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_HIDE
-
+    else
+        message(f'Layer state off!')
+        UIID_MAIN.seq.off_label      [ fn051.a.side ] -> UI_SHOW
+        UIID_MAIN.seq.off_label_text [ fn051.a.side ] -> UI_SHOW
+        UIID_MAIN.seq.off_label_text [ fn051.a.side ] -> text := 'LAYER OFF'
     end if
 end function
 

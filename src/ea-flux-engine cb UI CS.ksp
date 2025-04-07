@@ -89,78 +89,99 @@ on ui_controls
     end if
     
 
+    {{ LAYER POWER }}
+    if NI_UI_ID = UIID_MAIN.layer.power [ __LEFT ] or NI_UI_ID = UIID_MAIN.layer.power [ __RIGHT ] 
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_MAIN.layer.power [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+        uics_value := NI_UI_ID -> value
+
+        fn051.a.side        := uics_seq_side
+        fn051.a.seq_state   := UIID_MAIN.seq.power [ uics_seq_side ] -> value
+        fn051.a.layer_state := uics_value
+        call fn051_set_layer_panels_state
+        message(f'fn051.a.side        : <fn051.a.side >')
+        message(f'fn051.a.seq_state   : <fn051.a.seq_state >')
+        message(f'fn051.a.layer_state : <fn051.a.layer_state >')
+    end if
+
+
     {{ SEQ POWER }}
     if NI_UI_ID = UIID_MAIN.seq.power [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
         uics_seq_side := __LEFT
         if NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
             uics_seq_side := __RIGHT
         end if
-
         uics_value := NI_UI_ID -> value
-        
-        fn051.a.side      := uics_seq_side
-        fn051.a.seq_state := uics_value
-        call fn051_set_seq_on_off_panels
+        fn051.a.side        := uics_seq_side
+        fn051.a.seq_state   := uics_value
+        fn051.a.layer_state := UIID_MAIN.layer.power [ uics_seq_side ] -> value
+        call fn051_set_layer_panels_state
 
-        {
-            logic for the activators
+        if UIID_MAIN.layer.power [ uics_seq_side ] -> value = __ON
+            {
+                logic for the activators
 
-            when we turn the sequencer on there's 2 scenarios:
-                the other side is ON or 
-                the other side is OFF
+                when we turn the sequencer on there's 2 scenarios:
+                    the other side is ON or 
+                    the other side is OFF
 
-                if it is OFF,
-                    we should activate the VELOCITY activator and selector, and the power according to the buffer
+                    if it is OFF,
+                        we should activate the VELOCITY activator and selector, and the power according to the buffer
 
-                if it is ON
-                    the activator that should turn on is the same as the one selected on the right side.
-        }
+                    if it is ON
+                        the activator that should turn on is the same as the one selected on the right side.
+            }
 
-        if uics_value = __ON
-            { restore all target control states}
-            for uics_counter := 0 to 4
-                { recall power controls }
-                UIID_MAIN.seq.target_power [ uics_seq_side, uics_counter ] -> value := ...
-                    targets_power_state [ uics_seq_side, uics_counter ]
+            if uics_value = __ON
+                { restore all target control states}
+                for uics_counter := 0 to 4
+                    { recall power controls }
+                    UIID_MAIN.seq.target_power [ uics_seq_side, uics_counter ] -> value := ...
+                        targets_power_state [ uics_seq_side, uics_counter ]
 
-                { set activator based on the target selector }
-                if  UIID_MAIN.seq.target_selectors [ uics_counter ] -> value = __ON
-                    message(f'Selector on on side <abs(1-uics_seq_side)> = <uics_counter >')
-                    UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __ON
-                else
-                    if  UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
-                        UIID_MAIN.seq.target_activators [ uics_seq_side, SEQ_TARGET_VELO ] -> value := __ON
-                        UIID_MAIN.seq.target_selectors [ SEQ_TARGET_VELO ]                 -> value := __ON
+                    { set activator based on the target selector }
+                    if  UIID_MAIN.seq.target_selectors [ uics_counter ] -> value = __ON
+                        message(f'Selector on on side <abs(1-uics_seq_side)> = <uics_counter >')
+                        UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __ON
+                    else
+                        if  UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
+                            UIID_MAIN.seq.target_activators [ uics_seq_side, SEQ_TARGET_VELO ] -> value := __ON
+                            UIID_MAIN.seq.target_selectors [ SEQ_TARGET_VELO ]                 -> value := __ON
+                        end if
                     end if
-                end if
 
-                if  UIID_MAIN.seq.target_activators [ __LEFT,  uics_counter ] -> value = __ON and ...
-                    UIID_MAIN.seq.target_activators [ __RIGHT, uics_counter ] -> value = __ON
+                    if  UIID_MAIN.seq.target_activators [ __LEFT,  uics_counter ] -> value = __ON and ...
+                        UIID_MAIN.seq.target_activators [ __RIGHT, uics_counter ] -> value = __ON
 
-                    UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __ON
-                else
-                    UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
-                end if
-            end for
+                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __ON
+                    else
+                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
+                    end if
+                end for
 
-            fn021.a.side := uics_seq_side
-            call fn21_get_seq_target_active_activator
+                fn021.a.side := uics_seq_side
+                call fn21_get_seq_target_active_activator
 
-            fn020.a.seq_power_state   := NI_UI_ID -> value
-            fn020.a.side              := uics_seq_side
-            fn020.a.target_index      := fn021.r.active_index
-            fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
-            call fn020_update_seq_target_state
+                fn020.a.seq_power_state   := NI_UI_ID -> value
+                fn020.a.side              := uics_seq_side
+                fn020.a.target_index      := fn021.r.active_index
+                fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
+                call fn020_update_seq_target_state
 
-        else
-            { turn off target activators, power and selectors as they have no effect on single shots }
-            for uics_counter := 0 to 4
-                UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __OFF
-                UIID_MAIN.seq.target_power      [ uics_seq_side, uics_counter ] -> value := __OFF
-                if UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
-                    UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
-                end if
-            end for 
+            else
+                { turn off target activators, power and selectors as they have no effect on single shots }
+                for uics_counter := 0 to 4
+                    UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __OFF
+                    UIID_MAIN.seq.target_power      [ uics_seq_side, uics_counter ] -> value := __OFF
+                    if UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
+                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
+                    end if
+                end for 
+
+            end if
+
         end if
     end if
 
@@ -401,7 +422,7 @@ on ui_controls
         set_engine_par(                                                               ...
             ADSR_engine_pars [ uics_uiid_index mod 4 ],                               ...
             UIID_MAIN.ADSR_controls[ uics_seq_side, uics_uiid_index mod 4 ] -> value, ...
-            uics_seq_side,                                                            ...
+            selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT,       ...
             get_mod_idx(uics_seq_side, "ENV_AHDSR"),                                  ...
             -1                                                                        ...
         )
