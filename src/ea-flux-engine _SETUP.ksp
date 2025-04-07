@@ -5,6 +5,6 @@ define HMZ_DIVISOR := 28571 { 1000000 / 35 ( milliseconds )}
 define VOLUME_CURVE_SLOPE := 0.35
 
 {{ SOURCES }}
-define __SOURCE_COUNT         := 50
+define __SOURCE_COUNT         := 32 { example }
 define __MAX_SOURCES_PER_PAGE := 18
 define __MAX_SOURCE_PAGES     := __SOURCE_COUNT/__MAX_SOURCES_PER_PAGE 

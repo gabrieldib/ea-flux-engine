@@ -136,7 +136,9 @@ function pccb_init_instrument
     label_MAIN.matrix.left       -> picture_state := slider_MAIN.FX.LEFT.layer.volume / 3921
     label_MAIN.matrix.right      -> picture_state := slider_MAIN.FX.RIGHT.layer.volume / 3921
 
-
+    source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
+    source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
+    call fn055_recall_source_buttons_page
 end function
 
 {{ general }}
@@ -441,11 +443,6 @@ function fn013_update_seq_step_pictures
     else
         fn013.l.mode_side := __LEFT
     end if
-    // message(f'      fn13 side: <fn013.a.side >')
-    // message(f'      fn13 block: <fn013.a.block_index >')
-    // message(f'      target type: <SEQ.target_type [ SEQ.showing_target [ fn013.l.mode_side ] ] * 8 >')
-    // message(f'      target type: < SEQ.showing_target [ fn013.l.mode_side ]  >')
-    // message(f'      step count: <SEQ.DUAL.step_count [ fn013.a.side, fn013.a.block_index mod 4 ] >')
     for fn013.l.step := 0 to 7
         UIID_MAIN.seq.step [ fn013.a.side, fn013.l.step + (fn013.a.block_index mod 4 ) * 8 ] -> picture := ...
             SEQ_step_pictures [                                             ...
@@ -1566,8 +1563,16 @@ end function
 
 function fn054_update_source_buttons
     for fn054.l.counter := 0 to 17
-        UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.l.counter ] -> value := __OFF
-        UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.l.counter ] -> text := f'<source_page [ fn054.a.side ] * 18 + fn054.l.counter + 1>. Coefficient Preset'
+        if source_page [ fn054.a.side ] * 18 + fn054.l.counter < __SOURCE_COUNT
+            UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.l.counter ] -> UI_SHOW
+            UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.l.counter ] -> value := __OFF
+            UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.l.counter ] -> text := f'<source_page [ fn054.a.side ] * 18 + fn054.l.counter + 1>. Coefficient Preset'
+            if fn054.l.counter = fn054.a.index mod __MAX_SOURCES_PER_PAGE
+                UIID_GLOBAL.source_btns [ fn054.a.side ] -> text := f'<source_page [ fn054.a.side ] * 18 + fn054.l.counter + 1>. Coefficient Preset'
+            end if
+        else
+            UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.l.counter ] -> UI_HIDE
+        end if
     end for
     
     if fn054.a.index # -1
@@ -1581,9 +1586,6 @@ function fn055_recall_source_buttons_page
         fn054.a.index := selected_source [ fn055.l.counter ] mod __MAX_SOURCES_PER_PAGE
         fn054.a.side  := fn055.l.counter
         call fn054_update_source_buttons
-        message(f'side: <fn055.l.counter >')
-        message(f'    fn054.a.index <fn054.a.index >')
-        message(f'    page: <source_page [ fn055.l.counter ] >')
         UIID_GLOBAL.page_number [ fn055.l.counter ] -> text := (selected_source [ fn055.l.counter ] / __MAX_SOURCES_PER_PAGE) + 1
     end for
 end function
@@ -2740,8 +2742,13 @@ end function
 function PLAY_NOTE_NCB
     layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ] := play_note(pn_ncb.a.note, pn_ncb.a.velo, -1, -1)
     set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
-    { PENDING: group as side here is just for testing}
-    set_event_par_arr(layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ], EVENT_PAR_ALLOW_GROUP, __ON,  pn_ncb.a.side)
+    
+    set_event_par_arr(                                                     ...
+        layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ],               ...
+        EVENT_PAR_ALLOW_GROUP,                                             ...
+        __ON,                                                              ...
+        selected_source [ pn_ncb.a.side ] + pn_ncb.a.side * __SOURCE_COUNT ...
+    )
 
     set_event_par_arr(                                                   ...
         layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ],             ...
@@ -2791,8 +2798,13 @@ function fn027_play_lcb_core
             )                               ...
 
         set_event_par_arr(layers.note_events [ fn027.a.side, fn027.a.note ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
-        { PENDING: group here is just for testing example -> side }
-        set_event_par_arr(layers.note_events [ fn027.a.side, fn027.a.note ], EVENT_PAR_ALLOW_GROUP, __ON,  fn027.a.side)
+        
+        set_event_par_arr(                                                   ...
+            layers.note_events [ fn027.a.side, fn027.a.note ],               ...
+            EVENT_PAR_ALLOW_GROUP,                                           ...
+            __ON,                                                            ...
+            selected_source [ fn027.a.side ] + fn027.a.side * __SOURCE_COUNT ...
+        )
 
         set_event_par_arr(                                                   ...
             layers.note_events [ fn027.a.side, fn027.a.note ],               ...

@@ -9,6 +9,12 @@ UIID_GLOBAL.page_next_btns [ __RIGHT ] := get_ui_id( switch_BROWSER.RIGHT.nextPa
 UIID_GLOBAL.page_number [ __LEFT  ] := get_ui_id(  label_BROWSER.LEFT.pageNumber )
 UIID_GLOBAL.page_number [ __RIGHT ] := get_ui_id(  label_BROWSER.RIGHT.pageNumber )
 
+UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_PREV ] := get_ui_id( switch_MAIN.SoundSource.LEFT.prev )
+UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_NEXT ] := get_ui_id( switch_MAIN.SoundSource.LEFT.next )
+UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_PREV ] := get_ui_id( switch_MAIN.SoundSource.RIGHT.prev )
+UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_NEXT ] := get_ui_id( switch_MAIN.SoundSource.RIGHT.next )
+
+
 for i.i := 0 to 31
     UIID_MAIN.seq.step [ __LEFT, i.i ]  := get_ui_id(label_MAIN.LEFT.seq.step.0) + i.i
     UIID_MAIN.seq.step [ __RIGHT, i.i ] := get_ui_id(label_MAIN.RIGHT.seq.step.0) + i.i

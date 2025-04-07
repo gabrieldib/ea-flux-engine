@@ -20,8 +20,7 @@ on ui_controls
     end if
 
 
-    {{ SOURCE PAGE BUTTONS }}
-    
+    {{ SOURCE PAGE PREV/NEXT BUTTONS }}
     if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __LEFT ] or NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
         uics_seq_side := __LEFT
         if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
@@ -57,10 +56,38 @@ on ui_controls
             call fn054_update_source_buttons
         end if
         UIID_GLOBAL.page_number [ uics_seq_side ] -> text := source_page [ uics_seq_side ] + 1
-
     end if
 
 
+    {{ SOURCES PREV }}
+    if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_PREV] or ...
+        NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_PREV]
+
+        uics_seq_side    := __LEFT
+        if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_PREV]
+            uics_seq_side    := __RIGHT
+        end if
+        if selected_source [ uics_seq_side ] > 0
+            dec(selected_source [ uics_seq_side ])
+            call fn055_recall_source_buttons_page
+        end if
+    end if
+
+
+    {{ SOURCES NEXT }}
+    if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_NEXT] or ...
+        NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_NEXT]
+
+        uics_seq_side    := __LEFT
+        if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_NEXT]
+            uics_seq_side    := __RIGHT
+        end if
+        if selected_source [ uics_seq_side ] < __SOURCE_COUNT-1
+            inc(selected_source [ uics_seq_side ])
+            call fn055_recall_source_buttons_page
+        end if
+    end if
+    
 
     {{ SEQ POWER }}
     if NI_UI_ID = UIID_MAIN.seq.power [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
@@ -135,7 +162,6 @@ on ui_controls
                 end if
             end for 
         end if
-
     end if
 
 
@@ -472,7 +498,6 @@ on ui_controls
             NI_UI_ID -> value := __OFF
 
         end if
-
     end if
 
 
@@ -526,7 +551,6 @@ on ui_controls
         if  UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
             NI_UI_ID -> value := __OFF
         end if
-
     end if
 
 
@@ -603,7 +627,6 @@ on ui_controls
         else
             NI_UI_ID -> value := __OFF
         end if
-
     end if
 
 
@@ -653,7 +676,6 @@ on ui_controls
         UIID_MAIN.seq.flux_rand_intensity [ __LEFT ] -> value := NI_UI_ID -> value
         UIID_MAIN.display_title -> text := "Flux Randomizer"
         UIID_MAIN.display_value -> text := NI_UI_ID -> value & "%"
-
     end if
 
     {{ SEQ MAIN FLUX RAND BUTTONS }}
@@ -1155,7 +1177,6 @@ on ui_controls
         UIID_MAIN.single_shot_controls [ uics_seq_side, __SINGLE_SHOT_SAMPLE_START ] -> value := int(uics_r_value * 1000000.0)
 
         sample_starts [ uics_seq_side, last_played_note ] := uics_r_value
-
     end if
 
 

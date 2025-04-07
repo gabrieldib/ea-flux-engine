@@ -1,4 +1,4 @@
-{ Compiled on Mon Apr  7 10:03:18 2025 }
+{ Compiled on Mon Apr  7 15:37:53 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -104,17 +104,17 @@ on init
   20, 20, 20, 20, 20, 8, 8, 8, 20, 20, 8, 8, 21, 21, 20, 20, 20, 20, 8, 8, 8, 8, 8, 20, 23, 11, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 8, 8, ...
   8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 24, 21, 25, 26, 27, 28, 29, 30, 2, ...
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 31, 32, 32, 31, 8, ...
-  8, 13, 12, 13, 12, 2, 2, 2, 2, 33, 33, 34, 2, 2, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 46, 46, 46, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, ...
-  47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 45, 46, 46, 46, 46, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, ...
-  47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 48, 49, 50, 50, 2, 2, 51, 51, 2, 2, 52, 53, 54, 54, 55, 56, 2, 2, 57, 58, 59, 57, ...
-  58, 59, 2, 2, 60, 61, 61, 61, 62, 62, 62, 63, 63, 64, 65, 66, 67, 68, 61, 62, 63, 69, 61, 62, 61, 62, 63, 63, 70, 71, 72, 61, 61, 61, 62, 62, 62, 63, 63, 63, ...
-  73, 61, 61, 62, 62, 63, 63, 74, 2, 2, 75, 61, 62, 61, 62, 61, 62, 61, 62, 63, 63, 63, 63, 76, 61, 62, 63, 77, 78, 61, 61, 61, 62, 62, 62, 63, 63, 64, 79, 61, ...
-  62, 63, 66, 68, 67, 80, 61, 62, 61, 62, 63, 63, 70, 71, 81, 61, 61, 61, 62, 62, 62, 63, 63, 63, 82, 61, 61, 62, 62, 63, 63, 83, 2, 2, 84, 61, 62, 61, 62, 61, ...
-  62, 61, 62, 63, 63, 63, 63, 85, 61, 62, 63, 86, 87, 87, 88, 88, 89, 89, 90, 90, 2, 2, 2, 2, 2, 2, 91, 92, 92, 2, 2, 93, 2, 2, 2, 2, 2, 58, 58, 94, ...
-  94, 94, 94, 94, 94, 94, 94, 95, 95, 95, 95, 96, 96, 96, 96, 96, 96, 96, 96, 97, 97, 98, 98, 99, 99, 50, 50, 100, 101, 100, 100, 100, 100, 100, 101, 100, 100, 100, 100, 100, ...
-  100, 100, 100, 101, 102, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, ...
-  100, 100, 100, 101, 102, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, ...
-  100, 100, 100, 100, 100, 100, 100, 2, 2, 2, 2, 103, 103, 2, -1, -1)
+  8, 33, 34, 33, 34, 2, 2, 2, 2, 35, 35, 36, 2, 2, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, ...
+  49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 47, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, ...
+  49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 50, 51, 52, 52, 2, 2, 53, 53, 2, 2, 54, 55, 56, 56, 57, 58, 2, 2, 59, 60, 61, 59, ...
+  60, 61, 2, 2, 62, 63, 63, 63, 64, 64, 64, 65, 65, 66, 67, 68, 69, 70, 63, 64, 65, 71, 63, 64, 63, 64, 65, 65, 72, 73, 74, 63, 63, 63, 64, 64, 64, 65, 65, 65, ...
+  75, 63, 63, 64, 64, 65, 65, 76, 2, 2, 77, 63, 64, 63, 64, 63, 64, 63, 64, 65, 65, 65, 65, 78, 63, 64, 65, 79, 80, 63, 63, 63, 64, 64, 64, 65, 65, 66, 81, 63, ...
+  64, 65, 68, 70, 69, 82, 63, 64, 63, 64, 65, 65, 72, 73, 83, 63, 63, 63, 64, 64, 64, 65, 65, 65, 84, 63, 63, 64, 64, 65, 65, 85, 2, 2, 86, 63, 64, 63, 64, 63, ...
+  64, 63, 64, 65, 65, 65, 65, 87, 63, 64, 65, 88, 89, 89, 90, 90, 91, 91, 92, 92, 2, 2, 2, 2, 2, 2, 93, 94, 94, 2, 2, 95, 2, 2, 2, 2, 2, 60, 60, 96, ...
+  96, 96, 96, 96, 96, 96, 96, 97, 97, 97, 97, 98, 98, 98, 98, 98, 98, 98, 98, 99, 99, 100, 100, 101, 101, 52, 52, 102, 103, 102, 102, 102, 102, 102, 103, 102, 102, 102, 102, 102, ...
+  102, 102, 102, 103, 104, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, ...
+  102, 102, 102, 103, 104, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, ...
+  102, 102, 102, 102, 102, 102, 102, 2, 2, 2, 2, 105, 105, 2, -1, -1)
   declare %UI_font[737] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
@@ -133,7 +133,7 @@ on init
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 5, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
-  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
+  -1, -1, -1, -1, -1, -1, -1, 8, 8, 8, 8, -1, -1, -1, -1, -1)
   declare %UI_label_text[737] := (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, ...
   2, 3, 4, 5, 6, 7, -1, -1, -1, 8, 1, 2, 3, 4, 5, 6, 7, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9, 10, 11, 12, 13, 14, -1, ...
   -1, 9, 10, 11, 12, 13, 14, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, 16, 17, 18, 19, -1, -1, -1, -1, -1, -1, -1, -1, ...
@@ -168,7 +168,7 @@ on init
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
-  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 500000, ...
+  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 500000, -1, -1, -1, -1, -1, 500000, -1, -1, -1, -1, 500000, ...
   500000, 500000, 630000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, ...
   500000, 500000, 630000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, 500000, ...
   500000, 500000, 500000, 500000, 500000, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
@@ -286,7 +286,7 @@ on init
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, ...
   -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
-  declare !skin_picture[104]
+  declare !skin_picture[106]
   !skin_picture[0] := "button_randomize"
   !skin_picture[1] := "button_expand"
   !skin_picture[2] := "label_transparent"
@@ -320,77 +320,79 @@ on init
   !skin_picture[30] := "switch_MAIN.LFO.lock"
   !skin_picture[31] := "switch_FX.prevLayer"
   !skin_picture[32] := "switch_FX.nextLayer"
-  !skin_picture[33] := "slider_random"
-  !skin_picture[34] := "label_MAIN.title"
-  !skin_picture[35] := "label_MAIN.matrix.centerRL_256"
-  !skin_picture[36] := "label_MAIN.matrix.centerLR_256"
-  !skin_picture[37] := "label_MAIN.matrix.center.mod.RL_256"
-  !skin_picture[38] := "label_MAIN.matrix.center.mod.LR_256"
-  !skin_picture[39] := "slider_MAIN.matrix.left_256"
-  !skin_picture[40] := "slider_MAIN.matrix.right_256"
-  !skin_picture[41] := "label_MAIN.matrix.center"
-  !skin_picture[42] := "label_MAIN.2SEQ.background"
-  !skin_picture[43] := "label_MAIN.2SEQ.LEFT.fluxx.labels"
-  !skin_picture[44] := "label_MAIN.2SEQ.RIGHT.fluxx.labels"
-  !skin_picture[45] := "label_MAIN.2SEQ.sliders.background"
-  !skin_picture[46] := "label_seqLed.4_4"
-  !skin_picture[47] := "label_MAIN.sequencer.blockSlider8.uni_95"
-  !skin_picture[48] := "label_MAIN.RIGHT.layer.controls.separators"
-  !skin_picture[49] := "label_MAIN.LEFT.layer.controls.separators"
-  !skin_picture[50] := "slider_MAIN.dynamics"
-  !skin_picture[51] := "label_MAIN.dyn"
-  !skin_picture[52] := "label_MAIN.SEQjoin.background"
-  !skin_picture[53] := "label_SEQjoin.arp.background"
-  !skin_picture[54] := "label_fluxxRand.amount"
-  !skin_picture[55] := "label_MAIN.join.layer.controls.separators"
-  !skin_picture[56] := "label_MAIN.SEQjoin.off"
-  !skin_picture[57] := "label_MAIN.2SEQ.LEFT.single.shot"
-  !skin_picture[58] := "label_waveform_overlay"
-  !skin_picture[59] := "label_waveform.cursor"
-  !skin_picture[60] := "label_MAIN.FX.RIGHT.layer.background"
-  !skin_picture[61] := "label_LFO.modulationEnd.main09"
-  !skin_picture[62] := "label_LFO.modulationStart.main09"
-  !skin_picture[63] := "label_LFO.indicator"
-  !skin_picture[64] := "label_LFO.indicator.width"
-  !skin_picture[65] := "label_MAIN.FX.RIGHT.saturation.background"
-  !skin_picture[66] := "label_sat_classic_2"
-  !skin_picture[67] := "label_sat_drums_2"
-  !skin_picture[68] := "label_sat_enhanced_2"
-  !skin_picture[69] := "label_MAIN.FX.RIGHT.distortion.background"
-  !skin_picture[70] := "label_dist_tube_2"
-  !skin_picture[71] := "label_dist_trans_2"
-  !skin_picture[72] := "label_MAIN.FX.RIGHT.lofi.background"
-  !skin_picture[73] := "label_MAIN.FX.RIGHT.tapeSat.background"
-  !skin_picture[74] := "label_MAIN.FX.RIGHT.delay.background"
-  !skin_picture[75] := "label_MAIN.FX.RIGHT.chorus.background"
-  !skin_picture[76] := "label_MAIN.FX.RIGHT.reverb.background"
-  !skin_picture[77] := "label_MAIN.FX.RIGHT.reverb.menu.background"
-  !skin_picture[78] := "label_MAIN.FX.LEFT.layer.background"
-  !skin_picture[79] := "label_MAIN.FX.LEFT.saturation.background"
-  !skin_picture[80] := "label_MAIN.FX.LEFT.distortion.background"
-  !skin_picture[81] := "label_MAIN.FX.LEFT.lofi.background"
-  !skin_picture[82] := "label_MAIN.FX.LEFT.tapeSat.background"
-  !skin_picture[83] := "label_MAIN.FX.LEFT.delay.background"
-  !skin_picture[84] := "label_MAIN.FX.LEFT.chorus.background"
-  !skin_picture[85] := "label_MAIN.FX.LEFT.reverb.background"
-  !skin_picture[86] := "label_MAIN.FX.LEFT.reverb.menu.background"
-  !skin_picture[87] := "label_MAIN.SEQ.linked_2"
-  !skin_picture[88] := "label_MAIN.ARP.linked_2"
-  !skin_picture[89] := "label_MAIN.ADSR.linked_2"
-  !skin_picture[90] := "label_MAIN.FX.linked_2"
-  !skin_picture[91] := "label_LFO.square_2112"
-  !skin_picture[92] := "label_randomAmount"
-  !skin_picture[93] := "xypad_MAIN.matrix.center"
-  !skin_picture[94] := "slider_MAIN.adsr_116"
-  !skin_picture[95] := "slider_MAIN.randomizer.L"
-  !skin_picture[96] := "slider_MAIN.seq.blockSteps"
-  !skin_picture[97] := "slider_move.range"
-  !skin_picture[98] := "label_FX.off"
-  !skin_picture[99] := "slider_MAIN.joinSeq.randomizer_235"
-  !skin_picture[100] := "knob_unipolar"
-  !skin_picture[101] := "knob_pan"
-  !skin_picture[102] := "knob_width"
-  !skin_picture[103] := "button_draw"
+  !skin_picture[33] := "button_nav_small_next_sources"
+  !skin_picture[34] := "button_nav_small_prev_sources"
+  !skin_picture[35] := "slider_random"
+  !skin_picture[36] := "label_MAIN.title"
+  !skin_picture[37] := "label_MAIN.matrix.centerRL_256"
+  !skin_picture[38] := "label_MAIN.matrix.centerLR_256"
+  !skin_picture[39] := "label_MAIN.matrix.center.mod.RL_256"
+  !skin_picture[40] := "label_MAIN.matrix.center.mod.LR_256"
+  !skin_picture[41] := "slider_MAIN.matrix.left_256"
+  !skin_picture[42] := "slider_MAIN.matrix.right_256"
+  !skin_picture[43] := "label_MAIN.matrix.center"
+  !skin_picture[44] := "label_MAIN.2SEQ.background"
+  !skin_picture[45] := "label_MAIN.2SEQ.LEFT.fluxx.labels"
+  !skin_picture[46] := "label_MAIN.2SEQ.RIGHT.fluxx.labels"
+  !skin_picture[47] := "label_MAIN.2SEQ.sliders.background"
+  !skin_picture[48] := "label_seqLed.4_4"
+  !skin_picture[49] := "label_MAIN.sequencer.blockSlider8.uni_95"
+  !skin_picture[50] := "label_MAIN.RIGHT.layer.controls.separators"
+  !skin_picture[51] := "label_MAIN.LEFT.layer.controls.separators"
+  !skin_picture[52] := "slider_MAIN.dynamics"
+  !skin_picture[53] := "label_MAIN.dyn"
+  !skin_picture[54] := "label_MAIN.SEQjoin.background"
+  !skin_picture[55] := "label_SEQjoin.arp.background"
+  !skin_picture[56] := "label_fluxxRand.amount"
+  !skin_picture[57] := "label_MAIN.join.layer.controls.separators"
+  !skin_picture[58] := "label_MAIN.SEQjoin.off"
+  !skin_picture[59] := "label_MAIN.2SEQ.LEFT.single.shot"
+  !skin_picture[60] := "label_waveform_overlay"
+  !skin_picture[61] := "label_waveform.cursor"
+  !skin_picture[62] := "label_MAIN.FX.RIGHT.layer.background"
+  !skin_picture[63] := "label_LFO.modulationEnd.main09"
+  !skin_picture[64] := "label_LFO.modulationStart.main09"
+  !skin_picture[65] := "label_LFO.indicator"
+  !skin_picture[66] := "label_LFO.indicator.width"
+  !skin_picture[67] := "label_MAIN.FX.RIGHT.saturation.background"
+  !skin_picture[68] := "label_sat_classic_2"
+  !skin_picture[69] := "label_sat_drums_2"
+  !skin_picture[70] := "label_sat_enhanced_2"
+  !skin_picture[71] := "label_MAIN.FX.RIGHT.distortion.background"
+  !skin_picture[72] := "label_dist_tube_2"
+  !skin_picture[73] := "label_dist_trans_2"
+  !skin_picture[74] := "label_MAIN.FX.RIGHT.lofi.background"
+  !skin_picture[75] := "label_MAIN.FX.RIGHT.tapeSat.background"
+  !skin_picture[76] := "label_MAIN.FX.RIGHT.delay.background"
+  !skin_picture[77] := "label_MAIN.FX.RIGHT.chorus.background"
+  !skin_picture[78] := "label_MAIN.FX.RIGHT.reverb.background"
+  !skin_picture[79] := "label_MAIN.FX.RIGHT.reverb.menu.background"
+  !skin_picture[80] := "label_MAIN.FX.LEFT.layer.background"
+  !skin_picture[81] := "label_MAIN.FX.LEFT.saturation.background"
+  !skin_picture[82] := "label_MAIN.FX.LEFT.distortion.background"
+  !skin_picture[83] := "label_MAIN.FX.LEFT.lofi.background"
+  !skin_picture[84] := "label_MAIN.FX.LEFT.tapeSat.background"
+  !skin_picture[85] := "label_MAIN.FX.LEFT.delay.background"
+  !skin_picture[86] := "label_MAIN.FX.LEFT.chorus.background"
+  !skin_picture[87] := "label_MAIN.FX.LEFT.reverb.background"
+  !skin_picture[88] := "label_MAIN.FX.LEFT.reverb.menu.background"
+  !skin_picture[89] := "label_MAIN.SEQ.linked_2"
+  !skin_picture[90] := "label_MAIN.ARP.linked_2"
+  !skin_picture[91] := "label_MAIN.ADSR.linked_2"
+  !skin_picture[92] := "label_MAIN.FX.linked_2"
+  !skin_picture[93] := "label_LFO.square_2112"
+  !skin_picture[94] := "label_randomAmount"
+  !skin_picture[95] := "xypad_MAIN.matrix.center"
+  !skin_picture[96] := "slider_MAIN.adsr_116"
+  !skin_picture[97] := "slider_MAIN.randomizer.L"
+  !skin_picture[98] := "slider_MAIN.seq.blockSteps"
+  !skin_picture[99] := "slider_move.range"
+  !skin_picture[100] := "label_FX.off"
+  !skin_picture[101] := "slider_MAIN.joinSeq.randomizer_235"
+  !skin_picture[102] := "knob_unipolar"
+  !skin_picture[103] := "knob_pan"
+  !skin_picture[104] := "knob_width"
+  !skin_picture[105] := "button_draw"
   declare !_labels_text[38*10]
   declare const $labels_text__SIZE_D1 := 38
   declare const $labels_text__SIZE_D2 := 10
@@ -3746,6 +3748,9 @@ on init
   declare %UIID_GLOBAL__page_prev_btns[2]
   declare %UIID_GLOBAL__page_next_btns[2]
   declare %UIID_GLOBAL__page_number[2]
+  declare %_UIID_GLOBAL__sources_prev_next[2*2]
+  declare const $UIID_GLOBAL__sources_prev_next__SIZE_D1 := 2
+  declare const $UIID_GLOBAL__sources_prev_next__SIZE_D2 := 2
   declare %_UIID_BROWSER_source__select__btn[2*18]
   declare const $UIID_BROWSER_source__select__btn__SIZE_D1 := 2
   declare const $UIID_BROWSER_source__select__btn__SIZE_D2 := 18
@@ -3781,6 +3786,10 @@ on init
   set_control_par(get_ui_id(?xypad_MAIN__LEFT__randomizer),$CONTROL_PAR_MOUSE_MODE,2)
   set_control_par(get_ui_id(?xypad_MAIN__RIGHT__randomizer),$CONTROL_PAR_MOUSE_MODE,2)
   set_control_par(get_ui_id(?xypad_MAIN__matrix__center),$CONTROL_PAR_MOUSE_MODE,2)
+  set_control_par(get_ui_id($valueedit_MAIN__LEFT__low__range),$CONTROL_PAR_SHOW_ARROWS,0)
+  set_control_par(get_ui_id($valueedit_MAIN__LEFT__high__range),$CONTROL_PAR_SHOW_ARROWS,0)
+  set_control_par(get_ui_id($valueedit_MAIN__RIGHT__low__range),$CONTROL_PAR_SHOW_ARROWS,0)
+  set_control_par(get_ui_id($valueedit_MAIN__RIGHT__high__range),$CONTROL_PAR_SHOW_ARROWS,0)
   set_control_par_str(get_ui_id(?xypad_MAIN__SEQ__LEFT),$CONTROL_PAR_CURSOR_PICTURE,"label_xy.cursor")
   set_control_par_str(get_ui_id(?xypad_MAIN__SEQ__RIGHT),$CONTROL_PAR_CURSOR_PICTURE,"label_xy.cursor")
   set_control_par_str(get_ui_id(?xypad_MAIN__SEQ__join),$CONTROL_PAR_CURSOR_PICTURE,"label_xy.cursor")
@@ -4367,7 +4376,7 @@ end function
 function PLAY_NOTE_NCB
   %_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note] := play_note($pn_ncb__a__note,$pn_ncb__a__velo,-1,-1)
   set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
-  set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_ALLOW_GROUP,1,$pn_ncb__a__side)
+  set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_ALLOW_GROUP,1,%selected_source[$pn_ncb__a__side]+($pn_ncb__a__side*32))
   set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(?_sample_starts[128*$pn_ncb__a__side+$pn_ncb__a__note]*1000000.0),$pn_ncb__a__side+1)
   change_tune(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],real_to_int(?_sample_tuning[128*$pn_ncb__a__side+$last_played_note]*100000.0),0)
   wait(1)
@@ -4376,6 +4385,38 @@ function PLAY_NOTE_NCB
   else
     attach_zone($waveform_MAIN__2SEQ__RIGHT__display,get_event_par(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_ZONE_ID),0)
   end if
+end function
+
+function fn054_update_source_buttons
+  $fn054__l__counter := 0
+  while ($fn054__l__counter<=17)
+    if (%source_page[$fn054__a__side]*18+$fn054__l__counter<32)
+      set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
+      set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_VALUE,0)
+      set_control_par_str(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_TEXT,"" & (%source_page[$fn054__a__side]*18+$fn054__l__counter+1) & ". Coefficient Preset")
+      if ($fn054__l__counter=($fn054__a__index mod 18))
+        set_control_par_str(%UIID_GLOBAL__source_btns[$fn054__a__side],$CONTROL_PAR_TEXT,"" & (%source_page[$fn054__a__side]*18+$fn054__l__counter+1) & ". Coefficient Preset")
+      end if
+    else
+      set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+    end if
+    inc($fn054__l__counter)
+  end while
+  if ($fn054__a__index # -1)
+    set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__a__index],$CONTROL_PAR_VALUE,1)
+  end if
+end function
+
+function fn055_recall_source_buttons_page
+  $fn055__l__counter := 0
+  while ($fn055__l__counter<=1)
+    %source_page[$fn055__l__counter] := %selected_source[$fn055__l__counter]/18
+    $fn054__a__index := %selected_source[$fn055__l__counter] mod 18
+    $fn054__a__side := $fn055__l__counter
+    call fn054_update_source_buttons
+    set_control_par_str(%UIID_GLOBAL__page_number[$fn055__l__counter],$CONTROL_PAR_TEXT,%selected_source[$fn055__l__counter]/18+1)
+    inc($fn055__l__counter)
+  end while
 end function
 
 function pccb_init_instrument
@@ -4481,6 +4522,9 @@ function pccb_init_instrument
   set_control_par(get_ui_id($label_MAIN__matrix__centerRL),$CONTROL_PAR_PICTURE_STATE,real_to_int(255.0*int_to_real($slider_MAIN__FX__RIGHT__layer__volume)*0.000001))
   set_control_par(get_ui_id($label_MAIN__matrix__left),$CONTROL_PAR_PICTURE_STATE,$slider_MAIN__FX__LEFT__layer__volume/3921)
   set_control_par(get_ui_id($label_MAIN__matrix__right),$CONTROL_PAR_PICTURE_STATE,$slider_MAIN__FX__RIGHT__layer__volume/3921)
+  %source_page[0] := %selected_source[0]/18
+  %source_page[1] := %selected_source[1]/18
+  call fn055_recall_source_buttons_page
 end function
 
 function fn016_set_data_display_from_seq_xy
@@ -4773,33 +4817,6 @@ function convolution_filters_label
   else
     @conv_label := $conv_label_res/10000 & "." & (($conv_label_res+500)/1000 mod 10) & "k"
   end if
-end function
-
-function fn054_update_source_buttons
-  $fn054__l__counter := 0
-  while ($fn054__l__counter<=17)
-    set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_VALUE,0)
-    set_control_par_str(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_TEXT,"" & (%source_page[$fn054__a__side]*18+$fn054__l__counter+1) & ". Coefficient Preset")
-    inc($fn054__l__counter)
-  end while
-  if ($fn054__a__index # -1)
-    set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__a__index],$CONTROL_PAR_VALUE,1)
-  end if
-end function
-
-function fn055_recall_source_buttons_page
-  $fn055__l__counter := 0
-  while ($fn055__l__counter<=1)
-    %source_page[$fn055__l__counter] := %selected_source[$fn055__l__counter]/18
-    $fn054__a__index := %selected_source[$fn055__l__counter] mod 18
-    $fn054__a__side := $fn055__l__counter
-    call fn054_update_source_buttons
-    message("side: " & $fn055__l__counter & "")
-    message("    fn054.a.index " & $fn054__a__index & "")
-    message("    page: " & %source_page[$fn055__l__counter] & "")
-    set_control_par_str(%UIID_GLOBAL__page_number[$fn055__l__counter],$CONTROL_PAR_TEXT,%selected_source[$fn055__l__counter]/18+1)
-    inc($fn055__l__counter)
-  end while
 end function
 
 function fn21_get_seq_target_active_activator
@@ -5617,7 +5634,7 @@ function fn027_play_lcb_core
     end if
     %_layers__note_events[128*$fn027__a__side+$fn027__a__note] := play_note($fn027__a__note,$SEQ__step_velocity,-1,$fn027__l__step_duration)
     set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
-    set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_ALLOW_GROUP,1,$fn027__a__side)
+    set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_ALLOW_GROUP,1,%selected_source[$fn027__a__side]+($fn027__a__side*32))
     set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(?_sample_starts[128*$fn027__a__side+$fn027__a__note]*1000000.0),$pn_ncb__a__side+1)
     change_tune(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],real_to_int(?_sample_tuning[128*$fn027__a__side+$fn027__a__note]*100000.0)+($SEQ__step_pitch*100000),0)
     change_pan(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$SEQ__step_pan,0)
@@ -6036,6 +6053,10 @@ on persistence_changed
   %UIID_GLOBAL__page_next_btns[1] := get_ui_id($switch_BROWSER__RIGHT__nextPage)
   %UIID_GLOBAL__page_number[0] := get_ui_id($label_BROWSER__LEFT__pageNumber)
   %UIID_GLOBAL__page_number[1] := get_ui_id($label_BROWSER__RIGHT__pageNumber)
+  %_UIID_GLOBAL__sources_prev_next[2*0+0] := get_ui_id($switch_MAIN__SoundSource__LEFT__prev)
+  %_UIID_GLOBAL__sources_prev_next[2*0+1] := get_ui_id($switch_MAIN__SoundSource__LEFT__next)
+  %_UIID_GLOBAL__sources_prev_next[2*1+0] := get_ui_id($switch_MAIN__SoundSource__RIGHT__prev)
+  %_UIID_GLOBAL__sources_prev_next[2*1+1] := get_ui_id($switch_MAIN__SoundSource__RIGHT__next)
   $i__i := 0
   while ($i__i<=31)
     %_UIID_MAIN__seq__step[32*0+$i__i] := get_ui_id($label_MAIN__LEFT__seq__step__0)+$i__i
@@ -7706,7 +7727,7 @@ on persistence_changed
   call pccb_init_instrument
   message("ea-flux-engine loaded successfully")
   message(" time: " & get_engine_par($ENGINE_PAR_RDL_TIME_UNIT,-1,4,$NI_BUS_OFFSET) & "")
-  message("__MAX_SOURCE_PAGES: " & 2 & "")
+  message("__MAX_SOURCE_PAGES: " & 1 & "")
 end on
 
 on async_complete
@@ -7750,7 +7771,7 @@ on ui_controls
     if ($NI_UI_ID=%UIID_GLOBAL__page_next_btns[1])
       $uics_seq_side := 1
     end if
-    if (%source_page[$uics_seq_side]<2)
+    if (%source_page[$uics_seq_side]<1)
       inc(%source_page[$uics_seq_side])
       $fn054__a__side := $uics_seq_side
       if (%selected_source[$uics_seq_side]/18=%source_page[$uics_seq_side])
@@ -7761,6 +7782,26 @@ on ui_controls
       call fn054_update_source_buttons
     end if
     set_control_par_str(%UIID_GLOBAL__page_number[$uics_seq_side],$CONTROL_PAR_TEXT,%source_page[$uics_seq_side]+1)
+  end if
+  if ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*0+0] or ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*1+0]))
+    $uics_seq_side := 0
+    if ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*1+0])
+      $uics_seq_side := 1
+    end if
+    if (%selected_source[$uics_seq_side]>0)
+      dec(%selected_source[$uics_seq_side])
+      call fn055_recall_source_buttons_page
+    end if
+  end if
+  if ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*0+1] or ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*1+1]))
+    $uics_seq_side := 0
+    if ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*1+1])
+      $uics_seq_side := 1
+    end if
+    if (%selected_source[$uics_seq_side]<(32-1))
+      inc(%selected_source[$uics_seq_side])
+      call fn055_recall_source_buttons_page
+    end if
   end if
   if ($NI_UI_ID=%UIID_MAIN__seq__power[0] or ($NI_UI_ID=%UIID_MAIN__seq__power[1]))
     $uics_seq_side := 0

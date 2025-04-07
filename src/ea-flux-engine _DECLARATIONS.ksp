@@ -127,6 +127,9 @@
     define __TARGET_POWER     := 1
     define __TARGET_SELECTOR  := 2
 
+    define __SOURCE_PREV := 0
+    define __SOURCE_NEXT := 1
+
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
         declare hide_constants [ 2 ]
