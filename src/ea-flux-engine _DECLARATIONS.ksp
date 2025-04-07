@@ -658,8 +658,11 @@
     {{ GENERAL }}
         declare note_held_count
         declare read SHOWING_PANEL
-
         declare MATRIX.matrix.center.mouseON [2] // 0 is the state, 1 is the quadrant start index
+
+    {{ SOURCES }}
+    declare read selected_source [ 2 ]
+    declare read source_page [ 2 ]
 
     {{ SEQ }}
         declare SEQ.LEFT.step_index
@@ -1316,3 +1319,12 @@
     declare  fn053.a.side
     declare  fn053.a.note
     declare ~fn053.l.tune_knob
+
+    //fn054_update_source_buttons
+    declare fn054.a.side
+    declare fn054.a.index
+    declare fn054.l.counter
+
+    // fn055_recall_source_buttons_page
+    declare fn055.l.counter
+

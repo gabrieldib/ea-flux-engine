@@ -6,6 +6,11 @@
         panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
         panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
         set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
+        if panel_BROWSER -> hide = 0
+            source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
+            source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
+            call fn055_recall_source_buttons_page
+        end if
     end on
 
     on ui_control (switch_MAIN.RIGHT.soundSource)
@@ -14,6 +19,11 @@
         panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
         panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
         set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
+        if panel_BROWSER -> hide = 0
+            source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
+            source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
+            call fn055_recall_source_buttons_page
+        end if
     end on
 
 

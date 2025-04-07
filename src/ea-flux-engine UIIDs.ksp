@@ -53,8 +53,12 @@ declare UIID_MAIN.waveform_xypad_cursor         [ 2 ]
 declare UIID_MAIN.matrix_sides                  [ 2 ]
 declare UIID_MAIN.matrix_LFO_orbs               [ 2 ]
 declare UIID_MAIN.hmz_sliders                   [ 2 ]
+declare UIID_GLOBAL.source_btns                 [ 2 ]
+declare UIID_GLOBAL.page_prev_btns              [ 2 ]
+declare UIID_GLOBAL.page_next_btns              [ 2 ]
+declare UIID_GLOBAL.page_number                 [ 2 ]
 
-declare UIID_BROSER_source.select.btn       [ 2, 18 ]
+declare UIID_BROWSER_source.select.btn       [ 2, 18 ]
 
 
 {{ LFO }}

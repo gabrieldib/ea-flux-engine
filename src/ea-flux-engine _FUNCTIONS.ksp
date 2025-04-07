@@ -441,6 +441,11 @@ function fn013_update_seq_step_pictures
     else
         fn013.l.mode_side := __LEFT
     end if
+    // message(f'      fn13 side: <fn013.a.side >')
+    // message(f'      fn13 block: <fn013.a.block_index >')
+    // message(f'      target type: <SEQ.target_type [ SEQ.showing_target [ fn013.l.mode_side ] ] * 8 >')
+    // message(f'      target type: < SEQ.showing_target [ fn013.l.mode_side ]  >')
+    // message(f'      step count: <SEQ.DUAL.step_count [ fn013.a.side, fn013.a.block_index mod 4 ] >')
     for fn013.l.step := 0 to 7
         UIID_MAIN.seq.step [ fn013.a.side, fn013.l.step + (fn013.a.block_index mod 4 ) * 8 ] -> picture := ...
             SEQ_step_pictures [                                             ...
@@ -1559,6 +1564,31 @@ function fn053_update_single_shot_controls
     end if
 end function
 
+function fn054_update_source_buttons
+    for fn054.l.counter := 0 to 17
+        UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.l.counter ] -> value := __OFF
+        UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.l.counter ] -> text := f'<source_page [ fn054.a.side ] * 18 + fn054.l.counter + 1>. Coefficient Preset'
+    end for
+    
+    if fn054.a.index # -1
+        UIID_BROWSER_source.select.btn [ fn054.a.side, fn054.a.index ] -> value := __ON
+    end if
+end function
+
+function fn055_recall_source_buttons_page
+    for fn055.l.counter := __LEFT to __RIGHT
+        source_page [ fn055.l.counter ] := selected_source [ fn055.l.counter ] / __MAX_SOURCES_PER_PAGE
+        fn054.a.index := selected_source [ fn055.l.counter ] mod __MAX_SOURCES_PER_PAGE
+        fn054.a.side  := fn055.l.counter
+        call fn054_update_source_buttons
+        message(f'side: <fn055.l.counter >')
+        message(f'    fn054.a.index <fn054.a.index >')
+        message(f'    page: <source_page [ fn055.l.counter ] >')
+        UIID_GLOBAL.page_number [ fn055.l.counter ] -> text := (selected_source [ fn055.l.counter ] / __MAX_SOURCES_PER_PAGE) + 1
+    end for
+end function
+
+
 
 {{ LFO Functions }}
 function fn037_LFO.update_intensity_ring()
@@ -1734,12 +1764,12 @@ end function
 
 function fn040_set_MATRIX_slider_ps // picture state
     if fn040.a.side = __LEFT
-        label_MAIN.matrix.centerLR -> picture_state := 255 - int(pow(float(slider_MAIN.FX.LEFT.layer.volume)*0.000001, VOLUME_CURVE_SLOPE) * 255.0)
-        label_MAIN.matrix.left     -> picture_state := int(pow(float(slider_MAIN.FX.LEFT.layer.volume)*0.000001, VOLUME_CURVE_SLOPE) * 255.0)
+        label_MAIN.matrix.centerLR -> picture_state := 255 - int( float(slider_MAIN.FX.LEFT.layer.volume) * 0.000001 * 255.0)
+        label_MAIN.matrix.left     -> picture_state := int( float(slider_MAIN.FX.LEFT.layer.volume) * 0.000001 * 255.0)
         // label_MATRIX.matrix.centerLR -> picture_state := 255 - (slider_MAIN.FX.LEFT.layer.volume / 3921)
     else
-        label_MAIN.matrix.centerRL -> picture_state := int(pow(float(slider_MAIN.FX.RIGHT.layer.volume)*0.000001, VOLUME_CURVE_SLOPE) * 255.0)
-        label_MAIN.matrix.right    -> picture_state := int(pow(float(slider_MAIN.FX.RIGHT.layer.volume)*0.000001, VOLUME_CURVE_SLOPE) * 255.0)
+        label_MAIN.matrix.centerRL -> picture_state := int( float(slider_MAIN.FX.RIGHT.layer.volume) * 0.000001 * 255.0)
+        label_MAIN.matrix.right    -> picture_state := int( float(slider_MAIN.FX.RIGHT.layer.volume) * 0.000001 * 255.0)
         // label_MATRIX.matrix.centerRL -> picture_state := slider_MAIN.FX.RIGHT.layer.volume / 3921
     end if
 end function

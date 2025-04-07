@@ -1,3 +1,14 @@
+UIID_GLOBAL.source_btns [ __LEFT  ] := get_ui_id(switch_MAIN.LEFT.soundSource)
+UIID_GLOBAL.source_btns [ __RIGHT ] := get_ui_id(switch_MAIN.RIGHT.soundSource)
+
+UIID_GLOBAL.page_prev_btns [ __LEFT  ] := get_ui_id ( switch_BROWSER.LEFT.prevPage )
+UIID_GLOBAL.page_prev_btns [ __RIGHT ] := get_ui_id ( switch_BROWSER.RIGHT.prevPage )
+UIID_GLOBAL.page_next_btns [ __LEFT  ] := get_ui_id( switch_BROWSER.LEFT.nextPage )
+UIID_GLOBAL.page_next_btns [ __RIGHT ] := get_ui_id( switch_BROWSER.RIGHT.nextPage )
+
+UIID_GLOBAL.page_number [ __LEFT  ] := get_ui_id(  label_BROWSER.LEFT.pageNumber )
+UIID_GLOBAL.page_number [ __RIGHT ] := get_ui_id(  label_BROWSER.RIGHT.pageNumber )
+
 for i.i := 0 to 31
     UIID_MAIN.seq.step [ __LEFT, i.i ]  := get_ui_id(label_MAIN.LEFT.seq.step.0) + i.i
     UIID_MAIN.seq.step [ __RIGHT, i.i ] := get_ui_id(label_MAIN.RIGHT.seq.step.0) + i.i
@@ -243,27 +254,27 @@ UIID_MAIN.matrix_LFO_orbs [ 1 ] := get_ui_id(label_MAIN.matrix.center.mod.LR)
 UIID_MAIN.hmz_sliders [ 0 ] := get_ui_id(slider_MAIN.LEFT.hmz)
 UIID_MAIN.hmz_sliders [ 1 ] := get_ui_id(slider_MAIN.RIGHT.hmz)
 
-UIID_BROSER_source.select.btn [ __LEFT,  0 ] := get_ui_id(switch_BROWSER.LEFT.sound0)
-UIID_BROSER_source.select.btn [ __RIGHT, 0 ] := get_ui_id(switch_BROWSER.RIGHT.sound0)
+UIID_BROWSER_source.select.btn [ __LEFT,  0 ] := get_ui_id(switch_BROWSER.LEFT.sound0)
+UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] := get_ui_id(switch_BROWSER.RIGHT.sound0)
 for i.i := 0 to 17
-    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] := UIID_BROSER_source.select.btn [ __LEFT,  0 ] + i.i
-    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] := UIID_BROSER_source.select.btn [ __RIGHT, 0 ] + i.i
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] := UIID_BROWSER_source.select.btn [ __LEFT,  0 ] + i.i
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] := UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] + i.i
 
-    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
-    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
-    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
-    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
-    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
-    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
-    UIID_BROSER_source.select.btn [ __LEFT,  i.i ] -> disable_text_shifting := __ON    
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> disable_text_shifting := __ON    
 
-    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
-    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
-    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
-    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
-    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
-    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
-    UIID_BROSER_source.select.btn [ __RIGHT, i.i ] -> disable_text_shifting := __ON    
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
+    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> disable_text_shifting := __ON    
 end for
 
 
@@ -273,6 +284,15 @@ end for
     for i.i := 0 to 1
         UIID_MAIN.seq.arp_menu[i.i] -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_OFF  
         UIID_MAIN.seq.arp_menu[i.i] -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
+    end for
+    for i.i := 0 to 1
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type             := GLOBAL.SOURCE.BTN_FONT
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_on          := GLOBAL.SOURCE.BTN_FONT
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_off_pressed := GLOBAL.SOURCE.BTN_FONT_H
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_on_pressed  := GLOBAL.SOURCE.BTN_FONT_H 
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_off_hover   := GLOBAL.SOURCE.BTN_FONT_H
+        UIID_GLOBAL.source_btns [ i.i ] -> font_type_on_hover    := GLOBAL.SOURCE.BTN_FONT_H 
+        UIID_GLOBAL.source_btns [ i.i ] -> disable_text_shifting := __ON    
     end for
 
     for i.i := 0 to 7

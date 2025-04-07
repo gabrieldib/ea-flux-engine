@@ -31,4 +31,7 @@ declare MAIN.FX_SELECTOR.FONT_ON    := get_font_id("font_Roboto Regular Size 11 
 declare MAIN.FX_SELECTOR.FONT_OFF_H := get_font_id("font_Roboto Regular Size 11 #8E7466 100p underline")
 declare MAIN.FX_SELECTOR.FONT_ON_H  := get_font_id("font_Roboto Regular Size 11 #FFCBAE 100p underline")
 
+declare GLOBAL.SOURCE.BTN_FONT   := get_font_id("font_Roboto Regular Size 10 #FFCBAE 100p")
+declare GLOBAL.SOURCE.BTN_FONT_H := get_font_id("font_Roboto Regular Size 10 #FFE3D3 100p")
+
 

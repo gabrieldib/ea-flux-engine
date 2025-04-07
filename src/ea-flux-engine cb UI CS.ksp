@@ -1,5 +1,67 @@
 on ui_controls
     // message(f'UI CBS | NI_UI_ID: <NI_UI_ID>')
+
+    {{ SOURCE SELECT BUTTONS}}
+    if  in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __LEFT,  0 ] , UIID_BROWSER_source.select.btn [ __LEFT,  17 ]) or ...
+        in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] , UIID_BROWSER_source.select.btn [ __RIGHT, 17 ])
+
+        uics_uiid_index := NI_UI_ID - UIID_BROWSER_source.select.btn [ __LEFT, 0 ]
+        uics_seq_side    := __LEFT
+        if in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __RIGHT, 0 ], UIID_BROWSER_source.select.btn [ __RIGHT, 17 ])
+            uics_uiid_index := NI_UI_ID - UIID_BROWSER_source.select.btn [ __RIGHT, 0 ]
+            uics_seq_side    := __RIGHT
+        end if
+
+        fn054.a.side  := uics_seq_side
+        fn054.a.index := uics_uiid_index
+        call fn054_update_source_buttons
+        { store the source for the selected layer }
+        selected_source [ fn054.a.side ] := fn054.a.index + source_page [ fn054.a.side ] * __MAX_SOURCES_PER_PAGE
+    end if
+
+
+    {{ SOURCE PAGE BUTTONS }}
+    
+    if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __LEFT ] or NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+
+        if source_page [ uics_seq_side ] > 0 
+            dec(source_page [ uics_seq_side ])
+            fn054.a.side  := uics_seq_side
+            if selected_source [ uics_seq_side ] / __MAX_SOURCES_PER_PAGE = source_page [ uics_seq_side ]
+                fn054.a.index := selected_source [ uics_seq_side ] mod __MAX_SOURCES_PER_PAGE
+            else
+                fn054.a.index := -1
+            end if
+            call fn054_update_source_buttons
+        end if
+        UIID_GLOBAL.page_number [ uics_seq_side ] -> text := source_page [ uics_seq_side ] + 1
+    end if
+
+    if NI_UI_ID = UIID_GLOBAL.page_next_btns [ __LEFT ] or NI_UI_ID = UIID_GLOBAL.page_next_btns [ __RIGHT ]
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_GLOBAL.page_next_btns [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+        if source_page [ uics_seq_side ] < __MAX_SOURCE_PAGES 
+            inc(source_page [ uics_seq_side ])
+            fn054.a.side  := uics_seq_side
+            if selected_source [ uics_seq_side ] / __MAX_SOURCES_PER_PAGE = source_page [ uics_seq_side ]
+                fn054.a.index := selected_source [ uics_seq_side ] mod __MAX_SOURCES_PER_PAGE
+            else
+                fn054.a.index := -1
+            end if
+            call fn054_update_source_buttons
+        end if
+        UIID_GLOBAL.page_number [ uics_seq_side ] -> text := source_page [ uics_seq_side ] + 1
+
+    end if
+
+
+
     {{ SEQ POWER }}
     if NI_UI_ID = UIID_MAIN.seq.power [ __LEFT ] or NI_UI_ID = UIID_MAIN.seq.power [ __RIGHT ]
         uics_seq_side := __LEFT
@@ -877,10 +939,14 @@ on ui_controls
                                 SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]     := uics_random_delta + uics_current_value
                                 
                                 if uics_current_value + uics_random_delta > 7 
-                                    UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := 7
+                                    UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ]      -> value := 7
+                                    SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]               := 7
+                                    SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]          := 7
                                 else
                                     if uics_current_value + uics_random_delta < 0
                                         UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := 0
+                                        SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]               := 0
+                                        SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]          := 0
                                     end if
                                 end if
 
