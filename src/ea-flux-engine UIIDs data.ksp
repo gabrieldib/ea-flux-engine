@@ -262,29 +262,35 @@ UIID_MAIN.hmz_sliders [ 1 ] := get_ui_id(slider_MAIN.RIGHT.hmz)
 
 UIID_BROWSER_source.select.btn [ __LEFT,  0 ] := get_ui_id(switch_BROWSER.LEFT.sound0)
 UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] := get_ui_id(switch_BROWSER.RIGHT.sound0)
-for i.i := 0 to 17
-    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] := UIID_BROWSER_source.select.btn [ __LEFT,  0 ] + i.i
-    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] := UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] + i.i
 
-    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
-    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
-    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
-    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
-    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
-    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
-    UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> disable_text_shifting := __ON    
+UIID_MAIN.layer_fx_panel_rand_btn [ __LEFT  ] := get_ui_id( switch_MAIN.FX.LEFT.randomize ) 
+UIID_MAIN.layer_fx_panel_rand_btn [ __RIGHT ] := get_ui_id( switch_MAIN.FX.RIGHT.randomize ) 
 
-    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
-    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
-    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
-    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
-    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
-    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
-    UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> disable_text_shifting := __ON    
-end for
 
 
 {{ SETTING FONTS }}
+    for i.i := 0 to 17
+        UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] := UIID_BROWSER_source.select.btn [ __LEFT,  0 ] + i.i
+        UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] := UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] + i.i
+
+        UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
+        UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
+        UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
+        UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
+        UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
+        UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
+        UIID_BROWSER_source.select.btn [ __LEFT,  i.i ] -> disable_text_shifting := __ON    
+
+        UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type             := MAIN.FX_SELECTOR.FONT_OFF  
+        UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on          := MAIN.FX_SELECTOR.FONT_ON   
+        UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_pressed := MAIN.FX_SELECTOR.FONT_OFF_H
+        UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_pressed  := MAIN.FX_SELECTOR.FONT_ON_H 
+        UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_off_hover   := MAIN.FX_SELECTOR.FONT_OFF_H
+        UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> font_type_on_hover    := MAIN.FX_SELECTOR.FONT_ON_H 
+        UIID_BROWSER_source.select.btn [ __RIGHT, i.i ] -> disable_text_shifting := __ON    
+    end for
+
+
     switch_MAIN.ARP.LEFT.modeMenu -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON  
     switch_MAIN.ARP.LEFT.modeMenu -> font_type_on          := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON   
     for i.i := 0 to 1

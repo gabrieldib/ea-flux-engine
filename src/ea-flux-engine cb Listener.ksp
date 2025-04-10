@@ -302,15 +302,15 @@ on listener
 
         {{ DEMO MODE }}
         if lcb_ms_counter mod 41 = 0 and button_demo.mode = __ON
-            UIID_MAIN.seq.step [ __LEFT, LFO_seq_step_count ] -> picture_state := ...
-                int( (1.0 - LFO_emitted_value) * __SEQ_STEP_VALUE_FRAMES)
-            UIID_MAIN.seq.step [ __RIGHT, 31 - LFO_seq_step_count ] -> picture_state := ...
-                int( (1.0 - LFO_emitted_value) * __SEQ_STEP_VALUE_FRAMES)
-
-            inc(LFO_seq_step_count)
-            if LFO_seq_step_count > 31
-                LFO_seq_step_count := 0
-            end if
+            {UIID_MAIN.seq.step [ __LEFT, LFO_seq_step_count ] -> picture_state := ...
+                            int( (1.0 - LFO_emitted_value) * __SEQ_STEP_VALUE_FRAMES)
+                        UIID_MAIN.seq.step [ __RIGHT, 31 - LFO_seq_step_count ] -> picture_state := ...
+                            int( (1.0 - LFO_emitted_value) * __SEQ_STEP_VALUE_FRAMES)
+            
+                        inc(LFO_seq_step_count)
+                        if LFO_seq_step_count > 31
+                            LFO_seq_step_count := 0
+                        end if}
         end if
 
         { updates BPM in case it is changed, and arrays using note duration constants }

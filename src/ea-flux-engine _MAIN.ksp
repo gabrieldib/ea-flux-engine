@@ -39,6 +39,7 @@ on init
     
     panel_BROWSER                      -> UI_HIDE
 
+    message(f'ON INIT CB end.')
 end on // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
 import "ea-flux-engine _FUNCTIONS.ksp"

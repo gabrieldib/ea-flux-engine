@@ -1,11 +1,11 @@
 import "ARP/__ARP 03 functions.ksp"
 
 function fn056_single_shot_wf_preview
-    pn_ncb.a.side := fn056.a.side
-    pn_ncb.a.note := 60
-    pn_ncb.a.velo := 1
+    pn_ncb.a.side      := fn056.a.side
+    pn_ncb.a.note      := 60
+    pn_ncb.a.velo      := 1
+    pn_ncb.a.mute_note := __YES
     call PLAY_NOTE_NCB
-    change_vol( layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ], -200000, 0)
     fn053.a.side := fn056.a.side
     fn053.a.note := 60
     call fn053_update_single_shot_controls
@@ -98,33 +98,35 @@ function pccb_init_instrument
     end if
 
     for pccb_counter := __LEFT to __RIGHT
-
-        fn051.a.seq_state  := UIID_MAIN.seq.power [ pccb_counter ] -> value
         fn051.a.side := pccb_counter
-        fn051.a.layer_state := UIID_MAIN.layer.power [ pccb_counter ] -> value
         call fn051_set_layer_panels_state
 
-        fn020.a.seq_power_state    := UIID_MAIN.seq.power [ pccb_counter ] -> value
-        fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, SEQ_TARGET_VELO ]
-        fn020.a.side               := pccb_counter
-        fn020.a.target_index       := SEQ_TARGET_VELO
-        call fn020_update_seq_target_state
-
-        fn052.a.side       := pccb_counter
-        fn052.a.value      := float(UIID_MAIN.single_shot_controls [ pccb_counter, __SINGLE_SHOT_SAMPLE_START ] -> value)*0.000001
-        if fn052.a.value > 0.995
-            fn052.a.value := 0.995
+        if pccb_counter = __LEFT or pccb_counter = __RIGHT and switch_MAIN.SEQ.combine = __SEQ_DUAL
+            fn020.a.seq_power_state    := UIID_MAIN.seq.power [ pccb_counter ] -> value
+            fn020.a.target_power_uiid  := UIID_MAIN.seq.target_power [ pccb_counter, SEQ_TARGET_VELO ]
+            fn020.a.side               := pccb_counter
+            fn020.a.target_index       := SEQ_TARGET_VELO
+            call fn020_update_seq_target_state
         end if
-        call fn052_set_wf_cursor_and_overlay
 
-        if UIID_MAIN.seq.power [ pccb_counter ] -> value = __OFF
-            fn056.a.side := pccb_counter
-            call fn056_single_shot_wf_preview
+        if switch_MAIN.SEQ.combine = __SEQ_DUAL
+            fn052.a.side       := pccb_counter
+            fn052.a.value      := float(UIID_MAIN.single_shot_controls [ pccb_counter, __SINGLE_SHOT_SAMPLE_START ] -> value)*0.000001
+            if fn052.a.value > 0.995
+                fn052.a.value := 0.995
+            end if
+            call fn052_set_wf_cursor_and_overlay
 
-            UIID_MAIN.seq.target_activators [ pccb_counter, SEQ_TARGET_VELO ] -> value := __OFF
-            UIID_MAIN.seq.target_power      [ pccb_counter, SEQ_TARGET_VELO ] -> value := __OFF
-            UIID_MAIN.seq.target_selectors  [ pccb_counter ] -> value := __OFF
+            if UIID_MAIN.seq.power [ pccb_counter ] -> value = __OFF
+                fn056.a.side := pccb_counter
+                call fn056_single_shot_wf_preview
+
+                UIID_MAIN.seq.target_activators [ pccb_counter, SEQ_TARGET_VELO ] -> value := __OFF
+                UIID_MAIN.seq.target_power      [ pccb_counter, SEQ_TARGET_VELO ] -> value := __OFF
+                UIID_MAIN.seq.target_selectors  [ pccb_counter ] -> value := __OFF
+            end if
         end if
+
     end for
 
     UIID_MAIN.seq.arp_menu [ __LEFT  ] -> text := arp_menu_items_text [ arp_mode [ __LEFT ] ]
@@ -217,28 +219,165 @@ function update_lfo_viz_picture
     end select
 end function
 
+macro step_debug(#wait#, #ms#, #var#)
+    message("BEFORE " & #ms# & " " & #var#)
+    wait(#wait#)
+    message("AFTER " & #ms# & " " & #var#)
+    message(f'______________________')
+end macro
+
+function show_hide_according_to_combine_state
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        switch_MAIN.SEQ.RIGHT.link                 -> UI_SHOW
+        valueedit_MAIN.RIGHT.low.range             -> UI_SHOW
+        valueedit_MAIN.RIGHT.high.range            -> UI_SHOW
+        slider_MAIN.RIGHT.move.range               -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.randomize            -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.power                -> UI_SHOW
+        button_MAIN.RIGHT.controls.draw            -> UI_SHOW
+        switch_MAIN.SEQ.LEFT.link                  -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.mode.forwards        -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.mode.backwards       -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.fwbw                 -> UI_SHOW
+        label_MAIN.LEFT.layer.controls.separators  -> UI_SHOW
+        label_MAIN.RIGHT.layer.controls.separators -> UI_SHOW
+        xypad_MAIN.RIGHT.dynamics                  -> UI_SHOW
+        label_MAIN.RIGHT.dynamics                  -> UI_SHOW
+        label_MAIN.2SEQ.RIGHT.dyn                  -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.select.velocity      -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.select.pitch         -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.select.octave        -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.select.pan           -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.select.lphp          -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.power.velocity       -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.power.pitch          -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.power.octave         -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.power.pan            -> UI_SHOW
+        switch_MAIN.SEQ.RIGHT.power.lphp           -> UI_SHOW
+        switch_MAIN.2SEQ.RIGHT.step.lock           -> UI_SHOW
+        xypad_MAIN.SEQ.LEFT                        -> UI_SHOW
+        xypad_MAIN.SEQ.RIGHT                       -> UI_SHOW
+
+        label_MAIN.2SEQ.LEFT.fluxx.labels          -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.block.1             -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.block.2             -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.block.3             -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.block.4             -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.randomPower         -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.arp.power           -> UI_SHOW
+        slider_MAIN.FLRND.LEFT.amount              -> UI_SHOW
+        slider_MAIN.ARP.LEFT.rate                  -> UI_SHOW
+        switch_MAIN.ARP.LEFT.modeMenu              -> UI_SHOW
+
+        label_MAIN.2SEQ.RIGHT.fluxx.labels         -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.block.1            -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.block.2            -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.block.3            -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.block.4            -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.randomPower        -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.arp.power          -> UI_SHOW
+        slider_MAIN.FLRND.RIGHT.amount             -> UI_SHOW
+        slider_MAIN.ARP.RIGHT.rate                 -> UI_SHOW
+        switch_MAIN.ARP.RIGHT.modeMenu             -> UI_SHOW
+
+        panel_MAIN.2SEQ.LEFT.arpModes              -> UI_HIDE
+        panel_MAIN.2SEQ.RIGHT.arpModes             -> UI_HIDE
+
+
+        { join seq controls }
+        label_MAIN.join.layer.controls.separators  -> UI_HIDE
+        label_SEQjoin.fluxxRand.amount             -> UI_HIDE
+        label_SEQjoin.arp.rate                     -> UI_HIDE
+        slider_MAIN.FLRNDjoin.amount               -> UI_HIDE
+        slider_MAIN.ARPjoin.amount                 -> UI_HIDE
+        label_MAIN.join.layer.controls.separators  -> UI_HIDE
+        xypad_MAIN.SEQ.join                        -> UI_HIDE
+        label_MAIN.SEQjoin.off                     -> UI_HIDE
+        panel_MAIN.2JOIN.arpModes                  -> UI_HIDE
+        label_SEQjoin.arp.background               -> UI_HIDE
+    else
+        switch_MAIN.SEQ.RIGHT.link                 -> UI_HIDE
+        valueedit_MAIN.RIGHT.low.range             -> UI_HIDE
+        valueedit_MAIN.RIGHT.high.range            -> UI_HIDE
+        slider_MAIN.RIGHT.move.range               -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.randomize            -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.power                -> UI_HIDE
+        button_MAIN.RIGHT.controls.draw            -> UI_HIDE
+        switch_MAIN.SEQ.LEFT.link                  -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.mode.forwards        -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.mode.backwards       -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.fwbw                 -> UI_HIDE
+        label_MAIN.LEFT.layer.controls.separators  -> UI_HIDE
+        label_MAIN.RIGHT.layer.controls.separators -> UI_HIDE
+        xypad_MAIN.RIGHT.dynamics                  -> UI_HIDE
+        label_MAIN.RIGHT.dynamics                  -> UI_HIDE
+        label_MAIN.2SEQ.RIGHT.dyn                  -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.select.velocity      -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.select.pitch         -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.select.octave        -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.select.pan           -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.select.lphp          -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.power.velocity       -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.power.pitch          -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.power.octave         -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.power.pan            -> UI_HIDE
+        switch_MAIN.SEQ.RIGHT.power.lphp           -> UI_HIDE
+        switch_MAIN.2SEQ.RIGHT.step.lock           -> UI_HIDE
+        xypad_MAIN.SEQ.LEFT                        -> UI_HIDE
+        xypad_MAIN.SEQ.RIGHT                       -> UI_HIDE
+
+        switch_MAIN.FLUXX.LEFT.block.1             -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.block.2             -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.block.3             -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.block.4             -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.randomPower         -> UI_SHOW
+        switch_MAIN.FLUXX.LEFT.arp.power           -> UI_SHOW
+        switch_MAIN.ARP.LEFT.modeMenu              -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.block.1            -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.block.2            -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.block.3            -> UI_SHOW
+        switch_MAIN.FLUXX.RIGHT.block.4            -> UI_SHOW
+
+        label_MAIN.2SEQ.LEFT.fluxx.labels          -> UI_HIDE
+        slider_MAIN.FLRND.LEFT.amount              -> UI_HIDE
+        slider_MAIN.ARP.LEFT.rate                  -> UI_HIDE
+        label_MAIN.2SEQ.RIGHT.fluxx.labels         -> UI_HIDE
+        switch_MAIN.FLUXX.RIGHT.randomPower        -> UI_HIDE
+        switch_MAIN.FLUXX.RIGHT.arp.power          -> UI_HIDE
+        slider_MAIN.FLRND.RIGHT.amount             -> UI_HIDE
+        slider_MAIN.ARP.RIGHT.rate                 -> UI_HIDE
+        switch_MAIN.ARP.RIGHT.modeMenu             -> UI_HIDE
+
+        { join seq controls }
+        label_MAIN.join.layer.controls.separators  -> UI_SHOW
+        label_SEQjoin.fluxxRand.amount             -> UI_SHOW
+        label_SEQjoin.arp.rate                     -> UI_SHOW
+        slider_MAIN.FLRNDjoin.amount               -> UI_SHOW
+        slider_MAIN.ARPjoin.amount                 -> UI_SHOW
+        label_MAIN.join.layer.controls.separators  -> UI_SHOW
+        xypad_MAIN.SEQ.join                        -> UI_SHOW
+        label_MAIN.SEQjoin.off                     -> UI_SHOW
+
+        label_SEQjoin.arp.background               -> UI_SHOW
+    end if
+    panel_MAIN.2SEQ.LEFT.fluxxArp  -> UI_SHOW
+    panel_MAIN.2SEQ.RIGHT.fluxxArp -> UI_SHOW
+end function
+
 function draw_seq
     { SHOW / HIDE dual and joined seq panels }
-    panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
-    panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
+    // panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
+    // panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
         message(f'DRAW: Showing Sequencer DUAL ')
     else
         message(f'DRAW: Showing Sequencer JOIN ')
     end if
 
-    if switch_MAIN.SEQ.combine = 0 { dual seq }
-        label_SEQjoin.background    -> parent_panel := get_ui_id(panel_MAIN.2SEQ)
-        label_SEQjoin.background    -> UI_HIDE
-    else
-        label_SEQjoin.background    -> parent_panel := get_ui_id(panel_MAIN.SEQjoin)
-        label_SEQjoin.background    -> UI_SHOW
-    end if
-    
     for ds.counter := 0 to SEQ.COMMON_ELEMENTS_COUNT-1
         { change ui_control parent }
-        SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> parent_panel := ...
-            SEQ.common_elements_data [ ds.counter, switch_MAIN.SEQ.combine ]
+        // SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> parent_panel := ...
+        //     SEQ.common_elements_data [ ds.counter, switch_MAIN.SEQ.combine ]
 
         { update the coordinates }
         if switch_MAIN.SEQ.combine = __SEQ_DUAL
@@ -248,27 +387,61 @@ function draw_seq
             SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_y := ...
                 SEQ.common_elements_data [ ds.counter, PANEL_DUAL_SEQ_Y_COORD ]
 
-            if in_range(ds.counter, 29, 32)
-                UIID_FLUX_RAND_RIGHT [ ds.counter - 29 ] -> picture := "button_fluxx_block_" & ds.counter - 28
+            if in_range(ds.counter, __FLUX_BLOCK_RIGHT_START, __FLUX_BLOCK_RIGHT_START + 3)
+
+                message(f'DUAL: updating picture to button_fluxx_block_<ds.counter - __FLUX_BLOCK_RIGHT_START + 1>')
+
+                UIID_FLUX_RAND_RIGHT [ ds.counter - __FLUX_BLOCK_RIGHT_START ] -> picture := "button_fluxx_block_" & ds.counter - __FLUX_BLOCK_RIGHT_START + 1
             end if
 
         else                           { join seq }
-            message(f'DRAW SEQ: updating coordinates for element <ds.counter > | show status: <SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ]-> hide>')
+            // message(f'DRAW SEQ: updating coordinates for element <ds.counter > | show status: <SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ]-> hide>')
+            // step_debug(100000, "counter", ds.counter)
             SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_x := ...
                 SEQ.common_elements_data [ ds.counter, PANEL_JOIN_SEQ_X_COORD ]
 
             SEQ.common_elements_data [ ds.counter, ELEMENT_UIID ] -> pos_y := ...
                 SEQ.common_elements_data [ ds.counter, PANEL_JOIN_SEQ_Y_COORD ]
 
-            if in_range(ds.counter, 29, 32)
-                UIID_FLUX_RAND_RIGHT [ ds.counter - 29 ] -> picture := "button_fluxx_block_" & ds.counter - 24
+            if in_range(ds.counter, __FLUX_BLOCK_RIGHT_START, __FLUX_BLOCK_RIGHT_START + 3)
+                message(f'JOIN: updating picture to button_fluxx_block_<ds.counter - __FLUX_BLOCK_RIGHT_START + 1>')
+                UIID_FLUX_RAND_RIGHT [ ds.counter - __FLUX_BLOCK_RIGHT_START ] -> picture := "button_fluxx_block_" & ds.counter - __FLUX_BLOCK_RIGHT_START + 5
             end if
         end if
     end for
 
-    message("DUAL hide state: " & SEQ.common_elements_data [ 0, PANEL_DUAL_SEQ_PARENT_UIID ] -> hide)
-    message("JOIN hide state: " & SEQ.common_elements_data [ 0, PANEL_JOIN_SEQ_PARENT_UIID ] -> hide)
+    // message("DUAL hide state: " & SEQ.common_elements_data [ 0, PANEL_DUAL_SEQ_PARENT_UIID ] -> hide)
+    // message("JOIN hide state: " & SEQ.common_elements_data [ 0, PANEL_JOIN_SEQ_PARENT_UIID ] -> hide)
     message("switch_MAIN.SEQ.combine: " & switch_MAIN.SEQ.combine)"
+
+    label_MAIN.2SEQ.background -> UI_HIDE
+    label_SEQjoin.background   -> UI_HIDE
+    message(f' label_MAIN.2SEQ.background z_layer: <label_MAIN.2SEQ.background-> z_layer >')
+    message(f' label_SEQjoin.background z_layer: <label_SEQjoin.background-> z_layer >')
+    message(f' panel_MAIN.SEQjoin state: <panel_MAIN.SEQjoin -> hide >')
+    message(f' panel_MAIN.SEQjoin x: <panel_MAIN.SEQjoin -> x >')
+    message(f' panel_MAIN.SEQjoin y: <panel_MAIN.SEQjoin -> y >')
+    
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        label_MAIN.2SEQ.background -> UI_SHOW
+        label_SEQjoin.background   -> UI_HIDE
+
+    else
+        label_MAIN.2SEQ.background -> UI_HIDE
+        label_SEQjoin.background   -> UI_SHOW
+
+        if UIID_MAIN.seq.power [ __LEFT ] -> value = __ON
+            fn057.a.hide := __NO
+        else
+            fn057.a.hide := __NO
+        end if
+        call fn057_hide_seq_join_steps_leds_counters
+    end if
+    message(f'UIID_MAIN.seq.step [ __LEFT,  0 ] state:  <UIID_MAIN.seq.step [ __LEFT,  0 ] -> hide  >')
+
+    call show_hide_according_to_combine_state
+
+    message(f'panel_MAIN.2SEQ.LEFT.fluxxArp state: <panel_MAIN.2SEQ.LEFT.fluxxArp -> hide >')
 end function
 
 {{ LFO }}
@@ -325,7 +498,6 @@ function LCB_data_update
     end if 
 end function
 
-{{ SEQ COMMON }}
 function fn006_recall_seq_values
     for fn006.l.counter_block := 0 to 3
         for fn006.l.counter_step := 0 to 7
@@ -399,7 +571,7 @@ end function
 
 {{ 18 }}
 function fn018_set_seq_step_picture_state
-    // message(f'    ps = <int(float(SEQ_XY_H-1) * fn018.a.value)> | value <fn018.a.value>')
+    message(f'    ps = <int(float(SEQ_XY_H-1) * fn018.a.value)> | value <fn018.a.value>')
     UIID_MAIN.seq.step [ fn018.a.side, fn018.a.step_index ] -> picture_state := ...
         int(float(SEQ_XY_H-1) * fn018.a.value)
 end function
@@ -487,7 +659,7 @@ function fn003_set_block_step_count
                         fn003.a.side,                                                  ...
                         SEQ.DUAL.step_count [ fn003.a.side, fn003.a.block_index ], ...
                         fn003.l.counter                                                ...
-                    ] + SEQ_XY_BLOCK_START_OFFSET [ fn003.a.block_index ]
+                    ] + SEQ_XY_BLOCK_START_OFFSET [ fn003.a.block_index ] + SEQ_RIGHT_X_OFFSET * fn003.a.side
 
             else
                 UIID_MAIN.seq.step [ fn003.a.side, fn003.l.counter + fn003.a.block_index * 8 ] -> UI_HIDE
@@ -495,7 +667,7 @@ function fn003_set_block_step_count
         end for
 
     else  { SEQ JOIN }
-        message(f'FN003: Processing SEQ JOIN - moving ui controls to JOIN position')
+        // message(f'FN003: Processing SEQ JOIN - moving ui controls to JOIN position')
         SEQ.JOIN.step_width [ fn003.a.block_index + fn003.a.side * 4 ] := ...
             SEQ_XY_JOIN_BLOCK_W / float(SEQ.JOIN.step_count [ fn003.a.block_index + fn003.a.side * 4  ] + 1)
 
@@ -562,7 +734,6 @@ function get_seq_step_index
     call fn001_get_seq_step_index
 end function
 
-{{ SEQ JOIN }}
 function get_seq_join_step_index
     fn008.a.x_coord := xypad_MAIN.SEQ.join [ 0 ]
     call fn008_get_current_seq_join_block
@@ -903,18 +1074,20 @@ function fn020_update_seq_target_state
         end if
 
     else
-        // message(f'    SEQ JOIN')
-        if fn020.a.seq_power_state = __ON
+        message(f'    SEQ JOIN')
+        if UIID_MAIN.seq.power [ __LEFT ] -> value = __ON
+            message(f'        SEQ power ON')
             if  fn020.a.target_power_uiid -> value = __OFF
-                // message(f'        SEQ power ON')
+                message(f'              Target OFF')
                 label_MAIN.SEQjoin.off -> picture := "label_MAIN.SEQjoin.off"
                 label_MAIN.SEQjoin.off -> UI_SHOW
                 label_MAIN.SEQjoin.off -> text := "TARGET " & SEQ.target_names [ fn020.a.target_index ] & " IS OFF"
             else
-                // message(f'        SEQ power OFF')
+                message(f'              Target ON')
                 label_MAIN.SEQjoin.off -> UI_HIDE
             end if
         else
+            message(f'        SEQ power OFF')
             label_MAIN.SEQjoin.off -> UI_SHOW
             label_MAIN.SEQjoin.off -> picture := "label_seq_join_steps_bg"
             label_MAIN.SEQjoin.off -> text    := ""
@@ -1158,7 +1331,7 @@ function fn030_set_seq_step_dyn_value
         fn030.a.target,     ...
         fn030.a.step_index  ...
     ] := fn033.r.transf_value.r
-    // message(f'    FN30 Dynamic value stored: < fn033.r.transf_value.r >')
+    message(f'    FN30 Dynamic value stored: < fn033.r.transf_value.r >')
 end function
 
 function fn031_set_dyn_sliders_picture
@@ -1373,6 +1546,7 @@ function fn035_update_random_labels
 end function
 
 function fn036_set_control_param_slider
+    message(f'FN036 called, calling fn 37, 38, 39, 40 | value : <fn036.a.control_value> | target: <fn036.a.target>')
     fn037.a.side          := fn036.a.side
     fn037.a.target        := fn036.a.target
     fn037.a.control_value := fn036.a.control_value
@@ -1498,55 +1672,76 @@ function fn049_set_seq_values_to_original
 end function
 
 function fn051_set_layer_panels_state
-        { single shot elements }
+    { single shot elements }
     UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_HIDE
     UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_HIDE
     UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_HIDE
     UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_HIDE
     UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_HIDE
+
     UIID_MAIN.seq.off_label         [ fn051.a.side ] -> UI_HIDE
     UIID_MAIN.seq.off_label_text    [ fn051.a.side ] -> UI_HIDE
     UIID_MAIN.seq.off_label_text    [ fn051.a.side ] -> text := ''
-    UIID_MAIN.seq.flux_panels       [ fn051.a.side ] -> UI_HIDE
+
     UIID_MAIN.seq.arp_mode_panels   [ fn051.a.side ] -> UI_HIDE
-    if fn051.a.side = __LEFT
-        panel_MAIN.2SEQ.LEFT.controls -> UI_HIDE
-        slider_MAIN.2SEQ.LEFT.off     -> UI_HIDE
-        label_MAIN.2SEQ.LEFT.off      -> UI_HIDE
-    else
-        panel_MAIN.2SEQ.RIGHT.controls -> UI_HIDE
-        slider_MAIN.2SEQ.RIGHT.off     -> UI_HIDE
-        label_MAIN.2SEQ.RIGHT.off      -> UI_HIDE
+
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        if fn051.a.side = __LEFT
+            panel_MAIN.2SEQ.LEFT.controls -> UI_HIDE
+            slider_MAIN.2SEQ.LEFT.off     -> UI_HIDE
+            label_MAIN.2SEQ.LEFT.off      -> UI_HIDE
+        else
+            panel_MAIN.2SEQ.RIGHT.controls -> UI_HIDE
+            slider_MAIN.2SEQ.RIGHT.off     -> UI_HIDE
+            label_MAIN.2SEQ.RIGHT.off      -> UI_HIDE
+        end if
     end if
 
-    if fn051.a.layer_state = __ON
+    if UIID_MAIN.layer.power [ fn051.a.side ] -> value = __ON    { layer on ? }
+        if UIID_MAIN.seq.power [ fn051.a.side ] -> value = __OFF { single hit mode ? }
+            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                fn056.a.side := fn051.a.side
+                call fn056_single_shot_wf_preview
 
-        if fn051.a.seq_state = __OFF { Single hit }
-            fn056.a.side := fn051.a.side
-            call fn056_single_shot_wf_preview
-
-            UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_SHOW
-            UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_SHOW
-            UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_SHOW
-            UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_SHOW
-            UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_SHOW
+                UIID_MAIN.single_hit_panel      [ fn051.a.side ] -> UI_SHOW
+                UIID_MAIN.waveforms             [ fn051.a.side ] -> UI_SHOW
+                UIID_MAIN.waveform_cursor       [ fn051.a.side ] -> UI_SHOW
+                UIID_MAIN.waveform_overlay      [ fn051.a.side ] -> UI_SHOW
+                UIID_MAIN.waveform_xypad_cursor [ fn051.a.side ] -> UI_SHOW
+            else
+                if fn051.a.side = __LEFT
+                    label_MAIN.SEQjoin.off -> UI_SHOW
+                end if 
+            end if
 
         else    { SEQ is ON }
-            if fn051.a.side = __LEFT
-                panel_MAIN.2SEQ.LEFT.controls -> UI_SHOW
-                label_MAIN.2SEQ.LEFT.off      -> UI_SHOW
+            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                if fn051.a.side = __LEFT
+                    panel_MAIN.2SEQ.LEFT.controls -> UI_SHOW
+                    // label_MAIN.2SEQ.LEFT.off      -> UI_SHOW
+                else
+                    panel_MAIN.2SEQ.RIGHT.controls -> UI_SHOW
+                    // label_MAIN.2SEQ.RIGHT.off      -> UI_SHOW
+                end if
             else
-                panel_MAIN.2SEQ.RIGHT.controls -> UI_SHOW
-                label_MAIN.2SEQ.RIGHT.off      -> UI_SHOW
+                if fn051.a.side = __LEFT
+                    panel_MAIN.2SEQ.LEFT.controls  -> UI_SHOW
+                    panel_MAIN.2SEQ.RIGHT.controls -> UI_SHOW
+                    label_MAIN.SEQjoin.off -> UI_HIDE
+                end if 
             end if
-            UIID_MAIN.seq.flux_panels       [ fn051.a.side ] -> UI_SHOW
 
         end if
     else
         message(f'Layer state off!')
-        UIID_MAIN.seq.off_label      [ fn051.a.side ] -> UI_SHOW
-        UIID_MAIN.seq.off_label_text [ fn051.a.side ] -> UI_SHOW
-        UIID_MAIN.seq.off_label_text [ fn051.a.side ] -> text := 'LAYER OFF'
+        if switch_MAIN.SEQ.combine = __SEQ_DUAL
+            UIID_MAIN.seq.off_label      [ fn051.a.side ] -> UI_SHOW
+            UIID_MAIN.seq.off_label_text [ fn051.a.side ] -> UI_SHOW
+            UIID_MAIN.seq.off_label_text [ fn051.a.side ] -> text := 'LAYER OFF'
+        else
+            label_MAIN.2SEQ.LEFT.off  -> UI_SHOW
+            label_MAIN.2SEQ.RIGHT.off -> UI_SHOW
+        end if
     end if
 end function
 
@@ -1609,30 +1804,243 @@ function fn055_recall_source_buttons_page
     end for
 end function
 
+function fn057_hide_seq_join_steps_leds_counters
+    for fn057.l.counter := 0 to 31
+        UIID_MAIN.seq.step [ __LEFT,  fn057.l.counter ] -> hide := HIDE_WHOLE_CONTROL * fn057.a.hide
+        UIID_MAIN.seq.step [ __RIGHT, fn057.l.counter ] -> hide := HIDE_WHOLE_CONTROL * fn057.a.hide
+    end for
+    for fn057.l.counter := 0 to 3
+        UIID_MAIN.seq.leds        [ __LEFT,  fn057.l.counter ] -> hide := HIDE_WHOLE_CONTROL * fn057.a.hide
+        UIID_MAIN.seq.block_steps [ __RIGHT, fn057.l.counter ] -> hide := HIDE_WHOLE_CONTROL * fn057.a.hide
+    end for
+end function
+
+
+{{ RANDOMIZER FUNCTIONS }}
+function randomize_step_count
+    if UIID_MAIN.seq.step_lock [ uics_side_counter ] -> value = __OFF
+        for uics_counter := 0 to 3
+            for uics_counter2 := __LEFT to __RIGHT
+                if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                    uics_dual_join_side := uics_side_counter
+                else
+                    uics_dual_join_side := uics_counter2
+                end if
+
+                if  switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter2 = __LEFT or ...
+                    switch_MAIN.SEQ.combine = __SEQ_JOIN
+
+                    uics_current_value := UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value
+                    uics_random_delta  := int(float(random (-7, 7)) * uics_r_value)
+                   
+                    UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := uics_random_delta + uics_current_value
+                    SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]          := uics_random_delta + uics_current_value
+                    SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]     := uics_random_delta + uics_current_value
+                    
+                    if uics_current_value + uics_random_delta > 7 
+                        UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ]      -> value := 7
+                        SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]               := 7
+                        SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]          := 7
+                    else
+                        if uics_current_value + uics_random_delta < 0
+                            UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := 0
+                            SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]               := 0
+                            SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]          := 0
+                        end if
+                    end if
+
+                    fn003.a.side        := uics_dual_join_side
+                    fn003.a.mode        := switch_MAIN.SEQ.combine
+                    fn003.a.block_index := uics_counter
+                    call fn003_set_block_step_count
+                end if
+
+            end for
+        end for
+    end if
+end function
+
+function randomize_step_values
+    for uics_counter := 0 to 3
+        for uics_counter2 := 0 to 7
+            uics_current_value.r := ...
+                SEQ.data.f [                              ...
+                    uics_side_counter,                        ...
+                    SEQ.showing_target [ uics_side_counter ], ...
+                    uics_counter * 8 + uics_counter2      ...
+                ]
+
+            uics_random_delta.r := (float(random(-10000,10000))/10000.0) * uics_r_value
+
+            SEQ.data.f [                                  ...
+                    uics_side_counter,                        ...
+                    SEQ.showing_target [ uics_side_counter ], ...
+                    uics_counter * 8 + uics_counter2      ...
+                ] := uics_current_value.r + uics_random_delta.r
+
+            { clamping values out of range }
+            if uics_current_value.r + uics_random_delta.r > 1.0
+                SEQ.data.f [                              ...
+                    uics_side_counter,                        ...
+                    SEQ.showing_target [ uics_side_counter ], ...
+                    uics_counter * 8 + uics_counter2      ...
+                ] := 1.0
+
+            else
+                if uics_current_value.r + uics_random_delta.r < 0.0
+                    SEQ.data.f [                              ...
+                        uics_side_counter,                        ...
+                        SEQ.showing_target [ uics_side_counter ], ...
+                        uics_counter * 8 + uics_counter2      ...
+                    ] := 0.0
+                end if
+
+            end if
+
+            fn018.a.side       := uics_side_counter
+            fn018.a.step_index := uics_counter * 8 + uics_counter2
+            fn018.a.value      :=                         ...
+                SEQ.data.f [                              ...
+                    uics_side_counter,                        ...
+                    SEQ.showing_target [ uics_side_counter ], ...
+                    uics_counter * 8 + uics_counter2      ...
+                ]
+            call fn018_set_seq_step_picture_state
+
+            fn002.a.side            := uics_side_counter
+            fn002.a.value           := fn018.a.value
+            fn002.a.target          := SEQ.showing_target [ uics_side_counter ]
+            fn002.a.table_to_update := __SEQ_DYN_TRANSF_TABLE
+            fn002.a.step_index      := uics_counter * 8 + uics_counter2
+            call fn002_set_seq_step_value
+        end for
+    end for
+end function
+
+function fn058_clamp_value
+    fn058.r.int_clamped_value := fn058.a.int_value
+    if fn058.a.int_value > fn058.a.int_clamp_max
+        fn058.r.int_clamped_value := fn058.a.int_clamp_max
+        exit
+    end if
+    if fn058.a.int_value < fn058.a.int_clamp_min
+        fn058.r.int_clamped_value := fn058.a.int_clamp_min
+        exit
+    end if
+
+    fn058.r.float_clamped_value := fn058.a.float_value
+    if fn058.a.float_value > fn058.a.float_clamp_max
+        fn058.r.float_clamped_value := fn058.a.float_clamp_max
+        exit
+    end if
+    if fn058.a.float_value < fn058.a.float_clamp_min
+        fn058.r.float_clamped_value := fn058.a.float_clamp_min
+        exit
+    end if
+end function
+
+function fn059_randomize_common_lfp
+    for fn059.l.target_counter := fn059.a.target_start to fn059.a.target_end
+        { LFO amount }
+        fn059.l.lfo_amount := ...
+            int ( float(random(-1000000,1000000)) * fn059.a.random_value) + ...
+            UIID_controls_LFO_amount [ fn059.l.target_counter + uics_side_counter * __MAIN.FX.RIGHT.OFFSET ] -> value
+        message(f'RND common LFP | Processing target  < fn059.l.target_counter + uics_side_counter * __MAIN.FX.RIGHT.OFFSET >')
+        fn058.a.int_clamp_min := 0
+        fn058.a.int_clamp_max := 1000000
+        fn058.a.int_value     := fn059.l.lfo_amount
+        call fn058_clamp_value
+        UIID_controls_LFO_amount [ fn059.l.target_counter + uics_side_counter * __MAIN.FX.RIGHT.OFFSET ] -> value := fn058.r.int_clamped_value
+        
+        message(f'    target LFO amount value:  <fn059.l.lfo_amount >')
+        message(f'    target LFO amount clamped:<fn058.r.int_clamped_value >')
+
+        { LFO phase }
+        UIID_controls_LFO_phase [ fn059.l.target_counter + uics_side_counter * __MAIN.FX.RIGHT.OFFSET ] -> value := random(0,1)
+
+        { param value }
+        fn036.a.side          := uics_side_counter
+        fn036.a.target        := fn059.l.target_counter + uics_side_counter * __MAIN.FX.RIGHT.OFFSET
+        fn036.a.control_value := ...
+            get_engine_par(...
+                LFO_targets_engine_pars [ fn059.l.target_counter ],          ...
+                0, ... // LFO_targets_GROUP [ fn059.l.target_counter ],                ... { test }
+                LFO_targets_SLOT  [ fn059.l.target_counter ],                ...
+                LFO_targets_BUS   [ fn059.l.target_counter ] + uics_side_counter ...
+            )
+        fn036.a.control_value := int ( float(random(-1000000,1000000)) * fn059.a.random_value) + fn036.a.control_value
+
+        fn058.a.int_clamp_min := 0
+        fn058.a.int_clamp_max := 1000000
+        fn058.a.int_value     := fn036.a.control_value
+        call fn058_clamp_value
+        fn036.a.control_value := fn058.r.int_clamped_value
+        message(f'      param value  : <fn058.a.int_value >')
+        message(f'      clamped value: <fn058.r.int_clamped_value >')
+        message(f'      fn059.a.random_value: <fn059.a.random_value >')
+
+        UIID_controls [ fn059.l.target_counter + uics_side_counter * __MAIN.FX.RIGHT.OFFSET ] -> value := fn058.r.int_clamped_value
+        call fn036_set_control_param_slider()
+    end for 
+end function
+
+function randomize_lfp_saturation
+    fn059.a.random_value := uics_r_value { assuming we will only call this function from the randomizer control callback }
+    fn059.a.target_start := __MAIN.FX.SATURATION
+    fn059.a.target_end   := __MAIN.FX.SATURATION
+    call fn059_randomize_common_lfp
+
+    fn048.a.index := random(0,2)
+    fn048.a.side  := uics_side_counter
+    call fn048_set_fx_saturation_mode
+
+    set_engine_par(                           ...
+        ENGINE_PAR_SHAPE_TYPE,                ...
+        FX_saturation_type [ fn048.a.index ], ...
+        0,                                    ... { PENDING this is a test group }
+        __SLOT_G_SATURATION,                  ...
+        __GROUP_LEVEL                         ...
+    )
+end function
+
+
+function randomize_lfp_distortion
+    fn059.a.random_value := uics_r_value { assuming we will only call this function from the randomizer control callback }
+    fn059.a.target_start := __MAIN.FX.DISTORTION.DAMP
+    fn059.a.target_end   := __MAIN.FX.DISTORTION.DRIVE
+    call fn059_randomize_common_lfp
+
+    uics_random_value := random(0,1)
+    UIID_lfp_dst_modes [ uics_side_counter ] -> value := uics_random_value
+
+    set_engine_par(                               ...
+        ENGINE_PAR_DISTORTION_TYPE,               ...
+        FX_distortion_type [ uics_random_value ], ...
+        0,                                        ... { PENDING temp group }
+        __SLOT_G_DISTORTION,                      ...
+        __GROUP_LEVEL                             ...
+    )
+
+end function
 
 
 {{ LFO Functions }}
 function fn037_LFO.update_intensity_ring()
-    // message("CALL fn037 __________________________________________ ")
-    // message("    target = " & fn037.a.target)
+    message("CALL fn037 __________________________________________ ")
+    message("    target = " & fn037.a.target)
+    message("    fn037.a.control_value = " & fn037.a.control_value)
 
     if fn037.a.target < 32 and fn037.a.target mod 16 = __MAIN.FX.LAYER.WIDTH
         fn037.l.picture_state_start := ...
             int ( ...
                     127.0 - ( ...
-                        float  ( get_control_par( ...
-                                                UIID_controls   [ ...
-                                                                    fn037.a.target ...
-                                                                ], ...
-                                                CONTROL_PAR_VALUE )  ... 
-                                ) / 1000000.0 ...
-                        * ...
+                        float ( fn037.a.control_value ) / 1000000.0 ...
+                    * ...
                         float   ( get_control_par( ... 
-                                                UIID_controls_LFO_amount[ ... 
-                                                                            fn037.a.target ...
-                                                                        ], ...
-                                                CONTROL_PAR_VALUE ) ...
-                                ) / 1000000.0 ...
+                                    UIID_controls_LFO_amount[ fn037.a.target ], ...
+                                    CONTROL_PAR_VALUE ...
+                                ) ...
+                        ) / 1000000.0 ...
                     ) * 127.0 ...
             )
 
@@ -1641,38 +2049,26 @@ function fn037_LFO.update_intensity_ring()
         fn037.l.picture_state_start := ... 
             int ( ...
                     ( ...
-                        float  ( get_control_par( ...
-                                                UIID_controls   [ ...
-                                                                    fn037.a.target ...
-                                                                ], ...
-                                                CONTROL_PAR_VALUE ) ... 
-                                ) / 1000000.0 ...
+                        float ( fn037.a.control_value ) / 1000000.0 ...
                         - ...
                         float   ( get_control_par( ... 
-                                                UIID_controls_LFO_amount[ ... 
-                                                                            fn037.a.target ...
-                                                                        ], ...
-                                                CONTROL_PAR_VALUE ) / 2 ...
-                                ) / 1000000.0 ...
+                                    UIID_controls_LFO_amount[ fn037.a.target  ], ...
+                                    CONTROL_PAR_VALUE ...
+                                ) / 2 ...
+                        ) / 1000000.0 ...
                     ) * 255.0 ...
             )
 
         fn037.l.picture_state_end := ... 
             int ( ...
                     ( ...
-                        (1.0 - float( get_control_par( ...
-                                                        UIID_controls   [ ...
-                                                                            fn037.a.target ...
-                                                                        ], ...
-                                                        CONTROL_PAR_VALUE ) ...
-                                    ) / 1000000.0 ) ...
+                        (1.0 - float( fn037.a.control_value ) / 1000000.0 ) ...
                         - ...
-                        float   ( get_control_par( ... 
-                                                UIID_controls_LFO_amount[ ... 
-                                                                            fn037.a.target ...
-                                                                        ], ...
-                                                CONTROL_PAR_VALUE ) / 2 ...
-                                ) / 1000000.0 ...
+                        float ( get_control_par( ... 
+                                    UIID_controls_LFO_amount[ fn037.a.target ], ...
+                                    CONTROL_PAR_VALUE ...
+                                ) / 2 ...
+                        ) / 1000000.0 ...
                     ) * 255.0 ...
             )
     end if 
@@ -1687,6 +2083,8 @@ function fn037_LFO.update_intensity_ring()
         CONTROL_PAR_PICTURE_STATE,                    ...
         fn037.l.picture_state_end                     ...
     )
+    message(f'     fn037.l.picture_state_start:< fn037.l.picture_state_start >')
+    message(f'     fn037.l.picture_state_end  :< fn037.l.picture_state_end >')
 
     if fn037.a.link = __ON
         message("link is on - updating both blue rings masks")
@@ -1921,7 +2319,6 @@ end function
 function update_lfo_aux_data
     { rate data updates }
     if switch_MAIN.LFO.sync = __SYNC_BEAT
-        message("BEAT!")
         LFO_lcb_rate  := __RATE_ELEMENTS_COUNT - 1 - ( int(float(slider_MAIN.LFO.rate)/ __LFO_RATE_INDEX_DIVIDER))
         label_MAIN.LFO.rate -> text := beat_rates_display[ int(float(slider_MAIN.LFO.rate)/ __LFO_RATE_INDEX_DIVIDER) ]
         
@@ -1933,7 +2330,6 @@ function update_lfo_aux_data
         LFO_sine_step   := __TWO_PI / float(LFO_rate) //(float(LFO.ms_rates[ LFO_lcb_rate ])*0.001)
 
     else  { sync = HZ}
-        message("HZ!")
         if slider_MAIN.LFO.rate <= 100
             tau_hz_ms_rate_divisor := float(slider_MAIN.LFO.rate)/100.0
         else
@@ -2782,6 +3178,10 @@ function PLAY_NOTE_NCB
         0                                                                  ...
     )
 
+    if pn_ncb.a.mute_note = __YES
+        change_vol( layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ], -200000, 0)
+    end if
+
     wait(1)
     if pn_ncb.a.side = __LEFT
         attach_zone( ...
@@ -2898,9 +3298,9 @@ function PLAY_LCB
             for SEQ.key_count := 0 to 127
                 if KEY_DOWN[ SEQ.key_count ] = __ON
                     { kill the note we are about to play (in case it is still there from NCB or something else )}
-                    if layers.note_events [ p_lcb.a.side, SEQ.key_count ] > 0
-                        fade_out( layers.note_events [ p_lcb.a.side, SEQ.key_count ], 2000, 1)
-                    end if
+                    // if layers.note_events [ p_lcb.a.side, SEQ.key_count ] > 0
+                    //     fade_out( layers.note_events [ p_lcb.a.side, SEQ.key_count ], 2000, 1)
+                    // end if
 
                     if UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON
                         fn026.a.data_type := __FLUX_DATA
@@ -2976,9 +3376,9 @@ function PLAY_LCB
                 SEQ.step_lp_filter := fn026.r.lp_filter_value
                 SEQ.step_hp_filter := fn026.r.hp_filter_value
 
-                if layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ] > 0
-                    fade_out( layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ], 2000, 1)
-                end if
+                // if layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ] > 0
+                //     fade_out( layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ], 2000, 1)
+                // end if
 
                 if (in_range(ARP.played_note [ p_lcb.a.side ], 0, 127))
                     fn027.a.side         := p_lcb.a.side
@@ -3023,9 +3423,9 @@ function PLAY_LCB
                     SEQ.step_lp_filter := fn026.r.lp_filter_value
                     SEQ.step_hp_filter := fn026.r.hp_filter_value
 
-                    if layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ] > 0
-                        fade_out( layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ], 2000, 1)
-                    end if
+                    // if layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ] > 0
+                    //     fade_out( layers.note_events [ p_lcb.a.side, ARP.played_note [ p_lcb.a.side ] ], 2000, 1)
+                    // end if
 
                     if (in_range(ARP.played_note [ p_lcb.a.side ], 0, 127))
                         fn027.a.side         := p_lcb.a.side
@@ -3126,9 +3526,9 @@ function PLAY_LCB
                     for play_layer_count := __LEFT to __RIGHT
                         // message(f'Playing layer < play_layer_count >')
                         if UIID_MAIN.layer.power [ play_layer_count ] -> value = __ON
-                            if layers.note_events [ play_layer_count, SEQ.key_count ] > 0
-                                fade_out( layers.note_events [ play_layer_count, SEQ.key_count ], 2000, 1)
-                            end if
+                            // if layers.note_events [ play_layer_count, SEQ.key_count ] > 0
+                            //     fade_out( layers.note_events [ play_layer_count, SEQ.key_count ], 2000, 1)
+                            // end if
 
                             if  UIID_MAIN.seq.flux_rand_power [ __LEFT ] -> value = __ON and ...
                                 UIID_MAIN.seq.flux_rand_btns [ play_layer_count, SEQ.JOIN.current_block mod 4 ] -> value = __ON
@@ -3200,9 +3600,9 @@ function PLAY_LCB
 
                     // message(f'    SEQ.step_pan: <SEQ.step_pan>')
 
-                    if layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ] > 0
-                        fade_out( layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ], 2000, 1)
-                    end if
+                    // if layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ] > 0
+                    //     fade_out( layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ], 2000, 1)
+                    // end if
 
                     if (in_range(ARP.played_note [ __LEFT ], 0, 127))
                         fn027.a.side         := play_layer_count
@@ -3249,9 +3649,9 @@ function PLAY_LCB
                         SEQ.step_lp_filter := fn026.r.lp_filter_value
                         SEQ.step_hp_filter := fn026.r.hp_filter_value
 
-                        if layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ] > 0
-                            fade_out( layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ], 2000, 1)
-                        end if
+                        // if layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ] > 0
+                        //     fade_out( layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ], 2000, 1)
+                        // end if
 
                         if (in_range(ARP.played_note [ __LEFT ], 0, 127))
                             fn027.a.side         := play_layer_count

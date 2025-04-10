@@ -21,9 +21,10 @@ on note
             ( ( switch_MAIN.SEQ.LEFT.power     = __ON  and note_held_count = 1) or ...
             ( switch_MAIN.SEQ.LEFT.power       = __OFF ) )
 
-            pn_ncb.a.side := __LEFT
-            pn_ncb.a.note := EVENT_NOTE
-            pn_ncb.a.velo := EVENT_VELOCITY
+            pn_ncb.a.side      := __LEFT
+            pn_ncb.a.note      := EVENT_NOTE
+            pn_ncb.a.velo      := EVENT_VELOCITY
+            pn_ncb.a.mute_note := __NO
             call PLAY_NOTE_NCB
         end if
 
@@ -34,6 +35,7 @@ on note
             pn_ncb.a.side := __RIGHT
             pn_ncb.a.note := EVENT_NOTE
             pn_ncb.a.velo := EVENT_VELOCITY
+            pn_ncb.a.mute_note := __NO
             call PLAY_NOTE_NCB
         end if
 

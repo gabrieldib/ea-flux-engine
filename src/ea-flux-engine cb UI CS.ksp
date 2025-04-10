@@ -98,8 +98,6 @@ on ui_controls
         uics_value := NI_UI_ID -> value
 
         fn051.a.side        := uics_seq_side
-        fn051.a.seq_state   := UIID_MAIN.seq.power [ uics_seq_side ] -> value
-        fn051.a.layer_state := uics_value
         call fn051_set_layer_panels_state
         message(f'fn051.a.side        : <fn051.a.side >')
         message(f'fn051.a.seq_state   : <fn051.a.seq_state >')
@@ -115,71 +113,83 @@ on ui_controls
         end if
         uics_value := NI_UI_ID -> value
         fn051.a.side        := uics_seq_side
-        fn051.a.seq_state   := uics_value
-        fn051.a.layer_state := UIID_MAIN.layer.power [ uics_seq_side ] -> value
         call fn051_set_layer_panels_state
 
         if UIID_MAIN.layer.power [ uics_seq_side ] -> value = __ON
-            {
-                logic for the activators
 
-                when we turn the sequencer on there's 2 scenarios:
-                    the other side is ON or 
-                    the other side is OFF
+            if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                if UIID_MAIN.seq.power [ uics_seq_side ] -> value = __ON
+                    { restore all target control states}
+                    for uics_counter := 0 to 4
+                        { recall power controls }
+                        UIID_MAIN.seq.target_power [ uics_seq_side, uics_counter ] -> value := ...
+                            targets_power_state [ uics_seq_side, uics_counter ]
 
-                    if it is OFF,
-                        we should activate the VELOCITY activator and selector, and the power according to the buffer
-
-                    if it is ON
-                        the activator that should turn on is the same as the one selected on the right side.
-            }
-
-            if uics_value = __ON
-                { restore all target control states}
-                for uics_counter := 0 to 4
-                    { recall power controls }
-                    UIID_MAIN.seq.target_power [ uics_seq_side, uics_counter ] -> value := ...
-                        targets_power_state [ uics_seq_side, uics_counter ]
-
-                    { set activator based on the target selector }
-                    if  UIID_MAIN.seq.target_selectors [ uics_counter ] -> value = __ON
-                        message(f'Selector on on side <abs(1-uics_seq_side)> = <uics_counter >')
-                        UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __ON
-                    else
-                        if  UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
-                            UIID_MAIN.seq.target_activators [ uics_seq_side, SEQ_TARGET_VELO ] -> value := __ON
-                            UIID_MAIN.seq.target_selectors [ SEQ_TARGET_VELO ]                 -> value := __ON
+                        { set activator based on the target selector }
+                        if  UIID_MAIN.seq.target_selectors [ uics_counter ] -> value = __ON
+                            message(f'Selector on on side <abs(1-uics_seq_side)> = <uics_counter >')
+                            UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __ON
+                        else
+                            if  UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
+                                UIID_MAIN.seq.target_activators [ uics_seq_side, SEQ_TARGET_VELO ] -> value := __ON
+                                UIID_MAIN.seq.target_selectors [ SEQ_TARGET_VELO ]                 -> value := __ON
+                            end if
                         end if
-                    end if
 
-                    if  UIID_MAIN.seq.target_activators [ __LEFT,  uics_counter ] -> value = __ON and ...
-                        UIID_MAIN.seq.target_activators [ __RIGHT, uics_counter ] -> value = __ON
+                        if  UIID_MAIN.seq.target_activators [ __LEFT,  uics_counter ] -> value = __ON and ...
+                            UIID_MAIN.seq.target_activators [ __RIGHT, uics_counter ] -> value = __ON
 
-                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __ON
-                    else
-                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
-                    end if
-                end for
+                            UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __ON
+                        else
+                            UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
+                        end if
+                    end for
 
-                fn021.a.side := uics_seq_side
-                call fn21_get_seq_target_active_activator
+                    fn021.a.side := uics_seq_side
+                    call fn21_get_seq_target_active_activator
 
-                fn020.a.seq_power_state   := NI_UI_ID -> value
-                fn020.a.side              := uics_seq_side
-                fn020.a.target_index      := fn021.r.active_index
-                fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
-                call fn020_update_seq_target_state
+                    fn020.a.seq_power_state   := NI_UI_ID -> value
+                    fn020.a.side              := uics_seq_side
+                    fn020.a.target_index      := fn021.r.active_index
+                    fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
+                    call fn020_update_seq_target_state
 
-            else
-                { turn off target activators, power and selectors as they have no effect on single shots }
-                for uics_counter := 0 to 4
-                    UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __OFF
-                    UIID_MAIN.seq.target_power      [ uics_seq_side, uics_counter ] -> value := __OFF
-                    if UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
-                        UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
-                    end if
-                end for 
+                else
+                    { turn off target activators, power and selectors as they have no effect on single shots }
+                    for uics_counter := 0 to 4
+                        UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __OFF
+                        UIID_MAIN.seq.target_power      [ uics_seq_side, uics_counter ] -> value := __OFF
+                        if UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
+                            UIID_MAIN.seq.target_selectors [ uics_counter ] -> value := __OFF
+                        end if
+                    end for 
 
+                end if
+
+            else { SEQ Join }
+                if switch_MAIN.SEQ.combine = __SEQ_JOIN
+                    label_MAIN.SEQjoin.off -> hide := HIDE_WHOLE_CONTROL * uics_value
+                    for i.i := 0 to 31
+                        message(f'    LEFT step <i.i> state: <UIID_MAIN.seq.step [ __LEFT, i.i ] -> hide> ')
+                    end for
+                    for i.i := 0 to 31
+                        message(f'    RIGHT step <i.i> state: <UIID_MAIN.seq.step [ __RIGHT, i.i ] -> hide> ')
+                    end for
+                    for i.i := 0 to 3
+                        message(f'    LEFT step sliders <i.i> state: <UIID_MAIN.seq.block_steps [__LEFT, i.i] -> hide >')
+                    end for
+                    for i.i := 0 to 3
+                        message(f'    RIGHT step sliders <i.i> state: <UIID_MAIN.seq.block_steps [__RIGHT, i.i] -> hide >')
+                    end for
+                    for i.i := 0 to 3
+                        message(f'    LEFT leds <i.i> state: <UIID_MAIN.seq.leds [__LEFT, i.i] -> hide >')
+                    end for
+                    for i.i := 0 to 3
+                        message(f'    RIGHT leds <i.i> state: <UIID_MAIN.seq.leds [__RIGHT, i.i] -> hide >')
+                    end for
+
+                end if
+                
             end if
 
         end if
@@ -953,115 +963,65 @@ on ui_controls
                 __Y_AXIS                              ...
             )
 
-        fn035.a.side  := uics_seq_side
-        fn035.a.value := uics_r_value
-        call fn035_update_random_labels
+        { run for both sides if linked, or only for the side that called it }
+        for uics_side_counter := __LEFT to __RIGHT
+            if switch_MAIN.LEFT.randomizer.link = __ON or uics_side_counter = uics_seq_side
+                fn035.a.side  := uics_side_counter
+                fn035.a.value := uics_r_value
+                call fn035_update_random_labels
+            end if
+        end for
+
 
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_UP
-            {{ Randomize Sequencer }}
-            if UIID_MAIN.seq_random_btn [ uics_seq_side ] -> value = __ON
+            for uics_side_counter := __LEFT to __RIGHT
+                {{ Randomize Sequencer }}
+                if switch_MAIN.LEFT.randomizer.link = __ON or uics_side_counter = uics_seq_side
+                    if UIID_MAIN.seq_random_btn [ uics_side_counter ] -> value = __ON
+                        { randomize step count if not locked }
+                        call randomize_step_count
 
-                { randomize step count if not locked }
-                if UIID_MAIN.seq.step_lock [ uics_seq_side ] -> value = __OFF
-                    for uics_counter := 0 to 3
-                        for uics_counter2 := __LEFT to __RIGHT
-                            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                                uics_dual_join_side := uics_seq_side
-                            else
-                                uics_dual_join_side := uics_counter2
+                        fn031.a.reset := __ON
+                        fn031.a.side  := uics_side_counter
+                        call fn031_set_dyn_sliders_picture
+
+                        { randomize step values }
+                        call randomize_step_values
+                    end if
+
+                    {{ randomize layer and fx panels }}
+                    select(showing_layer_fx_panel_index [ uics_side_counter ])
+                        case __LAYER      
+                            if randomize_state [ uics_side_counter, showing_layer_fx_panel_index [ uics_side_counter ] ] = __ON
+                                fn059.a.random_value := uics_r_value
+                                fn059.a.target_start := __MAIN.FX.LAYER.VOLUME
+                                fn059.a.target_end   := __MAIN.FX.LAYER.WIDTH
+                                call fn059_randomize_common_lfp
+                            end if
+                        case __SATURATION 
+                            if randomize_state [ uics_side_counter, showing_layer_fx_panel_index [ uics_side_counter ] ] = __ON
+                                call randomize_lfp_saturation
                             end if
 
-                            if  switch_MAIN.SEQ.combine = __SEQ_DUAL and uics_counter2 = __LEFT or ...
-                                switch_MAIN.SEQ.combine = __SEQ_JOIN
-
-                                uics_current_value := UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value
-                                uics_random_delta  := int(float(random (-7, 7)) * uics_r_value)
-                               
-                                UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := uics_random_delta + uics_current_value
-                                SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]          := uics_random_delta + uics_current_value
-                                SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]     := uics_random_delta + uics_current_value
-                                
-                                if uics_current_value + uics_random_delta > 7 
-                                    UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ]      -> value := 7
-                                    SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]               := 7
-                                    SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]          := 7
-                                else
-                                    if uics_current_value + uics_random_delta < 0
-                                        UIID_MAIN.seq.block_steps [ uics_dual_join_side, uics_counter ] -> value := 0
-                                        SEQ.DUAL.step_count       [ uics_dual_join_side, uics_counter ]               := 0
-                                        SEQ.JOIN.step_count       [ uics_dual_join_side * 4 + uics_counter ]          := 0
-                                    end if
-                                end if
-
-                                fn003.a.side        := uics_dual_join_side
-                                fn003.a.mode        := switch_MAIN.SEQ.combine
-                                fn003.a.block_index := uics_counter
-                                call fn003_set_block_step_count
+                        case __DISTORTION 
+                            if randomize_state [ uics_side_counter, showing_layer_fx_panel_index [ uics_side_counter ] ] = __ON
+                                call randomize_lfp_distortion
                             end if
 
-                        end for
-                    end for
+                        case __LOFI       
+
+                        case __TAPESAT    
+
+                        case __DELAY      
+
+                        case __CHORUS     
+
+                        case __REVERB     
+
+                    end select
+
                 end if
-
-                { randomize step values }
-                for uics_counter := 0 to 3
-
-                    for uics_counter2 := 0 to 7
-
-                        uics_current_value.r := ...
-                            SEQ.data.dyn.f [                          ...
-                                uics_seq_side,                        ...
-                                SEQ.showing_target [ uics_seq_side ], ...
-                                fn018.a.step_index                    ...
-                            ]
-
-                        uics_random_delta.r := (float(random(-10000,10000))/10000.0) * uics_r_value
-                        
-                        SEQ.data.dyn.f [                          ...
-                                uics_seq_side,                        ...
-                                SEQ.showing_target [ uics_seq_side ], ...
-                                fn018.a.step_index                    ...
-                            ] := uics_current_value.r + uics_random_delta.r
-
-                        { clamping values out of range }
-                        if uics_current_value.r + uics_random_delta.r > 1.0
-                            SEQ.data.dyn.f [                          ...
-                                uics_seq_side,                        ...
-                                SEQ.showing_target [ uics_seq_side ], ...
-                                fn018.a.step_index                    ...
-                            ] := 1.0
-
-                        else
-                            if uics_current_value.r + uics_random_delta.r < 0.0
-                                SEQ.data.dyn.f [                          ...
-                                    uics_seq_side,                        ...
-                                    SEQ.showing_target [ uics_seq_side ], ...
-                                    fn018.a.step_index                    ...
-                                ] := 0.0
-                            end if
-
-                        end if
-
-                        fn018.a.side       := uics_seq_side
-                        fn018.a.step_index := uics_counter * 8 + uics_counter2
-                        fn018.a.value      :=                         ...
-                            SEQ.data.dyn.f [                          ...
-                                uics_seq_side,                        ...
-                                SEQ.showing_target [ uics_seq_side ], ...
-                                fn018.a.step_index                    ...
-                            ]
-                        call fn018_set_seq_step_picture_state
-
-                        fn002.a.side            := uics_seq_side
-                        fn002.a.value           := fn018.a.value
-                        fn002.a.target          := SEQ.showing_target [ uics_seq_side ]
-                        fn002.a.table_to_update := __SEQ_DYN_TRANSF_TABLE
-                        fn002.a.step_index      := uics_counter * 8 + uics_counter2
-                        call fn002_set_seq_step_value
-                    end for
-                end for
-
-            end if
+            end for
         end if
     end if
 
@@ -1087,6 +1047,24 @@ on ui_controls
         fn043.a.side  := uics_seq_side
         fn043.a.panel := uics_uiid_index
         call fn043_show_hide_fx_panels
+
+        { store the showing panel index }
+        showing_layer_fx_panel_index [ uics_seq_side ] := uics_uiid_index
+
+        { recall randomize button state for the showing panel }
+        UIID_MAIN.layer_fx_panel_rand_btn [ uics_seq_side ] -> value := ...
+            randomize_state [ uics_seq_side, showing_layer_fx_panel_index [ uics_seq_side ] ]
+    end if
+
+
+    {{ LAYER & FX PANEL RAND BUTTONS }}
+    if NI_UI_ID = UIID_MAIN.layer_fx_panel_rand_btn [ __LEFT ] or NI_UI_ID = UIID_MAIN.layer_fx_panel_rand_btn [ __RIGHT ]
+        uics_seq_side := __LEFT
+        if NI_UI_ID = UIID_MAIN.layer_fx_panel_rand_btn [ __RIGHT ]
+            uics_seq_side := __RIGHT
+        end if
+
+        randomize_state [ uics_seq_side, showing_layer_fx_panel_index [ uics_seq_side ] ] := NI_UI_ID -> value
     end if
 
 

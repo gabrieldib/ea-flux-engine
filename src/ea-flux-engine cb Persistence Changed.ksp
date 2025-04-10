@@ -1,5 +1,4 @@
 on persistence_changed
-    message("PCCB")
     import "ea-flux-engine UIIDs data.ksp"
     import "ea-flux-engine data loading.ksp"
     // import "ARP/__ARP 02 pc cb.ksp"
@@ -32,8 +31,6 @@ on persistence_changed
     call pccb_init_instrument()
 
     message("ea-flux-engine loaded successfully")
-    message(f' time: < get_engine_par(ENGINE_PAR_RDL_TIME_UNIT, -1, 4, NI_BUS_OFFSET) >')
-
-    message(f'__MAX_SOURCE_PAGES: <__MAX_SOURCE_PAGES >')
+    message(f'PCCB end.')
 
 end on
