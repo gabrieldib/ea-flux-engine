@@ -10,6 +10,15 @@
     define __X_AXIS            := 0
     define __Y_AXIS            := 1
 
+    define __LAYER      := 0
+    define __SATURATION := 1
+    define __DISTORTION := 2
+    define __LOFI       := 3
+    define __TAPESAT    := 4
+    define __DELAY      := 5
+    define __CHORUS     := 6
+    define __REVERB     := 7
+
     define LFO_RATE_MODE       := 0
     define LFO_RATE            := 1
     define LFO_DEPTH           := 2
@@ -106,12 +115,14 @@
     define __FX_DELAY_TIME_UNIT      := 1
     define __FX_DELAY_LOCUT          := 2
     define __FX_DELAY_HICUT          := 3
-    define __FX_DELAY_DRYWET         := 4
-    define __FX_DELAY_FEEDBACK       := 5
+    define __FX_DELAY_FEEDBACK       := 4
+    define __FX_DELAY_DRYWET         := 5
     define __FX_DELAY_TIME           := 6
     
     define __FX_DELAY_LABEL_PINGPONG := 0
     define __FX_DELAY_LABEL_SYNC     := 1
+
+    define __FX_REVERB_PREDELAY      := 0
 
     define __SINGLE_SHOT_SAMPLE_START := 0
     define __SINGLE_SHOT_TUNE         := 1
@@ -130,6 +141,8 @@
     define __SOURCE_PREV := 0
     define __SOURCE_NEXT := 1
 
+    define __LEFT_VOLUME := 0
+
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
         declare hide_constants [ 2 ]
@@ -142,6 +155,7 @@
     {{ UI }}
         // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
         declare SEQ.common_elements_data [ 200, 7 ] 
+        declare const __FLUX_BLOCK_RIGHT_START := 94
 
         declare const PANEL_DUAL_SEQ_PARENT_UIID := 0
         declare const PANEL_JOIN_SEQ_PARENT_UIID := 1
@@ -176,12 +190,12 @@
         declare const UIID_SEQ_JOIN_PANEL := get_ui_id(panel_MAIN.SEQjoin)
 
         declare SEQ_XY_BLOCK_START_OFFSET [ 4 ]
-            SEQ_XY_BLOCK_START_OFFSET [ 0 ]   :=   0
-            SEQ_XY_BLOCK_START_OFFSET [ 1 ]   :=  92
-            SEQ_XY_BLOCK_START_OFFSET [ 2 ]   := 184
-            SEQ_XY_BLOCK_START_OFFSET [ 3 ]   := 276
+            SEQ_XY_BLOCK_START_OFFSET [ 0 ]   :=  65
+            SEQ_XY_BLOCK_START_OFFSET [ 1 ]   := 157
+            SEQ_XY_BLOCK_START_OFFSET [ 2 ]   := 249
+            SEQ_XY_BLOCK_START_OFFSET [ 3 ]   := 341
 
-        declare const SEQ_RIGHT_X_OFFSET      := 138
+        declare const SEQ_RIGHT_X_OFFSET      := 504
 
         declare      ~SEQ_XY_DUAL_BLOCK_PX_W       := 1.0 / float(SEQ_DUAL_XY_W)
         declare      ~SEQ_XY_JOIN_BLOCK_PX_W       := 1.0 / float(SEQ_JOIN_XY_W)
@@ -206,12 +220,12 @@
         declare const SEQ_DUAL_STEP3_GAP           := 2
         declare const SEQ_DUAL_STEP4_GAP           := 2
         declare const SEQ_DUAL_STEP5_GAP           := 1
-        declare const SEQ_DUAL_STEP6_GAP           := 2
+        declare const SEQ_DUAL_STEP6_GAP           := 1
         declare const SEQ_DUAL_STEP7_GAP           := 2
         declare const SEQ_DUAL_STEP8_GAP           := 2
 
         { DUAL seq }
-        declare const SEQ_JOIN_LEFT_START_PX       := 71
+        declare const SEQ_JOIN_LEFT_START_PX       := 69
         declare const SEQ_JOIN_STEP2_WIDTH         := 40
         declare const SEQ_JOIN_STEP3_WIDTH         := 26
         declare const SEQ_JOIN_STEP4_WIDTH         := 19
@@ -224,18 +238,18 @@
         declare const SEQ_JOIN_STEP3_GAP           := 2
         declare const SEQ_JOIN_STEP4_GAP           := 2
         declare const SEQ_JOIN_STEP5_GAP           := 1
-        declare const SEQ_JOIN_STEP6_GAP           := 2
+        declare const SEQ_JOIN_STEP6_GAP           := 1
         declare const SEQ_JOIN_STEP7_GAP           := 2
         declare const SEQ_JOIN_STEP8_GAP           := 2
 
-        declare const SEQ_JOIN_RIGHT_GAP_STEP1     := 446 - SEQ_JOIN_LEFT_START_PX // because RIGHT takes from left
-        declare const SEQ_JOIN_RIGHT_GAP_STEP2     := 447 - SEQ_JOIN_LEFT_START_PX
-        declare const SEQ_JOIN_RIGHT_GAP_STEP3     := 447 - SEQ_JOIN_LEFT_START_PX
-        declare const SEQ_JOIN_RIGHT_GAP_STEP4     := 447 - SEQ_JOIN_LEFT_START_PX
-        declare const SEQ_JOIN_RIGHT_GAP_STEP5     := 446 - SEQ_JOIN_LEFT_START_PX
-        declare const SEQ_JOIN_RIGHT_GAP_STEP6     := 446 - SEQ_JOIN_LEFT_START_PX
-        declare const SEQ_JOIN_RIGHT_GAP_STEP7     := 447 - SEQ_JOIN_LEFT_START_PX
-        declare const SEQ_JOIN_RIGHT_GAP_STEP8     := 445 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP1     := 444 - SEQ_JOIN_LEFT_START_PX // because RIGHT takes from left
+        declare const SEQ_JOIN_RIGHT_GAP_STEP2     := 443 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP3     := 443 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP4     := 443 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP5     := 444 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP6     := 445 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP7     := 443 - SEQ_JOIN_LEFT_START_PX
+        declare const SEQ_JOIN_RIGHT_GAP_STEP8     := 441 - SEQ_JOIN_LEFT_START_PX
 
         declare const __SEQ_ORIGINAL_TABLE   := 1
         declare const __SEQ_DYN_TRANSF_TABLE := 2
@@ -508,8 +522,8 @@
             ENGINE_PAR_RDL_TIME_UNIT,          ...
             ENGINE_PAR_RDL_LOWCUT,             ...
             ENGINE_PAR_RDL_HIGHCUT,            ...
-            ENGINE_PAR_SEND_EFFECT_DRY_LEVEL,  ...
             ENGINE_PAR_RDL_FEEDBACK,           ...
+            ENGINE_PAR_SEND_EFFECT_DRY_LEVEL,  ...
             ENGINE_PAR_RDL_TIME                ...
         )
 
@@ -856,6 +870,10 @@
         { temp }
         declare LFO_seq_step_count
 
+    {{ LAYER AND FX PANELS }}
+        declare showing_layer_fx_panel_index [ 2 ] // only used if the randomize state was per panel
+        declare read randomize_lfp_state [ 2 ]
+
 
 { CB SPECIFIC ___________________________________________________________________________________ }
     declare uics_uiid_index
@@ -864,6 +882,7 @@
     declare uics_last_value
     declare uics_alt_key
     declare uics_shift_key
+    declare uics_side_counter
     declare uics_counter
     declare uics_counter2
     declare uics_counter3
@@ -887,6 +906,7 @@
     declare uics_slot
     declare uics_generic
     declare uics_dual_join_side
+    declare uics_random_value
 
     declare uicb_counter
     declare uicb_counter2
@@ -914,6 +934,7 @@
     declare pn_ncb.a.side
     declare pn_ncb.a.note
     declare pn_ncb.a.velo
+    declare pn_ncb.a.mute_note
 
     //PLAY_LCB
     declare p_lcb.a.side
@@ -1334,3 +1355,25 @@
 
     //fn056_single_shot_wf_preview
     declare fn056.a.side
+
+    //fn057_hide_seq_join_steps_leds_counters
+    declare fn057.a.hide
+    declare fn057.l.counter
+
+    //fn058_clamp_value
+    declare fn058.a.int_clamp_min
+    declare fn058.a.int_clamp_max
+    declare fn058.a.int_value
+    declare fn058.r.int_clamped_value
+    declare ~fn058.a.float_clamp_min
+    declare ~fn058.a.float_clamp_max
+    declare ~fn058.a.float_value
+    declare ~fn058.r.float_clamped_value
+
+    //fn058_randomize_common_lfp
+    declare fn059.a.target_start
+    declare fn059.a.target_end
+    declare ~fn059.a.random_value
+    declare fn059.l.target_counter
+    declare fn059.l.lfo_amount
+

@@ -39,6 +39,7 @@ declare UIID_LFO.waveshape_selectors            [ 5 ]
 { controls not modulated by LFO }
 declare UIID_lfp_sat_modes                   [ 2, 3 ]
 declare UIID_lfp_dst_modes                      [ 2 ]
+declare UIID_lfp_lofi_noise                     [ 2 ]
 declare UIID_lfp_tape_sat.hf_cut                [ 2 ]
 declare UIID_lfp_delay_controls              [ 2, 7 ]
 declare UIID_lfp_rvb_controls                [ 2, 4 ] // IR preset buttons are not included here
@@ -58,7 +59,8 @@ declare UIID_GLOBAL.page_prev_btns              [ 2 ]
 declare UIID_GLOBAL.page_next_btns              [ 2 ]
 declare UIID_GLOBAL.page_number                 [ 2 ]
 declare UIID_GLOBAL.sources_prev_next        [ 2, 2 ]
-declare UIID_BROWSER_source.select.btn       [ 2, 18 ]
+declare UIID_BROWSER_source.select.btn      [ 2, 18 ] { not used anymore, using a dropdown menu now }
+declare UIID_MAIN.layer_fx_panel_rand_btn       [ 2 ]
 
 
 {{ LFO }}

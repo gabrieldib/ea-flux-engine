@@ -1,10 +1,10 @@
 define WAVEFORM_COLOR := 9FFDECCh
 
-define HMZ_DIVISOR := 28571 { 1000000 / 35 ( milliseconds )}
+define HMZ_DIVISOR := 10000//28571 { 1000000 / 35 ( milliseconds )}
 
 define VOLUME_CURVE_SLOPE := 0.35
 
 {{ SOURCES }}
-define __SOURCE_COUNT         := 32 { example }
-define __MAX_SOURCES_PER_PAGE := 18
-define __MAX_SOURCE_PAGES     := __SOURCE_COUNT/__MAX_SOURCES_PER_PAGE 
+define __SOURCE_COUNT         := 5  { example v0.16 }
+define __MAX_SOURCES_PER_PAGE := 18 { not in use }
+define __MAX_SOURCE_PAGES     := __SOURCE_COUNT/__MAX_SOURCES_PER_PAGE { not in use }

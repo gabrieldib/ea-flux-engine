@@ -1,40 +1,54 @@
 {{ GLOBAL }}
 
-    on ui_control (switch_MAIN.LEFT.soundSource)
-        panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
-        panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
-        panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
-        panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
-        set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
-        if panel_BROWSER -> hide = 0
-            source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
-            source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
-            call fn055_recall_source_buttons_page
-        end if
+    on ui_control (menu_MAIN.LEFT.soundSource)
+        selected_source [ __LEFT ] := menu_MAIN.LEFT.soundSource
+
+        { if there was a browse panel }
+        // panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
+        // panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
+        // panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
+        // panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
+        // set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
+        // if panel_BROWSER -> hide = 0
+        //     source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
+        //     source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
+        //     call fn055_recall_source_buttons_page
+        // end if
     end on
 
-    on ui_control (switch_MAIN.RIGHT.soundSource)
-        panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
-        panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
-        panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
-        panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
-        set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
-        if panel_BROWSER -> hide = 0
-            source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
-            source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
-            call fn055_recall_source_buttons_page
-        end if
+    on ui_control (menu_MAIN.RIGHT.soundSource)
+        selected_source [ __RIGHT ] := menu_MAIN.RIGHT.soundSource + __SOURCE_COUNT { offset }
+
+
+        { if there was a browse panel }
+        // panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
+        // panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
+        // panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
+        // panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
+        // set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
+        // if panel_BROWSER -> hide = 0
+        //     source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
+        //     source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
+        //     call fn055_recall_source_buttons_page
+        // end if
     end on
 
+    on ui_control (switch_MAIN.LEFT.randomizer.link)
+        switch_MAIN.RIGHT.randomizer.link := switch_MAIN.LEFT.randomizer.link
+    end on
+    on ui_control (switch_MAIN.RIGHT.randomizer.link)
+        switch_MAIN.LEFT.randomizer.link := switch_MAIN.RIGHT.randomizer.link
+    end on
+    
 
 {{ MAIN }}
     on ui_control (switch_MAIN.SEQ.combine)
+        switch_MAIN.SEQ.LEFT.power := __ON
         call draw_seq
-        call clear_all_leds
+        // call clear_all_leds
         { recall block steps numbers and steps pictures }
         fn003.a.mode := switch_MAIN.SEQ.combine
         for uicb_combine_counter := 0 to 3
-            message(f'----- switch_MAIN.SEQ.combine called | uicb_combine_counter: <uicb_combine_counter>')
             fn003.a.block_index := uicb_combine_counter
             fn003.a.side := __LEFT
             call fn003_set_block_step_count
@@ -51,11 +65,12 @@
         { change text alignment on target selectors }
         call set_seq_target_selectors_text_alignment
 
-        panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
-        panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
+        // panel_MAIN.2SEQ    -> hide := switch_MAIN.SEQ.combine * HIDE_WHOLE_CONTROL
+        // panel_MAIN.SEQjoin -> hide := abs(1-switch_MAIN.SEQ.combine) * HIDE_WHOLE_CONTROL
 
         for uicb_combine_counter := __LEFT to __RIGHT
-            if  uicb_combine_counter = __LEFT or (switch_MAIN.SEQ.combine = __SEQ_DUAL and uicb_combine_counter = __RIGHT)
+            if  uicb_combine_counter = __LEFT or (switch_MAIN.SEQ.combine = __SEQ_DUAL and uicb_combine_counter = __RIGHT) 
+                message(f'    Combine counter: <uicb_combine_counter>')
                 fn021.a.side := uicb_combine_counter
                 call fn21_get_seq_target_active_activator
 
@@ -65,9 +80,14 @@
                 fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uicb_combine_counter, fn021.r.active_index ]
                 call fn020_update_seq_target_state
             end if
-        end for
 
-        message(f'xypad_MAIN.LEFT.dynamics x: <xypad_MAIN.LEFT.dynamics -> y >')
+            fn051.a.side := uicb_combine_counter
+            call fn051_set_layer_panels_state
+            
+        end for
+        panel_MAIN.2SEQ.LEFT.fluxxArp  -> UI_SHOW
+        panel_MAIN.2SEQ.RIGHT.fluxxArp -> UI_SHOW
+        
     end on
 
     on ui_control(xypad_MAIN.matrix.center)
@@ -116,7 +136,6 @@
 
         end if
     end on
-
 
 {{ SEQ }}
     on ui_control (xypad_MAIN.SEQ.join)
@@ -221,8 +240,6 @@
         // call fn010_set_seq_step_value
     end on
 
-
-
 {{ LFO }}
     on ui_control (slider_MAIN.LFO.rate)
         { direct rate values updates based on DURATION CONSTANTS }
@@ -285,7 +302,6 @@
             label_MAIN.matrix.center.mod.RL -> UI_SHOW
         end if
     end on
-    
 
 {{ DEMO MODE }}
     on ui_control (button_demo.mode)
