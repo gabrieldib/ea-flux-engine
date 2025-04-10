@@ -115,12 +115,14 @@
     define __FX_DELAY_TIME_UNIT      := 1
     define __FX_DELAY_LOCUT          := 2
     define __FX_DELAY_HICUT          := 3
-    define __FX_DELAY_DRYWET         := 4
-    define __FX_DELAY_FEEDBACK       := 5
+    define __FX_DELAY_FEEDBACK       := 4
+    define __FX_DELAY_DRYWET         := 5
     define __FX_DELAY_TIME           := 6
     
     define __FX_DELAY_LABEL_PINGPONG := 0
     define __FX_DELAY_LABEL_SYNC     := 1
+
+    define __FX_REVERB_PREDELAY      := 0
 
     define __SINGLE_SHOT_SAMPLE_START := 0
     define __SINGLE_SHOT_TUNE         := 1
@@ -138,6 +140,8 @@
 
     define __SOURCE_PREV := 0
     define __SOURCE_NEXT := 1
+
+    define __LEFT_VOLUME := 0
 
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
@@ -518,8 +522,8 @@
             ENGINE_PAR_RDL_TIME_UNIT,          ...
             ENGINE_PAR_RDL_LOWCUT,             ...
             ENGINE_PAR_RDL_HIGHCUT,            ...
-            ENGINE_PAR_SEND_EFFECT_DRY_LEVEL,  ...
             ENGINE_PAR_RDL_FEEDBACK,           ...
+            ENGINE_PAR_SEND_EFFECT_DRY_LEVEL,  ...
             ENGINE_PAR_RDL_TIME                ...
         )
 
@@ -867,8 +871,8 @@
         declare LFO_seq_step_count
 
     {{ LAYER AND FX PANELS }}
-        declare showing_layer_fx_panel_index [ 2 ]
-        declare read randomize_state [ 2, 8 ]
+        declare showing_layer_fx_panel_index [ 2 ] // only used if the randomize state was per panel
+        declare read randomize_lfp_state [ 2 ]
 
 
 { CB SPECIFIC ___________________________________________________________________________________ }

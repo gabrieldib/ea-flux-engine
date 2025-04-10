@@ -1,6 +1,7 @@
 on ui_controls
     // message(f'UI CBS | NI_UI_ID: <NI_UI_ID>')
 
+    { not in use }
     {{ SOURCE SELECT BUTTONS}}
     if  in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __LEFT,  0 ] , UIID_BROWSER_source.select.btn [ __LEFT,  17 ]) or ...
         in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] , UIID_BROWSER_source.select.btn [ __RIGHT, 17 ])
@@ -19,7 +20,7 @@ on ui_controls
         selected_source [ fn054.a.side ] := fn054.a.index + source_page [ fn054.a.side ] * __MAX_SOURCES_PER_PAGE
     end if
 
-
+    { not in use }
     {{ SOURCE PAGE PREV/NEXT BUTTONS }}
     if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __LEFT ] or NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
         uics_seq_side := __LEFT
@@ -99,9 +100,6 @@ on ui_controls
 
         fn051.a.side        := uics_seq_side
         call fn051_set_layer_panels_state
-        message(f'fn051.a.side        : <fn051.a.side >')
-        message(f'fn051.a.seq_state   : <fn051.a.seq_state >')
-        message(f'fn051.a.layer_state : <fn051.a.layer_state >')
     end if
 
 
@@ -116,7 +114,6 @@ on ui_controls
         call fn051_set_layer_panels_state
 
         if UIID_MAIN.layer.power [ uics_seq_side ] -> value = __ON
-
             if switch_MAIN.SEQ.combine = __SEQ_DUAL
                 if UIID_MAIN.seq.power [ uics_seq_side ] -> value = __ON
                     { restore all target control states}
@@ -428,14 +425,16 @@ on ui_controls
             uics_seq_side := __RIGHT
         end if
 
-        { the group, and slot will have to be defined when we have the group structure }
-        set_engine_par(                                                               ...
-            ADSR_engine_pars [ uics_uiid_index mod 4 ],                               ...
-            UIID_MAIN.ADSR_controls[ uics_seq_side, uics_uiid_index mod 4 ] -> value, ...
-            selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT,       ...
-            get_mod_idx(uics_seq_side, "ENV_AHDSR"),                                  ...
-            -1                                                                        ...
-        )
+        for uics_counter := 0 to __SOURCE_COUNT - 1
+            { PENDING the group, and slot will have to be defined when we have the group structure }
+            set_engine_par(                                                               ...
+                ADSR_engine_pars [ uics_uiid_index mod 4 ],                               ...
+                UIID_MAIN.ADSR_controls[ uics_seq_side, uics_uiid_index mod 4 ] -> value, ...
+                uics_counter + uics_seq_side * __SOURCE_COUNT,                            ...
+                get_mod_idx(uics_seq_side, "ENV_AHDSR"),                                  ...
+                -1                                                                        ...
+            )
+        end for
     end if
 
 
@@ -618,7 +617,7 @@ on ui_controls
             end if
 
             { The code below should only run when:
-                - target power is turned OFF and if the randomizer is ON
+                - target power is turned OFF and if the flux randomizer is ON
             }
             if  NI_UI_ID -> value = __OFF and UIID_MAIN.seq.flux_rand_power [ uics_seq_side  ] -> value = __ON and ...
                 SEQ.showing_target [ uics_seq_side ] = uics_uiid_index
@@ -990,36 +989,37 @@ on ui_controls
                     end if
 
                     {{ randomize layer and fx panels }}
-                    select(showing_layer_fx_panel_index [ uics_side_counter ])
-                        case __LAYER      
-                            if randomize_state [ uics_side_counter, showing_layer_fx_panel_index [ uics_side_counter ] ] = __ON
-                                fn059.a.random_value := uics_r_value
-                                fn059.a.target_start := __MAIN.FX.LAYER.VOLUME
-                                fn059.a.target_end   := __MAIN.FX.LAYER.WIDTH
-                                call fn059_randomize_common_lfp
-                            end if
-                        case __SATURATION 
-                            if randomize_state [ uics_side_counter, showing_layer_fx_panel_index [ uics_side_counter ] ] = __ON
+                    if randomize_lfp_state [ uics_side_counter ] = __ON
+                        select(showing_layer_fx_panel_index [ uics_side_counter ])
+                            case __LAYER      
+                                    fn059.a.random_value := uics_r_value
+                                    fn059.a.target_start := __MAIN.FX.LAYER.VOLUME
+                                    fn059.a.target_end   := __MAIN.FX.LAYER.WIDTH
+                                    call fn059_randomize_common_lfp
+
+                            case __SATURATION 
                                 call randomize_lfp_saturation
-                            end if
 
-                        case __DISTORTION 
-                            if randomize_state [ uics_side_counter, showing_layer_fx_panel_index [ uics_side_counter ] ] = __ON
+                            case __DISTORTION 
                                 call randomize_lfp_distortion
-                            end if
 
-                        case __LOFI       
+                            case __LOFI       
+                                call randomize_lfp_lofi
 
-                        case __TAPESAT    
+                            case __TAPESAT    
+                                call randomize_lfp_tapesat
 
-                        case __DELAY      
+                            case __DELAY      
+                                call randomize_lfp_delay
 
-                        case __CHORUS     
+                            case __CHORUS     
+                                call randomize_lfp_chorus
 
-                        case __REVERB     
+                            case __REVERB     
+                                call randomize_lfp_reverb
 
-                    end select
-
+                        end select
+                    end if
                 end if
             end for
         end if
@@ -1051,9 +1051,6 @@ on ui_controls
         { store the showing panel index }
         showing_layer_fx_panel_index [ uics_seq_side ] := uics_uiid_index
 
-        { recall randomize button state for the showing panel }
-        UIID_MAIN.layer_fx_panel_rand_btn [ uics_seq_side ] -> value := ...
-            randomize_state [ uics_seq_side, showing_layer_fx_panel_index [ uics_seq_side ] ]
     end if
 
 
@@ -1064,7 +1061,7 @@ on ui_controls
             uics_seq_side := __RIGHT
         end if
 
-        randomize_state [ uics_seq_side, showing_layer_fx_panel_index [ uics_seq_side ] ] := NI_UI_ID -> value
+        randomize_lfp_state [ uics_seq_side ] := NI_UI_ID -> value
     end if
 
 
@@ -1211,6 +1208,7 @@ on ui_controls
                 fn036.a.side          := uics_seq_side
                 fn036.a.target        := uicbs_custom_id
                 fn036.a.control_value := uicbs_control_par_value
+
                 call fn036_set_control_param_slider()
 
             case __CUUID_LFO_A_MIN  to __CUUID_LFO_A_MAX { FX LFO amount  }
@@ -1372,6 +1370,21 @@ on ui_controls
         UIID_MAIN.display_value -> text := !FX_distortion_type_txt [ uics_uiid_index ]
     end if
 
+    {{ FX Lofi Noise Color }}
+    if  NI_UI_ID = UIID_lfp_lofi_noise [ __LEFT ] or NI_UI_ID = UIID_lfp_lofi_noise [ __RIGHT ]
+        if NI_UI_ID = UIID_lfp_lofi_noise [ __LEFT ]
+            uics_seq_side   := __LEFT
+        else
+            uics_seq_side := __RIGHT
+        end if
+        uics_value := NI_UI_ID -> value
+
+        set_engine_par(ENGINE_PAR_NOISECOLOR, uics_value, __GROUP_NONE, __SLOT_B_LOFI, NI_BUS_OFFSET+uics_seq_side)
+
+        UIID_MAIN.display_title -> text := "Noise Color"
+        UIID_MAIN.display_value -> text := f'<uics_value/10000>%'
+    end if
+
 
     {{ FX Tape Saturator HF Cut }}
     if  NI_UI_ID = UIID_lfp_tape_sat.hf_cut [ __LEFT ] or NI_UI_ID = UIID_lfp_tape_sat.hf_cut [ __RIGHT ]
@@ -1434,8 +1447,6 @@ on ui_controls
             end if
         end if
 
-        // UIID_MAIN.display_title -> text := "HF Cut"
-        // UIID_MAIN.display_value -> text := get_engine_par_disp(ENGINE_PAR_TP_HF_ROLLOFF, __GROUP_NONE, __SLOT_B_TAPESAT, NI_BUS_OFFSET+uics_seq_side) & "Hz"
     end if
 
 
@@ -1452,7 +1463,7 @@ on ui_controls
         uics_value      := NI_UI_ID -> value
         
         @uics_title     := FX_delay_param_txt [ uics_uiid_index ]
-
+        message(f'DELAY control index <uics_uiid_index >')
         if uics_uiid_index # __FX_DELAY_DRYWET and uics_uiid_index # __FX_DELAY_TIME
             message("LOW, HIGH, FEEDBACK")
             set_engine_par(                            ...
@@ -1469,14 +1480,6 @@ on ui_controls
             if uics_uiid_index = __FX_DELAY_DRYWET
                 @uics_text_data := f'<uics_value/10000>%'
                 uics_value := int(float(uics_value)*0.63)
-                { dry }
-                // set_engine_par(                             ...
-                //     FX_delay_engine_par [uics_uiid_index],  ...
-                //     630000 - uics_value,                    ...
-                //     __GROUP_NONE,                           ...
-                //     __SLOT_B_DELAY,                         ...
-                //     NI_BUS_OFFSET+uics_seq_side             ...
-                // )
                 { wet }
                 set_engine_par(                          ...
                     ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN,  ...

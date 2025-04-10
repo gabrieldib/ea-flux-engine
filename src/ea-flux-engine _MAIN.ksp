@@ -36,8 +36,8 @@ on init
     panel_MAIN.FX.RIGHT.reverb         -> UI_HIDE
     panel_MAIN.FX.LEFT.reverb          -> UI_HIDE
     panel_MAIN.matrix.controls         -> UI_HIDE
-    
-    panel_BROWSER                      -> UI_HIDE
+
+    switch_crossfade                   -> UI_HIDE
 
     message(f'ON INIT CB end.')
 end on // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

@@ -1,29 +1,36 @@
 {{ GLOBAL }}
 
-    on ui_control (switch_MAIN.LEFT.soundSource)
-        panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
-        panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
-        panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
-        panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
-        set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
-        if panel_BROWSER -> hide = 0
-            source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
-            source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
-            call fn055_recall_source_buttons_page
-        end if
+    on ui_control (menu_MAIN.LEFT.soundSource)
+        selected_source [ __LEFT ] := menu_MAIN.LEFT.soundSource
+
+        { if there was a browse panel }
+        // panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
+        // panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
+        // panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
+        // panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
+        // set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
+        // if panel_BROWSER -> hide = 0
+        //     source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
+        //     source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
+        //     call fn055_recall_source_buttons_page
+        // end if
     end on
 
-    on ui_control (switch_MAIN.RIGHT.soundSource)
-        panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
-        panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
-        panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
-        panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
-        set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
-        if panel_BROWSER -> hide = 0
-            source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
-            source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
-            call fn055_recall_source_buttons_page
-        end if
+    on ui_control (menu_MAIN.RIGHT.soundSource)
+        selected_source [ __RIGHT ] := menu_MAIN.RIGHT.soundSource + __SOURCE_COUNT { offset }
+
+
+        { if there was a browse panel }
+        // panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
+        // panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
+        // panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
+        // panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
+        // set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
+        // if panel_BROWSER -> hide = 0
+        //     source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
+        //     source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
+        //     call fn055_recall_source_buttons_page
+        // end if
     end on
 
     on ui_control (switch_MAIN.LEFT.randomizer.link)
@@ -36,6 +43,7 @@
 
 {{ MAIN }}
     on ui_control (switch_MAIN.SEQ.combine)
+        switch_MAIN.SEQ.LEFT.power := __ON
         call draw_seq
         // call clear_all_leds
         { recall block steps numbers and steps pictures }

@@ -5,6 +5,8 @@ on note
     inc(note_held_count)
     message("note_held_count: " & note_held_count)
 
+    last_played_note := EVENT_NOTE
+
     layers.note_velo [ __LEFT,  EVENT_NOTE ] := EVENT_VELOCITY
     layers.note_velo [ __RIGHT, EVENT_NOTE ] := EVENT_VELOCITY
 
@@ -87,7 +89,6 @@ on note
 
     end if
 
-    last_played_note := EVENT_NOTE
     for ncb_counter := __LEFT to __RIGHT
         fn053.a.side := ncb_counter
         fn053.a.note := last_played_note
