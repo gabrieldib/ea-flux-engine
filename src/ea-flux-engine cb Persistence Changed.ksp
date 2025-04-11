@@ -31,8 +31,6 @@ on persistence_changed
     // switch_MAIN.SEQ.combine -> UI_HIDE
     // switch_MAIN.SEQ.combine := __NO
 
-    
-
     call pccb_init_instrument()
 
     message("ea-flux-engine loaded successfully")

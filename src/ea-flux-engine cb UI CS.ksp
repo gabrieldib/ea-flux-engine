@@ -115,6 +115,11 @@ on ui_controls
 
         if UIID_MAIN.layer.power [ uics_seq_side ] -> value = __ON
             if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                { adjust group filters and bus filters bypass state according to sequencer power state }
+                fn060.a.seq_power_state := uics_value
+                fn060.a.side            := uics_seq_side
+                call fn060_set_filters_bypass_state
+
                 if UIID_MAIN.seq.power [ uics_seq_side ] -> value = __ON
                     { restore all target control states}
                     for uics_counter := 0 to 4
@@ -124,7 +129,7 @@ on ui_controls
 
                         { set activator based on the target selector }
                         if  UIID_MAIN.seq.target_selectors [ uics_counter ] -> value = __ON
-                            message(f'Selector on on side <abs(1-uics_seq_side)> = <uics_counter >')
+
                             UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __ON
                         else
                             if  UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
@@ -151,6 +156,8 @@ on ui_controls
                     fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ uics_seq_side, fn021.r.active_index ]
                     call fn020_update_seq_target_state
 
+                    { with seq on, we will use filters on bus level }
+
                 else
                     { turn off target activators, power and selectors as they have no effect on single shots }
                     for uics_counter := 0 to 4
@@ -166,24 +173,6 @@ on ui_controls
             else { SEQ Join }
                 if switch_MAIN.SEQ.combine = __SEQ_JOIN
                     label_MAIN.SEQjoin.off -> hide := HIDE_WHOLE_CONTROL * uics_value
-                    for i.i := 0 to 31
-                        message(f'    LEFT step <i.i> state: <UIID_MAIN.seq.step [ __LEFT, i.i ] -> hide> ')
-                    end for
-                    for i.i := 0 to 31
-                        message(f'    RIGHT step <i.i> state: <UIID_MAIN.seq.step [ __RIGHT, i.i ] -> hide> ')
-                    end for
-                    for i.i := 0 to 3
-                        message(f'    LEFT step sliders <i.i> state: <UIID_MAIN.seq.block_steps [__LEFT, i.i] -> hide >')
-                    end for
-                    for i.i := 0 to 3
-                        message(f'    RIGHT step sliders <i.i> state: <UIID_MAIN.seq.block_steps [__RIGHT, i.i] -> hide >')
-                    end for
-                    for i.i := 0 to 3
-                        message(f'    LEFT leds <i.i> state: <UIID_MAIN.seq.leds [__LEFT, i.i] -> hide >')
-                    end for
-                    for i.i := 0 to 3
-                        message(f'    RIGHT leds <i.i> state: <UIID_MAIN.seq.leds [__RIGHT, i.i] -> hide >')
-                    end for
 
                 end if
                 
@@ -434,6 +423,20 @@ on ui_controls
                 get_mod_idx(uics_seq_side, "ENV_AHDSR"),                                  ...
                 -1                                                                        ...
             )
+
+            ADSR_display_unit := 'ms'
+            if uics_uiid_index mod 4 = 2
+                ADSR_display_unit := 'dB'
+            end if
+
+            UIID_MAIN.display_title -> text := ADSR_titles [ uics_uiid_index mod 4 ]
+            UIID_MAIN.display_value -> text := ...
+                get_engine_par_disp(                               ...
+                    ADSR_engine_pars [ uics_uiid_index mod 4 ],    ...
+                    uics_counter + uics_seq_side * __SOURCE_COUNT, ...
+                    get_mod_idx(uics_seq_side, "ENV_AHDSR"),       ...
+                    -1                                             ...
+                ) & ADSR_display_unit
         end for
     end if
 
@@ -442,21 +445,24 @@ on ui_controls
     if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ __LEFT ] or NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ __RIGHT ]
         message(f'SEQ RATE called>')
         if NI_UI_ID = UIID_MAIN.SEQ.rate_sliders [ __LEFT ]
-            uics_uiid_index := __LEFT
+            uics_seq_side := __LEFT
         else
-            uics_uiid_index := __RIGHT
+            uics_seq_side := __RIGHT
         end if
 
-        message("rate side: " & uics_uiid_index)
+        message("rate side: " & uics_seq_side)
         UIID_MAIN.display_title -> text := "Rate"
         UIID_MAIN.display_value -> text := ...
-            beat_rates_display [ (UIID_MAIN.SEQ.rate_sliders [ uics_uiid_index ] -> value) / __BEAT_RATE_DIVISOR ]
+            beat_rates_display [ (UIID_MAIN.SEQ.rate_sliders [ uics_seq_side ] -> value) / __BEAT_RATE_DIVISOR ]
         
-        SEQ.rate [ uics_uiid_index ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ uics_uiid_index ] -> value) / __BEAT_RATE_DIVISOR ]
+        SEQ.rate [ uics_seq_side ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ uics_seq_side ] -> value) / __BEAT_RATE_DIVISOR ]
 
-        if uics_uiid_index = __LEFT
+        if uics_seq_side = __LEFT
             slider_MAIN.ARPjoin.amount := UIID_MAIN.SEQ.rate_sliders [ __LEFT ] -> value
         end if
+
+        UIID_MAIN.show_rates [ uics_seq_side ] -> text := ...
+            beat_rates_display [ (UIID_MAIN.SEQ.rate_sliders [ uics_seq_side ] -> value) / __BEAT_RATE_DIVISOR ]
     end if 
 
 
@@ -1108,7 +1114,7 @@ on ui_controls
                     0                                                  ...
                 )
 
-                sample_starts [ uics_seq_side, last_played_note ] := fn052.a.value
+                sample_starts [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := fn052.a.value
                 UIID_MAIN.display_title -> text := "Sample Start"
                 UIID_MAIN.display_value -> text := f'<int(round(fn052.a.value * 10000.0)/100.0)>%'
 
@@ -1116,38 +1122,58 @@ on ui_controls
                 UIID_MAIN.display_title -> text := "Sample Tuning"
                 { value store and displaying on the UI }
                 if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_SHIFT) = __OFF
-                    sample_tuning [ uics_seq_side, last_played_note ] := round ( (float(uics_value - 500000) / __TUNING_STEP) )
-                    UIID_MAIN.display_value -> text := sample_tuning [ uics_seq_side, last_played_note ]
+                    sample_tuning [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := ...
+                        round ( (float(uics_value - 500000) / __TUNING_STEP) )
+
+                    UIID_MAIN.display_value -> text := sample_tuning [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ]
                 else
-                    sample_tuning [ uics_seq_side, last_played_note ] := round( 100.0 * ( (float(uics_value - 500000) / __TUNING_STEP)) )/100.0
-                    UIID_MAIN.display_value -> text := sample_tuning [ uics_seq_side, last_played_note ] & "st"
+                    sample_tuning [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := ...
+                        round( 100.0 * ( (float(uics_value - 500000) / __TUNING_STEP)) )/100.0
+
+                    UIID_MAIN.display_value -> text := sample_tuning [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] & "st"
                     message(f' shift step: < (float(uics_value) / __TUNING_STEP) * __TUNING_STEP >')
                 end if
                 { value will be used at the event level }
 
             case __SINGLE_SHOT_LP_CUT
-                set_engine_par(ENGINE_PAR_CUTOFF, uics_value, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                sample_low_cutoff  [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_value
+
+                { we do this only to get the display value, then set it back to initial value for 
+                the event to set the values using 'from script' modulator }
+                set_engine_par(ENGINE_PAR_CUTOFF, uics_value, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL)
                 UIID_MAIN.display_title -> text := "Low Pass Cutoff"
                 UIID_MAIN.display_value -> text := ...
-                    get_engine_par_disp(ENGINE_PAR_CUTOFF, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "hz"
+                    get_engine_par_disp(ENGINE_PAR_CUTOFF, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL) & "hz"
+                { back to default }
+                set_engine_par(ENGINE_PAR_CUTOFF, 0, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL)
 
             case __SINGLE_SHOT_LP_RES
-                set_engine_par(ENGINE_PAR_RESONANCE, uics_value, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                sample_low_reso    [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_value
+
+                set_engine_par(ENGINE_PAR_RESONANCE, uics_value, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL)
                 UIID_MAIN.display_title -> text := "Low Pass Reso"
                 UIID_MAIN.display_value -> text := ...
-                    get_engine_par_disp(ENGINE_PAR_RESONANCE, __GROUP_NONE, __LP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "%"
+                    get_engine_par_disp(ENGINE_PAR_RESONANCE, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL) & "%"
+                { back to default }
+                set_engine_par(ENGINE_PAR_RESONANCE, 0, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL)
 
             case __SINGLE_SHOT_HP_CUT
-                set_engine_par(ENGINE_PAR_CUTOFF, uics_value, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                sample_high_cutoff [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_value
+
+                set_engine_par(ENGINE_PAR_CUTOFF, uics_value, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL)
                 UIID_MAIN.display_title -> text := "Hi Pass Cutoff"
                 UIID_MAIN.display_value -> text := ...
-                    get_engine_par_disp(ENGINE_PAR_CUTOFF, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "hz"
+                    get_engine_par_disp(ENGINE_PAR_CUTOFF, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL) & "hz"
+                set_engine_par(ENGINE_PAR_CUTOFF, 0, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL)
 
             case __SINGLE_SHOT_HP_RES
-                set_engine_par(ENGINE_PAR_RESONANCE, uics_value, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side)
+                sample_high_reso   [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_value
+
+                set_engine_par(ENGINE_PAR_RESONANCE, uics_value, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL)
                 UIID_MAIN.display_title -> text := "Hi Pass Reso"
                 UIID_MAIN.display_value -> text := ...
-                    get_engine_par_disp(ENGINE_PAR_RESONANCE, __GROUP_NONE, __HP_FILTER_SLOT, NI_BUS_OFFSET+uics_seq_side) & "%"
+                    get_engine_par_disp(ENGINE_PAR_RESONANCE, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL) & "%"
+                set_engine_par(ENGINE_PAR_RESONANCE, 0, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL)
 
         end select
     end if
@@ -1172,7 +1198,10 @@ on ui_controls
         call fn052_set_wf_cursor_and_overlay
         UIID_MAIN.single_shot_controls [ uics_seq_side, __SINGLE_SHOT_SAMPLE_START ] -> value := int(uics_r_value * 1000000.0)
 
-        sample_starts [ uics_seq_side, last_played_note ] := uics_r_value
+        sample_starts [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_r_value
+
+        UIID_MAIN.display_title -> text := "Sample Start"
+        UIID_MAIN.display_value -> text := f'<int(round(fn052.a.value * 10000.0)/100.0)>%'
     end if
 
 
@@ -1208,6 +1237,10 @@ on ui_controls
                 fn036.a.side          := uics_seq_side
                 fn036.a.target        := uicbs_custom_id
                 fn036.a.control_value := uicbs_control_par_value
+
+                if uicbs_custom_id = 0 or uicbs_custom_id = 16
+                    fn036.a.control_value := int( float(fn036.a.control_value)*0.63)
+                end if
 
                 call fn036_set_control_param_slider()
 
@@ -1330,6 +1363,65 @@ on ui_controls
                 call UICBS_MAIN.FX.modules.links()
 
         end select
+    end if
+
+
+    {{ LAYER FX PANEL LINKS }}
+    if in_range(uicbs_custom_id, 212, 227)
+        uics_seq_side := __LEFT
+        if uicbs_custom_id >= 220
+            uics_seq_side := __RIGHT
+        end if
+
+        uics_value := NI_UI_ID -> value
+
+        { make the opposite side get all the values from the }
+        select ( (uicbs_custom_id - 212) mod 8 )
+            case __LAYER     
+                message(f' LAYER ')
+                { 3 params, 3 lfo amounts, 3 lfo powers, 3 lfo phase }
+                if uics_value = __ON
+                    message(f'    LINK ON')
+                    for uics_counter := 0 to 2
+                        message(f'    current   side index    <uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET >')
+                        message(f'    opposite  side index    <uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET >')
+                        // message(f'        Volume value:           <UIID_controls [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET ] >')
+                        // message(f'        Volume opposite: value: <UIID_controls [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET ] >')
+                        // message(f'        LFO A value:           <UIID_controls_LFO_amount [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET ] >')
+                        // message(f'        LFO A opposite: value: <UIID_controls_LFO_amount [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET ] >')
+
+                        // UIID_controls     [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
+                        //     UIID_controls [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET ]
+
+                        // UIID_controls_LFO_amount     [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
+                        //     UIID_controls_LFO_amount [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET]
+
+                        // UIID_controls_LFO_phase     [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
+                        //     UIID_controls_LFO_phase [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET]
+
+                        UIID_controls_LFO_power     [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
+                            UIID_controls_LFO_power [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET]
+
+                    end for
+
+                end if
+
+            case __SATURATION
+
+            case __DISTORTION
+
+            case __LOFI      
+
+            case __TAPESAT   
+
+            case __DELAY     
+
+            case __CHORUS    
+
+            case __REVERB    
+
+        end select
+
     end if
 
 
@@ -1594,8 +1686,7 @@ on ui_controls
             if uics_uiid_index = 2
                 uics_slot       := __SLOT_G_DISTORTION
             end if
-            { PENDING GROUP INDEX! }
-            set_engine_par(ENGINE_PAR_EFFECT_BYPASS, abs(1-uics_value), uics_seq_side, uics_slot, uics_generic)
+            set_engine_par(ENGINE_PAR_EFFECT_BYPASS, abs(1-uics_value), selected_source [ uics_seq_side ], uics_slot, uics_generic)
         else
             set_engine_par(                                          ...
                 ENGINE_PAR_EFFECT_BYPASS,                            ...
@@ -1623,7 +1714,7 @@ on ui_controls
 
             UIID_MAIN.display_title -> text := #title#
             UIID_MAIN.display_value -> text := get_engine_par_disp(#engine_par#, #target_group#, #target_slot#, #target_bus#) & #data_type#
-            set_engine_par(#engine_par#, uics_value, #target_group#, #target_slot#, #target_bus#)
+            // set_engine_par(#engine_par#, uics_value, #target_group#, #target_slot#, #target_bus#)
 
         end if
     end macro

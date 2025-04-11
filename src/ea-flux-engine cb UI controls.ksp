@@ -2,35 +2,17 @@
 
     on ui_control (menu_MAIN.LEFT.soundSource)
         selected_source [ __LEFT ] := menu_MAIN.LEFT.soundSource
+        for i.i := __MAIN.FX.SATURATION to __MAIN.FX.DISTORTION.DRIVE
+            LFO_targets_GROUP [ __LEFT, i.i ] := selected_source [ __LEFT ]
+        end for
 
-        { if there was a browse panel }
-        // panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
-        // panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
-        // panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
-        // panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
-        // set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
-        // if panel_BROWSER -> hide = 0
-        //     source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
-        //     source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
-        //     call fn055_recall_source_buttons_page
-        // end if
     end on
 
     on ui_control (menu_MAIN.RIGHT.soundSource)
         selected_source [ __RIGHT ] := menu_MAIN.RIGHT.soundSource + __SOURCE_COUNT { offset }
-
-
-        { if there was a browse panel }
-        // panel_MAIN         -> hide := HIDE_WHOLE_CONTROL - panel_MAIN         -> hide  
-        // panel_BROWSER      -> hide := HIDE_WHOLE_CONTROL - panel_BROWSER      -> hide  
-        // panel_LFO.controls -> hide := HIDE_WHOLE_CONTROL - panel_LFO.controls -> hide  
-        // panel_LINKS        -> hide := HIDE_WHOLE_CONTROL - panel_LINKS        -> hide  
-        // set_skin_offset( int(float(panel_MAIN -> hide) * 204.5) )
-        // if panel_BROWSER -> hide = 0
-        //     source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
-        //     source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
-        //     call fn055_recall_source_buttons_page
-        // end if
+        for i.i := __MAIN.FX.SATURATION to __MAIN.FX.DISTORTION.DRIVE
+            LFO_targets_GROUP [ __RIGHT, i.i ] := selected_source [ __RIGHT ]
+        end for
     end on
 
     on ui_control (switch_MAIN.LEFT.randomizer.link)
@@ -111,6 +93,8 @@
             MATRIX.matrix.center.mouseON[0]:= 0
         end if
 
+        UIID_MAIN.display_title -> text := "Volume"
+
         { while dragging LAYER A }
         if (MATRIX.matrix.center.mouseON[1] = 2 or MATRIX.matrix.center.mouseON[1] = 3)
             label_MAIN.matrix.centerLR   -> picture_state:= int(255.0 * xypad_MAIN.matrix.center[0] )
@@ -119,8 +103,10 @@
 
             fn036.a.side          := __LEFT
             fn036.a.target        := __MAIN.FX.LAYER.VOLUME 
-            fn036.a.control_value := slider_MAIN.FX.LEFT.layer.volume
+            fn036.a.control_value := int (float(slider_MAIN.FX.LEFT.layer.volume)*0.63)
             call fn036_set_control_param_slider
+            UIID_MAIN.display_value -> text := ...
+                get_engine_par_disp(ENGINE_PAR_VOLUME, __GROUP_NONE, __SLOT_NONE, NI_BUS_OFFSET) & "dB"
         end if
 
         { while dragging  LAYER B }
@@ -131,9 +117,10 @@
 
             fn036.a.side          := __RIGHT
             fn036.a.target        := __MAIN.FX.LAYER.VOLUME + __MAIN.FX.RIGHT.OFFSET
-            fn036.a.control_value := slider_MAIN.FX.RIGHT.layer.volume
+            fn036.a.control_value := int (float(slider_MAIN.FX.RIGHT.layer.volume)*0.63)
             call fn036_set_control_param_slider
-
+            UIID_MAIN.display_value -> text := ...
+                get_engine_par_disp(ENGINE_PAR_VOLUME, __GROUP_NONE, __SLOT_NONE, NI_BUS_OFFSET+1) & "dB"
         end if
     end on
 
@@ -245,7 +232,7 @@
         { direct rate values updates based on DURATION CONSTANTS }
         call update_lfo_rate
         { ui updates }
-        message(f'index: <int(float( slider_MAIN.LFO.rate) / 7.619047)>')
+        message(f'index: <int(float( 161-slider_MAIN.LFO.rate) / 7.619047)>')
 
         call update_lfo_viz
         call update_lfo_aux_data
@@ -302,6 +289,19 @@
             label_MAIN.matrix.center.mod.RL -> UI_SHOW
         end if
     end on
+
+
+{{ FX REVERB }}
+on ui_control (menu_MAIN.FX.LEFT.reverb.menu)
+    message(f' loading: ---<@reverb.path & Reverb_IR_files[menu_MAIN.FX.LEFT.reverb.menu] & ".wav" >---')
+    load_ir_sample(@reverb.path & Reverb_IR_files[menu_MAIN.FX.LEFT.reverb.menu] & ".wav", __SLOT_B_REVERB, NI_BUS_OFFSET+0)
+end on
+on ui_control (menu_MAIN.FX.RIGHT.reverb.menu)
+    message(f' loading: ---<@reverb.path & Reverb_IR_files[menu_MAIN.FX.RIGHT.reverb.menu] & ".wav" >---')
+    load_ir_sample(@reverb.path & Reverb_IR_files[menu_MAIN.FX.RIGHT.reverb.menu] & ".wav", __SLOT_B_REVERB, NI_BUS_OFFSET+1)
+end on
+
+
 
 {{ DEMO MODE }}
     on ui_control (button_demo.mode)

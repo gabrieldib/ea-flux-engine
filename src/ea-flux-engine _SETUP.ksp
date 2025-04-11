@@ -8,3 +8,6 @@ define VOLUME_CURVE_SLOPE := 0.35
 define __SOURCE_COUNT         := 5  { example v0.16 }
 define __MAX_SOURCES_PER_PAGE := 18 { not in use }
 define __MAX_SOURCE_PAGES     := __SOURCE_COUNT/__MAX_SOURCES_PER_PAGE { not in use }
+
+{{ FX REVERB}}
+define IR_FILES_COUNT := 180

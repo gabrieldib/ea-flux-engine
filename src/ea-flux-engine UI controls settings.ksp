@@ -50,5 +50,3 @@ declare MAIN.FX_SELECTOR.FONT_ON_H  := get_font_id("font_Roboto Regular Size 11 
 
 declare GLOBAL.SOURCE.BTN_FONT   := get_font_id("font_Roboto Regular Size 10 #FFCBAE 100p")
 declare GLOBAL.SOURCE.BTN_FONT_H := get_font_id("font_Roboto Regular Size 10 #FFE3D3 100p")
-
-
