@@ -270,7 +270,8 @@ UIID_MAIN.hmz_sliders [ 1 ] := get_ui_id(slider_MAIN.RIGHT.hmz)
 UIID_MAIN.layer_fx_panel_rand_btn [ __LEFT  ] := get_ui_id( switch_MAIN.FX.LEFT.randomize ) 
 UIID_MAIN.layer_fx_panel_rand_btn [ __RIGHT ] := get_ui_id( switch_MAIN.FX.RIGHT.randomize ) 
 
-
+UIID_MAIN.show_rates [ __LEFT ] := get_ui_id(label_MAIN.2SEQ.LEFT.show.rate)
+UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
 
 {{ SETTING FONTS }}
     // for i.i := 0 to 17

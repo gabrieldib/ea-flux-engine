@@ -143,6 +143,16 @@
 
     define __LEFT_VOLUME := 0
 
+    define __GROUP_LEVEL_LP_FILTER_SLOT := 2
+    define __GROUP_LEVEL_HP_FILTER_SLOT := 3
+
+    define __FS_SNG_SHT_SAMPLE_START_LAYER_1 := 1
+    define __FS_SNG_SHT_LP_CUTOFF := 3
+    define __FS_SNG_SHT_LP_RESO   := 4
+    define __FS_SNG_SHT_HP_CUTOFF := 5
+    define __FS_SNG_SHT_HP_RESO   := 6
+    define __FS_SNG_SHT_FILTER_LAYER_OFFSET := 4 { layer 2 cutoff and reso will be respectively 5 and 6 }
+
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
         declare hide_constants [ 2 ]
@@ -294,23 +304,23 @@
         declare const __LFO_RATE_FRAME := 1000000 / (__RATE_ELEMENTS_COUNT-1)
         declare !beat_rates_display [ __RATE_ELEMENTS_COUNT ]
             beat_rates_display [ 00 ] := "1/128"  { 128               }
-            beat_rates_display [ 01 ] := "1/64 T" { 64th  triplet     }
+            beat_rates_display [ 01 ] := "1/64T"  { 64th  triplet     }
             beat_rates_display [ 02 ] := "1/64"   { 64th              }
-            beat_rates_display [ 03 ] := "1/32 T" { 32nd  triplet     }
+            beat_rates_display [ 03 ] := "1/32T"  { 32nd  triplet     }
             beat_rates_display [ 04 ] := "1/32"   { 32nd              }
-            beat_rates_display [ 05 ] := "1/16 T" { sixteenth triplet }
+            beat_rates_display [ 05 ] := "1/16T"  { sixteenth triplet }
             beat_rates_display [ 06 ] := "1/16"   { sixteenth         }
-            beat_rates_display [ 07 ] := "1/8 T"  { eighth triplet    }
-            beat_rates_display [ 08 ] := "1/16 D" { sixteenth dotted  }
+            beat_rates_display [ 07 ] := "1/8T"   { eighth triplet    }
+            beat_rates_display [ 08 ] := "1/16D"  { sixteenth dotted  }
             beat_rates_display [ 09 ] := "1/8"    { eighth            }
-            beat_rates_display [ 10 ] := "1/4 T"  { quarter triplet   }
-            beat_rates_display [ 11 ] := "1/8 D"  { eight dotted      }
+            beat_rates_display [ 10 ] := "1/4T"   { quarter triplet   }
+            beat_rates_display [ 11 ] := "1/8D"   { eight dotted      }
             beat_rates_display [ 12 ] := "1/4"    { quarter           }
-            beat_rates_display [ 13 ] := "1/2 T"  { half triplet      }
-            beat_rates_display [ 14 ] := "1/4 D"  { quarter dotted    }
+            beat_rates_display [ 13 ] := "1/2T"   { half triplet      }
+            beat_rates_display [ 14 ] := "1/4D"   { quarter dotted    }
             beat_rates_display [ 15 ] := "1/2"    { half              }
-            beat_rates_display [ 16 ] := "1/2 D"  { half dotted       }
-            beat_rates_display [ 17 ] := "1 T"    { whole triplet     }
+            beat_rates_display [ 16 ] := "1/2D"   { half dotted       }
+            beat_rates_display [ 17 ] := "1T"     { whole triplet     }
             beat_rates_display [ 18 ] := "1"      { whole             }
             beat_rates_display [ 19 ] := "2"      { 2 x whole         }
             beat_rates_display [ 20 ] := "3"      { 3 x whole         }
@@ -421,6 +431,14 @@
             seq_polarity [0] := "unipolar"
             seq_polarity [1] := "bipolar"
 
+        declare !ADSR_titles [ 4 ]
+            ADSR_titles [ 0 ] := 'Attack'
+            ADSR_titles [ 1 ] := 'Decay'
+            ADSR_titles [ 2 ] := 'Sustain'
+            ADSR_titles [ 3 ] := 'Release'
+
+        declare @ADSR_display_unit
+
         declare const ~__SEQ_STEP_VALUE_FRAMES := 94.0
 
         declare LFO_targets_engine_pars [ 16 ] := (...
@@ -442,24 +460,23 @@
             ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN     ... { 15  Reverb       }
             )
 
-        declare LFO_targets_GROUP [ 16 ] := ( ...
-            __GROUP_NONE, ... {  0  Volume       }
-            __GROUP_NONE, ... {  1  Pan          }
-            __GROUP_NONE, ... {  2  Width        }
-            __GROUP_NONE, ... {  3  Saturation   }
-            __GROUP_NONE, ... {  4  Damp         }
-            __GROUP_NONE, ... {  5  Drive        }
-            __GROUP_NONE, ... {  6  Bits         }
-            __GROUP_NONE, ... {  7  Srate        }
-            __GROUP_NONE, ... {  8  Noise        }
-            __GROUP_NONE, ... {  9  TP Gain      }
-            __GROUP_NONE, ... { 10  TP Warmth    }
-            __GROUP_NONE, ... { 11  Chorus Wet   }
-            __GROUP_NONE, ... { 12  Chorus Depth }
-            __GROUP_NONE, ... { 13  Chorus Speed }
-            __GROUP_NONE, ... { 14  Chorus Phase }
-            __GROUP_NONE  ... { 15  Reverb       }
-            )
+        declare read LFO_targets_GROUP [ 2, 16 ] := ( __GROUP_NONE )
+            {  0  Volume       }
+            {  1  Pan          }
+            {  2  Width        }
+            {  3  Saturation   }
+            {  4  Damp         }
+            {  5  Drive        }
+            {  6  Bits         }
+            {  7  Srate        }
+            {  8  Noise        }
+            {  9  TP Gain      }
+            { 10  TP Warmth    }
+            { 11  Chorus Wet   }
+            { 12  Chorus Depth }
+            { 13  Chorus Speed }
+            { 14  Chorus Phase }
+            { 15  Reverb       }
 
         declare LFO_targets_SLOT [ 16 ] := ( ...
             __SLOT_NONE,        ... {  0  Volume       }
@@ -776,8 +793,12 @@
         declare layers.note_events [ 2, 128 ]
         declare layers.note_velo   [ 2, 128 ] // stores played velocities
         declare last_played_note              // to use as index for sample start data
-        declare read ?sample_starts [ 2, 128 ]
-        declare read ?sample_tuning [ 2, 128 ]
+        declare read ?sample_starts     [ __SOURCE_COUNT * 2, 2, 128 ]
+        declare read ?sample_tuning     [ __SOURCE_COUNT * 2, 2, 128 ]
+        declare read sample_low_cutoff  [ __SOURCE_COUNT * 2, 2, 128 ] := (0)
+        declare read sample_low_reso    [ __SOURCE_COUNT * 2, 2, 128 ]
+        declare read sample_high_cutoff [ __SOURCE_COUNT * 2, 2, 128 ]
+        declare read sample_high_reso   [ __SOURCE_COUNT * 2, 2, 128 ]
         declare ~ncb_tune_knob
         declare  ncb_counter
 
@@ -1370,10 +1391,14 @@
     declare ~fn058.a.float_value
     declare ~fn058.r.float_clamped_value
 
-    //fn058_randomize_common_lfp
+    //fn059_randomize_common_lfp
     declare fn059.a.target_start
     declare fn059.a.target_end
     declare ~fn059.a.random_value
     declare fn059.l.target_counter
     declare fn059.l.lfo_amount
 
+    //fn060_set_filters_bypas_state
+    declare fn060.a.seq_power_state
+    declare fn060.a.side
+    declare fn060.l.counter
