@@ -118,7 +118,7 @@ on ui_controls
                 { adjust group filters and bus filters bypass state according to sequencer power state }
                 fn060.a.seq_power_state := uics_value
                 fn060.a.side            := uics_seq_side
-                call fn060_set_filters_bypas_state
+                call fn060_set_filters_bypass_state
 
                 if UIID_MAIN.seq.power [ uics_seq_side ] -> value = __ON
                     { restore all target control states}
@@ -129,7 +129,7 @@ on ui_controls
 
                         { set activator based on the target selector }
                         if  UIID_MAIN.seq.target_selectors [ uics_counter ] -> value = __ON
-                            message(f'Selector on on side <abs(1-uics_seq_side)> = <uics_counter >')
+
                             UIID_MAIN.seq.target_activators [ uics_seq_side, uics_counter ] -> value := __ON
                         else
                             if  UIID_MAIN.seq.power [ abs(1-uics_seq_side) ] -> value = __OFF
@@ -1366,6 +1366,65 @@ on ui_controls
     end if
 
 
+    {{ LAYER FX PANEL LINKS }}
+    if in_range(uicbs_custom_id, 212, 227)
+        uics_seq_side := __LEFT
+        if uicbs_custom_id >= 220
+            uics_seq_side := __RIGHT
+        end if
+
+        uics_value := NI_UI_ID -> value
+
+        { make the opposite side get all the values from the }
+        select ( (uicbs_custom_id - 212) mod 8 )
+            case __LAYER     
+                message(f' LAYER ')
+                { 3 params, 3 lfo amounts, 3 lfo powers, 3 lfo phase }
+                if uics_value = __ON
+                    message(f'    LINK ON')
+                    for uics_counter := 0 to 2
+                        message(f'    current   side index    <uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET >')
+                        message(f'    opposite  side index    <uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET >')
+                        // message(f'        Volume value:           <UIID_controls [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET ] >')
+                        // message(f'        Volume opposite: value: <UIID_controls [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET ] >')
+                        // message(f'        LFO A value:           <UIID_controls_LFO_amount [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET ] >')
+                        // message(f'        LFO A opposite: value: <UIID_controls_LFO_amount [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET ] >')
+
+                        // UIID_controls     [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
+                        //     UIID_controls [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET ]
+
+                        // UIID_controls_LFO_amount     [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
+                        //     UIID_controls_LFO_amount [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET]
+
+                        // UIID_controls_LFO_phase     [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
+                        //     UIID_controls_LFO_phase [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET]
+
+                        UIID_controls_LFO_power     [ uics_counter + abs(1-uics_seq_side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
+                            UIID_controls_LFO_power [ uics_counter + uics_seq_side * __MAIN.FX.RIGHT.OFFSET]
+
+                    end for
+
+                end if
+
+            case __SATURATION
+
+            case __DISTORTION
+
+            case __LOFI      
+
+            case __TAPESAT   
+
+            case __DELAY     
+
+            case __CHORUS    
+
+            case __REVERB    
+
+        end select
+
+    end if
+
+
     {{ LAYER AND FX PANELS CONTROLS NOT Modulated by LFOs }}
     {{ FX Saturation Modes }}
     if  in_range(NI_UI_ID, UIID_lfp_sat_modes [ __LEFT,  0 ], UIID_lfp_sat_modes [ __LEFT,  2 ] ) or ...
@@ -1627,8 +1686,7 @@ on ui_controls
             if uics_uiid_index = 2
                 uics_slot       := __SLOT_G_DISTORTION
             end if
-            { PENDING GROUP INDEX! }
-            set_engine_par(ENGINE_PAR_EFFECT_BYPASS, abs(1-uics_value), uics_seq_side, uics_slot, uics_generic)
+            set_engine_par(ENGINE_PAR_EFFECT_BYPASS, abs(1-uics_value), selected_source [ uics_seq_side ], uics_slot, uics_generic)
         else
             set_engine_par(                                          ...
                 ENGINE_PAR_EFFECT_BYPASS,                            ...

@@ -145,10 +145,7 @@ on listener
                         sin( ...
                             LFO_sine_step * ((float(lcb_ms_counter) mod (float(LFO_rate))) - (NI_MATH_PI/2.0)) ...
                         ) / 2.0 + 0.5 { the /2 + 0.5 is to adjust from -1 to 1 to return values from 0 to 1 }
-                    
-                    // if lcb_ms_counter mod 250 = 0
-                    //     message(f' LFO_emitted_value < LFO_emitted_value >')
-                    // end if
+
                     if LFO_data [ LFO_WAVESHAPE ] = LFO_WAVESHAPE_SQR
                         if LFO_emitted_value <= 0.5
                             LFO_emitted_value := 0.0
@@ -206,12 +203,21 @@ on listener
                                 int(LFO_lcb_cursor_calc) ...
                             )
 
+                            {{ UPDATE MOD MATRIX ORBS }}
+                            LFO_lcb_cursor_calc_clamped := LFO_lcb_cursor_calc
+                            if LFO_lcb_cursor_calc_clamped > 255.0
+                                LFO_lcb_cursor_calc_clamped := 255.0
+                            end if
+                            if LFO_lcb_cursor_calc_clamped < 0.0
+                                LFO_lcb_cursor_calc_clamped := 0.0
+                            end if
+
                             if lcb_control_counter mod 16 = 0
-                                UIID_MAIN.matrix_sides    [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc)
+                                UIID_MAIN.matrix_sides    [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc_clamped)
                                 if lcb_control_counter / 16 = __LEFT
-                                    UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := 255 - int(LFO_lcb_cursor_calc)
+                                    UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := 255 - int(LFO_lcb_cursor_calc_clamped)
                                 else
-                                    UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc)
+                                    UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc_clamped)
                                 end if
                             end if
 
@@ -279,13 +285,13 @@ on listener
                             set_engine_par(...
                                 LFO_targets_engine_pars [ lcb_control_counter_adjusted ],               ...
                                 fn044.r.engine_value,                                                   ...
-                                lcb_lfo_group_counter,                                                  ...
+                                selected_source [ lcb_lfo_group_counter ],                              ...
                                 LFO_targets_SLOT  [ lcb_control_counter_adjusted ],                     ...
                                 LFO_targets_BUS   [ lcb_control_counter_adjusted ] + LFO_bus_adjustment ...
                             )
                         end for
 
-                    else { FX in the insert level}
+                    else { FX in the bus level}
                         set_engine_par(...
                             LFO_targets_engine_pars [ lcb_control_counter_adjusted ],               ...
                             fn044.r.engine_value,                                                   ...

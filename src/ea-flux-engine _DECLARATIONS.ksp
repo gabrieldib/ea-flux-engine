@@ -303,53 +303,54 @@
         declare const __RATE_ELEMENTS_COUNT := 22
         declare const __LFO_RATE_FRAME := 1000000 / (__RATE_ELEMENTS_COUNT-1)
         declare !beat_rates_display [ __RATE_ELEMENTS_COUNT ]
-            beat_rates_display [ 00 ] := "1/128"  { 128               }
-            beat_rates_display [ 01 ] := "1/64T"  { 64th  triplet     }
-            beat_rates_display [ 02 ] := "1/64"   { 64th              }
-            beat_rates_display [ 03 ] := "1/32T"  { 32nd  triplet     }
-            beat_rates_display [ 04 ] := "1/32"   { 32nd              }
-            beat_rates_display [ 05 ] := "1/16T"  { sixteenth triplet }
-            beat_rates_display [ 06 ] := "1/16"   { sixteenth         }
-            beat_rates_display [ 07 ] := "1/8T"   { eighth triplet    }
-            beat_rates_display [ 08 ] := "1/16D"  { sixteenth dotted  }
-            beat_rates_display [ 09 ] := "1/8"    { eighth            }
+            beat_rates_display [ 00 ] := "4"      { 4 x whole         }
+            beat_rates_display [ 01 ] := "3"      { 3 x whole         }
+            beat_rates_display [ 02 ] := "2"      { 2 x whole         }
+            beat_rates_display [ 03 ] := "1"      { whole             }
+            beat_rates_display [ 04 ] := "1T"     { whole triplet     }
+            beat_rates_display [ 05 ] := "1/2D"   { half dotted       }
+            beat_rates_display [ 06 ] := "1/2"    { half              }
+            beat_rates_display [ 07 ] := "1/2T"   { half triplet      }
+            beat_rates_display [ 08 ] := "1/4D"   { quarter dotted    }
+            beat_rates_display [ 09 ] := "1/4"    { quarter           }
             beat_rates_display [ 10 ] := "1/4T"   { quarter triplet   }
             beat_rates_display [ 11 ] := "1/8D"   { eight dotted      }
-            beat_rates_display [ 12 ] := "1/4"    { quarter           }
-            beat_rates_display [ 13 ] := "1/2T"   { half triplet      }
-            beat_rates_display [ 14 ] := "1/4D"   { quarter dotted    }
-            beat_rates_display [ 15 ] := "1/2"    { half              }
-            beat_rates_display [ 16 ] := "1/2D"   { half dotted       }
-            beat_rates_display [ 17 ] := "1T"     { whole triplet     }
-            beat_rates_display [ 18 ] := "1"      { whole             }
-            beat_rates_display [ 19 ] := "2"      { 2 x whole         }
-            beat_rates_display [ 20 ] := "3"      { 3 x whole         }
-            beat_rates_display [ 21 ] := "4"      { 4 x whole         }
+            beat_rates_display [ 12 ] := "1/8"    { eighth            }
+            beat_rates_display [ 13 ] := "1/8T"   { eighth triplet    }
+            beat_rates_display [ 14 ] := "1/16D"  { sixteenth dotted  }
+            beat_rates_display [ 15 ] := "1/16"   { sixteenth         }
+            beat_rates_display [ 16 ] := "1/16T"  { sixteenth triplet }
+            beat_rates_display [ 17 ] := "1/32"   { 32nd              }
+            beat_rates_display [ 18 ] := "1/32T"  { 32nd  triplet     }
+            beat_rates_display [ 19 ] := "1/64"   { 64th              }
+            beat_rates_display [ 20 ] := "1/64T"  { 64th  triplet     }
+            beat_rates_display [ 21 ] := "1/128"  { 128               }
 
         declare      ~__LFO_RATE_INDEX_DIVIDER := 7.619047 { 160 / 21 }
         declare beat_rates [ __RATE_ELEMENTS_COUNT ]
-            beat_rates [ 00 ] := (DURATION_SIXTEENTH/8)/1000
-            beat_rates [ 01 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
-            beat_rates [ 02 ] := (DURATION_SIXTEENTH/4)/1000
-            beat_rates [ 03 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
-            beat_rates [ 04 ] := (DURATION_SIXTEENTH/2)/1000
-            beat_rates [ 05 ] := (DURATION_SIXTEENTH_TRIPLET)/1000
-            beat_rates [ 06 ] := (DURATION_SIXTEENTH)/1000
-            beat_rates [ 07 ] := (DURATION_EIGHTH_TRIPLET)/1000
-            beat_rates [ 08 ] := (3*DURATION_SIXTEENTH/2)/1000
-            beat_rates [ 09 ] := (DURATION_EIGHTH)/1000
+            beat_rates [ 00 ] := (DURATION_QUARTER * 16)/1000
+            beat_rates [ 01 ] := (DURATION_QUARTER * 12)/1000
+            beat_rates [ 02 ] := (DURATION_QUARTER * 8)/1000
+            beat_rates [ 03 ] := (DURATION_QUARTER * 4)/1000
+            beat_rates [ 04 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
+            beat_rates [ 05 ] := (DURATION_QUARTER * 3)/1000
+            beat_rates [ 06 ] := (DURATION_QUARTER * 2)/1000
+            beat_rates [ 07 ] := (DURATION_QUARTER_TRIPLET * 2)/1000
+            beat_rates [ 08 ] := (DURATION_EIGHTH * 3)/1000
+            beat_rates [ 09 ] := (DURATION_QUARTER)/1000
             beat_rates [ 10 ] := (DURATION_QUARTER_TRIPLET)/1000
             beat_rates [ 11 ] := (DURATION_SIXTEENTH* 3)/1000
-            beat_rates [ 12 ] := (DURATION_QUARTER)/1000
-            beat_rates [ 13 ] := (DURATION_QUARTER_TRIPLET * 2)/1000
-            beat_rates [ 14 ] := (DURATION_EIGHTH * 3)/1000
-            beat_rates [ 15 ] := (DURATION_QUARTER * 2)/1000
-            beat_rates [ 16 ] := (DURATION_QUARTER * 3)/1000
-            beat_rates [ 17 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
-            beat_rates [ 18 ] := (DURATION_QUARTER * 4)/1000
-            beat_rates [ 19 ] := (DURATION_QUARTER * 8)/1000
-            beat_rates [ 20 ] := (DURATION_QUARTER * 12)/1000
-            beat_rates [ 21 ] := (DURATION_QUARTER * 16)/1000
+            beat_rates [ 12 ] := (DURATION_EIGHTH)/1000
+            beat_rates [ 13 ] := (DURATION_EIGHTH_TRIPLET)/1000
+            beat_rates [ 14 ] := (3*DURATION_SIXTEENTH/2)/1000
+            beat_rates [ 15 ] := (DURATION_SIXTEENTH)/1000
+            beat_rates [ 16 ] := (DURATION_SIXTEENTH_TRIPLET)/1000
+            beat_rates [ 17 ] := (DURATION_SIXTEENTH/2)/1000
+            beat_rates [ 18 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
+            beat_rates [ 19 ] := (DURATION_SIXTEENTH/4)/1000
+            beat_rates [ 20 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
+            beat_rates [ 21 ] := (DURATION_SIXTEENTH/8)/1000
+
 
         declare const __BEAT_RATE_DIVISOR := 1000000 / (__RATE_ELEMENTS_COUNT-1)
 
@@ -633,6 +634,12 @@
             ADSR_engine_pars [ 2 ] := ENGINE_PAR_SUSTAIN
             ADSR_engine_pars [ 3 ] := ENGINE_PAR_RELEASE
 
+    {{ FX REVERB }}
+    declare !Reverb_impulse_responses_titles [ 200 ]
+    declare !Reverb_IR_files [ 200 ]
+
+    declare @reverb.path := get_folder($GET_FOLDER_FACTORY_DIR) & "presets/effects/convolution/<<<K4IR.nkx>>>/K4 IR Samples/"
+
 
 { VARIABLES _____________________________________________________________________________________ }
     { sketch ___________________________________________________________________________________ }
@@ -823,8 +830,8 @@
 
     {{ LFO }}
         declare read LFO_data [ 4 ]
-
         declare read LFO_rate
+        declare invert_lfo_rate_knob_value
 
         { this exists in case certain targets will have a different max than 10^6 }
         declare LFO_control_value_max [45]  := (500000)
@@ -841,6 +848,7 @@
         declare ~LFO_lcb_ind_min
         declare ~LFO_lcb_ind_max
         declare ~LFO_lcb_cursor_calc
+        declare ~LFO_lcb_cursor_calc_clamped
         declare read ~LFO_rate_pct  // the LFO rate squished into 0 : 1 range
         declare ~tau_hz_ms_rate_divisor
         declare ~LFO_ms_rate_label_disp_value

@@ -232,7 +232,7 @@
         { direct rate values updates based on DURATION CONSTANTS }
         call update_lfo_rate
         { ui updates }
-        message(f'index: <int(float( slider_MAIN.LFO.rate) / 7.619047)>')
+        message(f'index: <int(float( 161-slider_MAIN.LFO.rate) / 7.619047)>')
 
         call update_lfo_viz
         call update_lfo_aux_data
@@ -289,6 +289,19 @@
             label_MAIN.matrix.center.mod.RL -> UI_SHOW
         end if
     end on
+
+
+{{ FX REVERB }}
+on ui_control (menu_MAIN.FX.LEFT.reverb.menu)
+    message(f' loading: ---<@reverb.path & Reverb_IR_files[menu_MAIN.FX.LEFT.reverb.menu] & ".wav" >---')
+    load_ir_sample(@reverb.path & Reverb_IR_files[menu_MAIN.FX.LEFT.reverb.menu] & ".wav", __SLOT_B_REVERB, NI_BUS_OFFSET+0)
+end on
+on ui_control (menu_MAIN.FX.RIGHT.reverb.menu)
+    message(f' loading: ---<@reverb.path & Reverb_IR_files[menu_MAIN.FX.RIGHT.reverb.menu] & ".wav" >---')
+    load_ir_sample(@reverb.path & Reverb_IR_files[menu_MAIN.FX.RIGHT.reverb.menu] & ".wav", __SLOT_B_REVERB, NI_BUS_OFFSET+1)
+end on
+
+
 
 {{ DEMO MODE }}
     on ui_control (button_demo.mode)

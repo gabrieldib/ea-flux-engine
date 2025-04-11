@@ -4,6 +4,7 @@ on note
     set_event_par(EVENT_ID, EVENT_PAR_0, 1)
     inc(note_held_count)
     message("note_held_count: " & note_held_count)
+    message(f' EVENT VELOCITY <EVENT_VELOCITY >')
 
     last_played_note := EVENT_NOTE
 
@@ -20,8 +21,7 @@ on note
               seq counter is zeroed and it will play immeditely }
 
         if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
-            ( ( switch_MAIN.SEQ.LEFT.power     = __ON  and note_held_count = 1) or ...
-            ( switch_MAIN.SEQ.LEFT.power       = __OFF ) )
+            ( switch_MAIN.SEQ.LEFT.power       = __OFF ) 
 
             pn_ncb.a.side      := __LEFT
             pn_ncb.a.note      := EVENT_NOTE
@@ -31,8 +31,7 @@ on note
         end if
 
         if  switch_MAIN.SoundSource.RIGHT.power = __ON  and ...
-            (( switch_MAIN.SEQ.RIGHT.power      = __ON  and note_held_count = 1) or ...
-            ( switch_MAIN.SEQ.RIGHT.power       = __OFF ))
+            ( switch_MAIN.SEQ.RIGHT.power       = __OFF )
 
             pn_ncb.a.side := __RIGHT
             pn_ncb.a.note := EVENT_NOTE

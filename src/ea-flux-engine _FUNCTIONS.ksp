@@ -81,13 +81,14 @@ function pccb_init_instrument
         { set filters bypass state }
         fn060.a.seq_power_state := UIID_MAIN.seq.power [ i.i ] -> value
         fn060.a.side            := i.i
-        call fn060_set_filters_bypas_state
+        call fn060_set_filters_bypass_state
 
         for l.i := __MAIN.FX.SATURATION to __MAIN.FX.DISTORTION.DRIVE
             LFO_targets_GROUP [ i.i, l.i ] := selected_source [ i.i ]
         end for
 
-        UIID_MAIN.show_rates [ i.i ] -> picture_state := (UIID_MAIN.SEQ.rate_sliders [ i.i ] -> value) / __BEAT_RATE_DIVISOR
+        UIID_MAIN.show_rates [ i.i ] -> text := ...
+            beat_rates_display [ (UIID_MAIN.SEQ.rate_sliders [ i.i ] -> value) / __BEAT_RATE_DIVISOR ]
     end for
 
     { change text alignment on target selectors according to SEQ DUAL/JOIN state }
@@ -161,6 +162,7 @@ function pccb_init_instrument
     source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
     source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
     // call fn055_recall_source_buttons_page
+
 end function
 
 {{ general }}
@@ -199,7 +201,7 @@ end function
 {{ MAIN }}
 function update_lfo_viz
     label_MAIN.LFO.visualRate  -> picture_state := ...
-        (slider_MAIN.LFO.depth/31250) * 64 + int(float(slider_MAIN.LFO.rate)/2.539682)
+        (slider_MAIN.LFO.depth/31250) * 64 + int(float(161-slider_MAIN.LFO.rate)/2.539682)
 
     // label_MAIN.LFO.visualDepth  -> picture_state := ...
     //     (slider_MAIN.LFO.depth/31250) * 64 + (slider_MAIN.LFO.rate/15873)
@@ -270,7 +272,6 @@ function show_hide_according_to_combine_state
         xypad_MAIN.SEQ.RIGHT                       -> UI_SHOW
         switch_MAIN.SEQ.LEFT.power                 -> UI_SHOW
 
-
         label_MAIN.2SEQ.LEFT.fluxx.labels          -> UI_SHOW
         switch_MAIN.FLUXX.LEFT.block.1             -> UI_SHOW
         switch_MAIN.FLUXX.LEFT.block.2             -> UI_SHOW
@@ -281,6 +282,8 @@ function show_hide_according_to_combine_state
         slider_MAIN.FLRND.LEFT.amount              -> UI_SHOW
         slider_MAIN.ARP.LEFT.rate                  -> UI_SHOW
         switch_MAIN.ARP.LEFT.modeMenu              -> UI_SHOW
+        label_MAIN.2SEQ.RIGHT.show.rate            -> UI_SHOW
+        label_MAIN.2SEQ.LEFT.show.rate             -> UI_SHOW
 
         label_MAIN.2SEQ.RIGHT.fluxx.labels         -> UI_SHOW
         switch_MAIN.FLUXX.RIGHT.block.1            -> UI_SHOW
@@ -299,7 +302,6 @@ function show_hide_according_to_combine_state
         label_MAIN.RIGHT.hmz                       -> UI_SHOW 
         switch_MAIN.LEFT.HMZ.link                  -> UI_SHOW      
         switch_MAIN.RIGHT.HMZ.link                 -> UI_SHOW       
-
 
         panel_MAIN.2SEQ.LEFT.arpModes              -> UI_HIDE
         panel_MAIN.2SEQ.RIGHT.arpModes             -> UI_HIDE
@@ -359,6 +361,9 @@ function show_hide_according_to_combine_state
         switch_MAIN.FLUXX.RIGHT.block.2            -> UI_SHOW
         switch_MAIN.FLUXX.RIGHT.block.3            -> UI_SHOW
         switch_MAIN.FLUXX.RIGHT.block.4            -> UI_SHOW
+
+        label_MAIN.2SEQ.RIGHT.show.rate            -> UI_HIDE
+        label_MAIN.2SEQ.LEFT.show.rate             -> UI_HIDE
 
         label_MAIN.2SEQ.LEFT.fluxx.labels          -> UI_HIDE
         slider_MAIN.FLRND.LEFT.amount              -> UI_HIDE
@@ -476,35 +481,36 @@ end function
 
 {{ LFO }}
 function update_beat_rates
-    beat_rates [ 00 ] := (DURATION_SIXTEENTH/8)/1000
-    beat_rates [ 01 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
-    beat_rates [ 02 ] := (DURATION_SIXTEENTH/4)/1000
-    beat_rates [ 03 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
-    beat_rates [ 04 ] := (DURATION_SIXTEENTH/2)/1000
-    beat_rates [ 05 ] := (DURATION_SIXTEENTH_TRIPLET)/1000
-    beat_rates [ 06 ] := (DURATION_SIXTEENTH)/1000
-    beat_rates [ 07 ] := (DURATION_EIGHTH_TRIPLET)/1000
-    beat_rates [ 08 ] := (3*DURATION_SIXTEENTH/2)/1000
-    beat_rates [ 09 ] := (DURATION_EIGHTH)/1000
+    beat_rates [ 00 ] := (DURATION_QUARTER * 16)/1000
+    beat_rates [ 01 ] := (DURATION_QUARTER * 12)/1000
+    beat_rates [ 02 ] := (DURATION_QUARTER * 8)/1000
+    beat_rates [ 03 ] := (DURATION_QUARTER * 4)/1000
+    beat_rates [ 04 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
+    beat_rates [ 05 ] := (DURATION_QUARTER * 3)/1000
+    beat_rates [ 06 ] := (DURATION_QUARTER * 2)/1000
+    beat_rates [ 07 ] := (DURATION_QUARTER_TRIPLET * 2)/1000
+    beat_rates [ 08 ] := (DURATION_EIGHTH * 3)/1000
+    beat_rates [ 09 ] := (DURATION_QUARTER)/1000
     beat_rates [ 10 ] := (DURATION_QUARTER_TRIPLET)/1000
     beat_rates [ 11 ] := (DURATION_SIXTEENTH* 3)/1000
-    beat_rates [ 12 ] := (DURATION_QUARTER)/1000
-    beat_rates [ 13 ] := (DURATION_QUARTER_TRIPLET * 2)/1000
-    beat_rates [ 14 ] := (DURATION_EIGHTH * 3)/1000
-    beat_rates [ 15 ] := (DURATION_QUARTER * 2)/1000
-    beat_rates [ 16 ] := (DURATION_QUARTER * 3)/1000
-    beat_rates [ 17 ] := (DURATION_QUARTER_TRIPLET * 4)/1000
-    beat_rates [ 18 ] := (DURATION_QUARTER * 4)/1000
-    beat_rates [ 19 ] := (DURATION_QUARTER * 8)/1000
-    beat_rates [ 20 ] := (DURATION_QUARTER * 12)/1000
-    beat_rates [ 21 ] := (DURATION_QUARTER * 16)/1000
+    beat_rates [ 12 ] := (DURATION_EIGHTH)/1000
+    beat_rates [ 13 ] := (DURATION_EIGHTH_TRIPLET)/1000
+    beat_rates [ 14 ] := (3*DURATION_SIXTEENTH/2)/1000
+    beat_rates [ 15 ] := (DURATION_SIXTEENTH)/1000
+    beat_rates [ 16 ] := (DURATION_SIXTEENTH_TRIPLET)/1000
+    beat_rates [ 17 ] := (DURATION_SIXTEENTH/2)/1000
+    beat_rates [ 18 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
+    beat_rates [ 19 ] := (DURATION_SIXTEENTH/4)/1000
+    beat_rates [ 20 ] := (DURATION_SIXTEENTH_TRIPLET/2)/1000
+    beat_rates [ 21 ] := (DURATION_SIXTEENTH/8)/1000
 end function
 
 function update_lfo_rate
+    // invert_lfo_rate_knob_value := 161 - slider_MAIN.LFO.rate
     if switch_MAIN.LFO.sync = __SYNC_BEAT
         LFO_rate := beat_rates [ int(float( slider_MAIN.LFO.rate) / __LFO_RATE_INDEX_DIVIDER) ]
-        SEQ.rate [ __LEFT  ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ __LEFT  ] -> value) / __BEAT_RATE_DIVISOR ]
-        SEQ.rate [ __RIGHT ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ __RIGHT ] -> value) / __BEAT_RATE_DIVISOR ]
+        // SEQ.rate [ __LEFT  ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ __LEFT  ] -> value) / __BEAT_RATE_DIVISOR ]
+        // SEQ.rate [ __RIGHT ] := beat_rates [ (UIID_MAIN.SEQ.rate_sliders [ __RIGHT ] -> value) / __BEAT_RATE_DIVISOR ]
     else
         if slider_MAIN.LFO.rate <= 100
             LFO_rate := int(1000.0 / (float(slider_MAIN.LFO.rate)/100.00))
@@ -1576,7 +1582,7 @@ function fn035_update_random_labels
 end function
 
 function fn036_set_control_param_slider
-    message(f'FN036 called, calling fn 37, 38, 39, 40 | value : <fn036.a.control_value> | target: <fn036.a.target>')
+    // message(f'FN036 called, calling fn 37, 38, 39, 40 | value : <fn036.a.control_value> | target: <fn036.a.target>')
     fn037.a.side          := fn036.a.side
     fn037.a.target        := fn036.a.target
     fn037.a.control_value := fn036.a.control_value
@@ -1853,7 +1859,7 @@ function fn057_hide_seq_join_steps_leds_counters
     end for
 end function
 
-function fn060_set_filters_bypas_state
+function fn060_set_filters_bypass_state
     for fn060.l.counter := 0 to __SOURCE_COUNT - 1
         { set LP's bypass state }
         set_engine_par(                                      ...
@@ -2293,9 +2299,7 @@ end function
 
 {{ LFO Functions }}
 function fn037_LFO.update_intensity_ring()
-    message("CALL fn037 __________________________________________ ")
-    message("    target = " & fn037.a.target)
-    message("    fn037.a.control_value = " & fn037.a.control_value)
+    // message("CALL fn037 ___/ntrol_value = " & fn037.a.control_value)
 
     if fn037.a.target < 32 and fn037.a.target mod 16 = __MAIN.FX.LAYER.WIDTH
         fn037.l.picture_state_start := ...
@@ -2350,11 +2354,11 @@ function fn037_LFO.update_intensity_ring()
         CONTROL_PAR_PICTURE_STATE,                    ...
         fn037.l.picture_state_end                     ...
     )
-    message(f'     fn037.l.picture_state_start:< fn037.l.picture_state_start >')
-    message(f'     fn037.l.picture_state_end  :< fn037.l.picture_state_end >')
+    // message(f'     fn037.l.picture_state_start:< fn037.l.picture_state_start >')
+    // message(f'     fn037.l.picture_state_end  :< fn037.l.picture_state_end >')
 
     if fn037.a.link = __ON
-        message("link is on - updating both blue rings masks")
+        // message("link is on - updating both blue rings masks")
         if fn037.a.target < 16 { left side }
             MAIN.FX.aux_flip_side := 16 { add 16 to get to right side }
         else                                                    { right side }
@@ -2430,8 +2434,8 @@ end function
 
 function fn039_set_FX_engine_par()
     message(f'FN39 value: <fn039.a.control_value >')
-    message(f'    target engine par: <LFO_targets_engine_pars [ fn039.a.target mod 16 ] >')
-    message(f'    ENGINE_PAR_VOLUME: <LFO_targets_engine_pars [ fn039.a.target mod 16 ] >')
+    message(f'    target <fn039.a.target>')
+    message(f'    UIID_controls [<fn039.a.target>] -> value = <UIID_controls [fn039.a.target] -> value> ')
     set_engine_par(...
         LFO_targets_engine_pars [ fn039.a.target mod 16 ],         ...
         fn039.a.control_value,                                     ...
@@ -3528,16 +3532,17 @@ end function
 function fn027_play_lcb_core
     message(f'Playing side <fn027.a.side > | note: < fn027.a.note>')
     if SEQ.step_velocity > 1
+        { step length adjustment }
         if  SEQ.step_length = 0
             SEQ.step_length := 1000
         end if
         if  switch_MAIN.SEQ.combine = __SEQ_DUAL
             fn027.l.step_duration := SEQ.DUAL.step_duration [ fn027.a.side ] * SEQ.step_length
-            message(f'    length: <SEQ.step_length >')
         else
             fn027.l.step_duration := SEQ.JOIN.step_duration * SEQ.step_length
         end if
-
+        message(f'    velocity: <SEQ.step_velocity >')
+        {{ PLAY note }}
         layers.note_events [ fn027.a.side, fn027.a.note ] := ...
             play_note(                      ...
                 fn027.a.note,               ...
@@ -3546,21 +3551,23 @@ function fn027_play_lcb_core
                 fn027.l.step_duration       ...
             )                               ...
 
+        { disallow all groups for this event }
         set_event_par_arr(layers.note_events [ fn027.a.side, fn027.a.note ], EVENT_PAR_ALLOW_GROUP, __OFF, ALL_GROUPS)
         
+        { allow selected source group for this event }
         set_event_par_arr(                                     ...
             layers.note_events [ fn027.a.side, fn027.a.note ], ...
             EVENT_PAR_ALLOW_GROUP,                             ...
             __ON,                                              ...
             selected_source [ fn027.a.side ]                   ...
         )
-        message(f'      Allowing group <selected_source [ fn027.a.side ] >')
 
+        { sample start adjustment for this event }
         set_event_par_arr(                                                                                     ...
             layers.note_events [ fn027.a.side, fn027.a.note ],                                                 ...
             EVENT_PAR_MOD_VALUE_ID,                                                                            ...
             int(sample_starts [ selected_source [ fn027.a.side ], fn027.a.side, fn027.a.note ] * 1000000.0),   ...
-            pn_ncb.a.side + 1                                                                                  ...
+            __FS_SNG_SHT_SAMPLE_START_LAYER_1 + pn_ncb.a.side * 1                                              ...
         )
 
         { adjust event according to seq modulations }
