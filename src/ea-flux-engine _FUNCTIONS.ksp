@@ -242,8 +242,8 @@ end macro
 function show_hide_according_to_combine_state
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
         switch_MAIN.SEQ.RIGHT.link                 -> UI_SHOW
-        valueedit_MAIN.RIGHT.low.range             -> UI_SHOW
-        valueedit_MAIN.RIGHT.high.range            -> UI_SHOW
+        // valueedit_MAIN.RIGHT.low.range             -> UI_SHOW
+        // valueedit_MAIN.RIGHT.high.range            -> UI_SHOW
         slider_MAIN.RIGHT.move.range               -> UI_SHOW
         switch_MAIN.SEQ.RIGHT.randomize            -> UI_SHOW
         switch_MAIN.SEQ.RIGHT.power                -> UI_SHOW
@@ -320,8 +320,8 @@ function show_hide_according_to_combine_state
         label_SEQjoin.arp.background               -> UI_HIDE
     else
         switch_MAIN.SEQ.RIGHT.link                 -> UI_HIDE
-        valueedit_MAIN.RIGHT.low.range             -> UI_HIDE
-        valueedit_MAIN.RIGHT.high.range            -> UI_HIDE
+        // valueedit_MAIN.RIGHT.low.range             -> UI_HIDE
+        // valueedit_MAIN.RIGHT.high.range            -> UI_HIDE
         slider_MAIN.RIGHT.move.range               -> UI_HIDE
         switch_MAIN.SEQ.RIGHT.randomize            -> UI_HIDE
         switch_MAIN.SEQ.RIGHT.power                -> UI_HIDE
@@ -537,7 +537,7 @@ end function
 function fn006_recall_seq_values
     for fn006.l.counter_block := 0 to 3
         for fn006.l.counter_step := 0 to 7
-            if  UIID_MAIN.seq.flux_rand_power [ fn006.a.side ] -> value = __ON and ...
+            if  SEQ.flux_rand_power_state [ fn006.a.side, SEQ.showing_target [ fn006.a.side ] ] = __ON and ...
                 UIID_MAIN.seq.flux_rand_btns [ fn006.a.side, fn006.l.counter_block ] -> value = __ON
 
                 UIID_MAIN.seq.step [ fn006.a.side, fn006.l.counter_block * 8 + fn006.l.counter_step ] -> picture_state := ...
@@ -607,7 +607,7 @@ end function
 
 {{ 18 }}
 function fn018_set_seq_step_picture_state
-    message(f'    ps = <int(float(SEQ_XY_H-1) * fn018.a.value)> | value <fn018.a.value>')
+    // message(f'    ps = <int(float(SEQ_XY_H-1) * fn018.a.value)> | value <fn018.a.value>')
     UIID_MAIN.seq.step [ fn018.a.side, fn018.a.step_index ] -> picture_state := ...
         int(float(SEQ_XY_H-1) * fn018.a.value)
 end function
@@ -651,7 +651,7 @@ function fn002_set_seq_step_value
         call fn030_set_seq_step_dyn_value
     end if
 
-    message(f'FN02 setting value <fn002.a.value> | side: <fn002.a.side> | step: <fn002.a.step_index>')
+    // message(f'FN02 setting value <fn002.a.value> | side: <fn002.a.side> | step: <fn002.a.step_index>')
 end function
 
 function fn013_update_seq_step_pictures
@@ -1143,124 +1143,158 @@ end function
 
 {{ 22 this will be called when a block is about to start }}
 function fn022_get_flux_values
-    if  UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
-        UIID_MAIN.seq.flux_rand_power [ fn022.a.side ] -> value = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
-        UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
-        UIID_MAIN.seq.flux_rand_power [ __LEFT ] -> value = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
         // message(f'fn22 ______________ side: < fn022.a.side >')
-        {{ FLUX RAND VELOCITY }}
+    
+
         if switch_MAIN.SEQ.combine = __SEQ_DUAL
             fn022.l.seq_mode_side := fn022.a.side
         else
             fn022.l.seq_mode_side := __LEFT
         end if
 
-        if  UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_VELO ] -> value = __ON
-            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_VELO ]
-            else
-                fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_VELO ]
-            end if
-            { first get the seed based on the flux randomizer intensity amount }
-            fn022.l.flux_velo_seed := int(1000000.0 * (float(fn022.l.flux_intensity)/100.0) )
-            { generate the actual flux offset value }
-            fn022.l.flux_velo      := random( -1 * fn022.l.flux_velo_seed, fn022.l.flux_velo_seed)
-            { add to the base value }
-            fn022.r.step_velocity := fn022.a.step_velocity + fn022.l.flux_velo
-            { clam if needed }
-            if fn022.r.step_velocity > 1000000
-                fn022.r.step_velocity := 1000000
-            end if
-            if fn022.r.step_velocity < 1
-                fn022.r.step_velocity := 1
+
+
+        {{ FLUX RAND VELOCITY }}
+        if  UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ fn022.a.side, SEQ_TARGET_VELO ] = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
+            UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ __LEFT, SEQ_TARGET_VELO ] = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
+
+            if  UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_VELO ] -> value = __ON
+                if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                    fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_VELO ]
+                else
+                    fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_VELO ]
+                end if
+                { first get the seed based on the flux randomizer intensity amount }
+                fn022.l.flux_velo_seed := int(1000000.0 * (float(fn022.l.flux_intensity)/100.0) )
+                { generate the actual flux offset value }
+                fn022.l.flux_velo      := random( -1 * fn022.l.flux_velo_seed, fn022.l.flux_velo_seed)
+                { add to the base value }
+                if fn022.a.step_velocity > 0
+                    fn022.r.step_velocity := fn022.a.step_velocity + fn022.l.flux_velo
+                    { clam if needed }
+                    if fn022.r.step_velocity > 1000000
+                        fn022.r.step_velocity := 1000000
+                    end if
+                    if fn022.r.step_velocity < 1
+                        fn022.r.step_velocity := 1
+                    end if
+                else
+                    fn022.r.step_velocity := 1
+                end if
             end if
 
         end if
 
-        {{ FLUX RAND PITCH }}
-        if UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_PITCH ] -> value = __ON
-            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_PITCH ]
-            else
-                fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_PITCH ]
-            end if
-            { flux rand intensity is 0:100, }
-            fn022.l.flux_pitch_seed := int(1000000.0 * (float(fn022.l.flux_intensity)/100.0))
-            fn022.l.flux_pitch      := random( -1 * fn022.l.flux_pitch_seed, fn022.l.flux_pitch_seed)
-            fn022.r.step_pitch := fn022.a.step_pitch + fn022.l.flux_pitch
-            // message(f'    fn022.l.flux_pitch_seed : <fn022.l.flux_pitch_seed>')
-            // message(f'    fn022.l.flux_pitch :      <fn022.l.flux_pitch>')
-            // message(f'    fn022.r.step_pitch :      <fn022.r.step_pitch>')
-            if fn022.r.step_pitch > 1000000
-                fn022.r.step_pitch := 1000000
-            end if
-            if fn022.r.step_pitch < 0
-                fn022.r.step_pitch := 0
-            end if
-            message(f'    FN22: processing flux pitch, original value: <fn022.a.step_pitch > | flux pitch: <fn022.r.step_pitch>')
-            // message(f'    fn022.r.step_pitch :      <fn022.r.step_pitch>')
-        end if
+        if  UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ fn022.a.side, SEQ_TARGET_PITCH ] = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
+            UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ __LEFT, SEQ_TARGET_PITCH ] = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
 
-        {{ FLUX RAND length }}
-        if UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_LENGTH ] -> value = __ON
-            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_LENGTH ]
-            else
-                fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_LENGTH ]
-            end if
-            fn022.l.flux_length_seed := int(1000000.0 * (float(fn022.l.flux_intensity )/100.0) )
-            fn022.l.flux_length      := random( -1 * fn022.l.flux_length_seed, fn022.l.flux_length_seed)
-            fn022.r.step_length := fn022.a.step_length + fn022.l.flux_length
-            if fn022.r.step_length > 1000000
-                fn022.r.step_length := 1000000
-            end if
-            if fn022.r.step_length < 0
-                fn022.r.step_length := 0
-            end if
-        end if
-        
-        {{ FLUX RAND PAN }}
-        if UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_PAN ] -> value = __ON
-            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_PAN ]
-            else
-                fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_PAN ]
-            end if
-            fn022.l.flux_pan_seed := int(1000000.0 * (float(fn022.l.flux_intensity )/100.0) )
-            fn022.l.flux_pan      := random( -1 * fn022.l.flux_pan_seed, fn022.l.flux_pan_seed)
-            fn022.r.step_pan := fn022.a.step_pan + fn022.l.flux_pan
-            if fn022.r.step_pan > 1000000
-                fn022.r.step_pan := 1000000
-            end if
-            if fn022.r.step_pan < 0
-                fn022.r.step_pan := 0
+            {{ FLUX RAND PITCH }}
+            if UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_PITCH ] -> value = __ON
+                if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                    fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_PITCH ]
+                else
+                    fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_PITCH ]
+                end if
+                { flux rand intensity is 0:100, }
+                fn022.l.flux_pitch_seed := int(1000000.0 * (float(fn022.l.flux_intensity)/100.0))
+                fn022.l.flux_pitch      := random( -1 * fn022.l.flux_pitch_seed, fn022.l.flux_pitch_seed)
+                fn022.r.step_pitch := fn022.a.step_pitch + fn022.l.flux_pitch
+                // message(f'    fn022.l.flux_pitch_seed : <fn022.l.flux_pitch_seed>')
+                // message(f'    fn022.l.flux_pitch :      <fn022.l.flux_pitch>')
+                // message(f'    fn022.r.step_pitch :      <fn022.r.step_pitch>')
+                if fn022.r.step_pitch > 1000000
+                    fn022.r.step_pitch := 1000000
+                end if
+                if fn022.r.step_pitch < 0
+                    fn022.r.step_pitch := 0
+                end if
+                message(f'    FN22: processing flux pitch, original value: <fn022.a.step_pitch > | flux pitch: <fn022.r.step_pitch>')
+                // message(f'    fn022.r.step_pitch :      <fn022.r.step_pitch>')
             end if
         end if
 
-        {{ FLUX RAND PAN }}
-        if UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_FILTER ] -> value = __ON
-            { not scaling by /100 because the extreme values of the filter just completely close the sound
-            so scaling by 150 instead of 100 }
-            if switch_MAIN.SEQ.combine = __SEQ_DUAL
-                fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_PAN ]
-            else
-                fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_FILTER ]
+        if  UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ fn022.a.side, SEQ_TARGET_LENGTH ] = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
+            UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ __LEFT, SEQ_TARGET_LENGTH ] = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
+
+            {{ FLUX RAND length }}
+            if UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_LENGTH ] -> value = __ON
+                if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                    fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_LENGTH ]
+                else
+                    fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_LENGTH ]
+                end if
+                fn022.l.flux_length_seed := int(1000000.0 * (float(fn022.l.flux_intensity )/100.0) )
+                fn022.l.flux_length      := random( -1 * fn022.l.flux_length_seed, fn022.l.flux_length_seed)
+                fn022.r.step_length := fn022.a.step_length + fn022.l.flux_length
+                if fn022.r.step_length > 1000000
+                    fn022.r.step_length := 1000000
+                end if
+                if fn022.r.step_length < 0
+                    fn022.r.step_length := 0
+                end if
             end if
-            fn022.l.flux_filter_seed := int(1000000.0 * (float(fn022.l.flux_intensity )/150.0) )
-            fn022.l.flux_filter      := random( -1 * fn022.l.flux_filter_seed, fn022.l.flux_filter_seed)
-            fn022.r.step_filter := fn022.a.step_filter + fn022.l.flux_filter
-            if fn022.r.step_filter > 850000
-                fn022.r.step_filter := 850000
+        end if
+            
+        if  UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ fn022.a.side, SEQ_TARGET_PAN ] = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
+            UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ __LEFT, SEQ_TARGET_PAN ] = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
+
+            {{ FLUX RAND PAN }}
+            if UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_PAN ] -> value = __ON
+                if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                    fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_PAN ]
+                else
+                    fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_PAN ]
+                end if
+                fn022.l.flux_pan_seed := int(1000000.0 * (float(fn022.l.flux_intensity )/100.0) )
+                fn022.l.flux_pan      := random( -1 * fn022.l.flux_pan_seed, fn022.l.flux_pan_seed)
+                fn022.r.step_pan := fn022.a.step_pan + fn022.l.flux_pan
+                if fn022.r.step_pan > 1000000
+                    fn022.r.step_pan := 1000000
+                end if
+                if fn022.r.step_pan < 0
+                    fn022.r.step_pan := 0
+                end if
             end if
-            if fn022.r.step_filter < 150000
-                fn022.r.step_filter := 150000
-            end if
-            if fn022.r.step_filter > 500000 { high pass }
-                fn022.r.step_lp_filter := 1000000
-                fn022.r.step_hp_filter := ( fn022.r.step_filter - 500000 ) * 2
-            else                        { low pass }
-                fn022.r.step_lp_filter := fn022.r.step_filter * 2
-                fn022.r.step_hp_filter := 0
+        end if
+
+        if  UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ fn022.a.side, SEQ_TARGET_FILTER ] = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
+            UIID_MAIN.seq.flux_rand_btns  [ fn022.a.side, fn022.a.block_step_index ] -> value = __ON and ...
+            SEQ.flux_rand_power_state     [ __LEFT, SEQ_TARGET_FILTER ] = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
+
+            {{ FLUX RAND PAN }}
+            if UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_FILTER ] -> value = __ON
+                { not scaling by /100 because the extreme values of the filter just completely close the sound
+                so scaling by 150 instead of 100 }
+                if switch_MAIN.SEQ.combine = __SEQ_DUAL
+                    fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_PAN ]
+                else
+                    fn022.l.flux_intensity := SEQ.join.flux_rand_intensity [ SEQ_TARGET_FILTER ]
+                end if
+                fn022.l.flux_filter_seed := int(1000000.0 * (float(fn022.l.flux_intensity )/150.0) )
+                fn022.l.flux_filter      := random( -1 * fn022.l.flux_filter_seed, fn022.l.flux_filter_seed)
+                fn022.r.step_filter := fn022.a.step_filter + fn022.l.flux_filter
+                if fn022.r.step_filter > 850000
+                    fn022.r.step_filter := 850000
+                end if
+                if fn022.r.step_filter < 150000
+                    fn022.r.step_filter := 150000
+                end if
+                if fn022.r.step_filter > 500000 { high pass }
+                    fn022.r.step_lp_filter := 1000000
+                    fn022.r.step_hp_filter := ( fn022.r.step_filter - 500000 ) * 2
+                else                        { low pass }
+                    fn022.r.step_lp_filter := fn022.r.step_filter * 2
+                    fn022.r.step_hp_filter := 0
+                end if
             end if
         end if
 
@@ -1284,7 +1318,7 @@ function fn022_get_flux_values
             call fn018_set_seq_step_picture_state
         end if
 
-    end if
+
 end function 
 
 function fn029_clear_arp_mode_btns
@@ -1367,7 +1401,7 @@ function fn030_set_seq_step_dyn_value
         fn030.a.target,     ...
         fn030.a.step_index  ...
     ] := fn033.r.transf_value.r
-    message(f'    FN30 Dynamic value stored: < fn033.r.transf_value.r >')
+    // message(f'    FN30 Dynamic value stored: < fn033.r.transf_value.r >')
 end function
 
 function fn031_set_dyn_sliders_picture
@@ -1436,11 +1470,11 @@ function fn032_set_seq_step_value_and_ui_via_dyn_slider
 
         { process side and flux rand power depending on what mode the sequencer is}
         fn032.l.loop_process_side     := fn032.l.side_counter
-        fn032.l.flux_rand_power       := UIID_MAIN.seq.flux_rand_power [ __LEFT ] -> value
+        fn032.l.flux_rand_power       := SEQ.flux_rand_power_state [ __LEFT, SEQ.showing_target [ __LEFT ] ]
 
         if switch_MAIN.SEQ.combine = __SEQ_DUAL and fn032.l.side_counter = fn032.a.side
             fn032.l.loop_process_side     := fn032.a.side
-            fn032.l.flux_rand_power       := UIID_MAIN.seq.flux_rand_power [ fn032.a.side ] -> value
+            fn032.l.flux_rand_power       := SEQ.flux_rand_power_state [ fn032.a.side, SEQ.showing_target [ fn032.a.side ] ]
         end if
 
         if  switch_MAIN.SEQ.combine = __SEQ_JOIN or ...
@@ -2772,7 +2806,7 @@ function fn007_update_block_and_steps_ts
 
         end if
 
-        if UIID_MAIN.seq.flux_rand_power [ fn007.a.side ] -> value = __ON
+        if SEQ.flux_rand_power_state [ fn007.a.side, SEQ.showing_target [ fn007.a.side ] ] = __ON
             {{ UPDATES WHOLE BLOCK FLUX DATA and UI STEPS ACCORDING TO FLUX RANDOMIZER INFLUENCE }}
             fn025.a.side := fn007.a.side
             call fn025_update_flux_on_all_block_steps
@@ -2835,7 +2869,7 @@ function fn007_update_block_and_steps_ts
 
         end if
 
-        if UIID_MAIN.seq.flux_rand_power [ __LEFT ] -> value = __ON
+        if SEQ.flux_rand_power_state [ __LEFT, SEQ.showing_target [ __LEFT ] ] = __ON
             {{ UPDATES WHOLE BLOCK FLUX DATA and UI STEPS ACCORDING TO FLUX RANDOMIZER INFLUENCE }}
             fn025.a.side := __FLUX_ON_ALL_BLOCKS
             call fn025_update_flux_on_all_block_steps
@@ -2987,7 +3021,7 @@ function fn025_update_flux_on_all_block_steps
 
             for fn025.l.counter2 := 0 to 3
                 if  UIID_MAIN.seq.flux_rand_btns  [ fn025.a.side, fn025.l.counter2 ] -> value = __ON and ...
-                    UIID_MAIN.seq.flux_rand_power [ fn025.a.side ] -> value = __ON
+                    SEQ.flux_rand_power_state [ fn025.a.side, SEQ.showing_target [ fn025.a.side ] ] = __ON
                     for fn025.l.counter := 0 to SEQ.DUAL.step_count [ fn025.a.side, fn025.l.counter2 ]
 
                         { retrieves data from the SEQ.data table }
@@ -3070,7 +3104,7 @@ function fn025_update_flux_on_all_block_steps
             for fn025.l.join_side_counter := __LEFT to __RIGHT
                 for fn025.l.counter2 := 0 to 3
                     if  UIID_MAIN.seq.flux_rand_btns  [ fn025.l.join_side_counter, fn025.l.counter2 ] -> value = __ON and ...
-                        UIID_MAIN.seq.flux_rand_power [ __LEFT ] -> value = __ON
+                        SEQ.flux_rand_power_state [ __LEFT, SEQ.showing_target [ __LEFT ] ] = __ON
 
                         for fn025.l.counter := 0 to SEQ.JOIN.step_count [ fn025.l.counter2 + fn025.l.join_side_counter * 4 ]
                             message(f'FN25 | side: < fn025.l.join_side_counter > | block: < fn025.l.counter2 > | step: < fn025.l.counter > -----------------')
@@ -3577,6 +3611,7 @@ function fn027_play_lcb_core
             0                                                                                       ...
         )
 
+        message(f'play core pan:  < SEQ.step_pan>')
         change_pan( ...
             layers.note_events [ fn027.a.side, fn027.a.note ], ...
             SEQ.step_pan, 0 )
@@ -3641,7 +3676,7 @@ function PLAY_LCB
                         note_off(layers.note_events [ p_lcb.a.side, SEQ.key_count ])
                     end if
 
-                    if UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON
+                    if SEQ.flux_rand_power_state [ p_lcb.a.side, SEQ.showing_target [ p_lcb.a.side ] ] = __ON
                         fn026.a.data_type := __FLUX_DATA
                     else
                         fn026.a.data_type := __ORIGINAL_DATA
@@ -3691,7 +3726,7 @@ function PLAY_LCB
                 ARP.played_duration [ p_lcb.a.side ] := SEQ.DUAL.step_duration [ p_lcb.a.side ] * SEQ.step_length
                 ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
 
-                if  UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON and ...
+                if  SEQ.flux_rand_power_state [ p_lcb.a.side, SEQ.showing_target [ p_lcb.a.side ] ] = __ON and ...
                     UIID_MAIN.seq.flux_rand_btns [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] -> value = __ON
 
                     fn026.a.data_type        := __FLUX_DATA
@@ -3738,7 +3773,7 @@ function PLAY_LCB
                     ARP.played_duration [ p_lcb.a.side ] := SEQ.DUAL.step_duration [ p_lcb.a.side ] * SEQ.step_length
                     ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
 
-                    if  UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON and ...
+                    if  SEQ.flux_rand_power_state [ p_lcb.a.side, SEQ.showing_target [ p_lcb.a.side ] ] = __ON and ...
                     UIID_MAIN.seq.flux_rand_btns [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] -> value = __ON
 
                         fn026.a.data_type        := __FLUX_DATA
@@ -3869,7 +3904,7 @@ function PLAY_LCB
                             //     fade_out( layers.note_events [ play_layer_count, SEQ.key_count ], 2000, 1)
                             // end if
 
-                            if  UIID_MAIN.seq.flux_rand_power [ __LEFT ] -> value = __ON and ...
+                            if  SEQ.flux_rand_power_state [ __LEFT, SEQ.showing_target [ __LEFT ] ] = __ON and ...
                                 UIID_MAIN.seq.flux_rand_btns [ play_layer_count, SEQ.JOIN.current_block mod 4 ] -> value = __ON
                                 fn026.a.data_type := __FLUX_DATA
                             else
@@ -3913,7 +3948,7 @@ function PLAY_LCB
                 ARP.played_duration [ __LEFT ] := SEQ.JOIN.step_duration * SEQ.step_length
                 ARP.played_velocity [ __LEFT ] := SEQ.step_velocity
 
-                if  UIID_MAIN.seq.flux_rand_power [ __LEFT ] -> value = __ON and ...
+                if  SEQ.flux_rand_power_state [ __LEFT, SEQ.showing_target [ __LEFT ] ] = __ON and ...
                     UIID_MAIN.seq.flux_rand_btns [ seq_join_side, SEQ.JOIN.current_block mod 4 ] -> value = __ON
                     fn026.a.data_type        := __FLUX_DATA
                 else
@@ -3964,7 +3999,7 @@ function PLAY_LCB
                     ARP.played_velocity [ p_lcb.a.side ] := SEQ.step_velocity
 
                     for play_layer_count := __LEFT to __RIGHT
-                        if  UIID_MAIN.seq.flux_rand_power [ p_lcb.a.side ] -> value = __ON and ...
+                        if  SEQ.flux_rand_power_state [ p_lcb.a.side, SEQ.showing_target [ p_lcb.a.side ] ] = __ON and ...
                         UIID_MAIN.seq.flux_rand_btns [ p_lcb.a.side, SEQ.JOIN.current_block mod 4 ] -> value = __ON
 
                             fn026.a.data_type        := __FLUX_DATA

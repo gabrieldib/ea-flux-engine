@@ -227,6 +227,28 @@
         // call fn010_set_seq_step_value
     end on
 
+    on ui_control (switch_MAIN.SEQ.LEFT.link)
+        switch_MAIN.SEQ.RIGHT.link := switch_MAIN.SEQ.LEFT.link
+    end on
+    
+    on ui_control (switch_MAIN.SEQ.RIGHT.link)
+        switch_MAIN.SEQ.LEFT.link := switch_MAIN.SEQ.RIGHT.link
+    end on
+    
+
+    on ui_control (switch_MAIN.SEQ.LEFT.randomize)
+        if switch_MAIN.SEQ.LEFT.link = __ON
+            switch_MAIN.SEQ.RIGHT.randomize := switch_MAIN.SEQ.LEFT.randomize
+        end if
+    end on
+    
+    on ui_control (switch_MAIN.SEQ.RIGHT.randomize)
+        if switch_MAIN.SEQ.LEFT.link = __ON
+            switch_MAIN.SEQ.LEFT.randomize := switch_MAIN.SEQ.RIGHT.randomize
+        end if
+    end on
+    
+
 {{ LFO }}
     on ui_control (slider_MAIN.LFO.rate)
         { direct rate values updates based on DURATION CONSTANTS }

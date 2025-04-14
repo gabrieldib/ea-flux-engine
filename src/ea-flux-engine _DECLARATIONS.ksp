@@ -700,6 +700,8 @@
         declare note_held_count
         declare read SHOWING_PANEL
         declare MATRIX.matrix.center.mouseON [2] // 0 is the state, 1 is the quadrant start index
+        declare read play_range [ 2, __SOURCE_COUNT, 2 ] // side, source, low and hi
+
 
     {{ SOURCES }}
     declare read selected_source [ 2 ]
@@ -752,8 +754,9 @@
         // declare seq_target_state [  ]
 
         { so we can have independent intensities per target }
-        declare read SEQ.flux_rand_intensity [ 2, 5 ]
-        declare read SEQ.join.flux_rand_intensity [ 5 ]
+        declare read SEQ.flux_rand_intensity      [ 2, 5 ]
+        declare read SEQ.flux_rand_power_state    [ 2, 5 ]
+        declare read SEQ.join.flux_rand_intensity    [ 5 ]
 
         declare read layers.seq_play_direction [ 2 ]
         declare read seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
@@ -936,6 +939,7 @@
     declare uics_generic
     declare uics_dual_join_side
     declare uics_random_value
+
 
     declare uicb_counter
     declare uicb_counter2
