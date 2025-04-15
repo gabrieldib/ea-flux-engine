@@ -64,6 +64,7 @@ declare UIID_MAIN.layer_fx_panel_rand_btn       [ 2 ]
 declare UIID_MAIN.show_rates                    [ 2 ]
 
 
+
 {{ LFO }}
 define __LAYER      := 0
 define __SATURATION := 1

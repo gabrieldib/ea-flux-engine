@@ -3,8 +3,8 @@ on note
     ignore_event(EVENT_ID)
     set_event_par(EVENT_ID, EVENT_PAR_0, 1)
     inc(note_held_count)
-    message("note_held_count: " & note_held_count)
-    message(f' EVENT VELOCITY <EVENT_VELOCITY >')
+    // message("note_held_count: " & note_held_count)
+    // message(f' EVENT VELOCITY <EVENT_VELOCITY >')
 
     last_played_note := EVENT_NOTE
 
@@ -22,7 +22,7 @@ on note
 
         if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
             ( switch_MAIN.SEQ.LEFT.power       = __OFF ) 
-
+            message(f'NCB | playing side LEFT')
             pn_ncb.a.side      := __LEFT
             pn_ncb.a.note      := EVENT_NOTE
             pn_ncb.a.velo      := EVENT_VELOCITY
@@ -32,7 +32,7 @@ on note
 
         if  switch_MAIN.SoundSource.RIGHT.power = __ON  and ...
             ( switch_MAIN.SEQ.RIGHT.power       = __OFF )
-
+            message(f'NCB | playing side RIGHT')
             pn_ncb.a.side := __RIGHT
             pn_ncb.a.note := EVENT_NOTE
             pn_ncb.a.velo := EVENT_VELOCITY

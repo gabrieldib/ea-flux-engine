@@ -1,11 +1,11 @@
 - user plays a key
-- NCB plays the note immediately
+- NCB plays the note immediately, only if single shot
 - Listener counter is zeroed if note held count = 1 
 - next LCB cycle fn007() is called to update block steps and ts
     - block index counter is updated (increased or decreased) depending on play direction
     - step duration is updated according to block step count
     - current block timestamps are calculated and populated into the timestamps array
-    - fn25() update flux values on all blocks is called
+    - fn25_update_flux_values_on_all_blocks() is called
         if we are at the start of all blocks cycle, 
             - call fn17 to get sequencer data per step
                 - fn17() retrieves the original values input into the seq table

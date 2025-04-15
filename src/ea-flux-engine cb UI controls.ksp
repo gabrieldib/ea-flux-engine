@@ -9,7 +9,7 @@
     end on
 
     on ui_control (menu_MAIN.RIGHT.soundSource)
-        selected_source [ __RIGHT ] := menu_MAIN.RIGHT.soundSource + __SOURCE_COUNT { offset }
+        selected_source [ __RIGHT ] := menu_MAIN.RIGHT.soundSource
         for i.i := __MAIN.FX.SATURATION to __MAIN.FX.DISTORTION.DRIVE
             LFO_targets_GROUP [ __RIGHT, i.i ] := selected_source [ __RIGHT ]
         end for
@@ -226,6 +226,28 @@
         // fn010.a.value      := xypad_MAIN.SEQ.join [ __Y_AXIS ]
         // call fn010_set_seq_step_value
     end on
+
+    on ui_control (switch_MAIN.SEQ.LEFT.link)
+        switch_MAIN.SEQ.RIGHT.link := switch_MAIN.SEQ.LEFT.link
+    end on
+    
+    on ui_control (switch_MAIN.SEQ.RIGHT.link)
+        switch_MAIN.SEQ.LEFT.link := switch_MAIN.SEQ.RIGHT.link
+    end on
+    
+
+    on ui_control (switch_MAIN.SEQ.LEFT.randomize)
+        if switch_MAIN.SEQ.LEFT.link = __ON
+            switch_MAIN.SEQ.RIGHT.randomize := switch_MAIN.SEQ.LEFT.randomize
+        end if
+    end on
+    
+    on ui_control (switch_MAIN.SEQ.RIGHT.randomize)
+        if switch_MAIN.SEQ.LEFT.link = __ON
+            switch_MAIN.SEQ.LEFT.randomize := switch_MAIN.SEQ.RIGHT.randomize
+        end if
+    end on
+    
 
 {{ LFO }}
     on ui_control (slider_MAIN.LFO.rate)
