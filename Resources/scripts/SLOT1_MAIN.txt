@@ -1,4 +1,4 @@
-{ Compiled on Mon Apr 14 14:08:28 2025 }
+{ Compiled on Tue Apr 15 10:32:20 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -2892,6 +2892,18 @@ on init
   declare !Reverb_IR_files[200]
   declare @reverb__path
   @reverb__path := get_folder($GET_FOLDER_FACTORY_DIR) & "presets/effects/convolution/<<<K4IR.nkx>>>/K4 IR Samples/"
+  declare const $__SEQ_STATE_DUAL := 0
+  declare const $__SEQ_STATE_JOIN := 1
+  declare const $__FLUX_SIDED_STATE := 2
+  declare const $__FLUX_BLOCK_STATE := 4
+  declare const $__FLUX_LEFT_STATE := 8
+  declare const $__FLUX_SIDED_BLOCK_DUAL := $__SEQ_STATE_DUAL+$__FLUX_SIDED_STATE+$__FLUX_BLOCK_STATE
+  declare const $__FLUX_LEFT_BLOCK_JOIN := $__SEQ_STATE_JOIN+$__FLUX_LEFT_STATE+$__FLUX_BLOCK_STATE
+  declare const $__FLUX_POWER_OFF_DUAL := 3
+  declare const $__FLUX_BLOCK_OFF_DUAL := 5
+  declare const $__FLUX_POWER_OFF_JOIN := 3
+  declare const $__FLUX_BLOCK_OFF_JOIN := 5
+  message("__FLUX_SIDED_BLOCK_DUAL " & $__FLUX_SIDED_BLOCK_DUAL & "")
   declare $a__i
   declare $b__i
   declare $c__i
@@ -3421,6 +3433,11 @@ on init
   declare $fn022__r__step_filter
   declare $fn022__r__step_lp_filter
   declare $fn022__r__step_hp_filter
+  declare $fn022__l__sided_rand_power_state
+  declare $fn022__l__left_rand_power_state
+  declare $fn022__l__combine_button
+  declare $fn022__l__flux_block_rand_state
+  declare $fn022__l__combined_states
   declare $fn023__a__counter
   declare $fn023__a__side
   declare $fn023__r__check
@@ -3597,6 +3614,11 @@ on init
   declare $fn060__a__seq_power_state
   declare $fn060__a__side
   declare $fn060__l__counter
+  declare $fn061__a__combine_button
+  declare $fn061__a__sided_rand_power_state
+  declare $fn061__a__left_rand_power_state
+  declare $fn061__a__flux_block_rand_state
+  declare $fn061__r__combined_states
   declare const $ARP__REC_TIME_TRANSPORT_RUNNING := 10
   declare const $ARP__REC_TIME_TRANSPORT_STOPPED := 30
   declare const $ARP__LATCH_TIME := 300
@@ -4448,13 +4470,14 @@ end function
 function PLAY_NOTE_NCB
   %_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note] := play_note($pn_ncb__a__note,$pn_ncb__a__velo,-1,-1)
   set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
-  set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_ALLOW_GROUP,1,%selected_source[$pn_ncb__a__side])
+  set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_ALLOW_GROUP,1,%selected_source[$pn_ncb__a__side]+($pn_ncb__a__side*5))
+  message("Playing group " & (%selected_source[$pn_ncb__a__side]+($pn_ncb__a__side*5)) & "")
   if ($pn_ncb__a__mute_note=1)
     change_vol(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],-200000,0)
   else
-    message("side: " & $pn_ncb__a__side & " | sample start: " & ?_sample_starts[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note] & "")
     set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(?_sample_starts[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note]*1000000.0),1+$pn_ncb__a__side)
     change_tune(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],real_to_int(?_sample_tuning[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$last_played_note]*100000.0),0)
+    message("    tuning from sample: " & ?_sample_tuning[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$last_played_note] & "")
     set_control_par(%_UIID_MAIN__single_shot_controls[6*$pn_ncb__a__side+2],$CONTROL_PAR_VALUE,%_sample_low_cutoff[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note])
     set_control_par(%_UIID_MAIN__single_shot_controls[6*$pn_ncb__a__side+3],$CONTROL_PAR_VALUE,%_sample_low_reso[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note])
     set_control_par(%_UIID_MAIN__single_shot_controls[6*$pn_ncb__a__side+4],$CONTROL_PAR_VALUE,%_sample_high_cutoff[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note])
@@ -4727,38 +4750,6 @@ function pccb_init_instrument
   %source_page[1] := %selected_source[1]/18
 end function
 
-function fn054_update_source_buttons
-  $fn054__l__counter := 0
-  while ($fn054__l__counter<=17)
-    if (%source_page[$fn054__a__side]*18+$fn054__l__counter<5)
-      set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
-      set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_VALUE,0)
-      set_control_par_str(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_TEXT,"" & (%source_page[$fn054__a__side]*18+$fn054__l__counter+1) & ". Coefficient Preset")
-      if ($fn054__l__counter=($fn054__a__index mod 18))
-        set_control_par_str(%UIID_GLOBAL__source_btns[$fn054__a__side],$CONTROL_PAR_TEXT,"" & (%source_page[$fn054__a__side]*18+$fn054__l__counter+1) & ". Coefficient Preset")
-      end if
-    else
-      set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__l__counter],$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
-    end if
-    inc($fn054__l__counter)
-  end while
-  if ($fn054__a__index # -1)
-    set_control_par(%_UIID_BROWSER_source__select__btn[18*$fn054__a__side+$fn054__a__index],$CONTROL_PAR_VALUE,1)
-  end if
-end function
-
-function fn055_recall_source_buttons_page
-  $fn055__l__counter := 0
-  while ($fn055__l__counter<=1)
-    %source_page[$fn055__l__counter] := %selected_source[$fn055__l__counter]/18
-    $fn054__a__index := %selected_source[$fn055__l__counter] mod 18
-    $fn054__a__side := $fn055__l__counter
-    call fn054_update_source_buttons
-    set_control_par_str(%UIID_GLOBAL__page_number[$fn055__l__counter],$CONTROL_PAR_TEXT,%selected_source[$fn055__l__counter]/18+1)
-    inc($fn055__l__counter)
-  end while
-end function
-
 function fn016_set_data_display_from_seq_xy
   select (%SEQ__showing_target[$fn016__a__side])
     case 0
@@ -4981,8 +4972,6 @@ function fn032_set_seq_step_value_and_ui_via_dyn_slider
             $fn018__a__step_index := $fn032__l__block_index*8+$fn032__l__step_index
             ~fn018__a__value := ?_SEQ__data__dyn__f[32*5*$fn032__l__loop_process_side+(32*%SEQ__showing_target[$fn032__l__loop_process_side])+$fn018__a__step_index]
             call fn018_set_seq_step_picture_state
-            if ($fn032__l__step_index mod 8=0)
-            end if
           end if
           inc($fn032__l__step_index)
         end while
@@ -5131,7 +5120,6 @@ function fn036_set_control_param_slider
   $fn040__a__side := $fn036__a__side
   call fn040_set_MATRIX_slider_ps
   if (get_control_par(%UIID_MAIN__FX__links[%UIID_FX__parameter_to_module[$fn036__a__target]],$CONTROL_PAR_VALUE)=1)
-    message("    fn36 LINK is ON")
     if ($fn036__a__target<16)
       $MAIN__FX__aux_flip_link := 16
     else
@@ -5139,7 +5127,8 @@ function fn036_set_control_param_slider
     end if
     $fn040__a__side := abs(1-$fn040__a__side)
     call fn040_set_MATRIX_slider_ps
-    set_control_par(%UIID_controls[$fn036__a__target+$MAIN__FX__aux_flip_link],$CONTROL_PAR_VALUE,$fn036__a__control_value)
+    message("FN36 setting the other side knob to " & $fn036__a__control_value & "")
+    set_control_par(%UIID_controls[$fn036__a__target+$MAIN__FX__aux_flip_link],$CONTROL_PAR_VALUE,get_control_par(%UIID_controls[$fn036__a__target],$CONTROL_PAR_VALUE))
   end if
 end function
 
@@ -5523,7 +5512,6 @@ function fn017_get_seq_target_data
     else
       $fn017__r__pitch := $fn017__l__seq_data
     end if
-    message("    FN17 | side: " & $fn017__a__side & " | block: " & $fn017__a__block_step_index & " | step: " & $fn017__a__step_counter & " |  fn017.r.pitch: " & $fn017__r__pitch & "")
   else
     $fn017__r__pitch := 0
   end if
@@ -5574,7 +5562,8 @@ function fn022_get_flux_values
   else
     $fn022__l__seq_mode_side := 0
   end if
-  if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*$fn022__a__side+0]=1) and ($switch_MAIN__SEQ__combine=0) or (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*0+0]=1) and ($switch_MAIN__SEQ__combine=1)))
+  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+0],1)+sh_left(get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE),2)+sh_left(%_SEQ__flux_rand_power_state[5*0+0],3)
+  if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+0],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
         $fn022__l__flux_intensity := %_SEQ__flux_rand_intensity[5*$fn022__l__seq_mode_side+0]
@@ -5594,9 +5583,15 @@ function fn022_get_flux_values
       else
         $fn022__r__step_velocity := 1
       end if
+      message("    fn22 returning fluxed velocity " & $fn022__r__step_velocity & "")
+    end if
+  else
+    if ($fn061__r__combined_states .and. $__SEQ_STATE_DUAL=$__SEQ_STATE_DUAL and ($fn061__r__combined_states .and. $__FLUX_SIDED_STATE=0) or ($fn061__r__combined_states .and. $__SEQ_STATE_DUAL=$__SEQ_STATE_DUAL and ($fn061__r__combined_states .and. $__FLUX_BLOCK_STATE=0)) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_LEFT_STATE=0)) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_BLOCK_STATE=0)))
+      $fn022__r__step_velocity := $fn022__a__step_velocity
     end if
   end if
-  if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*$fn022__a__side+1]=1) and ($switch_MAIN__SEQ__combine=0) or (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*0+1]=1) and ($switch_MAIN__SEQ__combine=1)))
+  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+1],1)+sh_left(get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE),2)+sh_left(%_SEQ__flux_rand_power_state[5*0+1],3)
+  if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+1],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
         $fn022__l__flux_intensity := %_SEQ__flux_rand_intensity[5*$fn022__l__seq_mode_side+1]
@@ -5612,10 +5607,14 @@ function fn022_get_flux_values
       if ($fn022__r__step_pitch<0)
         $fn022__r__step_pitch := 0
       end if
-      message("    FN22: processing flux pitch, original value: " & $fn022__a__step_pitch & " | flux pitch: " & $fn022__r__step_pitch & "")
+    end if
+  else
+    if ($fn061__r__combined_states .and. $__FLUX_POWER_OFF_DUAL=0 or ($fn061__r__combined_states .and. $__FLUX_BLOCK_OFF_DUAL=0) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_LEFT_STATE=0)) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_BLOCK_STATE=0)))
+      $fn022__r__step_pitch := $fn022__a__step_pitch
     end if
   end if
-  if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*$fn022__a__side+2]=1) and ($switch_MAIN__SEQ__combine=0) or (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*0+2]=1) and ($switch_MAIN__SEQ__combine=1)))
+  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+2],1)+sh_left(get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE),2)+sh_left(%_SEQ__flux_rand_power_state[5*0+2],3)
+  if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+2],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
         $fn022__l__flux_intensity := %_SEQ__flux_rand_intensity[5*$fn022__l__seq_mode_side+2]
@@ -5632,8 +5631,13 @@ function fn022_get_flux_values
         $fn022__r__step_length := 0
       end if
     end if
+  else
+    if ($fn061__r__combined_states .and. $__FLUX_POWER_OFF_DUAL=0 or ($fn061__r__combined_states .and. $__FLUX_BLOCK_OFF_DUAL=0) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_LEFT_STATE=0)) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_BLOCK_STATE=0)))
+      $fn022__r__step_length := $fn022__a__step_length
+    end if
   end if
-  if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*$fn022__a__side+3]=1) and ($switch_MAIN__SEQ__combine=0) or (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*0+3]=1) and ($switch_MAIN__SEQ__combine=1)))
+  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+3],1)+sh_left(get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE),2)+sh_left(%_SEQ__flux_rand_power_state[5*0+3],3)
+  if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+3],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
         $fn022__l__flux_intensity := %_SEQ__flux_rand_intensity[5*$fn022__l__seq_mode_side+3]
@@ -5650,7 +5654,12 @@ function fn022_get_flux_values
         $fn022__r__step_pan := 0
       end if
     end if
+  else
+    if ($fn061__r__combined_states .and. $__FLUX_POWER_OFF_DUAL=0 or ($fn061__r__combined_states .and. $__FLUX_BLOCK_OFF_DUAL=0) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_LEFT_STATE=0)) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_BLOCK_STATE=0)))
+      $fn022__r__step_pan := $fn022__a__step_pan
+    end if
   end if
+  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+4],1)+sh_left(get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE),2)+sh_left(%_SEQ__flux_rand_power_state[5*0+4],3)
   if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*$fn022__a__side+4]=1) and ($switch_MAIN__SEQ__combine=0) or (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn022__a__side+$fn022__a__block_step_index],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*0+4]=1) and ($switch_MAIN__SEQ__combine=1)))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+4],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
@@ -5674,6 +5683,18 @@ function fn022_get_flux_values
         $fn022__r__step_lp_filter := $fn022__r__step_filter*2
         $fn022__r__step_hp_filter := 0
       end if
+    end if
+  else
+    if ($fn061__r__combined_states .and. $__FLUX_POWER_OFF_DUAL=0 or ($fn061__r__combined_states .and. $__FLUX_BLOCK_OFF_DUAL=0) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_LEFT_STATE=0)) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_BLOCK_STATE=0)))
+      $fn022__r__step_filter := $fn022__a__step_filter
+      if ($fn022__r__step_filter>850000)
+        $fn022__r__step_filter := 850000
+      end if
+      if ($fn022__r__step_filter<150000)
+        $fn022__r__step_filter := 150000
+      end if
+      $fn022__r__step_lp_filter := 1000000
+      $fn022__r__step_hp_filter := 0
     end if
   end if
   if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+%SEQ__showing_target[$fn022__l__seq_mode_side]],$CONTROL_PAR_VALUE)=1)
@@ -5719,7 +5740,6 @@ function fn024_update_flux_data_and_ui
       ~fn024__l__picture_state := ~fn024__l__step_velocity_flux
     case 1
       ~fn024__l__picture_state := ~fn024__l__step_pitch_flux
-      message("          FN24: updating picture to " & real_to_int(int_to_real($SEQ_XY_H-1)*~fn024__l__picture_state) & "")
     case 2
       ~fn024__l__picture_state := ~fn024__l__step_length_flux
     case 3
@@ -5731,19 +5751,62 @@ function fn024_update_flux_data_and_ui
 end function
 
 function fn025_update_flux_on_all_block_steps
+  message("FN25 side " & $fn025__a__side & " | __FLUX_ON_ALL_BLOCKS = " & $__FLUX_ON_ALL_BLOCKS & "")
   if ($fn025__a__side # $__FLUX_ON_ALL_BLOCKS)
     if (%SEQ__DUAL__current_block[$fn025__a__side]=0 and (%seq__direction_status[$fn025__a__side]=0) or (%SEQ__DUAL__current_block[$fn025__a__side]=3 and (%seq__direction_status[$fn025__a__side]=1)))
       $fn025__l__counter2 := 0
       while ($fn025__l__counter2<=3)
-        if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn025__a__side+$fn025__l__counter2],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*$fn025__a__side+%SEQ__showing_target[$fn025__a__side]]=1))
+        $fn025__l__counter := 0
+        while ($fn025__l__counter<=%_SEQ__DUAL__step_count[4*$fn025__a__side+$fn025__l__counter2])
+          $fn017__a__transform_value := 0
+          $fn017__a__side := $fn025__a__side
+          $fn017__a__step_counter := $fn025__l__counter
+          $fn017__a__block_step_index := $fn025__l__counter2
+          call fn017_get_seq_target_data
+          $fn022__a__side := $fn025__a__side
+          $fn022__a__step_counter := $fn025__l__counter
+          $fn022__a__block_step_index := $fn025__l__counter2
+          $fn022__a__step_velocity := $fn017__r__velocity
+          $fn022__a__step_pitch := $fn017__r__pitch
+          $fn022__a__step_length := $fn017__r__length
+          $fn022__a__step_pan := $fn017__r__pan
+          $fn022__a__step_filter := $fn017__r__filter_value
+          call fn022_get_flux_values
+          $fn024__a__step_velocity := $fn022__r__step_velocity
+          $fn024__a__step_pitch := $fn022__r__step_pitch
+          $fn024__a__step_length := $fn022__r__step_length
+          $fn024__a__step_pan := $fn022__r__step_pan
+          $fn024__a__step_filter := $fn022__r__step_filter
+          $fn024__a__step_lp_filter := $fn022__r__step_lp_filter
+          $fn024__a__step_hp_filter := $fn022__r__step_hp_filter
+          $fn024__a__side := $fn025__a__side
+          $fn024__a__step_counter := $fn025__l__counter
+          $fn024__a__block_step_index := $fn025__l__counter2
+          call fn024_update_flux_data_and_ui
+          ~fn033__a__dyn_value := get_control_par_real_arr(%UIID_MAIN__seq__dyn_slider[$fn025__a__side],$CONTROL_PAR_VALUE,1)
+          ~fn033__a__step_value := ?_SEQ__data__flux__f[32*5*$fn025__a__side+(32*0)+$fn025__l__counter2*8+$fn025__l__counter]
+          call fn033_transform_step_value_into_dynamic
+          %_SEQ__data__dyn__i[32*5*$fn025__a__side+(32*0)+$fn025__l__counter2*8+$fn025__l__counter] := $fn033__r__transf_value__i
+          ?_SEQ__data__dyn__f[32*5*$fn025__a__side+(32*0)+$fn025__l__counter2*8+$fn025__l__counter] := ~fn033__r__transf_value__r
+          inc($fn025__l__counter)
+        end while
+        inc($fn025__l__counter2)
+      end while
+    end if
+  else
+    if ($SEQ__JOIN__current_block=0 and ($seq_join__direction_status=0) or ($SEQ__JOIN__current_block=7 and ($seq_join__direction_status=1)))
+      $fn025__l__join_side_counter := 0
+      while ($fn025__l__join_side_counter<=1)
+        $fn025__l__counter2 := 0
+        while ($fn025__l__counter2<=3)
           $fn025__l__counter := 0
-          while ($fn025__l__counter<=%_SEQ__DUAL__step_count[4*$fn025__a__side+$fn025__l__counter2])
+          while ($fn025__l__counter<=%SEQ__JOIN__step_count[$fn025__l__counter2+($fn025__l__join_side_counter*4)])
             $fn017__a__transform_value := 0
-            $fn017__a__side := $fn025__a__side
+            $fn017__a__side := $fn025__l__join_side_counter
             $fn017__a__step_counter := $fn025__l__counter
             $fn017__a__block_step_index := $fn025__l__counter2
             call fn017_get_seq_target_data
-            $fn022__a__side := $fn025__a__side
+            $fn022__a__side := $fn025__l__join_side_counter
             $fn022__a__step_counter := $fn025__l__counter
             $fn022__a__block_step_index := $fn025__l__counter2
             $fn022__a__step_velocity := $fn017__r__velocity
@@ -5759,65 +5822,17 @@ function fn025_update_flux_on_all_block_steps
             $fn024__a__step_filter := $fn022__r__step_filter
             $fn024__a__step_lp_filter := $fn022__r__step_lp_filter
             $fn024__a__step_hp_filter := $fn022__r__step_hp_filter
-            $fn024__a__side := $fn025__a__side
+            $fn024__a__side := $fn025__l__join_side_counter
             $fn024__a__step_counter := $fn025__l__counter
             $fn024__a__block_step_index := $fn025__l__counter2
             call fn024_update_flux_data_and_ui
-            ~fn033__a__dyn_value := get_control_par_real_arr(%UIID_MAIN__seq__dyn_slider[$fn025__a__side],$CONTROL_PAR_VALUE,1)
-            ~fn033__a__step_value := ?_SEQ__data__flux__f[32*5*$fn025__a__side+(32*0)+$fn025__l__counter2*8+$fn025__l__counter]
+            ~fn033__a__dyn_value := get_control_par_real_arr(%UIID_MAIN__seq__dyn_slider[0],$CONTROL_PAR_VALUE,1)
+            ~fn033__a__step_value := ?_SEQ__data__flux__f[32*5*$fn025__l__join_side_counter+(32*0)+$fn025__l__counter2*8+$fn025__l__counter]
             call fn033_transform_step_value_into_dynamic
-            %_SEQ__data__dyn__i[32*5*$fn025__a__side+(32*0)+$fn025__l__counter2*8+$fn025__l__counter] := $fn033__r__transf_value__i
-            ?_SEQ__data__dyn__f[32*5*$fn025__a__side+(32*0)+$fn025__l__counter2*8+$fn025__l__counter] := ~fn033__r__transf_value__r
+            %_SEQ__data__dyn__i[32*5*$fn025__l__join_side_counter+(32*0)+$fn025__l__counter2*8+$fn025__l__counter] := $fn033__r__transf_value__i
+            ?_SEQ__data__dyn__f[32*5*$fn025__l__join_side_counter+(32*0)+$fn025__l__counter2*8+$fn025__l__counter] := ~fn033__r__transf_value__r
             inc($fn025__l__counter)
           end while
-        end if
-        inc($fn025__l__counter2)
-      end while
-    end if
-  else
-    if ($SEQ__JOIN__current_block=0 and ($seq_join__direction_status=0) or ($SEQ__JOIN__current_block=7 and ($seq_join__direction_status=1)))
-      message("FN 25 _____________________________")
-      $fn025__l__join_side_counter := 0
-      while ($fn025__l__join_side_counter<=1)
-        $fn025__l__counter2 := 0
-        while ($fn025__l__counter2<=3)
-          if (get_control_par(%_UIID_MAIN__seq__flux_rand_btns[4*$fn025__l__join_side_counter+$fn025__l__counter2],$CONTROL_PAR_VALUE)=1 and (%_SEQ__flux_rand_power_state[5*0+%SEQ__showing_target[0]]=1))
-            $fn025__l__counter := 0
-            while ($fn025__l__counter<=%SEQ__JOIN__step_count[$fn025__l__counter2+($fn025__l__join_side_counter*4)])
-              message("FN25 | side: " & $fn025__l__join_side_counter & " | block: " & $fn025__l__counter2 & " | step: " & $fn025__l__counter & " -----------------")
-              $fn017__a__transform_value := 0
-              $fn017__a__side := $fn025__l__join_side_counter
-              $fn017__a__step_counter := $fn025__l__counter
-              $fn017__a__block_step_index := $fn025__l__counter2
-              call fn017_get_seq_target_data
-              $fn022__a__side := $fn025__l__join_side_counter
-              $fn022__a__step_counter := $fn025__l__counter
-              $fn022__a__block_step_index := $fn025__l__counter2
-              $fn022__a__step_velocity := $fn017__r__velocity
-              $fn022__a__step_pitch := $fn017__r__pitch
-              $fn022__a__step_length := $fn017__r__length
-              $fn022__a__step_pan := $fn017__r__pan
-              $fn022__a__step_filter := $fn017__r__filter_value
-              call fn022_get_flux_values
-              $fn024__a__step_velocity := $fn022__r__step_velocity
-              $fn024__a__step_pitch := $fn022__r__step_pitch
-              $fn024__a__step_length := $fn022__r__step_length
-              $fn024__a__step_pan := $fn022__r__step_pan
-              $fn024__a__step_filter := $fn022__r__step_filter
-              $fn024__a__step_lp_filter := $fn022__r__step_lp_filter
-              $fn024__a__step_hp_filter := $fn022__r__step_hp_filter
-              $fn024__a__side := $fn025__l__join_side_counter
-              $fn024__a__step_counter := $fn025__l__counter
-              $fn024__a__block_step_index := $fn025__l__counter2
-              call fn024_update_flux_data_and_ui
-              ~fn033__a__dyn_value := get_control_par_real_arr(%UIID_MAIN__seq__dyn_slider[0],$CONTROL_PAR_VALUE,1)
-              ~fn033__a__step_value := ?_SEQ__data__flux__f[32*5*$fn025__l__join_side_counter+(32*0)+$fn025__l__counter2*8+$fn025__l__counter]
-              call fn033_transform_step_value_into_dynamic
-              %_SEQ__data__dyn__i[32*5*$fn025__l__join_side_counter+(32*0)+$fn025__l__counter2*8+$fn025__l__counter] := $fn033__r__transf_value__i
-              ?_SEQ__data__dyn__f[32*5*$fn025__l__join_side_counter+(32*0)+$fn025__l__counter2*8+$fn025__l__counter] := ~fn033__r__transf_value__r
-              inc($fn025__l__counter)
-            end while
-          end if
           inc($fn025__l__counter2)
         end while
         inc($fn025__l__join_side_counter)
@@ -5827,7 +5842,9 @@ function fn025_update_flux_on_all_block_steps
 end function
 
 function fn007_update_block_and_steps_ts
-  if ($switch_MAIN__SEQ__combine=0)
+  message("FN007 side: " & $fn007__a__side & " | layer power  " & get_control_par(%UIID_MAIN__layer__power[$fn007__a__side],$CONTROL_PAR_VALUE) & "")
+  if ($switch_MAIN__SEQ__combine=0 and (get_control_par(%UIID_MAIN__layer__power[$fn007__a__side],$CONTROL_PAR_VALUE)=1))
+    message("    Processing DUAL blocks ")
     if (%seq__direction_status[$fn007__a__side]=0)
       inc(%SEQ__DUAL__current_block[$fn007__a__side])
       if (%SEQ__DUAL__current_block[$fn007__a__side]>3)
@@ -5867,51 +5884,51 @@ function fn007_update_block_and_steps_ts
         end while
       end if
     end if
-    if (%_SEQ__flux_rand_power_state[5*$fn007__a__side+%SEQ__showing_target[$fn007__a__side]]=1)
-      $fn025__a__side := $fn007__a__side
-      call fn025_update_flux_on_all_block_steps
-    end if
+    message("Calling fn25, side: " & $fn007__a__side & "")
+    $fn025__a__side := $fn007__a__side
+    call fn025_update_flux_on_all_block_steps
   else
-    if ($seq_join__direction_status=0)
-      inc($SEQ__JOIN__current_block)
-      if ($SEQ__JOIN__current_block>7)
-        if ($layers__seq_join_play_direction=2)
-          $SEQ__JOIN__current_block := 7
-          $seq_join__direction_status := 1
-        else
-          $SEQ__JOIN__current_block := 0
-        end if
-      end if
-      $SEQ__JOIN__step_duration := %SEQ__rate[0]/(%SEQ__JOIN__step_count[$SEQ__JOIN__current_block]+1)
-      $s__i := 0
-      while ($s__i<=%SEQ__JOIN__step_count[$SEQ__JOIN__current_block])
-        if ($s__i>0)
-          %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)+random(-%SEQ__humanize[0],%SEQ__humanize[0])
-        else
-          %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)
-        end if
-        inc($s__i)
-      end while
-    else
-      if ($seq_join__direction_status=1)
-        dec($SEQ__JOIN__current_block)
-        if ($SEQ__JOIN__current_block<0)
+    if (get_control_par(%UIID_MAIN__layer__power[$fn007__a__side],$CONTROL_PAR_VALUE)=1)
+      message("    Processing JOIN blocks ")
+      if ($seq_join__direction_status=0)
+        inc($SEQ__JOIN__current_block)
+        if ($SEQ__JOIN__current_block>7)
           if ($layers__seq_join_play_direction=2)
-            $SEQ__JOIN__current_block := 0
-            $seq_join__direction_status := 0
-          else
             $SEQ__JOIN__current_block := 7
+            $seq_join__direction_status := 1
+          else
+            $SEQ__JOIN__current_block := 0
           end if
         end if
         $SEQ__JOIN__step_duration := %SEQ__rate[0]/(%SEQ__JOIN__step_count[$SEQ__JOIN__current_block]+1)
         $s__i := 0
         while ($s__i<=%SEQ__JOIN__step_count[$SEQ__JOIN__current_block])
-          %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)
+          if ($s__i>0)
+            %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)+random(-%SEQ__humanize[0],%SEQ__humanize[0])
+          else
+            %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)
+          end if
           inc($s__i)
         end while
+      else
+        if ($seq_join__direction_status=1)
+          dec($SEQ__JOIN__current_block)
+          if ($SEQ__JOIN__current_block<0)
+            if ($layers__seq_join_play_direction=2)
+              $SEQ__JOIN__current_block := 0
+              $seq_join__direction_status := 0
+            else
+              $SEQ__JOIN__current_block := 7
+            end if
+          end if
+          $SEQ__JOIN__step_duration := %SEQ__rate[0]/(%SEQ__JOIN__step_count[$SEQ__JOIN__current_block]+1)
+          $s__i := 0
+          while ($s__i<=%SEQ__JOIN__step_count[$SEQ__JOIN__current_block])
+            %_SEQ__JOIN__steps_timestamps[8*$SEQ__JOIN__current_block+$s__i] := $ENGINE_UPTIME+($s__i*$SEQ__JOIN__step_duration)
+            inc($s__i)
+          end while
+        end if
       end if
-    end if
-    if (%_SEQ__flux_rand_power_state[5*0+%SEQ__showing_target[0]]=1)
       $fn025__a__side := $__FLUX_ON_ALL_BLOCKS
       call fn025_update_flux_on_all_block_steps
     end if
@@ -6042,6 +6059,7 @@ function fn026_get_seq_target_data
     $fn034__a__value := $fn026__r__velocity
     call fn034_transform_data_according_to_seq_target
     $fn026__r__velocity := $fn034__r__transf_value__i
+    message("FN26 fn026.r.velocity = " & $fn026__r__velocity & "")
   else
     $fn026__r__velocity := %_layers__note_velo[128*$fn026__a__side+$fn026__a__key_note]
   end if
@@ -6112,7 +6130,6 @@ function fn026_get_seq_target_data
 end function
 
 function fn027_play_lcb_core
-  message("Playing side " & $fn027__a__side & " | note: " & $fn027__a__note & "")
   if ($SEQ__step_velocity>1)
     if ($SEQ__step_length=0)
       $SEQ__step_length := 1000
@@ -6122,13 +6139,15 @@ function fn027_play_lcb_core
     else
       $fn027__l__step_duration := $SEQ__JOIN__step_duration*$SEQ__step_length
     end if
-    message("    velocity: " & $SEQ__step_velocity & "")
     %_layers__note_events[128*$fn027__a__side+$fn027__a__note] := play_note($fn027__a__note,$SEQ__step_velocity,-1,$fn027__l__step_duration)
     set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
-    set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_ALLOW_GROUP,1,%selected_source[$fn027__a__side])
-    set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(?_sample_starts[128*2*%selected_source[$fn027__a__side]+(128*$fn027__a__side)+$fn027__a__note]*1000000.0),1+($pn_ncb__a__side*1))
-    change_tune(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],real_to_int(?_sample_tuning[128*2*%selected_source[$fn027__a__side]+(128*$fn027__a__side)+$fn027__a__note]*100000.0)+($SEQ__step_pitch*100000),0)
-    message("play core pan:  " & $SEQ__step_pan & "")
+    set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_ALLOW_GROUP,1,%selected_source[$fn027__a__side]+($fn027__a__side*5))
+    message("PLAY CORE side " & $fn027__a__side & "")
+    message("    Allowing group: " & (%selected_source[$fn027__a__side]+($fn027__a__side*5)) & "")
+    set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(?_sample_starts[128*2*(%selected_source[$fn027__a__side]+($fn027__a__side*5))+(128*$fn027__a__side)+$fn027__a__note]*1000000.0),1+($pn_ncb__a__side*1))
+    change_tune(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],real_to_int(?_sample_tuning[128*2*(%selected_source[$fn027__a__side]+($fn027__a__side*5))+(128*$fn027__a__side)+$fn027__a__note]*100000.0)+($SEQ__step_pitch*100000),0)
+    message("    tuning from sample: " & ?_sample_tuning[128*2*(%selected_source[$fn027__a__side]+($fn027__a__side*5))+(128*$fn027__a__side)+$fn027__a__note] & "")
+    message("    source: " & %selected_source[$fn027__a__side] & "")
     change_pan(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$SEQ__step_pan,0)
     if ($fn026__r__filter_status=1)
       set_engine_par($ENGINE_PAR_CUTOFF,$SEQ__step_lp_filter,-1,2,$NI_BUS_OFFSET+$fn027__a__side)
@@ -6187,9 +6206,9 @@ function PLAY_LCB
           $SEQ__step_pitch := $fn026__r__pitch
           $SEQ__step_length := $fn026__r__length
           $SEQ__step_pan := $fn026__r__pan
-          $SEQ__step_filter := $fn026__r__filter_value
           $SEQ__step_lp_filter := $fn026__r__lp_filter_value
           $SEQ__step_hp_filter := $fn026__r__hp_filter_value
+          $SEQ__step_filter := $fn026__r__filter_value
           $fn027__a__side := $p_lcb__a__side
           $fn027__a__note := $SEQ__key_count
           $fn027__a__step_counter := $SEQ__ts_counter
@@ -6202,6 +6221,7 @@ function PLAY_LCB
       call fn028_update_arp_note_buffers
       $fn50__a__side := $p_lcb__a__side
       call fn050_seq__arp__get_play_note_from_buffer
+      message("PLAY DUAL | ARP | side: " & $p_lcb__a__side & " | note: " & %ARP__played_note[$p_lcb__a__side] & "")
       if (%arp_mode[$p_lcb__a__side] # 5)
         %ARP__played_duration[$p_lcb__a__side] := %SEQ__DUAL__step_duration[$p_lcb__a__side]*$SEQ__step_length
         %ARP__played_velocity[$p_lcb__a__side] := $SEQ__step_velocity
@@ -7167,736 +7187,733 @@ on persistence_changed
     set_control_par(%UIID_MAIN__FX__links[$i__i],$CONTROL_PAR_CUSTOM_ID,$i__i+212)
     inc($i__i)
   end while
-  $SEQ__COMMON_ELEMENTS_COUNT := 122
-  %_SEQ__common_elements_data[7*1+$ELEMENT_UIID] := get_ui_id($button_MAIN__LEFT__controls__draw)
-  %_SEQ__common_elements_data[7*1+$PANEL_DUAL_SEQ_X_COORD] := 133
-  %_SEQ__common_elements_data[7*1+$PANEL_DUAL_SEQ_Y_COORD] := 42
-  %_SEQ__common_elements_data[7*2+$ELEMENT_UIID] := get_ui_id($button_MAIN__LEFT__move__range)
-  %_SEQ__common_elements_data[7*2+$PANEL_DUAL_SEQ_X_COORD] := 287
-  %_SEQ__common_elements_data[7*2+$PANEL_DUAL_SEQ_Y_COORD] := 47
-  %_SEQ__common_elements_data[7*3+$ELEMENT_UIID] := get_ui_id($label_MAIN__2SEQ__LEFT__dyn)
-  %_SEQ__common_elements_data[7*3+$PANEL_DUAL_SEQ_X_COORD] := 21
-  %_SEQ__common_elements_data[7*3+$PANEL_DUAL_SEQ_Y_COORD] := 213
-  %_SEQ__common_elements_data[7*4+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__dynamics)
-  %_SEQ__common_elements_data[7*4+$PANEL_DUAL_SEQ_X_COORD] := 25
-  %_SEQ__common_elements_data[7*4+$PANEL_DUAL_SEQ_Y_COORD] := 66
-  %_SEQ__common_elements_data[7*5+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__hmz)
-  %_SEQ__common_elements_data[7*5+$PANEL_DUAL_SEQ_X_COORD] := 12
-  %_SEQ__common_elements_data[7*5+$PANEL_DUAL_SEQ_Y_COORD] := 539
-  %_SEQ__common_elements_data[7*6+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__0)
-  %_SEQ__common_elements_data[7*6+$PANEL_DUAL_SEQ_X_COORD] := 67
+  $SEQ__COMMON_ELEMENTS_COUNT := 121
+  %_SEQ__common_elements_data[7*0+$ELEMENT_UIID] := get_ui_id($button_MAIN__LEFT__controls__draw)
+  %_SEQ__common_elements_data[7*0+$PANEL_DUAL_SEQ_X_COORD] := 133
+  %_SEQ__common_elements_data[7*0+$PANEL_DUAL_SEQ_Y_COORD] := 42
+  %_SEQ__common_elements_data[7*1+$ELEMENT_UIID] := get_ui_id($button_MAIN__LEFT__move__range)
+  %_SEQ__common_elements_data[7*1+$PANEL_DUAL_SEQ_X_COORD] := 287
+  %_SEQ__common_elements_data[7*1+$PANEL_DUAL_SEQ_Y_COORD] := 47
+  %_SEQ__common_elements_data[7*2+$ELEMENT_UIID] := get_ui_id($label_MAIN__2SEQ__LEFT__dyn)
+  %_SEQ__common_elements_data[7*2+$PANEL_DUAL_SEQ_X_COORD] := 21
+  %_SEQ__common_elements_data[7*2+$PANEL_DUAL_SEQ_Y_COORD] := 213
+  %_SEQ__common_elements_data[7*3+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__dynamics)
+  %_SEQ__common_elements_data[7*3+$PANEL_DUAL_SEQ_X_COORD] := 25
+  %_SEQ__common_elements_data[7*3+$PANEL_DUAL_SEQ_Y_COORD] := 66
+  %_SEQ__common_elements_data[7*4+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__hmz)
+  %_SEQ__common_elements_data[7*4+$PANEL_DUAL_SEQ_X_COORD] := 12
+  %_SEQ__common_elements_data[7*4+$PANEL_DUAL_SEQ_Y_COORD] := 539
+  %_SEQ__common_elements_data[7*5+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__0)
+  %_SEQ__common_elements_data[7*5+$PANEL_DUAL_SEQ_X_COORD] := 67
+  %_SEQ__common_elements_data[7*5+$PANEL_DUAL_SEQ_Y_COORD] := 92
+  %_SEQ__common_elements_data[7*6+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__1)
+  %_SEQ__common_elements_data[7*6+$PANEL_DUAL_SEQ_X_COORD] := 78
   %_SEQ__common_elements_data[7*6+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*7+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__1)
-  %_SEQ__common_elements_data[7*7+$PANEL_DUAL_SEQ_X_COORD] := 78
+  %_SEQ__common_elements_data[7*7+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__10)
+  %_SEQ__common_elements_data[7*7+$PANEL_DUAL_SEQ_X_COORD] := 181
   %_SEQ__common_elements_data[7*7+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*8+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__10)
-  %_SEQ__common_elements_data[7*8+$PANEL_DUAL_SEQ_X_COORD] := 181
+  %_SEQ__common_elements_data[7*8+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__11)
+  %_SEQ__common_elements_data[7*8+$PANEL_DUAL_SEQ_X_COORD] := 192
   %_SEQ__common_elements_data[7*8+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*9+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__11)
-  %_SEQ__common_elements_data[7*9+$PANEL_DUAL_SEQ_X_COORD] := 192
+  %_SEQ__common_elements_data[7*9+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__12)
+  %_SEQ__common_elements_data[7*9+$PANEL_DUAL_SEQ_X_COORD] := 203
   %_SEQ__common_elements_data[7*9+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*10+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__12)
-  %_SEQ__common_elements_data[7*10+$PANEL_DUAL_SEQ_X_COORD] := 203
+  %_SEQ__common_elements_data[7*10+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__13)
+  %_SEQ__common_elements_data[7*10+$PANEL_DUAL_SEQ_X_COORD] := 214
   %_SEQ__common_elements_data[7*10+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*11+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__13)
-  %_SEQ__common_elements_data[7*11+$PANEL_DUAL_SEQ_X_COORD] := 214
+  %_SEQ__common_elements_data[7*11+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__14)
+  %_SEQ__common_elements_data[7*11+$PANEL_DUAL_SEQ_X_COORD] := 225
   %_SEQ__common_elements_data[7*11+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*12+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__14)
-  %_SEQ__common_elements_data[7*12+$PANEL_DUAL_SEQ_X_COORD] := 225
+  %_SEQ__common_elements_data[7*12+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__15)
+  %_SEQ__common_elements_data[7*12+$PANEL_DUAL_SEQ_X_COORD] := 236
   %_SEQ__common_elements_data[7*12+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*13+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__15)
-  %_SEQ__common_elements_data[7*13+$PANEL_DUAL_SEQ_X_COORD] := 236
+  %_SEQ__common_elements_data[7*13+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__16)
+  %_SEQ__common_elements_data[7*13+$PANEL_DUAL_SEQ_X_COORD] := 251
   %_SEQ__common_elements_data[7*13+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*14+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__16)
-  %_SEQ__common_elements_data[7*14+$PANEL_DUAL_SEQ_X_COORD] := 251
+  %_SEQ__common_elements_data[7*14+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__17)
+  %_SEQ__common_elements_data[7*14+$PANEL_DUAL_SEQ_X_COORD] := 262
   %_SEQ__common_elements_data[7*14+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*15+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__17)
-  %_SEQ__common_elements_data[7*15+$PANEL_DUAL_SEQ_X_COORD] := 262
+  %_SEQ__common_elements_data[7*15+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__18)
+  %_SEQ__common_elements_data[7*15+$PANEL_DUAL_SEQ_X_COORD] := 273
   %_SEQ__common_elements_data[7*15+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*16+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__18)
-  %_SEQ__common_elements_data[7*16+$PANEL_DUAL_SEQ_X_COORD] := 273
+  %_SEQ__common_elements_data[7*16+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__19)
+  %_SEQ__common_elements_data[7*16+$PANEL_DUAL_SEQ_X_COORD] := 284
   %_SEQ__common_elements_data[7*16+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*17+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__19)
-  %_SEQ__common_elements_data[7*17+$PANEL_DUAL_SEQ_X_COORD] := 284
+  %_SEQ__common_elements_data[7*17+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__2)
+  %_SEQ__common_elements_data[7*17+$PANEL_DUAL_SEQ_X_COORD] := 89
   %_SEQ__common_elements_data[7*17+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*18+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__2)
-  %_SEQ__common_elements_data[7*18+$PANEL_DUAL_SEQ_X_COORD] := 89
+  %_SEQ__common_elements_data[7*18+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__20)
+  %_SEQ__common_elements_data[7*18+$PANEL_DUAL_SEQ_X_COORD] := 295
   %_SEQ__common_elements_data[7*18+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*19+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__20)
-  %_SEQ__common_elements_data[7*19+$PANEL_DUAL_SEQ_X_COORD] := 295
+  %_SEQ__common_elements_data[7*19+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__21)
+  %_SEQ__common_elements_data[7*19+$PANEL_DUAL_SEQ_X_COORD] := 306
   %_SEQ__common_elements_data[7*19+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*20+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__21)
-  %_SEQ__common_elements_data[7*20+$PANEL_DUAL_SEQ_X_COORD] := 306
+  %_SEQ__common_elements_data[7*20+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__22)
+  %_SEQ__common_elements_data[7*20+$PANEL_DUAL_SEQ_X_COORD] := 317
   %_SEQ__common_elements_data[7*20+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*21+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__22)
-  %_SEQ__common_elements_data[7*21+$PANEL_DUAL_SEQ_X_COORD] := 317
+  %_SEQ__common_elements_data[7*21+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__23)
+  %_SEQ__common_elements_data[7*21+$PANEL_DUAL_SEQ_X_COORD] := 328
   %_SEQ__common_elements_data[7*21+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*22+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__23)
-  %_SEQ__common_elements_data[7*22+$PANEL_DUAL_SEQ_X_COORD] := 328
+  %_SEQ__common_elements_data[7*22+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__24)
+  %_SEQ__common_elements_data[7*22+$PANEL_DUAL_SEQ_X_COORD] := 343
   %_SEQ__common_elements_data[7*22+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*23+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__24)
-  %_SEQ__common_elements_data[7*23+$PANEL_DUAL_SEQ_X_COORD] := 343
+  %_SEQ__common_elements_data[7*23+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__25)
+  %_SEQ__common_elements_data[7*23+$PANEL_DUAL_SEQ_X_COORD] := 354
   %_SEQ__common_elements_data[7*23+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*24+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__25)
-  %_SEQ__common_elements_data[7*24+$PANEL_DUAL_SEQ_X_COORD] := 354
+  %_SEQ__common_elements_data[7*24+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__26)
+  %_SEQ__common_elements_data[7*24+$PANEL_DUAL_SEQ_X_COORD] := 365
   %_SEQ__common_elements_data[7*24+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*25+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__26)
-  %_SEQ__common_elements_data[7*25+$PANEL_DUAL_SEQ_X_COORD] := 365
+  %_SEQ__common_elements_data[7*25+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__27)
+  %_SEQ__common_elements_data[7*25+$PANEL_DUAL_SEQ_X_COORD] := 376
   %_SEQ__common_elements_data[7*25+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*26+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__27)
-  %_SEQ__common_elements_data[7*26+$PANEL_DUAL_SEQ_X_COORD] := 376
+  %_SEQ__common_elements_data[7*26+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__28)
+  %_SEQ__common_elements_data[7*26+$PANEL_DUAL_SEQ_X_COORD] := 387
   %_SEQ__common_elements_data[7*26+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*27+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__28)
-  %_SEQ__common_elements_data[7*27+$PANEL_DUAL_SEQ_X_COORD] := 387
+  %_SEQ__common_elements_data[7*27+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__29)
+  %_SEQ__common_elements_data[7*27+$PANEL_DUAL_SEQ_X_COORD] := 398
   %_SEQ__common_elements_data[7*27+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*28+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__29)
-  %_SEQ__common_elements_data[7*28+$PANEL_DUAL_SEQ_X_COORD] := 398
+  %_SEQ__common_elements_data[7*28+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__3)
+  %_SEQ__common_elements_data[7*28+$PANEL_DUAL_SEQ_X_COORD] := 100
   %_SEQ__common_elements_data[7*28+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*29+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__3)
-  %_SEQ__common_elements_data[7*29+$PANEL_DUAL_SEQ_X_COORD] := 100
+  %_SEQ__common_elements_data[7*29+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__30)
+  %_SEQ__common_elements_data[7*29+$PANEL_DUAL_SEQ_X_COORD] := 409
   %_SEQ__common_elements_data[7*29+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*30+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__30)
-  %_SEQ__common_elements_data[7*30+$PANEL_DUAL_SEQ_X_COORD] := 409
+  %_SEQ__common_elements_data[7*30+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__31)
+  %_SEQ__common_elements_data[7*30+$PANEL_DUAL_SEQ_X_COORD] := 420
   %_SEQ__common_elements_data[7*30+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*31+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__31)
-  %_SEQ__common_elements_data[7*31+$PANEL_DUAL_SEQ_X_COORD] := 420
+  %_SEQ__common_elements_data[7*31+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__4)
+  %_SEQ__common_elements_data[7*31+$PANEL_DUAL_SEQ_X_COORD] := 111
   %_SEQ__common_elements_data[7*31+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*32+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__4)
-  %_SEQ__common_elements_data[7*32+$PANEL_DUAL_SEQ_X_COORD] := 111
+  %_SEQ__common_elements_data[7*32+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__5)
+  %_SEQ__common_elements_data[7*32+$PANEL_DUAL_SEQ_X_COORD] := 122
   %_SEQ__common_elements_data[7*32+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*33+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__5)
-  %_SEQ__common_elements_data[7*33+$PANEL_DUAL_SEQ_X_COORD] := 122
+  %_SEQ__common_elements_data[7*33+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__6)
+  %_SEQ__common_elements_data[7*33+$PANEL_DUAL_SEQ_X_COORD] := 133
   %_SEQ__common_elements_data[7*33+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*34+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__6)
-  %_SEQ__common_elements_data[7*34+$PANEL_DUAL_SEQ_X_COORD] := 133
+  %_SEQ__common_elements_data[7*34+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__7)
+  %_SEQ__common_elements_data[7*34+$PANEL_DUAL_SEQ_X_COORD] := 144
   %_SEQ__common_elements_data[7*34+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*35+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__7)
-  %_SEQ__common_elements_data[7*35+$PANEL_DUAL_SEQ_X_COORD] := 144
+  %_SEQ__common_elements_data[7*35+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__8)
+  %_SEQ__common_elements_data[7*35+$PANEL_DUAL_SEQ_X_COORD] := 159
   %_SEQ__common_elements_data[7*35+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*36+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__8)
-  %_SEQ__common_elements_data[7*36+$PANEL_DUAL_SEQ_X_COORD] := 159
+  %_SEQ__common_elements_data[7*36+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__9)
+  %_SEQ__common_elements_data[7*36+$PANEL_DUAL_SEQ_X_COORD] := 170
   %_SEQ__common_elements_data[7*36+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*37+$ELEMENT_UIID] := get_ui_id($label_MAIN__LEFT__seq__step__9)
-  %_SEQ__common_elements_data[7*37+$PANEL_DUAL_SEQ_X_COORD] := 170
-  %_SEQ__common_elements_data[7*37+$PANEL_DUAL_SEQ_Y_COORD] := 92
-  %_SEQ__common_elements_data[7*38+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__0)
-  %_SEQ__common_elements_data[7*38+$PANEL_DUAL_SEQ_X_COORD] := 571
+  %_SEQ__common_elements_data[7*37+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__0)
+  %_SEQ__common_elements_data[7*37+$PANEL_DUAL_SEQ_X_COORD] := 571
+  %_SEQ__common_elements_data[7*37+$PANEL_DUAL_SEQ_Y_COORD] := 91
+  %_SEQ__common_elements_data[7*38+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__1)
+  %_SEQ__common_elements_data[7*38+$PANEL_DUAL_SEQ_X_COORD] := 582
   %_SEQ__common_elements_data[7*38+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*39+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__1)
-  %_SEQ__common_elements_data[7*39+$PANEL_DUAL_SEQ_X_COORD] := 582
+  %_SEQ__common_elements_data[7*39+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__10)
+  %_SEQ__common_elements_data[7*39+$PANEL_DUAL_SEQ_X_COORD] := 685
   %_SEQ__common_elements_data[7*39+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*40+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__10)
-  %_SEQ__common_elements_data[7*40+$PANEL_DUAL_SEQ_X_COORD] := 685
+  %_SEQ__common_elements_data[7*40+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__11)
+  %_SEQ__common_elements_data[7*40+$PANEL_DUAL_SEQ_X_COORD] := 696
   %_SEQ__common_elements_data[7*40+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*41+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__11)
-  %_SEQ__common_elements_data[7*41+$PANEL_DUAL_SEQ_X_COORD] := 696
+  %_SEQ__common_elements_data[7*41+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__12)
+  %_SEQ__common_elements_data[7*41+$PANEL_DUAL_SEQ_X_COORD] := 707
   %_SEQ__common_elements_data[7*41+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*42+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__12)
-  %_SEQ__common_elements_data[7*42+$PANEL_DUAL_SEQ_X_COORD] := 707
+  %_SEQ__common_elements_data[7*42+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__13)
+  %_SEQ__common_elements_data[7*42+$PANEL_DUAL_SEQ_X_COORD] := 718
   %_SEQ__common_elements_data[7*42+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*43+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__13)
-  %_SEQ__common_elements_data[7*43+$PANEL_DUAL_SEQ_X_COORD] := 718
+  %_SEQ__common_elements_data[7*43+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__14)
+  %_SEQ__common_elements_data[7*43+$PANEL_DUAL_SEQ_X_COORD] := 729
   %_SEQ__common_elements_data[7*43+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*44+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__14)
-  %_SEQ__common_elements_data[7*44+$PANEL_DUAL_SEQ_X_COORD] := 729
+  %_SEQ__common_elements_data[7*44+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__15)
+  %_SEQ__common_elements_data[7*44+$PANEL_DUAL_SEQ_X_COORD] := 740
   %_SEQ__common_elements_data[7*44+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*45+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__15)
-  %_SEQ__common_elements_data[7*45+$PANEL_DUAL_SEQ_X_COORD] := 740
+  %_SEQ__common_elements_data[7*45+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__16)
+  %_SEQ__common_elements_data[7*45+$PANEL_DUAL_SEQ_X_COORD] := 755
   %_SEQ__common_elements_data[7*45+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*46+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__16)
-  %_SEQ__common_elements_data[7*46+$PANEL_DUAL_SEQ_X_COORD] := 755
+  %_SEQ__common_elements_data[7*46+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__17)
+  %_SEQ__common_elements_data[7*46+$PANEL_DUAL_SEQ_X_COORD] := 766
   %_SEQ__common_elements_data[7*46+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*47+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__17)
-  %_SEQ__common_elements_data[7*47+$PANEL_DUAL_SEQ_X_COORD] := 766
+  %_SEQ__common_elements_data[7*47+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__18)
+  %_SEQ__common_elements_data[7*47+$PANEL_DUAL_SEQ_X_COORD] := 777
   %_SEQ__common_elements_data[7*47+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*48+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__18)
-  %_SEQ__common_elements_data[7*48+$PANEL_DUAL_SEQ_X_COORD] := 777
+  %_SEQ__common_elements_data[7*48+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__19)
+  %_SEQ__common_elements_data[7*48+$PANEL_DUAL_SEQ_X_COORD] := 788
   %_SEQ__common_elements_data[7*48+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*49+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__19)
-  %_SEQ__common_elements_data[7*49+$PANEL_DUAL_SEQ_X_COORD] := 788
+  %_SEQ__common_elements_data[7*49+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__2)
+  %_SEQ__common_elements_data[7*49+$PANEL_DUAL_SEQ_X_COORD] := 593
   %_SEQ__common_elements_data[7*49+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*50+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__2)
-  %_SEQ__common_elements_data[7*50+$PANEL_DUAL_SEQ_X_COORD] := 593
+  %_SEQ__common_elements_data[7*50+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__20)
+  %_SEQ__common_elements_data[7*50+$PANEL_DUAL_SEQ_X_COORD] := 799
   %_SEQ__common_elements_data[7*50+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*51+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__20)
-  %_SEQ__common_elements_data[7*51+$PANEL_DUAL_SEQ_X_COORD] := 799
+  %_SEQ__common_elements_data[7*51+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__21)
+  %_SEQ__common_elements_data[7*51+$PANEL_DUAL_SEQ_X_COORD] := 810
   %_SEQ__common_elements_data[7*51+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*52+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__21)
-  %_SEQ__common_elements_data[7*52+$PANEL_DUAL_SEQ_X_COORD] := 810
+  %_SEQ__common_elements_data[7*52+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__22)
+  %_SEQ__common_elements_data[7*52+$PANEL_DUAL_SEQ_X_COORD] := 821
   %_SEQ__common_elements_data[7*52+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*53+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__22)
-  %_SEQ__common_elements_data[7*53+$PANEL_DUAL_SEQ_X_COORD] := 821
+  %_SEQ__common_elements_data[7*53+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__23)
+  %_SEQ__common_elements_data[7*53+$PANEL_DUAL_SEQ_X_COORD] := 832
   %_SEQ__common_elements_data[7*53+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*54+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__23)
-  %_SEQ__common_elements_data[7*54+$PANEL_DUAL_SEQ_X_COORD] := 832
+  %_SEQ__common_elements_data[7*54+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__24)
+  %_SEQ__common_elements_data[7*54+$PANEL_DUAL_SEQ_X_COORD] := 847
   %_SEQ__common_elements_data[7*54+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*55+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__24)
-  %_SEQ__common_elements_data[7*55+$PANEL_DUAL_SEQ_X_COORD] := 847
+  %_SEQ__common_elements_data[7*55+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__25)
+  %_SEQ__common_elements_data[7*55+$PANEL_DUAL_SEQ_X_COORD] := 858
   %_SEQ__common_elements_data[7*55+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*56+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__25)
-  %_SEQ__common_elements_data[7*56+$PANEL_DUAL_SEQ_X_COORD] := 858
+  %_SEQ__common_elements_data[7*56+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__26)
+  %_SEQ__common_elements_data[7*56+$PANEL_DUAL_SEQ_X_COORD] := 869
   %_SEQ__common_elements_data[7*56+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*57+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__26)
-  %_SEQ__common_elements_data[7*57+$PANEL_DUAL_SEQ_X_COORD] := 869
+  %_SEQ__common_elements_data[7*57+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__27)
+  %_SEQ__common_elements_data[7*57+$PANEL_DUAL_SEQ_X_COORD] := 880
   %_SEQ__common_elements_data[7*57+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*58+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__27)
-  %_SEQ__common_elements_data[7*58+$PANEL_DUAL_SEQ_X_COORD] := 880
+  %_SEQ__common_elements_data[7*58+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__28)
+  %_SEQ__common_elements_data[7*58+$PANEL_DUAL_SEQ_X_COORD] := 891
   %_SEQ__common_elements_data[7*58+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*59+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__28)
-  %_SEQ__common_elements_data[7*59+$PANEL_DUAL_SEQ_X_COORD] := 891
+  %_SEQ__common_elements_data[7*59+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__29)
+  %_SEQ__common_elements_data[7*59+$PANEL_DUAL_SEQ_X_COORD] := 902
   %_SEQ__common_elements_data[7*59+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*60+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__29)
-  %_SEQ__common_elements_data[7*60+$PANEL_DUAL_SEQ_X_COORD] := 902
+  %_SEQ__common_elements_data[7*60+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__3)
+  %_SEQ__common_elements_data[7*60+$PANEL_DUAL_SEQ_X_COORD] := 604
   %_SEQ__common_elements_data[7*60+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*61+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__3)
-  %_SEQ__common_elements_data[7*61+$PANEL_DUAL_SEQ_X_COORD] := 604
+  %_SEQ__common_elements_data[7*61+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__30)
+  %_SEQ__common_elements_data[7*61+$PANEL_DUAL_SEQ_X_COORD] := 913
   %_SEQ__common_elements_data[7*61+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*62+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__30)
-  %_SEQ__common_elements_data[7*62+$PANEL_DUAL_SEQ_X_COORD] := 913
+  %_SEQ__common_elements_data[7*62+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__31)
+  %_SEQ__common_elements_data[7*62+$PANEL_DUAL_SEQ_X_COORD] := 924
   %_SEQ__common_elements_data[7*62+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*63+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__31)
-  %_SEQ__common_elements_data[7*63+$PANEL_DUAL_SEQ_X_COORD] := 924
+  %_SEQ__common_elements_data[7*63+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__4)
+  %_SEQ__common_elements_data[7*63+$PANEL_DUAL_SEQ_X_COORD] := 615
   %_SEQ__common_elements_data[7*63+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*64+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__4)
-  %_SEQ__common_elements_data[7*64+$PANEL_DUAL_SEQ_X_COORD] := 615
+  %_SEQ__common_elements_data[7*64+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__5)
+  %_SEQ__common_elements_data[7*64+$PANEL_DUAL_SEQ_X_COORD] := 626
   %_SEQ__common_elements_data[7*64+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*65+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__5)
-  %_SEQ__common_elements_data[7*65+$PANEL_DUAL_SEQ_X_COORD] := 626
+  %_SEQ__common_elements_data[7*65+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__6)
+  %_SEQ__common_elements_data[7*65+$PANEL_DUAL_SEQ_X_COORD] := 637
   %_SEQ__common_elements_data[7*65+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*66+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__6)
-  %_SEQ__common_elements_data[7*66+$PANEL_DUAL_SEQ_X_COORD] := 637
+  %_SEQ__common_elements_data[7*66+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__7)
+  %_SEQ__common_elements_data[7*66+$PANEL_DUAL_SEQ_X_COORD] := 648
   %_SEQ__common_elements_data[7*66+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*67+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__7)
-  %_SEQ__common_elements_data[7*67+$PANEL_DUAL_SEQ_X_COORD] := 648
+  %_SEQ__common_elements_data[7*67+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__8)
+  %_SEQ__common_elements_data[7*67+$PANEL_DUAL_SEQ_X_COORD] := 663
   %_SEQ__common_elements_data[7*67+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*68+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__8)
-  %_SEQ__common_elements_data[7*68+$PANEL_DUAL_SEQ_X_COORD] := 663
+  %_SEQ__common_elements_data[7*68+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__9)
+  %_SEQ__common_elements_data[7*68+$PANEL_DUAL_SEQ_X_COORD] := 674
   %_SEQ__common_elements_data[7*68+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*69+$ELEMENT_UIID] := get_ui_id($label_MAIN__RIGHT__seq__step__9)
-  %_SEQ__common_elements_data[7*69+$PANEL_DUAL_SEQ_X_COORD] := 674
-  %_SEQ__common_elements_data[7*69+$PANEL_DUAL_SEQ_Y_COORD] := 91
-  %_SEQ__common_elements_data[7*70+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__LEFT__led1)
-  %_SEQ__common_elements_data[7*70+$PANEL_DUAL_SEQ_X_COORD] := 66
+  %_SEQ__common_elements_data[7*69+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__LEFT__led1)
+  %_SEQ__common_elements_data[7*69+$PANEL_DUAL_SEQ_X_COORD] := 66
+  %_SEQ__common_elements_data[7*69+$PANEL_DUAL_SEQ_Y_COORD] := 191
+  %_SEQ__common_elements_data[7*70+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__LEFT__led2)
+  %_SEQ__common_elements_data[7*70+$PANEL_DUAL_SEQ_X_COORD] := 158
   %_SEQ__common_elements_data[7*70+$PANEL_DUAL_SEQ_Y_COORD] := 191
-  %_SEQ__common_elements_data[7*71+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__LEFT__led2)
-  %_SEQ__common_elements_data[7*71+$PANEL_DUAL_SEQ_X_COORD] := 158
+  %_SEQ__common_elements_data[7*71+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__LEFT__led3)
+  %_SEQ__common_elements_data[7*71+$PANEL_DUAL_SEQ_X_COORD] := 250
   %_SEQ__common_elements_data[7*71+$PANEL_DUAL_SEQ_Y_COORD] := 191
-  %_SEQ__common_elements_data[7*72+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__LEFT__led3)
-  %_SEQ__common_elements_data[7*72+$PANEL_DUAL_SEQ_X_COORD] := 250
+  %_SEQ__common_elements_data[7*72+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__LEFT__led4)
+  %_SEQ__common_elements_data[7*72+$PANEL_DUAL_SEQ_X_COORD] := 342
   %_SEQ__common_elements_data[7*72+$PANEL_DUAL_SEQ_Y_COORD] := 191
-  %_SEQ__common_elements_data[7*73+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__LEFT__led4)
-  %_SEQ__common_elements_data[7*73+$PANEL_DUAL_SEQ_X_COORD] := 342
+  %_SEQ__common_elements_data[7*73+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__RIGHT__led1)
+  %_SEQ__common_elements_data[7*73+$PANEL_DUAL_SEQ_X_COORD] := 570
   %_SEQ__common_elements_data[7*73+$PANEL_DUAL_SEQ_Y_COORD] := 191
-  %_SEQ__common_elements_data[7*74+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__RIGHT__led1)
-  %_SEQ__common_elements_data[7*74+$PANEL_DUAL_SEQ_X_COORD] := 570
+  %_SEQ__common_elements_data[7*74+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__RIGHT__led2)
+  %_SEQ__common_elements_data[7*74+$PANEL_DUAL_SEQ_X_COORD] := 662
   %_SEQ__common_elements_data[7*74+$PANEL_DUAL_SEQ_Y_COORD] := 191
-  %_SEQ__common_elements_data[7*75+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__RIGHT__led2)
-  %_SEQ__common_elements_data[7*75+$PANEL_DUAL_SEQ_X_COORD] := 662
+  %_SEQ__common_elements_data[7*75+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__RIGHT__led3)
+  %_SEQ__common_elements_data[7*75+$PANEL_DUAL_SEQ_X_COORD] := 754
   %_SEQ__common_elements_data[7*75+$PANEL_DUAL_SEQ_Y_COORD] := 191
-  %_SEQ__common_elements_data[7*76+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__RIGHT__led3)
-  %_SEQ__common_elements_data[7*76+$PANEL_DUAL_SEQ_X_COORD] := 754
+  %_SEQ__common_elements_data[7*76+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__RIGHT__led4)
+  %_SEQ__common_elements_data[7*76+$PANEL_DUAL_SEQ_X_COORD] := 846
   %_SEQ__common_elements_data[7*76+$PANEL_DUAL_SEQ_Y_COORD] := 191
-  %_SEQ__common_elements_data[7*77+$ELEMENT_UIID] := get_ui_id($label_MAIN__SEQ__RIGHT__led4)
-  %_SEQ__common_elements_data[7*77+$PANEL_DUAL_SEQ_X_COORD] := 846
-  %_SEQ__common_elements_data[7*77+$PANEL_DUAL_SEQ_Y_COORD] := 191
-  %_SEQ__common_elements_data[7*78+$ELEMENT_UIID] := get_ui_id($label_MAIN__display__control)
-  %_SEQ__common_elements_data[7*78+$PANEL_DUAL_SEQ_X_COORD] := 448
-  %_SEQ__common_elements_data[7*78+$PANEL_DUAL_SEQ_Y_COORD] := 218
-  %_SEQ__common_elements_data[7*79+$ELEMENT_UIID] := get_ui_id($label_MAIN__display__value)
-  %_SEQ__common_elements_data[7*79+$PANEL_DUAL_SEQ_X_COORD] := 443
-  %_SEQ__common_elements_data[7*79+$PANEL_DUAL_SEQ_Y_COORD] := 236
-  %_SEQ__common_elements_data[7*80+$ELEMENT_UIID] := get_ui_id($slider_MAIN__LEFT__hmz)
-  %_SEQ__common_elements_data[7*80+$PANEL_DUAL_SEQ_X_COORD] := 25
-  %_SEQ__common_elements_data[7*80+$PANEL_DUAL_SEQ_Y_COORD] := 570
-  %_SEQ__common_elements_data[7*81+$ELEMENT_UIID] := get_ui_id($slider_MAIN__LEFT__move__range)
-  %_SEQ__common_elements_data[7*81+$PANEL_DUAL_SEQ_X_COORD] := 287
-  %_SEQ__common_elements_data[7*81+$PANEL_DUAL_SEQ_Y_COORD] := 47
-  %_SEQ__common_elements_data[7*82+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__LEFT__block1__steps)
-  %_SEQ__common_elements_data[7*82+$PANEL_DUAL_SEQ_X_COORD] := 66
+  %_SEQ__common_elements_data[7*77+$ELEMENT_UIID] := get_ui_id($label_MAIN__display__control)
+  %_SEQ__common_elements_data[7*77+$PANEL_DUAL_SEQ_X_COORD] := 448
+  %_SEQ__common_elements_data[7*77+$PANEL_DUAL_SEQ_Y_COORD] := 218
+  %_SEQ__common_elements_data[7*78+$ELEMENT_UIID] := get_ui_id($label_MAIN__display__value)
+  %_SEQ__common_elements_data[7*78+$PANEL_DUAL_SEQ_X_COORD] := 443
+  %_SEQ__common_elements_data[7*78+$PANEL_DUAL_SEQ_Y_COORD] := 236
+  %_SEQ__common_elements_data[7*79+$ELEMENT_UIID] := get_ui_id($slider_MAIN__LEFT__hmz)
+  %_SEQ__common_elements_data[7*79+$PANEL_DUAL_SEQ_X_COORD] := 25
+  %_SEQ__common_elements_data[7*79+$PANEL_DUAL_SEQ_Y_COORD] := 570
+  %_SEQ__common_elements_data[7*80+$ELEMENT_UIID] := get_ui_id($slider_MAIN__LEFT__move__range)
+  %_SEQ__common_elements_data[7*80+$PANEL_DUAL_SEQ_X_COORD] := 287
+  %_SEQ__common_elements_data[7*80+$PANEL_DUAL_SEQ_Y_COORD] := 47
+  %_SEQ__common_elements_data[7*81+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__LEFT__block1__steps)
+  %_SEQ__common_elements_data[7*81+$PANEL_DUAL_SEQ_X_COORD] := 66
+  %_SEQ__common_elements_data[7*81+$PANEL_DUAL_SEQ_Y_COORD] := 73
+  %_SEQ__common_elements_data[7*82+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__LEFT__block2__steps)
+  %_SEQ__common_elements_data[7*82+$PANEL_DUAL_SEQ_X_COORD] := 158
   %_SEQ__common_elements_data[7*82+$PANEL_DUAL_SEQ_Y_COORD] := 73
-  %_SEQ__common_elements_data[7*83+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__LEFT__block2__steps)
-  %_SEQ__common_elements_data[7*83+$PANEL_DUAL_SEQ_X_COORD] := 158
+  %_SEQ__common_elements_data[7*83+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__LEFT__block3__steps)
+  %_SEQ__common_elements_data[7*83+$PANEL_DUAL_SEQ_X_COORD] := 250
   %_SEQ__common_elements_data[7*83+$PANEL_DUAL_SEQ_Y_COORD] := 73
-  %_SEQ__common_elements_data[7*84+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__LEFT__block3__steps)
-  %_SEQ__common_elements_data[7*84+$PANEL_DUAL_SEQ_X_COORD] := 250
+  %_SEQ__common_elements_data[7*84+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__LEFT__block4__steps)
+  %_SEQ__common_elements_data[7*84+$PANEL_DUAL_SEQ_X_COORD] := 342
   %_SEQ__common_elements_data[7*84+$PANEL_DUAL_SEQ_Y_COORD] := 73
-  %_SEQ__common_elements_data[7*85+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__LEFT__block4__steps)
-  %_SEQ__common_elements_data[7*85+$PANEL_DUAL_SEQ_X_COORD] := 342
+  %_SEQ__common_elements_data[7*85+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__RIGHT__block1__steps)
+  %_SEQ__common_elements_data[7*85+$PANEL_DUAL_SEQ_X_COORD] := 570
   %_SEQ__common_elements_data[7*85+$PANEL_DUAL_SEQ_Y_COORD] := 73
-  %_SEQ__common_elements_data[7*86+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__RIGHT__block1__steps)
-  %_SEQ__common_elements_data[7*86+$PANEL_DUAL_SEQ_X_COORD] := 570
+  %_SEQ__common_elements_data[7*86+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__RIGHT__block2__steps)
+  %_SEQ__common_elements_data[7*86+$PANEL_DUAL_SEQ_X_COORD] := 662
   %_SEQ__common_elements_data[7*86+$PANEL_DUAL_SEQ_Y_COORD] := 73
-  %_SEQ__common_elements_data[7*87+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__RIGHT__block2__steps)
-  %_SEQ__common_elements_data[7*87+$PANEL_DUAL_SEQ_X_COORD] := 662
+  %_SEQ__common_elements_data[7*87+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__RIGHT__block3__steps)
+  %_SEQ__common_elements_data[7*87+$PANEL_DUAL_SEQ_X_COORD] := 754
   %_SEQ__common_elements_data[7*87+$PANEL_DUAL_SEQ_Y_COORD] := 73
-  %_SEQ__common_elements_data[7*88+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__RIGHT__block3__steps)
-  %_SEQ__common_elements_data[7*88+$PANEL_DUAL_SEQ_X_COORD] := 754
+  %_SEQ__common_elements_data[7*88+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__RIGHT__block4__steps)
+  %_SEQ__common_elements_data[7*88+$PANEL_DUAL_SEQ_X_COORD] := 846
   %_SEQ__common_elements_data[7*88+$PANEL_DUAL_SEQ_Y_COORD] := 73
-  %_SEQ__common_elements_data[7*89+$ELEMENT_UIID] := get_ui_id($slider_MAIN__SEQ__RIGHT__block4__steps)
-  %_SEQ__common_elements_data[7*89+$PANEL_DUAL_SEQ_X_COORD] := 846
-  %_SEQ__common_elements_data[7*89+$PANEL_DUAL_SEQ_Y_COORD] := 73
-  %_SEQ__common_elements_data[7*90+$ELEMENT_UIID] := get_ui_id($switch_MAIN__2SEQ__LEFT__step__lock)
-  %_SEQ__common_elements_data[7*90+$PANEL_DUAL_SEQ_X_COORD] := 437
-  %_SEQ__common_elements_data[7*90+$PANEL_DUAL_SEQ_Y_COORD] := 71
-  %_SEQ__common_elements_data[7*91+$ELEMENT_UIID] := get_ui_id($switch_MAIN__ARP__LEFT__modeMenu)
-  %_SEQ__common_elements_data[7*91+$PANEL_DUAL_SEQ_X_COORD] := 133
-  %_SEQ__common_elements_data[7*91+$PANEL_DUAL_SEQ_Y_COORD] := 249
-  %_SEQ__common_elements_data[7*92+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__arp__power)
-  %_SEQ__common_elements_data[7*92+$PANEL_DUAL_SEQ_X_COORD] := 67
-  %_SEQ__common_elements_data[7*92+$PANEL_DUAL_SEQ_Y_COORD] := 246
-  %_SEQ__common_elements_data[7*93+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__block__1)
-  %_SEQ__common_elements_data[7*93+$PANEL_DUAL_SEQ_X_COORD] := 175
+  %_SEQ__common_elements_data[7*89+$ELEMENT_UIID] := get_ui_id($switch_MAIN__2SEQ__LEFT__step__lock)
+  %_SEQ__common_elements_data[7*89+$PANEL_DUAL_SEQ_X_COORD] := 437
+  %_SEQ__common_elements_data[7*89+$PANEL_DUAL_SEQ_Y_COORD] := 71
+  %_SEQ__common_elements_data[7*90+$ELEMENT_UIID] := get_ui_id($switch_MAIN__ARP__LEFT__modeMenu)
+  %_SEQ__common_elements_data[7*90+$PANEL_DUAL_SEQ_X_COORD] := 133
+  %_SEQ__common_elements_data[7*90+$PANEL_DUAL_SEQ_Y_COORD] := 249
+  %_SEQ__common_elements_data[7*91+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__arp__power)
+  %_SEQ__common_elements_data[7*91+$PANEL_DUAL_SEQ_X_COORD] := 67
+  %_SEQ__common_elements_data[7*91+$PANEL_DUAL_SEQ_Y_COORD] := 246
+  %_SEQ__common_elements_data[7*92+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__block__1)
+  %_SEQ__common_elements_data[7*92+$PANEL_DUAL_SEQ_X_COORD] := 175
+  %_SEQ__common_elements_data[7*92+$PANEL_DUAL_SEQ_Y_COORD] := 214
+  %_SEQ__common_elements_data[7*93+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__block__2)
+  %_SEQ__common_elements_data[7*93+$PANEL_DUAL_SEQ_X_COORD] := 191
   %_SEQ__common_elements_data[7*93+$PANEL_DUAL_SEQ_Y_COORD] := 214
-  %_SEQ__common_elements_data[7*94+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__block__2)
-  %_SEQ__common_elements_data[7*94+$PANEL_DUAL_SEQ_X_COORD] := 191
+  %_SEQ__common_elements_data[7*94+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__block__3)
+  %_SEQ__common_elements_data[7*94+$PANEL_DUAL_SEQ_X_COORD] := 207
   %_SEQ__common_elements_data[7*94+$PANEL_DUAL_SEQ_Y_COORD] := 214
-  %_SEQ__common_elements_data[7*95+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__block__3)
-  %_SEQ__common_elements_data[7*95+$PANEL_DUAL_SEQ_X_COORD] := 207
+  %_SEQ__common_elements_data[7*95+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__block__4)
+  %_SEQ__common_elements_data[7*95+$PANEL_DUAL_SEQ_X_COORD] := 223
   %_SEQ__common_elements_data[7*95+$PANEL_DUAL_SEQ_Y_COORD] := 214
-  %_SEQ__common_elements_data[7*96+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__block__4)
-  %_SEQ__common_elements_data[7*96+$PANEL_DUAL_SEQ_X_COORD] := 223
-  %_SEQ__common_elements_data[7*96+$PANEL_DUAL_SEQ_Y_COORD] := 214
-  %_SEQ__common_elements_data[7*97+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__randomPower)
-  %_SEQ__common_elements_data[7*97+$PANEL_DUAL_SEQ_X_COORD] := 67
-  %_SEQ__common_elements_data[7*97+$PANEL_DUAL_SEQ_Y_COORD] := 218
-  %_SEQ__common_elements_data[7*98+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__RIGHT__block__1)
-  %_SEQ__common_elements_data[7*98+$PANEL_DUAL_SEQ_X_COORD] := 764
+  %_SEQ__common_elements_data[7*96+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__LEFT__randomPower)
+  %_SEQ__common_elements_data[7*96+$PANEL_DUAL_SEQ_X_COORD] := 67
+  %_SEQ__common_elements_data[7*96+$PANEL_DUAL_SEQ_Y_COORD] := 218
+  %_SEQ__common_elements_data[7*97+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__RIGHT__block__1)
+  %_SEQ__common_elements_data[7*97+$PANEL_DUAL_SEQ_X_COORD] := 764
+  %_SEQ__common_elements_data[7*97+$PANEL_DUAL_SEQ_Y_COORD] := 214
+  %_SEQ__common_elements_data[7*98+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__RIGHT__block__2)
+  %_SEQ__common_elements_data[7*98+$PANEL_DUAL_SEQ_X_COORD] := 780
   %_SEQ__common_elements_data[7*98+$PANEL_DUAL_SEQ_Y_COORD] := 214
-  %_SEQ__common_elements_data[7*99+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__RIGHT__block__2)
-  %_SEQ__common_elements_data[7*99+$PANEL_DUAL_SEQ_X_COORD] := 780
+  %_SEQ__common_elements_data[7*99+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__RIGHT__block__3)
+  %_SEQ__common_elements_data[7*99+$PANEL_DUAL_SEQ_X_COORD] := 796
   %_SEQ__common_elements_data[7*99+$PANEL_DUAL_SEQ_Y_COORD] := 214
-  %_SEQ__common_elements_data[7*100+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__RIGHT__block__3)
-  %_SEQ__common_elements_data[7*100+$PANEL_DUAL_SEQ_X_COORD] := 796
+  %_SEQ__common_elements_data[7*100+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__RIGHT__block__4)
+  %_SEQ__common_elements_data[7*100+$PANEL_DUAL_SEQ_X_COORD] := 812
   %_SEQ__common_elements_data[7*100+$PANEL_DUAL_SEQ_Y_COORD] := 214
-  %_SEQ__common_elements_data[7*101+$ELEMENT_UIID] := get_ui_id($switch_MAIN__FLUXX__RIGHT__block__4)
-  %_SEQ__common_elements_data[7*101+$PANEL_DUAL_SEQ_X_COORD] := 812
-  %_SEQ__common_elements_data[7*101+$PANEL_DUAL_SEQ_Y_COORD] := 214
-  %_SEQ__common_elements_data[7*102+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__fwbw)
-  %_SEQ__common_elements_data[7*102+$PANEL_DUAL_SEQ_X_COORD] := 240
+  %_SEQ__common_elements_data[7*101+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__fwbw)
+  %_SEQ__common_elements_data[7*101+$PANEL_DUAL_SEQ_X_COORD] := 240
+  %_SEQ__common_elements_data[7*101+$PANEL_DUAL_SEQ_Y_COORD] := 47
+  %_SEQ__common_elements_data[7*102+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__mode__backwards)
+  %_SEQ__common_elements_data[7*102+$PANEL_DUAL_SEQ_X_COORD] := 205
   %_SEQ__common_elements_data[7*102+$PANEL_DUAL_SEQ_Y_COORD] := 47
-  %_SEQ__common_elements_data[7*103+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__mode__backwards)
-  %_SEQ__common_elements_data[7*103+$PANEL_DUAL_SEQ_X_COORD] := 205
+  %_SEQ__common_elements_data[7*103+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__mode__forwards)
+  %_SEQ__common_elements_data[7*103+$PANEL_DUAL_SEQ_X_COORD] := 170
   %_SEQ__common_elements_data[7*103+$PANEL_DUAL_SEQ_Y_COORD] := 47
-  %_SEQ__common_elements_data[7*104+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__mode__forwards)
-  %_SEQ__common_elements_data[7*104+$PANEL_DUAL_SEQ_X_COORD] := 170
-  %_SEQ__common_elements_data[7*104+$PANEL_DUAL_SEQ_Y_COORD] := 47
-  %_SEQ__common_elements_data[7*105+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__lphp)
+  %_SEQ__common_elements_data[7*104+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__lphp)
+  %_SEQ__common_elements_data[7*104+$PANEL_DUAL_SEQ_X_COORD] := 453
+  %_SEQ__common_elements_data[7*104+$PANEL_DUAL_SEQ_Y_COORD] := 178
+  %_SEQ__common_elements_data[7*105+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__octave)
   %_SEQ__common_elements_data[7*105+$PANEL_DUAL_SEQ_X_COORD] := 453
-  %_SEQ__common_elements_data[7*105+$PANEL_DUAL_SEQ_Y_COORD] := 178
-  %_SEQ__common_elements_data[7*106+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__octave)
+  %_SEQ__common_elements_data[7*105+$PANEL_DUAL_SEQ_Y_COORD] := 134
+  %_SEQ__common_elements_data[7*106+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__pan)
   %_SEQ__common_elements_data[7*106+$PANEL_DUAL_SEQ_X_COORD] := 453
-  %_SEQ__common_elements_data[7*106+$PANEL_DUAL_SEQ_Y_COORD] := 134
-  %_SEQ__common_elements_data[7*107+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__pan)
+  %_SEQ__common_elements_data[7*106+$PANEL_DUAL_SEQ_Y_COORD] := 156
+  %_SEQ__common_elements_data[7*107+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__pitch)
   %_SEQ__common_elements_data[7*107+$PANEL_DUAL_SEQ_X_COORD] := 453
-  %_SEQ__common_elements_data[7*107+$PANEL_DUAL_SEQ_Y_COORD] := 156
-  %_SEQ__common_elements_data[7*108+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__pitch)
+  %_SEQ__common_elements_data[7*107+$PANEL_DUAL_SEQ_Y_COORD] := 112
+  %_SEQ__common_elements_data[7*108+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__velocity)
   %_SEQ__common_elements_data[7*108+$PANEL_DUAL_SEQ_X_COORD] := 453
-  %_SEQ__common_elements_data[7*108+$PANEL_DUAL_SEQ_Y_COORD] := 112
-  %_SEQ__common_elements_data[7*109+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__power__velocity)
-  %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_X_COORD] := 453
-  %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_Y_COORD] := 90
-  %_SEQ__common_elements_data[7*110+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__randomize)
-  %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_X_COORD] := 98
-  %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_Y_COORD] := 43
-  %_SEQ__common_elements_data[7*111+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__lphp)
+  %_SEQ__common_elements_data[7*108+$PANEL_DUAL_SEQ_Y_COORD] := 90
+  %_SEQ__common_elements_data[7*109+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__randomize)
+  %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_X_COORD] := 98
+  %_SEQ__common_elements_data[7*109+$PANEL_DUAL_SEQ_Y_COORD] := 43
+  %_SEQ__common_elements_data[7*110+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__lphp)
+  %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_X_COORD] := 439
+  %_SEQ__common_elements_data[7*110+$PANEL_DUAL_SEQ_Y_COORD] := 178
+  %_SEQ__common_elements_data[7*111+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__octave)
   %_SEQ__common_elements_data[7*111+$PANEL_DUAL_SEQ_X_COORD] := 439
-  %_SEQ__common_elements_data[7*111+$PANEL_DUAL_SEQ_Y_COORD] := 178
-  %_SEQ__common_elements_data[7*112+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__octave)
+  %_SEQ__common_elements_data[7*111+$PANEL_DUAL_SEQ_Y_COORD] := 134
+  %_SEQ__common_elements_data[7*112+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__pan)
   %_SEQ__common_elements_data[7*112+$PANEL_DUAL_SEQ_X_COORD] := 439
-  %_SEQ__common_elements_data[7*112+$PANEL_DUAL_SEQ_Y_COORD] := 134
-  %_SEQ__common_elements_data[7*113+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__pan)
+  %_SEQ__common_elements_data[7*112+$PANEL_DUAL_SEQ_Y_COORD] := 156
+  %_SEQ__common_elements_data[7*113+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__pitch)
   %_SEQ__common_elements_data[7*113+$PANEL_DUAL_SEQ_X_COORD] := 439
-  %_SEQ__common_elements_data[7*113+$PANEL_DUAL_SEQ_Y_COORD] := 156
-  %_SEQ__common_elements_data[7*114+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__pitch)
+  %_SEQ__common_elements_data[7*113+$PANEL_DUAL_SEQ_Y_COORD] := 112
+  %_SEQ__common_elements_data[7*114+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__velocity)
   %_SEQ__common_elements_data[7*114+$PANEL_DUAL_SEQ_X_COORD] := 439
-  %_SEQ__common_elements_data[7*114+$PANEL_DUAL_SEQ_Y_COORD] := 112
-  %_SEQ__common_elements_data[7*115+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__LEFT__select__velocity)
-  %_SEQ__common_elements_data[7*115+$PANEL_DUAL_SEQ_X_COORD] := 439
-  %_SEQ__common_elements_data[7*115+$PANEL_DUAL_SEQ_Y_COORD] := 90
-  %_SEQ__common_elements_data[7*116+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__lphp)
+  %_SEQ__common_elements_data[7*114+$PANEL_DUAL_SEQ_Y_COORD] := 90
+  %_SEQ__common_elements_data[7*115+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__lphp)
+  %_SEQ__common_elements_data[7*115+$PANEL_DUAL_SEQ_X_COORD] := 469
+  %_SEQ__common_elements_data[7*115+$PANEL_DUAL_SEQ_Y_COORD] := 176
+  %_SEQ__common_elements_data[7*116+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__octave)
   %_SEQ__common_elements_data[7*116+$PANEL_DUAL_SEQ_X_COORD] := 469
-  %_SEQ__common_elements_data[7*116+$PANEL_DUAL_SEQ_Y_COORD] := 176
-  %_SEQ__common_elements_data[7*117+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__octave)
+  %_SEQ__common_elements_data[7*116+$PANEL_DUAL_SEQ_Y_COORD] := 132
+  %_SEQ__common_elements_data[7*117+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__pan)
   %_SEQ__common_elements_data[7*117+$PANEL_DUAL_SEQ_X_COORD] := 469
-  %_SEQ__common_elements_data[7*117+$PANEL_DUAL_SEQ_Y_COORD] := 132
-  %_SEQ__common_elements_data[7*118+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__pan)
+  %_SEQ__common_elements_data[7*117+$PANEL_DUAL_SEQ_Y_COORD] := 154
+  %_SEQ__common_elements_data[7*118+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__pitch)
   %_SEQ__common_elements_data[7*118+$PANEL_DUAL_SEQ_X_COORD] := 469
-  %_SEQ__common_elements_data[7*118+$PANEL_DUAL_SEQ_Y_COORD] := 154
-  %_SEQ__common_elements_data[7*119+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__pitch)
+  %_SEQ__common_elements_data[7*118+$PANEL_DUAL_SEQ_Y_COORD] := 110
+  %_SEQ__common_elements_data[7*119+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__velocity)
   %_SEQ__common_elements_data[7*119+$PANEL_DUAL_SEQ_X_COORD] := 469
-  %_SEQ__common_elements_data[7*119+$PANEL_DUAL_SEQ_Y_COORD] := 110
-  %_SEQ__common_elements_data[7*120+$ELEMENT_UIID] := get_ui_id($switch_MAIN__SEQ__center__select__velocity)
-  %_SEQ__common_elements_data[7*120+$PANEL_DUAL_SEQ_X_COORD] := 469
-  %_SEQ__common_elements_data[7*120+$PANEL_DUAL_SEQ_Y_COORD] := 88
-  %_SEQ__common_elements_data[7*121+$ELEMENT_UIID] := get_ui_id(?xypad_MAIN__LEFT__dynamics)
-  %_SEQ__common_elements_data[7*121+$PANEL_DUAL_SEQ_X_COORD] := 25
-  %_SEQ__common_elements_data[7*121+$PANEL_DUAL_SEQ_Y_COORD] := 66
+  %_SEQ__common_elements_data[7*119+$PANEL_DUAL_SEQ_Y_COORD] := 88
+  %_SEQ__common_elements_data[7*120+$ELEMENT_UIID] := get_ui_id(?xypad_MAIN__LEFT__dynamics)
+  %_SEQ__common_elements_data[7*120+$PANEL_DUAL_SEQ_X_COORD] := 25
+  %_SEQ__common_elements_data[7*120+$PANEL_DUAL_SEQ_Y_COORD] := 66
   %_SEQ__common_elements_data[7*0+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*0+$PANEL_JOIN_SEQ_X_COORD] := 794
-  %_SEQ__common_elements_data[7*0+$PANEL_JOIN_SEQ_Y_COORD] := 45
+  %_SEQ__common_elements_data[7*0+$PANEL_JOIN_SEQ_X_COORD] := 160
+  %_SEQ__common_elements_data[7*0+$PANEL_JOIN_SEQ_Y_COORD] := 41
   %_SEQ__common_elements_data[7*1+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*1+$PANEL_JOIN_SEQ_X_COORD] := 160
-  %_SEQ__common_elements_data[7*1+$PANEL_JOIN_SEQ_Y_COORD] := 41
+  %_SEQ__common_elements_data[7*1+$PANEL_JOIN_SEQ_X_COORD] := 324
+  %_SEQ__common_elements_data[7*1+$PANEL_JOIN_SEQ_Y_COORD] := 46
   %_SEQ__common_elements_data[7*2+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*2+$PANEL_JOIN_SEQ_X_COORD] := 324
-  %_SEQ__common_elements_data[7*2+$PANEL_JOIN_SEQ_Y_COORD] := 46
+  %_SEQ__common_elements_data[7*2+$PANEL_JOIN_SEQ_X_COORD] := 61
+  %_SEQ__common_elements_data[7*2+$PANEL_JOIN_SEQ_Y_COORD] := 215
   %_SEQ__common_elements_data[7*3+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*3+$PANEL_JOIN_SEQ_X_COORD] := 61
-  %_SEQ__common_elements_data[7*3+$PANEL_JOIN_SEQ_Y_COORD] := 215
+  %_SEQ__common_elements_data[7*3+$PANEL_JOIN_SEQ_X_COORD] := 65
+  %_SEQ__common_elements_data[7*3+$PANEL_JOIN_SEQ_Y_COORD] := 63
   %_SEQ__common_elements_data[7*4+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*4+$PANEL_JOIN_SEQ_X_COORD] := 65
-  %_SEQ__common_elements_data[7*4+$PANEL_JOIN_SEQ_Y_COORD] := 63
+  %_SEQ__common_elements_data[7*4+$PANEL_JOIN_SEQ_X_COORD] := 13
+  %_SEQ__common_elements_data[7*4+$PANEL_JOIN_SEQ_Y_COORD] := 215
   %_SEQ__common_elements_data[7*5+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*5+$PANEL_JOIN_SEQ_X_COORD] := 13
-  %_SEQ__common_elements_data[7*5+$PANEL_JOIN_SEQ_Y_COORD] := 215
+  %_SEQ__common_elements_data[7*5+$PANEL_JOIN_SEQ_X_COORD] := 132
+  %_SEQ__common_elements_data[7*5+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*6+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*6+$PANEL_JOIN_SEQ_X_COORD] := 132
+  %_SEQ__common_elements_data[7*6+$PANEL_JOIN_SEQ_X_COORD] := 143
   %_SEQ__common_elements_data[7*6+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*7+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*7+$PANEL_JOIN_SEQ_X_COORD] := 143
+  %_SEQ__common_elements_data[7*7+$PANEL_JOIN_SEQ_X_COORD] := 246
   %_SEQ__common_elements_data[7*7+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*8+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*8+$PANEL_JOIN_SEQ_X_COORD] := 246
+  %_SEQ__common_elements_data[7*8+$PANEL_JOIN_SEQ_X_COORD] := 257
   %_SEQ__common_elements_data[7*8+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*9+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*9+$PANEL_JOIN_SEQ_X_COORD] := 257
+  %_SEQ__common_elements_data[7*9+$PANEL_JOIN_SEQ_X_COORD] := 268
   %_SEQ__common_elements_data[7*9+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*10+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*10+$PANEL_JOIN_SEQ_X_COORD] := 268
+  %_SEQ__common_elements_data[7*10+$PANEL_JOIN_SEQ_X_COORD] := 279
   %_SEQ__common_elements_data[7*10+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*11+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*11+$PANEL_JOIN_SEQ_X_COORD] := 279
+  %_SEQ__common_elements_data[7*11+$PANEL_JOIN_SEQ_X_COORD] := 290
   %_SEQ__common_elements_data[7*11+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*12+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*12+$PANEL_JOIN_SEQ_X_COORD] := 290
+  %_SEQ__common_elements_data[7*12+$PANEL_JOIN_SEQ_X_COORD] := 301
   %_SEQ__common_elements_data[7*12+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*13+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*13+$PANEL_JOIN_SEQ_X_COORD] := 301
+  %_SEQ__common_elements_data[7*13+$PANEL_JOIN_SEQ_X_COORD] := 316
   %_SEQ__common_elements_data[7*13+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*14+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*14+$PANEL_JOIN_SEQ_X_COORD] := 316
+  %_SEQ__common_elements_data[7*14+$PANEL_JOIN_SEQ_X_COORD] := 327
   %_SEQ__common_elements_data[7*14+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*15+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*15+$PANEL_JOIN_SEQ_X_COORD] := 327
+  %_SEQ__common_elements_data[7*15+$PANEL_JOIN_SEQ_X_COORD] := 338
   %_SEQ__common_elements_data[7*15+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*16+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*16+$PANEL_JOIN_SEQ_X_COORD] := 338
+  %_SEQ__common_elements_data[7*16+$PANEL_JOIN_SEQ_X_COORD] := 349
   %_SEQ__common_elements_data[7*16+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*17+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*17+$PANEL_JOIN_SEQ_X_COORD] := 349
+  %_SEQ__common_elements_data[7*17+$PANEL_JOIN_SEQ_X_COORD] := 154
   %_SEQ__common_elements_data[7*17+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*18+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*18+$PANEL_JOIN_SEQ_X_COORD] := 154
+  %_SEQ__common_elements_data[7*18+$PANEL_JOIN_SEQ_X_COORD] := 360
   %_SEQ__common_elements_data[7*18+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*19+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*19+$PANEL_JOIN_SEQ_X_COORD] := 360
+  %_SEQ__common_elements_data[7*19+$PANEL_JOIN_SEQ_X_COORD] := 371
   %_SEQ__common_elements_data[7*19+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*20+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*20+$PANEL_JOIN_SEQ_X_COORD] := 371
+  %_SEQ__common_elements_data[7*20+$PANEL_JOIN_SEQ_X_COORD] := 382
   %_SEQ__common_elements_data[7*20+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*21+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*21+$PANEL_JOIN_SEQ_X_COORD] := 382
+  %_SEQ__common_elements_data[7*21+$PANEL_JOIN_SEQ_X_COORD] := 393
   %_SEQ__common_elements_data[7*21+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*22+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*22+$PANEL_JOIN_SEQ_X_COORD] := 393
+  %_SEQ__common_elements_data[7*22+$PANEL_JOIN_SEQ_X_COORD] := 408
   %_SEQ__common_elements_data[7*22+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*23+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*23+$PANEL_JOIN_SEQ_X_COORD] := 408
+  %_SEQ__common_elements_data[7*23+$PANEL_JOIN_SEQ_X_COORD] := 419
   %_SEQ__common_elements_data[7*23+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*24+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*24+$PANEL_JOIN_SEQ_X_COORD] := 419
+  %_SEQ__common_elements_data[7*24+$PANEL_JOIN_SEQ_X_COORD] := 430
   %_SEQ__common_elements_data[7*24+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*25+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*25+$PANEL_JOIN_SEQ_X_COORD] := 430
+  %_SEQ__common_elements_data[7*25+$PANEL_JOIN_SEQ_X_COORD] := 441
   %_SEQ__common_elements_data[7*25+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*26+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*26+$PANEL_JOIN_SEQ_X_COORD] := 441
+  %_SEQ__common_elements_data[7*26+$PANEL_JOIN_SEQ_X_COORD] := 452
   %_SEQ__common_elements_data[7*26+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*27+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*27+$PANEL_JOIN_SEQ_X_COORD] := 452
+  %_SEQ__common_elements_data[7*27+$PANEL_JOIN_SEQ_X_COORD] := 463
   %_SEQ__common_elements_data[7*27+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*28+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*28+$PANEL_JOIN_SEQ_X_COORD] := 463
+  %_SEQ__common_elements_data[7*28+$PANEL_JOIN_SEQ_X_COORD] := 165
   %_SEQ__common_elements_data[7*28+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*29+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*29+$PANEL_JOIN_SEQ_X_COORD] := 165
+  %_SEQ__common_elements_data[7*29+$PANEL_JOIN_SEQ_X_COORD] := 474
   %_SEQ__common_elements_data[7*29+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*30+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*30+$PANEL_JOIN_SEQ_X_COORD] := 474
+  %_SEQ__common_elements_data[7*30+$PANEL_JOIN_SEQ_X_COORD] := 485
   %_SEQ__common_elements_data[7*30+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*31+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*31+$PANEL_JOIN_SEQ_X_COORD] := 485
+  %_SEQ__common_elements_data[7*31+$PANEL_JOIN_SEQ_X_COORD] := 176
   %_SEQ__common_elements_data[7*31+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*32+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*32+$PANEL_JOIN_SEQ_X_COORD] := 176
+  %_SEQ__common_elements_data[7*32+$PANEL_JOIN_SEQ_X_COORD] := 187
   %_SEQ__common_elements_data[7*32+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*33+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*33+$PANEL_JOIN_SEQ_X_COORD] := 187
+  %_SEQ__common_elements_data[7*33+$PANEL_JOIN_SEQ_X_COORD] := 198
   %_SEQ__common_elements_data[7*33+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*34+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*34+$PANEL_JOIN_SEQ_X_COORD] := 198
+  %_SEQ__common_elements_data[7*34+$PANEL_JOIN_SEQ_X_COORD] := 209
   %_SEQ__common_elements_data[7*34+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*35+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*35+$PANEL_JOIN_SEQ_X_COORD] := 209
+  %_SEQ__common_elements_data[7*35+$PANEL_JOIN_SEQ_X_COORD] := 224
   %_SEQ__common_elements_data[7*35+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*36+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*36+$PANEL_JOIN_SEQ_X_COORD] := 224
+  %_SEQ__common_elements_data[7*36+$PANEL_JOIN_SEQ_X_COORD] := 235
   %_SEQ__common_elements_data[7*36+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*37+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*37+$PANEL_JOIN_SEQ_X_COORD] := 235
+  %_SEQ__common_elements_data[7*37+$PANEL_JOIN_SEQ_X_COORD] := 506
   %_SEQ__common_elements_data[7*37+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*38+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*38+$PANEL_JOIN_SEQ_X_COORD] := 506
+  %_SEQ__common_elements_data[7*38+$PANEL_JOIN_SEQ_X_COORD] := 517
   %_SEQ__common_elements_data[7*38+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*39+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*39+$PANEL_JOIN_SEQ_X_COORD] := 517
+  %_SEQ__common_elements_data[7*39+$PANEL_JOIN_SEQ_X_COORD] := 620
   %_SEQ__common_elements_data[7*39+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*40+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*40+$PANEL_JOIN_SEQ_X_COORD] := 620
+  %_SEQ__common_elements_data[7*40+$PANEL_JOIN_SEQ_X_COORD] := 631
   %_SEQ__common_elements_data[7*40+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*41+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*41+$PANEL_JOIN_SEQ_X_COORD] := 631
+  %_SEQ__common_elements_data[7*41+$PANEL_JOIN_SEQ_X_COORD] := 642
   %_SEQ__common_elements_data[7*41+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*42+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*42+$PANEL_JOIN_SEQ_X_COORD] := 642
+  %_SEQ__common_elements_data[7*42+$PANEL_JOIN_SEQ_X_COORD] := 653
   %_SEQ__common_elements_data[7*42+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*43+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*43+$PANEL_JOIN_SEQ_X_COORD] := 653
+  %_SEQ__common_elements_data[7*43+$PANEL_JOIN_SEQ_X_COORD] := 664
   %_SEQ__common_elements_data[7*43+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*44+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*44+$PANEL_JOIN_SEQ_X_COORD] := 664
+  %_SEQ__common_elements_data[7*44+$PANEL_JOIN_SEQ_X_COORD] := 675
   %_SEQ__common_elements_data[7*44+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*45+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*45+$PANEL_JOIN_SEQ_X_COORD] := 675
+  %_SEQ__common_elements_data[7*45+$PANEL_JOIN_SEQ_X_COORD] := 690
   %_SEQ__common_elements_data[7*45+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*46+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*46+$PANEL_JOIN_SEQ_X_COORD] := 690
+  %_SEQ__common_elements_data[7*46+$PANEL_JOIN_SEQ_X_COORD] := 701
   %_SEQ__common_elements_data[7*46+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*47+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*47+$PANEL_JOIN_SEQ_X_COORD] := 701
+  %_SEQ__common_elements_data[7*47+$PANEL_JOIN_SEQ_X_COORD] := 712
   %_SEQ__common_elements_data[7*47+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*48+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*48+$PANEL_JOIN_SEQ_X_COORD] := 712
+  %_SEQ__common_elements_data[7*48+$PANEL_JOIN_SEQ_X_COORD] := 723
   %_SEQ__common_elements_data[7*48+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*49+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*49+$PANEL_JOIN_SEQ_X_COORD] := 723
+  %_SEQ__common_elements_data[7*49+$PANEL_JOIN_SEQ_X_COORD] := 528
   %_SEQ__common_elements_data[7*49+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*50+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*50+$PANEL_JOIN_SEQ_X_COORD] := 528
+  %_SEQ__common_elements_data[7*50+$PANEL_JOIN_SEQ_X_COORD] := 734
   %_SEQ__common_elements_data[7*50+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*51+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*51+$PANEL_JOIN_SEQ_X_COORD] := 734
+  %_SEQ__common_elements_data[7*51+$PANEL_JOIN_SEQ_X_COORD] := 745
   %_SEQ__common_elements_data[7*51+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*52+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*52+$PANEL_JOIN_SEQ_X_COORD] := 745
+  %_SEQ__common_elements_data[7*52+$PANEL_JOIN_SEQ_X_COORD] := 756
   %_SEQ__common_elements_data[7*52+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*53+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*53+$PANEL_JOIN_SEQ_X_COORD] := 756
+  %_SEQ__common_elements_data[7*53+$PANEL_JOIN_SEQ_X_COORD] := 767
   %_SEQ__common_elements_data[7*53+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*54+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*54+$PANEL_JOIN_SEQ_X_COORD] := 767
+  %_SEQ__common_elements_data[7*54+$PANEL_JOIN_SEQ_X_COORD] := 782
   %_SEQ__common_elements_data[7*54+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*55+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*55+$PANEL_JOIN_SEQ_X_COORD] := 782
+  %_SEQ__common_elements_data[7*55+$PANEL_JOIN_SEQ_X_COORD] := 793
   %_SEQ__common_elements_data[7*55+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*56+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*56+$PANEL_JOIN_SEQ_X_COORD] := 793
+  %_SEQ__common_elements_data[7*56+$PANEL_JOIN_SEQ_X_COORD] := 804
   %_SEQ__common_elements_data[7*56+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*57+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*57+$PANEL_JOIN_SEQ_X_COORD] := 804
+  %_SEQ__common_elements_data[7*57+$PANEL_JOIN_SEQ_X_COORD] := 815
   %_SEQ__common_elements_data[7*57+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*58+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*58+$PANEL_JOIN_SEQ_X_COORD] := 815
+  %_SEQ__common_elements_data[7*58+$PANEL_JOIN_SEQ_X_COORD] := 826
   %_SEQ__common_elements_data[7*58+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*59+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*59+$PANEL_JOIN_SEQ_X_COORD] := 826
+  %_SEQ__common_elements_data[7*59+$PANEL_JOIN_SEQ_X_COORD] := 837
   %_SEQ__common_elements_data[7*59+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*60+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*60+$PANEL_JOIN_SEQ_X_COORD] := 837
+  %_SEQ__common_elements_data[7*60+$PANEL_JOIN_SEQ_X_COORD] := 539
   %_SEQ__common_elements_data[7*60+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*61+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*61+$PANEL_JOIN_SEQ_X_COORD] := 539
+  %_SEQ__common_elements_data[7*61+$PANEL_JOIN_SEQ_X_COORD] := 848
   %_SEQ__common_elements_data[7*61+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*62+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*62+$PANEL_JOIN_SEQ_X_COORD] := 848
+  %_SEQ__common_elements_data[7*62+$PANEL_JOIN_SEQ_X_COORD] := 859
   %_SEQ__common_elements_data[7*62+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*63+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*63+$PANEL_JOIN_SEQ_X_COORD] := 859
+  %_SEQ__common_elements_data[7*63+$PANEL_JOIN_SEQ_X_COORD] := 550
   %_SEQ__common_elements_data[7*63+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*64+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*64+$PANEL_JOIN_SEQ_X_COORD] := 550
+  %_SEQ__common_elements_data[7*64+$PANEL_JOIN_SEQ_X_COORD] := 561
   %_SEQ__common_elements_data[7*64+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*65+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*65+$PANEL_JOIN_SEQ_X_COORD] := 561
+  %_SEQ__common_elements_data[7*65+$PANEL_JOIN_SEQ_X_COORD] := 572
   %_SEQ__common_elements_data[7*65+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*66+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*66+$PANEL_JOIN_SEQ_X_COORD] := 572
+  %_SEQ__common_elements_data[7*66+$PANEL_JOIN_SEQ_X_COORD] := 583
   %_SEQ__common_elements_data[7*66+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*67+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*67+$PANEL_JOIN_SEQ_X_COORD] := 583
+  %_SEQ__common_elements_data[7*67+$PANEL_JOIN_SEQ_X_COORD] := 598
   %_SEQ__common_elements_data[7*67+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*68+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*68+$PANEL_JOIN_SEQ_X_COORD] := 598
+  %_SEQ__common_elements_data[7*68+$PANEL_JOIN_SEQ_X_COORD] := 609
   %_SEQ__common_elements_data[7*68+$PANEL_JOIN_SEQ_Y_COORD] := 92
   %_SEQ__common_elements_data[7*69+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*69+$PANEL_JOIN_SEQ_X_COORD] := 609
-  %_SEQ__common_elements_data[7*69+$PANEL_JOIN_SEQ_Y_COORD] := 92
+  %_SEQ__common_elements_data[7*69+$PANEL_JOIN_SEQ_X_COORD] := 131
+  %_SEQ__common_elements_data[7*69+$PANEL_JOIN_SEQ_Y_COORD] := 192
   %_SEQ__common_elements_data[7*70+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*70+$PANEL_JOIN_SEQ_X_COORD] := 131
+  %_SEQ__common_elements_data[7*70+$PANEL_JOIN_SEQ_X_COORD] := 223
   %_SEQ__common_elements_data[7*70+$PANEL_JOIN_SEQ_Y_COORD] := 192
   %_SEQ__common_elements_data[7*71+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*71+$PANEL_JOIN_SEQ_X_COORD] := 223
+  %_SEQ__common_elements_data[7*71+$PANEL_JOIN_SEQ_X_COORD] := 315
   %_SEQ__common_elements_data[7*71+$PANEL_JOIN_SEQ_Y_COORD] := 192
   %_SEQ__common_elements_data[7*72+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*72+$PANEL_JOIN_SEQ_X_COORD] := 315
+  %_SEQ__common_elements_data[7*72+$PANEL_JOIN_SEQ_X_COORD] := 407
   %_SEQ__common_elements_data[7*72+$PANEL_JOIN_SEQ_Y_COORD] := 192
   %_SEQ__common_elements_data[7*73+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*73+$PANEL_JOIN_SEQ_X_COORD] := 407
+  %_SEQ__common_elements_data[7*73+$PANEL_JOIN_SEQ_X_COORD] := 505
   %_SEQ__common_elements_data[7*73+$PANEL_JOIN_SEQ_Y_COORD] := 192
   %_SEQ__common_elements_data[7*74+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*74+$PANEL_JOIN_SEQ_X_COORD] := 505
+  %_SEQ__common_elements_data[7*74+$PANEL_JOIN_SEQ_X_COORD] := 597
   %_SEQ__common_elements_data[7*74+$PANEL_JOIN_SEQ_Y_COORD] := 192
   %_SEQ__common_elements_data[7*75+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*75+$PANEL_JOIN_SEQ_X_COORD] := 597
+  %_SEQ__common_elements_data[7*75+$PANEL_JOIN_SEQ_X_COORD] := 689
   %_SEQ__common_elements_data[7*75+$PANEL_JOIN_SEQ_Y_COORD] := 192
   %_SEQ__common_elements_data[7*76+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*76+$PANEL_JOIN_SEQ_X_COORD] := 689
+  %_SEQ__common_elements_data[7*76+$PANEL_JOIN_SEQ_X_COORD] := 781
   %_SEQ__common_elements_data[7*76+$PANEL_JOIN_SEQ_Y_COORD] := 192
   %_SEQ__common_elements_data[7*77+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*77+$PANEL_JOIN_SEQ_X_COORD] := 781
-  %_SEQ__common_elements_data[7*77+$PANEL_JOIN_SEQ_Y_COORD] := 192
+  %_SEQ__common_elements_data[7*77+$PANEL_JOIN_SEQ_X_COORD] := 448
+  %_SEQ__common_elements_data[7*77+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*78+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*78+$PANEL_JOIN_SEQ_X_COORD] := 448
-  %_SEQ__common_elements_data[7*78+$PANEL_JOIN_SEQ_Y_COORD] := 218
+  %_SEQ__common_elements_data[7*78+$PANEL_JOIN_SEQ_X_COORD] := 443
+  %_SEQ__common_elements_data[7*78+$PANEL_JOIN_SEQ_Y_COORD] := 236
   %_SEQ__common_elements_data[7*79+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*79+$PANEL_JOIN_SEQ_X_COORD] := 443
-  %_SEQ__common_elements_data[7*79+$PANEL_JOIN_SEQ_Y_COORD] := 236
+  %_SEQ__common_elements_data[7*79+$PANEL_JOIN_SEQ_X_COORD] := 26
+  %_SEQ__common_elements_data[7*79+$PANEL_JOIN_SEQ_Y_COORD] := 63
   %_SEQ__common_elements_data[7*80+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*80+$PANEL_JOIN_SEQ_X_COORD] := 26
-  %_SEQ__common_elements_data[7*80+$PANEL_JOIN_SEQ_Y_COORD] := 63
+  %_SEQ__common_elements_data[7*80+$PANEL_JOIN_SEQ_X_COORD] := 324
+  %_SEQ__common_elements_data[7*80+$PANEL_JOIN_SEQ_Y_COORD] := 46
   %_SEQ__common_elements_data[7*81+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*81+$PANEL_JOIN_SEQ_X_COORD] := 324
-  %_SEQ__common_elements_data[7*81+$PANEL_JOIN_SEQ_Y_COORD] := 46
+  %_SEQ__common_elements_data[7*81+$PANEL_JOIN_SEQ_X_COORD] := 133
+  %_SEQ__common_elements_data[7*81+$PANEL_JOIN_SEQ_Y_COORD] := 73
   %_SEQ__common_elements_data[7*82+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*82+$PANEL_JOIN_SEQ_X_COORD] := 133
+  %_SEQ__common_elements_data[7*82+$PANEL_JOIN_SEQ_X_COORD] := 225
   %_SEQ__common_elements_data[7*82+$PANEL_JOIN_SEQ_Y_COORD] := 73
   %_SEQ__common_elements_data[7*83+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*83+$PANEL_JOIN_SEQ_X_COORD] := 225
+  %_SEQ__common_elements_data[7*83+$PANEL_JOIN_SEQ_X_COORD] := 317
   %_SEQ__common_elements_data[7*83+$PANEL_JOIN_SEQ_Y_COORD] := 73
   %_SEQ__common_elements_data[7*84+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*84+$PANEL_JOIN_SEQ_X_COORD] := 317
+  %_SEQ__common_elements_data[7*84+$PANEL_JOIN_SEQ_X_COORD] := 409
   %_SEQ__common_elements_data[7*84+$PANEL_JOIN_SEQ_Y_COORD] := 73
   %_SEQ__common_elements_data[7*85+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*85+$PANEL_JOIN_SEQ_X_COORD] := 409
+  %_SEQ__common_elements_data[7*85+$PANEL_JOIN_SEQ_X_COORD] := 504
   %_SEQ__common_elements_data[7*85+$PANEL_JOIN_SEQ_Y_COORD] := 73
   %_SEQ__common_elements_data[7*86+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*86+$PANEL_JOIN_SEQ_X_COORD] := 504
+  %_SEQ__common_elements_data[7*86+$PANEL_JOIN_SEQ_X_COORD] := 596
   %_SEQ__common_elements_data[7*86+$PANEL_JOIN_SEQ_Y_COORD] := 73
   %_SEQ__common_elements_data[7*87+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*87+$PANEL_JOIN_SEQ_X_COORD] := 596
+  %_SEQ__common_elements_data[7*87+$PANEL_JOIN_SEQ_X_COORD] := 688
   %_SEQ__common_elements_data[7*87+$PANEL_JOIN_SEQ_Y_COORD] := 73
   %_SEQ__common_elements_data[7*88+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*88+$PANEL_JOIN_SEQ_X_COORD] := 688
+  %_SEQ__common_elements_data[7*88+$PANEL_JOIN_SEQ_X_COORD] := 780
   %_SEQ__common_elements_data[7*88+$PANEL_JOIN_SEQ_Y_COORD] := 73
   %_SEQ__common_elements_data[7*89+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*89+$PANEL_JOIN_SEQ_X_COORD] := 780
-  %_SEQ__common_elements_data[7*89+$PANEL_JOIN_SEQ_Y_COORD] := 73
+  %_SEQ__common_elements_data[7*89+$PANEL_JOIN_SEQ_X_COORD] := 109
+  %_SEQ__common_elements_data[7*89+$PANEL_JOIN_SEQ_Y_COORD] := 70
   %_SEQ__common_elements_data[7*90+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*90+$PANEL_JOIN_SEQ_X_COORD] := 109
-  %_SEQ__common_elements_data[7*90+$PANEL_JOIN_SEQ_Y_COORD] := 70
+  %_SEQ__common_elements_data[7*90+$PANEL_JOIN_SEQ_X_COORD] := 631
+  %_SEQ__common_elements_data[7*90+$PANEL_JOIN_SEQ_Y_COORD] := 226
   %_SEQ__common_elements_data[7*91+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*91+$PANEL_JOIN_SEQ_X_COORD] := 631
-  %_SEQ__common_elements_data[7*91+$PANEL_JOIN_SEQ_Y_COORD] := 226
+  %_SEQ__common_elements_data[7*91+$PANEL_JOIN_SEQ_X_COORD] := 568
+  %_SEQ__common_elements_data[7*91+$PANEL_JOIN_SEQ_Y_COORD] := 224
   %_SEQ__common_elements_data[7*92+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*92+$PANEL_JOIN_SEQ_X_COORD] := 568
-  %_SEQ__common_elements_data[7*92+$PANEL_JOIN_SEQ_Y_COORD] := 224
+  %_SEQ__common_elements_data[7*92+$PANEL_JOIN_SEQ_X_COORD] := 293
+  %_SEQ__common_elements_data[7*92+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*93+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*93+$PANEL_JOIN_SEQ_X_COORD] := 293
+  %_SEQ__common_elements_data[7*93+$PANEL_JOIN_SEQ_X_COORD] := 310
   %_SEQ__common_elements_data[7*93+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*94+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*94+$PANEL_JOIN_SEQ_X_COORD] := 310
+  %_SEQ__common_elements_data[7*94+$PANEL_JOIN_SEQ_X_COORD] := 327
   %_SEQ__common_elements_data[7*94+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*95+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*95+$PANEL_JOIN_SEQ_X_COORD] := 327
+  %_SEQ__common_elements_data[7*95+$PANEL_JOIN_SEQ_X_COORD] := 344
   %_SEQ__common_elements_data[7*95+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*96+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*96+$PANEL_JOIN_SEQ_X_COORD] := 344
-  %_SEQ__common_elements_data[7*96+$PANEL_JOIN_SEQ_Y_COORD] := 218
+  %_SEQ__common_elements_data[7*96+$PANEL_JOIN_SEQ_X_COORD] := 188
+  %_SEQ__common_elements_data[7*96+$PANEL_JOIN_SEQ_Y_COORD] := 224
   %_SEQ__common_elements_data[7*97+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*97+$PANEL_JOIN_SEQ_X_COORD] := 188
-  %_SEQ__common_elements_data[7*97+$PANEL_JOIN_SEQ_Y_COORD] := 224
+  %_SEQ__common_elements_data[7*97+$PANEL_JOIN_SEQ_X_COORD] := 367
+  %_SEQ__common_elements_data[7*97+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*98+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*98+$PANEL_JOIN_SEQ_X_COORD] := 367
+  %_SEQ__common_elements_data[7*98+$PANEL_JOIN_SEQ_X_COORD] := 384
   %_SEQ__common_elements_data[7*98+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*99+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*99+$PANEL_JOIN_SEQ_X_COORD] := 384
+  %_SEQ__common_elements_data[7*99+$PANEL_JOIN_SEQ_X_COORD] := 401
   %_SEQ__common_elements_data[7*99+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*100+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*100+$PANEL_JOIN_SEQ_X_COORD] := 401
+  %_SEQ__common_elements_data[7*100+$PANEL_JOIN_SEQ_X_COORD] := 418
   %_SEQ__common_elements_data[7*100+$PANEL_JOIN_SEQ_Y_COORD] := 218
   %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_X_COORD] := 418
-  %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_Y_COORD] := 218
+  %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_X_COORD] := 268
+  %_SEQ__common_elements_data[7*101+$PANEL_JOIN_SEQ_Y_COORD] := 46
   %_SEQ__common_elements_data[7*102+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*102+$PANEL_JOIN_SEQ_X_COORD] := 268
+  %_SEQ__common_elements_data[7*102+$PANEL_JOIN_SEQ_X_COORD] := 233
   %_SEQ__common_elements_data[7*102+$PANEL_JOIN_SEQ_Y_COORD] := 46
   %_SEQ__common_elements_data[7*103+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*103+$PANEL_JOIN_SEQ_X_COORD] := 233
+  %_SEQ__common_elements_data[7*103+$PANEL_JOIN_SEQ_X_COORD] := 198
   %_SEQ__common_elements_data[7*103+$PANEL_JOIN_SEQ_Y_COORD] := 46
   %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_X_COORD] := 198
-  %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_Y_COORD] := 46
+  %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_X_COORD] := 894
+  %_SEQ__common_elements_data[7*104+$PANEL_JOIN_SEQ_Y_COORD] := 176
   %_SEQ__common_elements_data[7*105+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*105+$PANEL_JOIN_SEQ_X_COORD] := 894
-  %_SEQ__common_elements_data[7*105+$PANEL_JOIN_SEQ_Y_COORD] := 176
+  %_SEQ__common_elements_data[7*105+$PANEL_JOIN_SEQ_Y_COORD] := 132
   %_SEQ__common_elements_data[7*106+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*106+$PANEL_JOIN_SEQ_X_COORD] := 894
-  %_SEQ__common_elements_data[7*106+$PANEL_JOIN_SEQ_Y_COORD] := 132
+  %_SEQ__common_elements_data[7*106+$PANEL_JOIN_SEQ_Y_COORD] := 154
   %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_X_COORD] := 894
-  %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_Y_COORD] := 154
+  %_SEQ__common_elements_data[7*107+$PANEL_JOIN_SEQ_Y_COORD] := 110
   %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_X_COORD] := 894
-  %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_Y_COORD] := 110
+  %_SEQ__common_elements_data[7*108+$PANEL_JOIN_SEQ_Y_COORD] := 88
   %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_X_COORD] := 894
-  %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_Y_COORD] := 88
+  %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_X_COORD] := 129
+  %_SEQ__common_elements_data[7*109+$PANEL_JOIN_SEQ_Y_COORD] := 42
   %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_X_COORD] := 129
-  %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_Y_COORD] := 42
+  %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_X_COORD] := 880
+  %_SEQ__common_elements_data[7*110+$PANEL_JOIN_SEQ_Y_COORD] := 176
   %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_X_COORD] := 880
-  %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_Y_COORD] := 176
+  %_SEQ__common_elements_data[7*111+$PANEL_JOIN_SEQ_Y_COORD] := 132
   %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_X_COORD] := 880
-  %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_Y_COORD] := 132
+  %_SEQ__common_elements_data[7*112+$PANEL_JOIN_SEQ_Y_COORD] := 154
   %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_X_COORD] := 880
-  %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_Y_COORD] := 154
+  %_SEQ__common_elements_data[7*113+$PANEL_JOIN_SEQ_Y_COORD] := 110
   %_SEQ__common_elements_data[7*114+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*114+$PANEL_JOIN_SEQ_X_COORD] := 880
-  %_SEQ__common_elements_data[7*114+$PANEL_JOIN_SEQ_Y_COORD] := 110
+  %_SEQ__common_elements_data[7*114+$PANEL_JOIN_SEQ_Y_COORD] := 88
   %_SEQ__common_elements_data[7*115+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*115+$PANEL_JOIN_SEQ_X_COORD] := 880
-  %_SEQ__common_elements_data[7*115+$PANEL_JOIN_SEQ_Y_COORD] := 88
+  %_SEQ__common_elements_data[7*115+$PANEL_JOIN_SEQ_X_COORD] := 910
+  %_SEQ__common_elements_data[7*115+$PANEL_JOIN_SEQ_Y_COORD] := 174
   %_SEQ__common_elements_data[7*116+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*116+$PANEL_JOIN_SEQ_X_COORD] := 910
-  %_SEQ__common_elements_data[7*116+$PANEL_JOIN_SEQ_Y_COORD] := 174
+  %_SEQ__common_elements_data[7*116+$PANEL_JOIN_SEQ_Y_COORD] := 130
   %_SEQ__common_elements_data[7*117+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*117+$PANEL_JOIN_SEQ_X_COORD] := 910
-  %_SEQ__common_elements_data[7*117+$PANEL_JOIN_SEQ_Y_COORD] := 130
+  %_SEQ__common_elements_data[7*117+$PANEL_JOIN_SEQ_Y_COORD] := 152
   %_SEQ__common_elements_data[7*118+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*118+$PANEL_JOIN_SEQ_X_COORD] := 910
-  %_SEQ__common_elements_data[7*118+$PANEL_JOIN_SEQ_Y_COORD] := 152
+  %_SEQ__common_elements_data[7*118+$PANEL_JOIN_SEQ_Y_COORD] := 108
   %_SEQ__common_elements_data[7*119+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
   %_SEQ__common_elements_data[7*119+$PANEL_JOIN_SEQ_X_COORD] := 910
-  %_SEQ__common_elements_data[7*119+$PANEL_JOIN_SEQ_Y_COORD] := 108
+  %_SEQ__common_elements_data[7*119+$PANEL_JOIN_SEQ_Y_COORD] := 86
   %_SEQ__common_elements_data[7*120+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*120+$PANEL_JOIN_SEQ_X_COORD] := 910
-  %_SEQ__common_elements_data[7*120+$PANEL_JOIN_SEQ_Y_COORD] := 86
-  %_SEQ__common_elements_data[7*121+$PANEL_JOIN_SEQ_PARENT_UIID] := $UIID_SEQ_JOIN_PANEL
-  %_SEQ__common_elements_data[7*121+$PANEL_JOIN_SEQ_X_COORD] := 65
-  %_SEQ__common_elements_data[7*121+$PANEL_JOIN_SEQ_Y_COORD] := 63
+  %_SEQ__common_elements_data[7*120+$PANEL_JOIN_SEQ_X_COORD] := 65
+  %_SEQ__common_elements_data[7*120+$PANEL_JOIN_SEQ_Y_COORD] := 63
   $i__i := 0
   while ($i__i<=7)
     !SEQ_step_pictures[$i__i] := "slider_MAIN.sequencer.block" & ($i__i+1) & ".uni_95"
@@ -8118,52 +8135,6 @@ on async_complete
 end on
 
 on ui_controls
-  if (in_range($NI_UI_ID,%_UIID_BROWSER_source__select__btn[18*0+0],%_UIID_BROWSER_source__select__btn[18*0+17]) or in_range($NI_UI_ID,%_UIID_BROWSER_source__select__btn[18*1+0],%_UIID_BROWSER_source__select__btn[18*1+17]))
-    $uics_uiid_index := $NI_UI_ID-%_UIID_BROWSER_source__select__btn[18*0+0]
-    $uics_seq_side := 0
-    if (in_range($NI_UI_ID,%_UIID_BROWSER_source__select__btn[18*1+0],%_UIID_BROWSER_source__select__btn[18*1+17]))
-      $uics_uiid_index := $NI_UI_ID-%_UIID_BROWSER_source__select__btn[18*1+0]
-      $uics_seq_side := 1
-    end if
-    $fn054__a__side := $uics_seq_side
-    $fn054__a__index := $uics_uiid_index
-    call fn054_update_source_buttons
-    %selected_source[$fn054__a__side] := $fn054__a__index+(%source_page[$fn054__a__side]*18)
-  end if
-  if ($NI_UI_ID=%UIID_GLOBAL__page_prev_btns[0] or ($NI_UI_ID=%UIID_GLOBAL__page_prev_btns[1]))
-    $uics_seq_side := 0
-    if ($NI_UI_ID=%UIID_GLOBAL__page_prev_btns[1])
-      $uics_seq_side := 1
-    end if
-    if (%source_page[$uics_seq_side]>0)
-      dec(%source_page[$uics_seq_side])
-      $fn054__a__side := $uics_seq_side
-      if (%selected_source[$uics_seq_side]/18=%source_page[$uics_seq_side])
-        $fn054__a__index := %selected_source[$uics_seq_side] mod 18
-      else
-        $fn054__a__index := -1
-      end if
-      call fn054_update_source_buttons
-    end if
-    set_control_par_str(%UIID_GLOBAL__page_number[$uics_seq_side],$CONTROL_PAR_TEXT,%source_page[$uics_seq_side]+1)
-  end if
-  if ($NI_UI_ID=%UIID_GLOBAL__page_next_btns[0] or ($NI_UI_ID=%UIID_GLOBAL__page_next_btns[1]))
-    $uics_seq_side := 0
-    if ($NI_UI_ID=%UIID_GLOBAL__page_next_btns[1])
-      $uics_seq_side := 1
-    end if
-    if (%source_page[$uics_seq_side]<0)
-      inc(%source_page[$uics_seq_side])
-      $fn054__a__side := $uics_seq_side
-      if (%selected_source[$uics_seq_side]/18=%source_page[$uics_seq_side])
-        $fn054__a__index := %selected_source[$uics_seq_side] mod 18
-      else
-        $fn054__a__index := -1
-      end if
-      call fn054_update_source_buttons
-    end if
-    set_control_par_str(%UIID_GLOBAL__page_number[$uics_seq_side],$CONTROL_PAR_TEXT,%source_page[$uics_seq_side]+1)
-  end if
   if ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*0+0] or ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*1+0]))
     $uics_seq_side := 0
     if ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*1+0])
@@ -8171,7 +8142,7 @@ on ui_controls
     end if
     if (%selected_source[$uics_seq_side]>0)
       dec(%selected_source[$uics_seq_side])
-      call fn055_recall_source_buttons_page
+      set_control_par(%UIID_GLOBAL__source_btns[$uics_seq_side],$CONTROL_PAR_VALUE,%selected_source[$uics_seq_side])
     end if
   end if
   if ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*0+1] or ($NI_UI_ID=%_UIID_GLOBAL__sources_prev_next[2*1+1]))
@@ -8181,7 +8152,7 @@ on ui_controls
     end if
     if (%selected_source[$uics_seq_side]<(5-1))
       inc(%selected_source[$uics_seq_side])
-      call fn055_recall_source_buttons_page
+      set_control_par(%UIID_GLOBAL__source_btns[$uics_seq_side],$CONTROL_PAR_VALUE,%selected_source[$uics_seq_side])
     end if
   end if
   if ($NI_UI_ID=%UIID_MAIN__layer__power[0] or ($NI_UI_ID=%UIID_MAIN__layer__power[1]))
@@ -8476,8 +8447,8 @@ on ui_controls
     call fn005_set_seq_target_selector
     %SEQ__showing_target[0] := $uics_uiid_index
     %SEQ__showing_target[1] := $uics_uiid_index
-    set_control_par(%UIID_MAIN__seq__flux_rand_power[0],$CONTROL_PAR_VALUE,%_SEQ__flux_rand_power_state[5*$uics_seq_side+$uics_uiid_index])
-    set_control_par(%UIID_MAIN__seq__flux_rand_power[1],$CONTROL_PAR_VALUE,%_SEQ__flux_rand_power_state[5*$uics_seq_side+$uics_uiid_index])
+    set_control_par(%UIID_MAIN__seq__flux_rand_power[0],$CONTROL_PAR_VALUE,%_SEQ__flux_rand_power_state[5*0+$uics_uiid_index])
+    set_control_par(%UIID_MAIN__seq__flux_rand_power[1],$CONTROL_PAR_VALUE,%_SEQ__flux_rand_power_state[5*1+$uics_uiid_index])
     $uics_counter := 0
     while ($uics_counter<=1)
       if (get_control_par(%UIID_MAIN__seq__power[$uics_counter],$CONTROL_PAR_VALUE)=1)
@@ -8596,6 +8567,7 @@ on ui_controls
     %_SEQ__flux_rand_intensity[5*$uics_seq_side+%SEQ__showing_target[$uics_seq_side]] := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Flux Randomizer")
     set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_control_par(%UIID_MAIN__seq__flux_rand_intensity[$uics_seq_side],$CONTROL_PAR_VALUE) & "%")
+    message("Flux Rand side: " & $uics_seq_side & " Target: " & %SEQ__showing_target[$uics_seq_side] & " Value: " & get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE) & "")
   end if
   if ($NI_UI_ID=get_ui_id($slider_MAIN__FLRNDjoin__amount))
     %_SEQ__flux_rand_intensity[5*0+%SEQ__showing_target[0]] := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -8888,39 +8860,39 @@ on ui_controls
         end if
         call fn052_set_wf_cursor_and_overlay
         set_control_par_real_arr(%UIID_MAIN__waveform_xypad_cursor[$uics_seq_side],$CONTROL_PAR_VALUE,~fn052__a__value,0)
-        ?_sample_starts[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] := ~fn052__a__value
+        ?_sample_starts[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] := ~fn052__a__value
         set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Sample Start")
         set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,"" & real_to_int(round(~fn052__a__value*10000.0)/100.0) & "%")
       case 1
         set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Sample Tuning")
         if (get_control_par($NI_UI_ID,$CONTROL_PAR_KEY_SHIFT)=0)
-          ?_sample_tuning[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] := round(int_to_real($uics_value-500000)/~__TUNING_STEP)
-          set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,?_sample_tuning[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note])
+          ?_sample_tuning[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] := round(int_to_real($uics_value-500000)/~__TUNING_STEP)
+          set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,?_sample_tuning[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note])
         else
-          ?_sample_tuning[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] := round(100.0*(int_to_real($uics_value-500000)/~__TUNING_STEP))/100.0
-          set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,?_sample_tuning[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] & "st")
+          ?_sample_tuning[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] := round(100.0*(int_to_real($uics_value-500000)/~__TUNING_STEP))/100.0
+          set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,?_sample_tuning[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] & "st")
           message(" shift step: " & (int_to_real($uics_value)/~__TUNING_STEP*~__TUNING_STEP) & "")
         end if
       case 2
-        %_sample_low_cutoff[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] := $uics_value
+        %_sample_low_cutoff[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] := $uics_value
         set_engine_par($ENGINE_PAR_CUTOFF,$uics_value,0,2,-1)
         set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Low Pass Cutoff")
         set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CUTOFF,0,2,-1) & "hz")
         set_engine_par($ENGINE_PAR_CUTOFF,0,0,2,-1)
       case 3
-        %_sample_low_reso[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] := $uics_value
+        %_sample_low_reso[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] := $uics_value
         set_engine_par($ENGINE_PAR_RESONANCE,$uics_value,0,2,-1)
         set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Low Pass Reso")
         set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_RESONANCE,0,2,-1) & "%")
         set_engine_par($ENGINE_PAR_RESONANCE,0,0,2,-1)
       case 4
-        %_sample_high_cutoff[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] := $uics_value
+        %_sample_high_cutoff[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] := $uics_value
         set_engine_par($ENGINE_PAR_CUTOFF,$uics_value,0,3,-1)
         set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Hi Pass Cutoff")
         set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CUTOFF,0,3,-1) & "hz")
         set_engine_par($ENGINE_PAR_CUTOFF,0,0,3,-1)
       case 5
-        %_sample_high_reso[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] := $uics_value
+        %_sample_high_reso[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] := $uics_value
         set_engine_par($ENGINE_PAR_RESONANCE,$uics_value,0,3,-1)
         set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Hi Pass Reso")
         set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_RESONANCE,0,3,-1) & "%")
@@ -8943,7 +8915,7 @@ on ui_controls
     ~fn052__a__value := ~uics_r_value
     call fn052_set_wf_cursor_and_overlay
     set_control_par(%_UIID_MAIN__single_shot_controls[6*$uics_seq_side+0],$CONTROL_PAR_VALUE,real_to_int(~uics_r_value*1000000.0))
-    ?_sample_starts[128*2*%selected_source[$uics_seq_side]+(128*$uics_seq_side)+$last_played_note] := ~uics_r_value
+    ?_sample_starts[128*2*(%selected_source[$uics_seq_side]+($uics_seq_side*5))+(128*$uics_seq_side)+$last_played_note] := ~uics_r_value
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Sample Start")
     set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,"" & real_to_int(round(~fn052__a__value*10000.0)/100.0) & "%")
   end if
@@ -9212,7 +9184,7 @@ on ui_controls
       if ($uics_uiid_index=2)
         $uics_slot := 1
       end if
-      set_engine_par($ENGINE_PAR_EFFECT_BYPASS,abs(1-$uics_value),%selected_source[$uics_seq_side],$uics_slot,$uics_generic)
+      set_engine_par($ENGINE_PAR_EFFECT_BYPASS,abs(1-$uics_value),%selected_source[$uics_seq_side]+($uics_seq_side*5),$uics_slot,$uics_generic)
     else
       set_engine_par($ENGINE_PAR_EFFECT_BYPASS,abs(1-$uics_value),-1,%MAIN_lfp_power_to_slot_mapping[$uics_uiid_index],$NI_BUS_OFFSET+$uics_seq_side)
     end if
@@ -9375,7 +9347,7 @@ on ui_control($menu_MAIN__LEFT__soundSource)
 end on
 
 on ui_control($menu_MAIN__RIGHT__soundSource)
-  %selected_source[1] := $menu_MAIN__RIGHT__soundSource+5
+  %selected_source[1] := $menu_MAIN__RIGHT__soundSource
   $i__i := 3
   while ($i__i<=5)
     %_LFO_targets_GROUP[16*1+$i__i] := %selected_source[1]
@@ -9607,8 +9579,6 @@ on note
   ignore_event($EVENT_ID)
   set_event_par($EVENT_ID,$EVENT_PAR_0,1)
   inc($note_held_count)
-  message("note_held_count: " & $note_held_count)
-  message(" EVENT VELOCITY " & $EVENT_VELOCITY & "")
   $last_played_note := $EVENT_NOTE
   %_layers__note_velo[128*0+$EVENT_NOTE] := $EVENT_VELOCITY
   %_layers__note_velo[128*1+$EVENT_NOTE] := $EVENT_VELOCITY
@@ -9618,6 +9588,7 @@ on note
   end if
   if ($switch_MAIN__SEQ__combine=0)
     if ($switch_MAIN__SoundSource__LEFT__power=1 and ($switch_MAIN__SEQ__LEFT__power=0))
+      message("NCB | playing side LEFT")
       $pn_ncb__a__side := 0
       $pn_ncb__a__note := $EVENT_NOTE
       $pn_ncb__a__velo := $EVENT_VELOCITY
@@ -9625,6 +9596,7 @@ on note
       call PLAY_NOTE_NCB
     end if
     if ($switch_MAIN__SoundSource__RIGHT__power=1 and ($switch_MAIN__SEQ__RIGHT__power=0))
+      message("NCB | playing side RIGHT")
       $pn_ncb__a__side := 1
       $pn_ncb__a__note := $EVENT_NOTE
       $pn_ncb__a__velo := $EVENT_VELOCITY

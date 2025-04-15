@@ -640,6 +640,24 @@
 
     declare @reverb.path := get_folder($GET_FOLDER_FACTORY_DIR) & "presets/effects/convolution/<<<K4IR.nkx>>>/K4 IR Samples/"
 
+    {{ FLUX }}
+    declare const __SEQ_STATE_DUAL    := 0 { bit : 1 }
+    declare const __SEQ_STATE_JOIN    := 1 { bit : 1 }
+    declare const __FLUX_SIDED_STATE  := 2 { bit : 2 }
+    declare const __FLUX_BLOCK_STATE  := 4 { bit : 3 }
+    declare const __FLUX_LEFT_STATE   := 8 { bit : 4 }
+    declare const __FLUX_SIDED_BLOCK_DUAL := __SEQ_STATE_DUAL + __FLUX_SIDED_STATE + __FLUX_BLOCK_STATE
+    declare const __FLUX_LEFT_BLOCK_JOIN  := __SEQ_STATE_JOIN + __FLUX_LEFT_STATE + __FLUX_BLOCK_STATE
+    declare const __FLUX_POWER_OFF_DUAL   := 3 { both off, use .and. against it  }
+    declare const __FLUX_BLOCK_OFF_DUAL   := 5 { both off, use .and. against it  }
+    declare const __FLUX_POWER_OFF_JOIN   := 3 { both off, use .and. against it  }
+    declare const __FLUX_BLOCK_OFF_JOIN   := 5 { both off, use .and. against it  }
+    {
+        bits:
+            left_power | block_state | sided_power | combine
+    }
+
+    message(f'__FLUX_SIDED_BLOCK_DUAL <__FLUX_SIDED_BLOCK_DUAL >')
 
 { VARIABLES _____________________________________________________________________________________ }
     { sketch ___________________________________________________________________________________ }
@@ -1162,6 +1180,12 @@
     declare  fn022.r.step_lp_filter
     declare  fn022.r.step_hp_filter
 
+    declare fn022.l.sided_rand_power_state
+    declare fn022.l.left_rand_power_state
+    declare fn022.l.combine_button
+    declare fn022.l.flux_block_rand_state
+    declare fn022.l.combined_states
+
     //fn023.r.check
     declare fn023.a.counter
     declare fn023.a.side
@@ -1191,6 +1215,7 @@
     declare fn025.l.counter
     declare fn025.l.counter2
     declare fn025.l.join_side_counter
+    
 
     //fn026_get_seq_target_data
     declare fn026.a.data_type // if flux or pre-flux -> SEQ.data.flux.i or SEQ.data.dyn.i
@@ -1414,3 +1439,11 @@
     declare fn060.a.seq_power_state
     declare fn060.a.side
     declare fn060.l.counter
+
+    //fn061_get_combined_states
+    declare fn061.a.combine_button
+    declare fn061.a.sided_rand_power_state
+    declare fn061.a.left_rand_power_state
+    declare fn061.a.flux_block_rand_state
+    declare fn061.r.combined_states
+

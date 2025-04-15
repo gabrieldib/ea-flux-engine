@@ -1,65 +1,6 @@
 on ui_controls
     // message(f'UI CBS | NI_UI_ID: <NI_UI_ID>')
 
-    { not in use }
-    {{ SOURCE SELECT BUTTONS}}
-    if  in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __LEFT,  0 ] , UIID_BROWSER_source.select.btn [ __LEFT,  17 ]) or ...
-        in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] , UIID_BROWSER_source.select.btn [ __RIGHT, 17 ])
-
-        uics_uiid_index := NI_UI_ID - UIID_BROWSER_source.select.btn [ __LEFT, 0 ]
-        uics_seq_side    := __LEFT
-        if in_range(NI_UI_ID, UIID_BROWSER_source.select.btn [ __RIGHT, 0 ], UIID_BROWSER_source.select.btn [ __RIGHT, 17 ])
-            uics_uiid_index := NI_UI_ID - UIID_BROWSER_source.select.btn [ __RIGHT, 0 ]
-            uics_seq_side    := __RIGHT
-        end if
-
-        fn054.a.side  := uics_seq_side
-        fn054.a.index := uics_uiid_index
-        call fn054_update_source_buttons
-        { store the source for the selected layer }
-        selected_source [ fn054.a.side ] := fn054.a.index + source_page [ fn054.a.side ] * __MAX_SOURCES_PER_PAGE
-    end if
-
-    { not in use }
-    {{ SOURCE PAGE PREV/NEXT BUTTONS }}
-    if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __LEFT ] or NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
-        uics_seq_side := __LEFT
-        if NI_UI_ID = UIID_GLOBAL.page_prev_btns [ __RIGHT ]
-            uics_seq_side := __RIGHT
-        end if
-
-        if source_page [ uics_seq_side ] > 0 
-            dec(source_page [ uics_seq_side ])
-            fn054.a.side  := uics_seq_side
-            if selected_source [ uics_seq_side ] / __MAX_SOURCES_PER_PAGE = source_page [ uics_seq_side ]
-                fn054.a.index := selected_source [ uics_seq_side ] mod __MAX_SOURCES_PER_PAGE
-            else
-                fn054.a.index := -1
-            end if
-            call fn054_update_source_buttons
-        end if
-        UIID_GLOBAL.page_number [ uics_seq_side ] -> text := source_page [ uics_seq_side ] + 1
-    end if
-
-    if NI_UI_ID = UIID_GLOBAL.page_next_btns [ __LEFT ] or NI_UI_ID = UIID_GLOBAL.page_next_btns [ __RIGHT ]
-        uics_seq_side := __LEFT
-        if NI_UI_ID = UIID_GLOBAL.page_next_btns [ __RIGHT ]
-            uics_seq_side := __RIGHT
-        end if
-        if source_page [ uics_seq_side ] < __MAX_SOURCE_PAGES 
-            inc(source_page [ uics_seq_side ])
-            fn054.a.side  := uics_seq_side
-            if selected_source [ uics_seq_side ] / __MAX_SOURCES_PER_PAGE = source_page [ uics_seq_side ]
-                fn054.a.index := selected_source [ uics_seq_side ] mod __MAX_SOURCES_PER_PAGE
-            else
-                fn054.a.index := -1
-            end if
-            call fn054_update_source_buttons
-        end if
-        UIID_GLOBAL.page_number [ uics_seq_side ] -> text := source_page [ uics_seq_side ] + 1
-    end if
-
-
     {{ SOURCES PREV }}
     if  NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __LEFT,  __SOURCE_PREV] or ...
         NI_UI_ID = UIID_GLOBAL.sources_prev_next [ __RIGHT, __SOURCE_PREV]
@@ -70,7 +11,7 @@ on ui_controls
         end if
         if selected_source [ uics_seq_side ] > 0
             dec(selected_source [ uics_seq_side ])
-            call fn055_recall_source_buttons_page
+            UIID_GLOBAL.source_btns [ uics_seq_side ] -> value := selected_source [ uics_seq_side ]
         end if
     end if
 
@@ -85,7 +26,7 @@ on ui_controls
         end if
         if selected_source [ uics_seq_side ] < __SOURCE_COUNT-1
             inc(selected_source [ uics_seq_side ])
-            call fn055_recall_source_buttons_page
+            UIID_GLOBAL.source_btns [ uics_seq_side ] -> value := selected_source [ uics_seq_side ]
         end if
     end if
     
@@ -547,8 +488,8 @@ on ui_controls
         SEQ.showing_target [ __LEFT  ] := uics_uiid_index
         SEQ.showing_target [ __RIGHT ] := uics_uiid_index
 
-        UIID_MAIN.seq.flux_rand_power [ __LEFT  ] -> value := SEQ.flux_rand_power_state [ uics_seq_side, uics_uiid_index ]
-        UIID_MAIN.seq.flux_rand_power [ __RIGHT ] -> value := SEQ.flux_rand_power_state [ uics_seq_side, uics_uiid_index ]
+        UIID_MAIN.seq.flux_rand_power [ __LEFT  ] -> value := SEQ.flux_rand_power_state [ __LEFT, uics_uiid_index ]
+        UIID_MAIN.seq.flux_rand_power [ __RIGHT ] -> value := SEQ.flux_rand_power_state [ __RIGHT, uics_uiid_index ]
 
         for uics_counter := __LEFT to __RIGHT
             if  UIID_MAIN.seq.power [ uics_counter ] -> value = __ON
@@ -713,6 +654,7 @@ on ui_controls
         SEQ.flux_rand_intensity [ uics_seq_side, SEQ.showing_target [ uics_seq_side ] ] := NI_UI_ID -> value
         UIID_MAIN.display_title -> text := "Flux Randomizer"
         UIID_MAIN.display_value -> text := UIID_MAIN.seq.flux_rand_intensity [ uics_seq_side ] -> value & "%"
+        message(f'Flux Rand side: <uics_seq_side> Target: <SEQ.showing_target [ uics_seq_side ]> Value: <NI_UI_ID -> value >')
     end if
 
     if NI_UI_ID = get_ui_id(slider_MAIN.FLRNDjoin.amount)
@@ -1122,7 +1064,7 @@ on ui_controls
                     0                                                  ...
                 )
 
-                sample_starts [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := fn052.a.value
+                sample_starts [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] := fn052.a.value
                 UIID_MAIN.display_title -> text := "Sample Start"
                 UIID_MAIN.display_value -> text := f'<int(round(fn052.a.value * 10000.0)/100.0)>%'
 
@@ -1130,21 +1072,21 @@ on ui_controls
                 UIID_MAIN.display_title -> text := "Sample Tuning"
                 { value store and displaying on the UI }
                 if get_control_par(NI_UI_ID, CONTROL_PAR_KEY_SHIFT) = __OFF
-                    sample_tuning [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := ...
+                    sample_tuning [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] := ...
                         round ( (float(uics_value - 500000) / __TUNING_STEP) )
 
-                    UIID_MAIN.display_value -> text := sample_tuning [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ]
+                    UIID_MAIN.display_value -> text := sample_tuning [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ]
                 else
-                    sample_tuning [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := ...
+                    sample_tuning [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] := ...
                         round( 100.0 * ( (float(uics_value - 500000) / __TUNING_STEP)) )/100.0
 
-                    UIID_MAIN.display_value -> text := sample_tuning [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] & "st"
+                    UIID_MAIN.display_value -> text := sample_tuning [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] & "st"
                     message(f' shift step: < (float(uics_value) / __TUNING_STEP) * __TUNING_STEP >')
                 end if
                 { value will be used at the event level }
 
             case __SINGLE_SHOT_LP_CUT
-                sample_low_cutoff  [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_value
+                sample_low_cutoff  [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] := uics_value
 
                 { we do this only to get the display value, then set it back to initial value for 
                 the event to set the values using 'from script' modulator }
@@ -1156,7 +1098,7 @@ on ui_controls
                 set_engine_par(ENGINE_PAR_CUTOFF, 0, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL)
 
             case __SINGLE_SHOT_LP_RES
-                sample_low_reso    [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_value
+                sample_low_reso    [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] := uics_value
 
                 set_engine_par(ENGINE_PAR_RESONANCE, uics_value, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL)
                 UIID_MAIN.display_title -> text := "Low Pass Reso"
@@ -1166,7 +1108,7 @@ on ui_controls
                 set_engine_par(ENGINE_PAR_RESONANCE, 0, 0, __GROUP_LEVEL_LP_FILTER_SLOT, __GROUP_LEVEL)
 
             case __SINGLE_SHOT_HP_CUT
-                sample_high_cutoff [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_value
+                sample_high_cutoff [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] := uics_value
 
                 set_engine_par(ENGINE_PAR_CUTOFF, uics_value, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL)
                 UIID_MAIN.display_title -> text := "Hi Pass Cutoff"
@@ -1175,7 +1117,7 @@ on ui_controls
                 set_engine_par(ENGINE_PAR_CUTOFF, 0, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL)
 
             case __SINGLE_SHOT_HP_RES
-                sample_high_reso   [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_value
+                sample_high_reso   [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] := uics_value
 
                 set_engine_par(ENGINE_PAR_RESONANCE, uics_value, 0, __GROUP_LEVEL_HP_FILTER_SLOT, __GROUP_LEVEL)
                 UIID_MAIN.display_title -> text := "Hi Pass Reso"
@@ -1206,7 +1148,7 @@ on ui_controls
         call fn052_set_wf_cursor_and_overlay
         UIID_MAIN.single_shot_controls [ uics_seq_side, __SINGLE_SHOT_SAMPLE_START ] -> value := int(uics_r_value * 1000000.0)
 
-        sample_starts [ selected_source [ uics_seq_side ], uics_seq_side, last_played_note ] := uics_r_value
+        sample_starts [ selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_seq_side, last_played_note ] := uics_r_value
 
         UIID_MAIN.display_title -> text := "Sample Start"
         UIID_MAIN.display_value -> text := f'<int(round(fn052.a.value * 10000.0)/100.0)>%'
@@ -1694,7 +1636,7 @@ on ui_controls
             if uics_uiid_index = 2
                 uics_slot       := __SLOT_G_DISTORTION
             end if
-            set_engine_par(ENGINE_PAR_EFFECT_BYPASS, abs(1-uics_value), selected_source [ uics_seq_side ], uics_slot, uics_generic)
+            set_engine_par(ENGINE_PAR_EFFECT_BYPASS, abs(1-uics_value), selected_source [ uics_seq_side ] + uics_seq_side * __SOURCE_COUNT, uics_slot, uics_generic)
         else
             set_engine_par(                                          ...
                 ENGINE_PAR_EFFECT_BYPASS,                            ...

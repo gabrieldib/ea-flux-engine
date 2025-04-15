@@ -18,12 +18,6 @@ xypad_MAIN.LEFT.randomizer       -> mouse_mode := 2
 xypad_MAIN.RIGHT.randomizer      -> mouse_mode := 2
 xypad_MAIN.matrix.center         -> mouse_mode := 2
 
-// valueedit_MAIN.LEFT.low.range   -> show_arrows := 0
-// valueedit_MAIN.LEFT.high.range  -> show_arrows := 0
-// valueedit_MAIN.RIGHT.low.range  -> show_arrows := 0
-// valueedit_MAIN.RIGHT.high.range -> show_arrows := 0
-
-
 xypad_MAIN.SEQ.LEFT              -> cursor_picture := "label_xy.cursor"
 xypad_MAIN.SEQ.RIGHT             -> cursor_picture := "label_xy.cursor"
 xypad_MAIN.SEQ.join              -> cursor_picture := "label_xy.cursor"
