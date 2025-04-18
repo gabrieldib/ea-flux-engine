@@ -25,7 +25,7 @@ on listener
         if  UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF and ...
             event_status(layers.note_events [ __RIGHT, last_played_note ]) # EVENT_STATUS_INACTIVE and ...
             note_held_count > 0
-
+            
             lcb_wf_right_cursor_pos      := get_event_par(layers.note_events [ __RIGHT, last_played_note ], EVENT_PAR_PLAY_POS)
             if  lcb_wf_right_cursor_pos = 0
                 lcb_wf_right_cursor_pos := -1
@@ -53,12 +53,16 @@ on listener
                             we will have the duration of the entire block
                             the duration of each step is block_dur (which is the rate basically) / step_count
                     }
-                    fn007.a.side            := __LEFT
-                    call fn007_update_block_and_steps_ts
+                    if UIID_MAIN.seq.power [ __LEFT ] -> value = __ON and UIID_MAIN.layer.power [ __LEFT ] -> value = __ON
+                        fn007.a.side            := __LEFT
+                        call fn007_update_block_and_steps_ts
+                    end if
                 end if
                 if lcb_ms_counter mod SEQ.rate [ __RIGHT ] = 0
-                    fn007.a.side := __RIGHT
-                    call fn007_update_block_and_steps_ts
+                    if UIID_MAIN.seq.power [ __RIGHT ] -> value = __ON and UIID_MAIN.layer.power [ __RIGHT ] -> value = __ON
+                        fn007.a.side := __RIGHT
+                        call fn007_update_block_and_steps_ts
+                    end if 
                 end if
 
                 for lcb_play_side := __LEFT to __RIGHT

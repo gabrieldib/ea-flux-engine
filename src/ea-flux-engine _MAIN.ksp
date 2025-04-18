@@ -38,6 +38,10 @@ on init
     panel_MAIN.matrix.controls         -> UI_HIDE
 
     switch_crossfade                   -> UI_HIDE
+
+    panel_dev                          -> UI_HIDE
+    label_dev.monitor                  -> text := ""    
+
     { making sure the output gain of the bus filters is 0}
     set_engine_par(ENGINE_PAR_INSERT_EFFECT_OUTPUT_GAIN, 395000, -1, 2, NI_BUS_OFFSET)
     set_engine_par(ENGINE_PAR_INSERT_EFFECT_OUTPUT_GAIN, 395000, -1, 2, NI_BUS_OFFSET+1)

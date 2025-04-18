@@ -264,19 +264,21 @@ UIID_MAIN.matrix_LFO_orbs [ 1 ] := get_ui_id(label_MAIN.matrix.center.mod.LR)
 UIID_MAIN.hmz_sliders [ 0 ] := get_ui_id(slider_MAIN.LEFT.hmz)
 UIID_MAIN.hmz_sliders [ 1 ] := get_ui_id(slider_MAIN.RIGHT.hmz)
 
-// UIID_BROWSER_source.select.btn [ __LEFT,  0 ] := get_ui_id(switch_BROWSER.LEFT.sound0)
-// UIID_BROWSER_source.select.btn [ __RIGHT, 0 ] := get_ui_id(switch_BROWSER.RIGHT.sound0)
-
 UIID_MAIN.layer_fx_panel_rand_btn [ __LEFT  ] := get_ui_id( switch_MAIN.FX.LEFT.randomize ) 
 UIID_MAIN.layer_fx_panel_rand_btn [ __RIGHT ] := get_ui_id( switch_MAIN.FX.RIGHT.randomize ) 
 
-UIID_MAIN.show_rates [ __LEFT ]  := get_ui_id(label_MAIN.2SEQ.LEFT.show.rate)
+UIID_MAIN.show_rates [ __LEFT  ]  := get_ui_id(label_MAIN.2SEQ.LEFT.show.rate)
 UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
 
-// UIID_MAIN.play_range [ __LEFT,  0 ] := get_ui_id(valueedit_MAIN.LEFT.low.range)
-// UIID_MAIN.play_range [ __LEFT,  1 ] := get_ui_id(valueedit_MAIN.LEFT.high.range)
-// UIID_MAIN.play_range [ __RIGHT, 0 ] := get_ui_id(valueedit_MAIN.RIGHT.low.range)
-// UIID_MAIN.play_range [ __RIGHT, 1 ] := get_ui_id(valueedit_MAIN.RIGHT.high.range)
+// UIID_MAIN.range_sliders [ __LEFT  ] := get_ui_id(slider_MAIN.LEFT.move.range)
+// UIID_MAIN.range_sliders [ __RIGHT ] := get_ui_id(slider_MAIN.RIGHT.move.range)
+
+UIID_MAIN.adsr_links [ __LEFT  ] := get_ui_id(switch_MAIN.ADSR.LEFT.link)
+UIID_MAIN.adsr_links [ __RIGHT ] := get_ui_id(switch_MAIN.ADSR.RIGHT.link)
+
+UIID_MAIN.seq_links [ __LEFT  ] := get_ui_id(switch_MAIN.SEQ.LEFT.link)
+UIID_MAIN.seq_links [ __RIGHT ] := get_ui_id(switch_MAIN.SEQ.RIGHT.link)
+
 
 {{ SETTING FONTS }}
     switch_MAIN.ARP.LEFT.modeMenu -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON  
@@ -345,10 +347,9 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
         UIID_MAIN.seq.target_selectors [ i.i ] -> disable_text_shifting := __ON
     end for
 
-
 {{ LFO }}
 
-{{ UIID_controls - indices are the parameters' ID }}
+{{ UIID_controls - indices are the parameters' ID }} 
     UIID_controls [ 00 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.volume             )
     UIID_controls [ 01 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.pan                )
     UIID_controls [ 02 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.width              )
@@ -381,7 +382,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_controls [ 29 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorus.speed.amount     )
     UIID_controls [ 30 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorus.phase.amount     )
     UIID_controls [ 31 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverb.drywet.amount    )
-{{ UIID_controls_LFO_amount }}
+{{ UIID_controls_LFO_amount }}                       
     UIID_controls_LFO_amount [ 00 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.volLFO.amount         )
     UIID_controls_LFO_amount [ 01 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.panLFO.amount         )
     UIID_controls_LFO_amount [ 02 ] := get_ui_id(slider_MAIN.FX.LEFT.layer.widthLFO.amount       )
@@ -414,7 +415,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_controls_LFO_amount [ 29 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorusLFO.speed.amount     )
     UIID_controls_LFO_amount [ 30 ] := get_ui_id(slider_MAIN.FX.RIGHT.chorusLFO.phase.amount     )
     UIID_controls_LFO_amount [ 31 ] := get_ui_id(slider_MAIN.FX.RIGHT.reverbLFO.drywet.amount    )
-{{ UIID_controls_LFO_phase }}
+{{ UIID_controls_LFO_phase }}                        
     UIID_controls_LFO_phase [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.volLFO.phase         )
     UIID_controls_LFO_phase [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.panLFO.phase         )
     UIID_controls_LFO_phase [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.widthLFO.phase       )
@@ -447,7 +448,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_controls_LFO_phase [ 29 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.speed.phase        )
     UIID_controls_LFO_phase [ 30 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.phase.phase        )
     UIID_controls_LFO_phase [ 31 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverbLFO.drywet.phase    )
-{{ UIID_controls_LFO_power }}
+{{ UIID_controls_LFO_power }}                        
     UIID_controls_LFO_power [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.volLFO.power         )
     UIID_controls_LFO_power [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.panLFO.power         )
     UIID_controls_LFO_power [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.widthLFO.power       )
@@ -480,7 +481,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_controls_LFO_power [ 29 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorusLFO.speed.power     )
     UIID_controls_LFO_power [ 30 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorusLFO.phase.power     )
     UIID_controls_LFO_power [ 31 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverbLFO.drywet.power    )
-{{ UIID_controls_LFO_mod_start }}
+{{ UIID_controls_LFO_mod_start }}                    
     UIID_controls_LFO_mod_start [ 00 ] := get_ui_id(label_MAIN.FX.LEFT.layer.volLFOmodStart            )
     UIID_controls_LFO_mod_start [ 01 ] := get_ui_id(label_MAIN.FX.LEFT.layer.panLFOmodStart            )
     UIID_controls_LFO_mod_start [ 02 ] := get_ui_id(label_MAIN.FX.LEFT.layer.widthLFOmodStart          )
@@ -513,7 +514,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_controls_LFO_mod_start [ 29 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.speedLFOmodStart        )
     UIID_controls_LFO_mod_start [ 30 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.phaseLFOmodStart        )
     UIID_controls_LFO_mod_start [ 31 ] := get_ui_id(label_MAIN.FX.RIGHT.reverb.drywet.LFOmodStart      )
-{{ UIID_controls_LFO_mod_end }}
+{{ UIID_controls_LFO_mod_end }}                      
     UIID_controls_LFO_mod_end [ 00 ] := get_ui_id(label_MAIN.FX.LEFT.layer.volLFOmodEnd            )
     UIID_controls_LFO_mod_end [ 01 ] := get_ui_id(label_MAIN.FX.LEFT.layer.panLFOmodEnd            )
     UIID_controls_LFO_mod_end [ 02 ] := get_ui_id(label_MAIN.FX.LEFT.layer.widthLFOmodEnd          )
@@ -546,7 +547,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_controls_LFO_mod_end [ 29 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.speedLFOmodEnd        )
     UIID_controls_LFO_mod_end [ 30 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.phaseLFOmodEnd        )
     UIID_controls_LFO_mod_end [ 31 ] := get_ui_id(label_MAIN.FX.RIGHT.reverb.drywet.LFOmodEnd      )
-{{ UIID_controls_LFO_mod_cursor }}
+{{ UIID_controls_LFO_mod_cursor }}                   
     UIID_controls_LFO_mod_cursor [ 00 ] := get_ui_id(label_MAIN.FX.LEFT.layer.vol.LFOindicator           )
     UIID_controls_LFO_mod_cursor [ 01 ] := get_ui_id(label_MAIN.FX.LEFT.layer.pan.LFOindicator           )
     UIID_controls_LFO_mod_cursor [ 02 ] := get_ui_id(label_MAIN.FX.LEFT.layer.width.LFOindicator         )
@@ -579,7 +580,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_controls_LFO_mod_cursor [ 29 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.depth.LFOindicator       )
     UIID_controls_LFO_mod_cursor [ 30 ] := get_ui_id(label_MAIN.FX.RIGHT.chorus.phase.LFOindicator       )
     UIID_controls_LFO_mod_cursor [ 31 ] := get_ui_id(label_MAIN.FX.RIGHT.reverb.drywet.LFOindicator      )
-{{ UIID_MAIN.FX.panels }}
+{{ UIID_MAIN.FX.panels }}                            
     UIID_MAIN.FX.panels [ 00 ] := get_ui_id(panel_MAIN.FX.LEFT.layer           )
     UIID_MAIN.FX.panels [ 01 ] := get_ui_id(panel_MAIN.FX.LEFT.saturation      )
     UIID_MAIN.FX.panels [ 02 ] := get_ui_id(panel_MAIN.FX.LEFT.distortion      )
@@ -596,7 +597,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_MAIN.FX.panels [ 13 ] := get_ui_id(panel_MAIN.FX.RIGHT.delay          )
     UIID_MAIN.FX.panels [ 14 ] := get_ui_id(panel_MAIN.FX.RIGHT.chorus         )
     UIID_MAIN.FX.panels [ 15 ] := get_ui_id(panel_MAIN.FX.RIGHT.reverb         )
-{{ UIID_MAIN.FX.selectors }}
+{{ UIID_MAIN.FX.selectors }}                         
     UIID_MAIN.FX.selectors [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.selection           )
     UIID_MAIN.FX.selectors [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.selection      )
     UIID_MAIN.FX.selectors [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.selection      )
@@ -613,7 +614,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_MAIN.FX.selectors [ 13 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.selection          )
     UIID_MAIN.FX.selectors [ 14 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.selection         )
     UIID_MAIN.FX.selectors [ 15 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverb.selection         )
-{{ UIID FX modules power }}
+{{ UIID FX modules power }}                          
     UIID_FX.modules.power [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.power           )
     UIID_FX.modules.power [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.power      )
     UIID_FX.modules.power [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.power      )
@@ -630,7 +631,7 @@ UIID_MAIN.show_rates [ __RIGHT ] := get_ui_id(label_MAIN.2SEQ.RIGHT.show.rate)
     UIID_FX.modules.power [ 13 ] := get_ui_id(switch_MAIN.FX.RIGHT.delay.power          )
     UIID_FX.modules.power [ 14 ] := get_ui_id(switch_MAIN.FX.RIGHT.chorus.power         )
     UIID_FX.modules.power [ 15 ] := get_ui_id(switch_MAIN.FX.RIGHT.reverb.power         )
-{{ UIID MAIN FX Links }}
+{{ UIID MAIN FX Links }}                             
     UIID_MAIN.FX.links [ 00 ] := get_ui_id(switch_MAIN.FX.LEFT.layer.link           )
     UIID_MAIN.FX.links [ 01 ] := get_ui_id(switch_MAIN.FX.LEFT.saturation.link      )
     UIID_MAIN.FX.links [ 02 ] := get_ui_id(switch_MAIN.FX.LEFT.distortion.link      )

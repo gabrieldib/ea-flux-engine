@@ -720,10 +720,23 @@
         declare MATRIX.matrix.center.mouseON [2] // 0 is the state, 1 is the quadrant start index
         declare read play_range [ 2, __SOURCE_COUNT, 2 ] // side, source, low and hi
 
-
     {{ SOURCES }}
-    declare read selected_source [ 2 ]
-    declare read source_page [ 2 ]
+        declare read selected_source      [ 2 ]
+        declare read source_page          [ 2 ]
+        declare read sources_range_offset [ 2, __SOURCE_COUNT ]
+        declare read sources_range_data   [ __SOURCE_COUNT, 128 ] // each key of the range 
+        declare read sources_range        [ __SOURCE_COUNT, 2 ]   // lowest / highest keys for each range
+        declare read sources_range_length [ __SOURCE_COUNT ]      // range length
+        declare const __RANGE_LOW  := 0
+        declare const __RANGE_HIGH := 1
+        declare read key_range_colors [ 128 ]
+        declare read offset_default_values [ 2 ]
+        declare read offset_knob_divisor   [ 2 ]
+
+        declare L1.lo
+        declare L1.hi
+        declare L2.lo
+        declare L2.hi
 
     {{ SEQ }}
         declare SEQ.LEFT.step_index
@@ -772,9 +785,10 @@
         // declare seq_target_state [  ]
 
         { so we can have independent intensities per target }
-        declare read SEQ.flux_rand_intensity      [ 2, 5 ]
-        declare read SEQ.flux_rand_power_state    [ 2, 5 ]
-        declare read SEQ.join.flux_rand_intensity    [ 5 ]
+        declare read SEQ.flux_rand_intensity         [ 2, 5 ]
+        declare read SEQ.flux_rand_power_state       [ 2, 5 ]
+        declare read SEQ.join.flux_rand_intensity       [ 5 ]
+        declare read SEQ.flux_rand_block_state    [ 2, 4, 5 ] // 2 sides, 4 buttons each, 5 targets
 
         declare read layers.seq_play_direction [ 2 ]
         declare read seq.direction_status [ 2 ] // fixed or fluid depending on the direction mode
@@ -821,12 +835,12 @@
         declare layers.note_events [ 2, 128 ]
         declare layers.note_velo   [ 2, 128 ] // stores played velocities
         declare last_played_note              // to use as index for sample start data
-        declare read ?sample_starts     [ __SOURCE_COUNT * 2, 2, 128 ]
-        declare read ?sample_tuning     [ __SOURCE_COUNT * 2, 2, 128 ]
-        declare read sample_low_cutoff  [ __SOURCE_COUNT * 2, 2, 128 ] := (0)
-        declare read sample_low_reso    [ __SOURCE_COUNT * 2, 2, 128 ]
-        declare read sample_high_cutoff [ __SOURCE_COUNT * 2, 2, 128 ]
-        declare read sample_high_reso   [ __SOURCE_COUNT * 2, 2, 128 ]
+        declare read ?sample_starts     [ __SOURCE_COUNT, 2, 128 ]
+        declare read ?sample_tuning     [ __SOURCE_COUNT, 2, 128 ]
+        declare read sample_low_cutoff  [ __SOURCE_COUNT, 2, 128 ] := (0)
+        declare read sample_low_reso    [ __SOURCE_COUNT, 2, 128 ]
+        declare read sample_high_cutoff [ __SOURCE_COUNT, 2, 128 ]
+        declare read sample_high_reso   [ __SOURCE_COUNT, 2, 128 ]
         declare ~ncb_tune_knob
         declare  ncb_counter
 
@@ -933,6 +947,8 @@
     declare uics_alt_key
     declare uics_shift_key
     declare uics_side_counter
+    declare uics_link_counter
+    declare uics_op_side
     declare uics_counter
     declare uics_counter2
     declare uics_counter3
@@ -1325,7 +1341,7 @@
     declare fn038.a.link
     declare fn038.a.control_type
     declare fn038.l.target
-    declare fn038.l.counter
+    declare fn038.l.side_counter
 
     //fn039_set_FX_engine_par
     declare fn039.a.side
@@ -1447,3 +1463,15 @@
     declare fn061.a.flux_block_rand_state
     declare fn061.r.combined_states
 
+    // fn062_update_range_data
+    declare fn062.a.side
+    declare fn062.l.source_index
+
+    //fn063_populate_opposite_layer_panel_control_values
+    declare fn063.a.control_index
+    declare fn063.a.side
+
+    //fn064_update_sequencer_power_state
+    declare fn064.a.side
+    declare fn064.a.value
+    declare fn064.l.target_counter
