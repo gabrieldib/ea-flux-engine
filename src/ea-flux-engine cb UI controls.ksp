@@ -1,11 +1,21 @@
-{{ GLOBAL }}
+{{ DEV MODE }}
+    on ui_control (button_dev.exit)
+        panel_dev -> UI_HIDE
+    end on
+    
 
+
+{{ GLOBAL }}
     on ui_control (menu_MAIN.LEFT.soundSource)
         selected_source [ __LEFT ] := menu_MAIN.LEFT.soundSource
         for i.i := __MAIN.FX.SATURATION to __MAIN.FX.DISTORTION.DRIVE
             LFO_targets_GROUP [ __LEFT, i.i ] := selected_source [ __LEFT ]
         end for
 
+        fn062.a.side := __LEFT
+        call fn062_update_range_data
+
+        call draw_key_ranges
     end on
 
     on ui_control (menu_MAIN.RIGHT.soundSource)
@@ -13,14 +23,85 @@
         for i.i := __MAIN.FX.SATURATION to __MAIN.FX.DISTORTION.DRIVE
             LFO_targets_GROUP [ __RIGHT, i.i ] := selected_source [ __RIGHT ]
         end for
+
+        fn062.a.side := __RIGHT
+        call fn062_update_range_data
+
+        call draw_key_ranges
     end on
 
     on ui_control (switch_MAIN.LEFT.randomizer.link)
         switch_MAIN.RIGHT.randomizer.link := switch_MAIN.LEFT.randomizer.link
     end on
+
     on ui_control (switch_MAIN.RIGHT.randomizer.link)
         switch_MAIN.LEFT.randomizer.link := switch_MAIN.RIGHT.randomizer.link
     end on
+
+{{ DEV MODE }}
+
+    on ui_control (button_dev.mode)
+        if  get_control_par(get_ui_id(button_dev.mode), CONTROL_PAR_KEY_SHIFT) = 1 and ...
+            get_control_par(get_ui_id(button_dev.mode), CONTROL_PAR_KEY_ALT) = 1   and ...
+            get_control_par(get_ui_id(button_dev.mode), CONTROL_PAR_KEY_CONTROL) = 1
+
+            message(f'dev mode!')
+            panel_dev -> UI_SHOW
+        end if
+    end on
+    
+    on ui_control (button_dev.exit)
+        panel_dev -> UI_HIDE
+    end on
+    
+    on ui_control (button_dev.rescan.sources)
+        label_dev.monitor -> text := "$ > Scanning all keys in all groups..."
+        for g.i := 0 to ((NUM_GROUPS-1)/2)
+            l.i := 0
+            h.i := 0
+            for n.i := 0 to 127
+                e.i := play_note(n.i, 64, 0, 100000)
+                set_event_par_arr(e.i, EVENT_PAR_ALLOW_GROUP, 0, ALL_GROUPS)
+                set_event_par_arr(e.i, EVENT_PAR_ALLOW_GROUP, 1, g.i)
+                change_vol(e.i, -200000, 0)
+                wait(10000)
+                sources_range_data [ g.i, n.i ] := get_event_par(e.i, EVENT_PAR_ZONE_ID)
+                if sources_range_data [ g.i, n.i ] > 0
+                    if l.i = 0
+                        l.i := n.i
+                        message(f'    source <g.i> range started at <n.i>')
+                    end if
+                    h.i := n.i
+                end if
+            end for
+            message(f'    source <g.i> range ended at <h.i>')
+            sources_range_length [ g.i ] := h.i - l.i
+            sources_range [ g.i, __RANGE_LOW  ] := l.i
+            sources_range [ g.i, __RANGE_HIGH ] := h.i
+            add_text_line(label_dev.monitor, f'$ > source <g.i> lo: <l.i> hi: <h.i> length: <sources_range_length[ g.i ] > ')
+
+        end for
+        add_text_line(label_dev.monitor, "$ > Sources scanning done.")
+        call draw_key_ranges
+    end on
+
+    on ui_control (button_dev.print.sources.range)
+        for g.i := 0 to ((NUM_GROUPS-1)/2)
+            l.i := 0
+            h.i := 0
+            for n.i := 0 to 127
+                if sources_range_data [ g.i, n.i ] > 0
+                    if l.i = 0
+                        message(f'Group: <g.i> | low: <n.i>')
+                        l.i := 1
+                    end if
+                    h.i := n.i
+                end if
+            end for
+            message(f'Group: <g.i> | hi: <h.i>')
+        end for
+    end on
+    
     
 
 {{ MAIN }}
@@ -103,7 +184,7 @@
 
             fn036.a.side          := __LEFT
             fn036.a.target        := __MAIN.FX.LAYER.VOLUME 
-            fn036.a.control_value := int (float(slider_MAIN.FX.LEFT.layer.volume)*0.63)
+            fn036.a.control_value := slider_MAIN.FX.LEFT.layer.volume
             call fn036_set_control_param_slider
             UIID_MAIN.display_value -> text := ...
                 get_engine_par_disp(ENGINE_PAR_VOLUME, __GROUP_NONE, __SLOT_NONE, NI_BUS_OFFSET) & "dB"
@@ -117,12 +198,15 @@
 
             fn036.a.side          := __RIGHT
             fn036.a.target        := __MAIN.FX.LAYER.VOLUME + __MAIN.FX.RIGHT.OFFSET
-            fn036.a.control_value := int (float(slider_MAIN.FX.RIGHT.layer.volume)*0.63)
+            fn036.a.control_value := slider_MAIN.FX.RIGHT.layer.volume
             call fn036_set_control_param_slider
             UIID_MAIN.display_value -> text := ...
                 get_engine_par_disp(ENGINE_PAR_VOLUME, __GROUP_NONE, __SLOT_NONE, NI_BUS_OFFSET+1) & "dB"
         end if
     end on
+
+    
+
 
 {{ SEQ }}
     on ui_control (xypad_MAIN.SEQ.join)
@@ -227,15 +311,6 @@
         // call fn010_set_seq_step_value
     end on
 
-    on ui_control (switch_MAIN.SEQ.LEFT.link)
-        switch_MAIN.SEQ.RIGHT.link := switch_MAIN.SEQ.LEFT.link
-    end on
-    
-    on ui_control (switch_MAIN.SEQ.RIGHT.link)
-        switch_MAIN.SEQ.LEFT.link := switch_MAIN.SEQ.RIGHT.link
-    end on
-    
-
     on ui_control (switch_MAIN.SEQ.LEFT.randomize)
         if switch_MAIN.SEQ.LEFT.link = __ON
             switch_MAIN.SEQ.RIGHT.randomize := switch_MAIN.SEQ.LEFT.randomize
@@ -247,7 +322,25 @@
             switch_MAIN.SEQ.LEFT.randomize := switch_MAIN.SEQ.RIGHT.randomize
         end if
     end on
-    
+
+    // on ui_control (slider_MAIN.LEFT.move.range)
+    //     sources_range_offset [ __LEFT, menu_MAIN.LEFT.soundSource ] := ...
+    //         slider_MAIN.LEFT.move.range / offset_knob_divisor [ __LEFT ] - ...
+    //         sources_range [ selected_source [ __LEFT ], __RANGE_LOW  ]
+
+    //     call draw_key_ranges
+    // end on
+
+    // on ui_control (slider_MAIN.RIGHT.move.range)
+    //     sources_range_offset [ __RIGHT, menu_MAIN.RIGHT.soundSource ] := ...
+    //         slider_MAIN.RIGHT.move.range / offset_knob_divisor [ __RIGHT ] - ...
+    //         sources_range [ selected_source [ __RIGHT ], __RANGE_LOW  ]
+            
+    //     call draw_key_ranges
+    // end on
+
+
+
 
 {{ LFO }}
     on ui_control (slider_MAIN.LFO.rate)

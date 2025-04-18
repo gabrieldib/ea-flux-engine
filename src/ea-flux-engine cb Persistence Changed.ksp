@@ -33,6 +33,10 @@ on persistence_changed
 
     call pccb_init_instrument()
 
+    //F2K fixes, or things that are not explained yet
+    menu_MAIN.FX.LEFT.reverb.menu -> parent_panel := get_ui_id(panel_MAIN.FX.LEFT.reverb)
+    menu_MAIN.FX.RIGHT.reverb.menu -> parent_panel := get_ui_id(panel_MAIN.FX.RIGHT.reverb)
+
     message("ea-flux-engine loaded successfully")
     message(f'PCCB end.')
 

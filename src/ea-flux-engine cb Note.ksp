@@ -22,7 +22,6 @@ on note
 
         if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
             ( switch_MAIN.SEQ.LEFT.power       = __OFF ) 
-            message(f'NCB | playing side LEFT')
             pn_ncb.a.side      := __LEFT
             pn_ncb.a.note      := EVENT_NOTE
             pn_ncb.a.velo      := EVENT_VELOCITY
@@ -32,7 +31,6 @@ on note
 
         if  switch_MAIN.SoundSource.RIGHT.power = __ON  and ...
             ( switch_MAIN.SEQ.RIGHT.power       = __OFF )
-            message(f'NCB | playing side RIGHT')
             pn_ncb.a.side := __RIGHT
             pn_ncb.a.note := EVENT_NOTE
             pn_ncb.a.velo := EVENT_VELOCITY
