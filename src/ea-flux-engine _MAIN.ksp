@@ -56,7 +56,7 @@ on init
         add_menu_item(menu_MAIN.FX.RIGHT.reverb.menu, !Reverb_impulse_responses_titles[i.i], i.i)
     end for
 
-
+    watch_var(LFO_play_state)
 
     message(f'ON INIT CB end.')
 end on // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

@@ -135,7 +135,7 @@ on listener
 
 
         {{ LFO }}
-        if switch_MAIN.LFO.power = __ON
+        if switch_MAIN.LFO.power = __ON and LFO_play_state = __ON
             select(LFO_data [ LFO_WAVESHAPE ])
                 case LFO_WAVESHAPE_TRI
                     LFO_emitted_value := ...
@@ -173,11 +173,11 @@ on listener
 
             { loop that sets all the LFO target values and UI animations }
             for lcb_control_counter := 0 to 31
-                if UIID_controls_LFO_power [ lcb_control_counter ] -> value = 1 and ...
-                   UIID_FX.modules.power [ UIID_FX.parameter_to_module [ lcb_control_counter ] ] -> value = 1
+                if UIID_controls_LFO_power [ lcb_control_counter ] -> value = __ON and ...
+                   UIID_FX.modules.power [ UIID_FX.parameter_to_module [ lcb_control_counter ] ] -> value = __ON
 
                     {{ LFO phase }}
-                    if UIID_controls_LFO_phase [ lcb_control_counter ] -> value = 1
+                    if UIID_controls_LFO_phase [ lcb_control_counter ] -> value = __ON
                         LFO_emitted_value_phase_checked := 1.0 - LFO_emitted_value
                     else
                         LFO_emitted_value_phase_checked := LFO_emitted_value
@@ -277,15 +277,15 @@ on listener
 
                     select (lcb_control_counter)
                         case  0 to 15
-                            LFO_bus_adjustment := 0
+                            LFO_bus_adjustment := __LEFT
                             lcb_control_counter_adjusted := lcb_control_counter { lands on volume layer A }
                         case 16 to 31
-                            LFO_bus_adjustment := 1
+                            LFO_bus_adjustment := __RIGHT
                             lcb_control_counter_adjusted := lcb_control_counter - 16 { lands on volume layer B }
                     end select
 
                     if  in_range(lcb_control_counter mod 16, __MAIN.FX.SATURATION, __MAIN.FX.DISTORTION.DRIVE)
-                        for lcb_lfo_group_counter := 0 to 1
+                        for lcb_lfo_group_counter := __LEFT to __RIGHT
                             set_engine_par(...
                                 LFO_targets_engine_pars [ lcb_control_counter_adjusted ],               ...
                                 fn044.r.engine_value,                                                   ...
@@ -307,6 +307,24 @@ on listener
 
                 end if
             end for
+
+
+            { for readability, checking if should turn off the LFO engine }
+            __SINGLE_SHOT_LFO_CHECK := __OFF
+            if  LFO_release_time [ __REL_FLAG ] = __ON and ...
+                lcb_wf_left_cursor_pos = -1 and lcb_wf_right_cursor_pos = -1 and ...
+                ENGINE_UPTIME - last_played_note_ts > 100 and ...
+                UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and ...
+                UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
+
+                    __SINGLE_SHOT_LFO_CHECK := __ON
+            end if
+
+            if  __SINGLE_SHOT_LFO_CHECK = __ON
+                message(f'Turning off the LFO')
+                LFO_play_state := __OFF
+                LFO_release_time [ __REL_FLAG ] := __OFF
+            end if
 
         end if
 

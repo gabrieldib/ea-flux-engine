@@ -65,6 +65,10 @@ declare UIID_MAIN.show_rates                    [ 2 ]
 declare UIID_MAIN.range_sliders                 [ 2 ]
 declare UIID_MAIN.adsr_links                    [ 2 ]
 declare UIID_MAIN.seq_links                     [ 2 ]
+declare UIID_MAIN.source_rand                   [ 2 ]
+declare UIID_MAIN.reverb_menu                   [ 2 ]
+declare UIID_MAIN.reverb_menu_prev_btn          [ 2 ]
+declare UIID_MAIN.reverb_menu_next_btn          [ 2 ]
 
 
 {{ LFO }}

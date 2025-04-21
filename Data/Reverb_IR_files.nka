@@ -1,201 +1,180 @@
 !Reverb_IR_files
-Real Rooms:
-Auditorium A
-Auditorium B
-Cathedral A
-Cathedral B
-Chamber A
-Chamber B
-Club A
-Club B
-Concert Hall A
-Concert Hall B
-Hard Wood Room A
-Hard Wood Room B
-Inversed Room
-Music Studio A
-Music Studio B 
-Small Room A
-Small Room B
+Real Rooms
+Auditorium A.wav
+Auditorium B.wav
+Cathedral A.wav
+Cathedral B.wav
+Chamber A.wav
+Chamber B.wav
+Club A.wav
+Club B.wav
+Club B.wav
+Concert Hall A.wav
+Concert Hall B.wav
+Hard Wood Room A.wav
+Hard Wood Room B.wav
+Inversed Room.wav
+Music Studio A.wav
+Music Studio B .wav
+Small Room A.wav
+Small Room B.wav
 
 Digital Reverbs
-BRT 7 Ambience Long
-BRT 7 Ambience Medium
-BRT 7 Ambience Small
-BRT 7 Chamber Snare
-BRT 7 Chamber Vintage
-BRT 7 Hall Concert
-BRT 7 Hall Gold
-BRT 7 Location Chapel B
-BRT 7 Location Stage
-BRT 7 Plate Dark
-BRT 7 Plate Percussion
-BRT 7 Plate Snare
-BRT 7 Plate Drum 
-BRT 7 Room Percussion
-BRT 7 Room Wood 
+BRT 7 Ambience Long.wav
+BRT 7 Ambience Medium .wav
+BRT 7 Ambience Small.wav
+BRT 7 Chamber Snare.wav
+BRT 7 Chamber Vintage.wav
+BRT 7 Hall Concert.wav
+BRT 7 Hall Gold.wav
+BRT 7 Location Chapel B.wav
+BRT 7 Location Stage.wav
+BRT 7 Plate Dark.wav
+BRT 7 Plate Percussion.wav
+BRT 7 Plate Snare.wav
+BRT 7 Plate Drum.wav
+BRT 7 Room Percussion.wav
+BRT 7 Room Wood.wav
 
-L224 Ambience 1.15s
-L224 Ambience 1.25s
-L224 Hall 1 1.1s
-L224 Hall 1 5.7s
-L224 Hall 2 5.2s
-L224 Hall 2 7.5s
-L224 Orchestral 1.1s
-L224 Orchestral 3.8s
-L224 Orchestral 5.7s
-L224 Orchestral 8.5s
-L224 Plate 1 2.00s
-L224 Plate 2 0.8s
-L224 Plate 2 4.0s
-L224 Plate 2 8.0s
+L224 Ambience 1.15s.wav
+L224 Ambience 1.25s.wav
+L224 Hall_1 1.1s.wav
+L224 Hall_1 5.7s.wav
+L224 Hall_2 5.2s.wav
+L224 Hall_2 7.5s.wav
+L224 Orchestral 1.1s.wav
+L224 Orchestral 3.8s.wav
+L224 Orchestral 5.7s.wav
+L224 Orchestral 8.5s.wav
+L224 Plate_1 2.00s.wav
+L224 Plate_2 0.8s.wav
+L224 Plate_2 4.0s.wav
+L224 Plate 2 8.0s.wav
 
-L300 Acousticas 1.8s
-L300 Acousticas 2.8s
-L300 Acousticas 5.3s
-L300 Contem-Plate
-L300 Drum Cave
-L300 Large Chamber
-L300 Large Hall
-L300 Large Room 
-L300 RT60 15.6s
-L300 RT60 2.1s 
-L300 RT60 3.5s
-L300 RT60 31.8s
-L300 RT60 7.5s
-L300 Smooth Ambience
-L300 Space & Echoes
-
-L480 Church 2.3s
-L480 Church 5.2s
-L480 Clear Ambience 1.1s
-L480 Clear Ambience 4.6s
-L480 Factory Jazz Hall A
-L480 Factory LG Wood Room A
-L480 Hall 2.9s
-L480 Hall 7.1s
-L480 Plate 1.1s
-L480 Plate 3.6s
-L480 Plate 5.0s
-L480 Plate 7.1s
-L480 Stereo Maker Cluster x 0.5
-L480 Stereo Maker Cluster x 1.0
-L480 Stereo Maker Cluster x 2.0
-
-L96 Chamber Large B
-L96 Chamber Small A
-L96 Hall Large B
-L96 Hall Percussion
-L96 Hall Wide
-L96 Plate Large A
-L96 Plate Small B
-L96 Room Clear A
-L96 Room Drum A
-L96 Room Small B
+L300 Acousticas 1.8s.wav
+L300 Acousticas 2.8s.wav
+L300 Acousticas 5.3s.wav
+L300 Contem-Plate.wav
+L300 Drum Cave.wav
+L300 Large Chamber.wav
+L300 Large Hall.wav
+L300 Large Room.wav
+L300 RT60 15.6s.wav
+L300 RT60 2.1s.wav
+L300 RT60 3.5s.wav
+L300 RT60 31.8s.wav
+L300 RT60 7.5s.wav
+L300 Smooth Ambience.wav
+L300 Space & Echoes.wav
+L480 Church 2.3s.wav
+L480 Church 5.2s.wav
+L480 Clear Ambience 1.1s.wav
+L480 Clear Ambience 4.6s.wav
+L480 Factory Jazz Hall A.wav
+L480 Factory LG Wood Room A.wav
+L480 Hall 2.9s.wav
+L480 Hall 7.1s.wav
+L480 Plate 1.1s.wav
+L480 Plate 3.6s.wav
+L480 Plate 5.0s.wav
+L480 Plate 7.1s.wav
+L480 Stereo Maker Cluster x 0.5.wav
+L480 Stereo Maker Cluster x 1.0.wav
+L480 Stereo Maker Cluster x 2.0.wav
+L96 Chamber Large B.wav
+L96 Chamber Small A.wav
+L96 Hall Large B.wav
+L96 Hall Percussion.wav
+L96 Hall Wide.wav
+L96 Plate Large A.wav
+L96 Plate Small B.wav
+L96 Room Clear A.wav
+L96 Room Drum A.wav
+L96 Room Small B.wav
 
 Real Plate Reverbs
-E250 0.6s
-E250 1.5s
-E250 2.2s
-E250 2.8s
-E250 3.3s
-E250 4.0s
-
-E252 0.6s
-E252 1.0s
-E252 1.8s
-E252 2.2s
-E252 2.8s
-E252 3.6s
-E252 4.5s
+E250 0.6s.wav
+E250 1.5s.wav
+E250 2.2s.wav
+E250 2.8s.wav
+E250 3.3s.wav
+E250 4.0s.wav
+E252 0.6s.wav
+E252 1.0s.wav
+E252 1.8s.wav
+E252 2.2s.wav
+E252 2.8s.wav
+E252 3.6s.wav
+E252 4.5s.wav
 
 Drum Reverbs
-0.1s Ambience Kit Orven
-0.2s Small Drum Space Orven
-0.4s Ring Snare Verb Orven
-0.4s Small Booth
-0.5s Flutter Echo Orven
-0.5s Grain Drum 6TC
-0.5s Short Snare 6TC
-0.6s Gated Ambience Big Orven
-0.6s Nonlinear Orven
-0.6s Steam Machine Orven
-0.6s Wide Room Orven
-0.7s Drum Flat Orven
-0.8s Drum Rev 6TC
-0.9s Wood Room 960
-0.9s Zizzle Echo Orven
-1.1s Drum Chamber Orven 
-2.2s Spring Drum
-2.6s Drum Filter Orven
-2.9s Vibra Pan Orven
+The Ambience Kit.wav
+Small Drumspace.wav
+Ring Snareverb.wav
+SMALL BOOTH 1.wav
+Flutter Echo.wav
+05 grain verb.wav
+19 sn short.wav
+Gated Ambience Big.wav
+Nonlinear#1.wav
+Steam Machine.wav
+Wide Room.wav
+Drum Flutters.wav
+12 drum reverb.wav
+wood room.wav
+Zizzle Echo.wav
+Drum Chamber.wav
+HIGH END SPRING.wav
+Drum Filter.wav
+Vibra Pan.wav
 
 Drum Filters
-Aquamarine
-Banishing
-Brick Red
-Eggshell
-Electrostatic
-Her Green Djembe
-Rust
-Water Blipy
-Singing Ghost
-Myeerrrk
-Reflex
-Glass
-Indecipherable
-Baja 500
-Retro Virus
-Metaphysical
-Electrode Clasp
-Mosquito
-No Hablo
-Vincents Favorite
-Plastic Tubes
-Drizzling Outdoors
+Shards of Aquamarine.wav
+Banishing.wav
+Brick Red.wav
+Eggshell.wav
+Electrostatic Separation.wav
+Her Green Djembe.wav
+Rust.wav
+Who Said Ghosts Can Sing.wav
+Myeerrrrk.wav
+Crippling.wav
+Glas.wav
+Indecipherable.wav
+Retrovirus.wav
+Metaphysical.wav
+Electrode Clasp.wav
+Man Eating Mosquito.wav
+No Hablo.wav
+PLASTIC TUBES 1.wav
+Drizzling Outdoors.wav
 
 Reverse Reverbs
-0.1s Rev Iso Booth
-0.2s Rev New Air
-0.5s Rev Slap
-0.5s Rev Tetra Orven
-0.6s Rev Deadline Flyby
-0.8s Rev Nonlinear Orven
+12 drum reverb.wav
+CLASS-BND.wav
+ISO BOOTH 1.wav
+New Air.wav
+Deadline Flyby.wav
+Pantry.wav
+Reverse Nonlinear.wav
+ReverseTetra.wav
+slap room.wav
 
 Plate Reverbs
-Short Plate 960
-Bright Plate 1 960
-Bright Plate 2 960
-EMT Style Plate Orven
-Reverb A2 Orven
-Golden Plate 6TC
-Flying Plate 960
-Middle Large Plate
-Chorus Plate Orven
-Groomy Plate 960
-Usual Plate
-Windy Plate 960
-Metallic Plate Orven
-Sizzler Plate Orven
-Chorus Plate Orven
-Densely Plate
-Usual Plate Long
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+17 golden plate.wav
+bright plate.wav
+Chorus & Plate.wav
+DENSELY PLATE 1.wav
+EMT-style Plate.wav
+Metallic Plate.wav
+MIDDLE LARGE PLATE 1.wav
+plate bright mit ER.wav
+plate fliegend.wav
+plate short.wav
+Reverb A2.wav
+Sizzler Plate.wav
+spez plate ER.wav
+St.Plate+Chorus.wav
+USUAL_PLATE_2s.wav
+USUAL_PLATE_4s.wav
+windy plate.wav

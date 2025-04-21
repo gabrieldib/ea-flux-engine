@@ -152,6 +152,7 @@
     define __FS_SNG_SHT_HP_CUTOFF := 5
     define __FS_SNG_SHT_HP_RESO   := 6
     define __FS_SNG_SHT_FILTER_LAYER_OFFSET := 4 { layer 2 cutoff and reso will be respectively 5 and 6 }
+    define __FS_VELOCITY := 11 { left, + 1 for right side }
 
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
@@ -165,7 +166,8 @@
     {{ UI }}
         // 100 elements, 6 parameters, parent1_uiid, x1, y1, parent2_uiid, x2, y2
         declare SEQ.common_elements_data [ 200, 7 ] 
-        declare const __FLUX_BLOCK_RIGHT_START := 94
+        declare const __FLUX_BLOCK_LEFT_START  := 90
+        declare const __FLUX_BLOCK_RIGHT_START := 95
 
         declare const PANEL_DUAL_SEQ_PARENT_UIID := 0
         declare const PANEL_JOIN_SEQ_PARENT_UIID := 1
@@ -177,10 +179,6 @@
 
         declare SEQ.COMMON_ELEMENTS_COUNT
         declare UIID_FLUX_RAND_RIGHT [ 4 ] 
-            UIID_FLUX_RAND_RIGHT [ 0 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.1)
-            UIID_FLUX_RAND_RIGHT [ 1 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.2)
-            UIID_FLUX_RAND_RIGHT [ 2 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.3)
-            UIID_FLUX_RAND_RIGHT [ 3 ] := get_ui_id(switch_MAIN.FLUXX.RIGHT.block.4)
 
         declare random_sliders_x_pos [ 2 ]
             random_sliders_x_pos [ 0 ] :=  10
@@ -719,6 +717,7 @@
         declare read SHOWING_PANEL
         declare MATRIX.matrix.center.mouseON [2] // 0 is the state, 1 is the quadrant start index
         declare read play_range [ 2, __SOURCE_COUNT, 2 ] // side, source, low and hi
+        declare __INSTRUMENT_INIT := __YES
 
     {{ SOURCES }}
         declare read selected_source      [ 2 ]
@@ -831,18 +830,31 @@
 
         declare SEQ.lcb_layer_side
 
+        declare read DUAL_SEQ.link_buffer [ 2 ]
+        declare read DUAL_SEQ.hmz.link_buffer [ 2 ]
+
     {{ PLAY ENGINE }}
         declare layers.note_events [ 2, 128 ]
         declare layers.note_velo   [ 2, 128 ] // stores played velocities
         declare last_played_note              // to use as index for sample start data
+        declare last_played_note_ts           // for the LFO engine on off
+        declare __SINGLE_SHOT_LFO_CHECK
+
         declare read ?sample_starts     [ __SOURCE_COUNT, 2, 128 ]
         declare read ?sample_tuning     [ __SOURCE_COUNT, 2, 128 ]
         declare read sample_low_cutoff  [ __SOURCE_COUNT, 2, 128 ] := (0)
         declare read sample_low_reso    [ __SOURCE_COUNT, 2, 128 ]
         declare read sample_high_cutoff [ __SOURCE_COUNT, 2, 128 ]
         declare read sample_high_reso   [ __SOURCE_COUNT, 2, 128 ]
+
+        declare      ncb_round_robin  [ 2, 128 ]
+
         declare ~ncb_tune_knob
         declare  ncb_counter
+        declare  rcb_counter_side
+        declare  rcb_counter_block
+        declare  rcb_counter_step
+        declare ~rcb_step_data
 
     {{ LCB }}
         declare read ~__BPM
@@ -938,6 +950,26 @@
         declare showing_layer_fx_panel_index [ 2 ] // only used if the randomize state was per panel
         declare read randomize_lfp_state [ 2 ]
 
+    {{ ADSR Release Conversion }}
+        declare ~ADSR_val
+        declare  ADSR_res [ 2 ]
+        declare const ~MAX_AH_COEF  := 9.6159388045295
+        declare const ~MIN_ENV_COEF := 0.6931471824646
+        declare const ~MAX_DR_COEF  := 10.1267113685608
+        declare const ~DR_RANGE := ~MAX_DR_COEF - ~MIN_ENV_COEF
+        declare const ~AH_RANGE := ~MAX_AH_COEF - ~MIN_ENV_COEF
+        declare const ~OFFSET       := 2.0
+
+        declare read LFO_release_time [ 3 ]
+        declare const __RELEASE_TIME  := 0
+        declare const __REL_TIMESTAMP := 1
+        declare const __REL_FLAG      := 2
+
+        declare LFO_play_state
+
+        declare all_events [ 1024 ]
+
+
 
 { CB SPECIFIC ___________________________________________________________________________________ }
     declare uics_uiid_index
@@ -945,6 +977,7 @@
     declare uics_value
     declare uics_last_value
     declare uics_alt_key
+    declare uics_control_key
     declare uics_shift_key
     declare uics_side_counter
     declare uics_link_counter
@@ -1002,6 +1035,7 @@
     declare pn_ncb.a.note
     declare pn_ncb.a.velo
     declare pn_ncb.a.mute_note
+    declare pn_ncb.l.sample_address
 
     //PLAY_LCB
     declare p_lcb.a.side
@@ -1255,6 +1289,7 @@
     declare fn027.a.note
     declare fn027.a.step_counter
     declare fn027.l.step_duration
+    declare fn027.l.sample_address
 
     //fn028_update_arp_note_buffers
     declare fn028.a.side
@@ -1276,10 +1311,11 @@
     declare ~fn030.r.transf_value
 
     //fn031_set_dyn_sliders_picture
-    declare fn031.a.reset
-    declare fn031.a.side
-    declare fn031.a.block_index
-    declare fn031.l.step_index
+    declare  fn031.a.reset
+    declare  fn031.a.side
+    declare ~fn031.a.value
+    declare  fn031.a.block_index
+    declare  fn031.l.step_index
 
     //fn032_set_seq_step_value_and_ui_via_dyn_slider
     declare fn032.a.side
@@ -1475,3 +1511,7 @@
     declare fn064.a.side
     declare fn064.a.value
     declare fn064.l.target_counter
+
+    //fn065_get_sample_address
+    declare fn065.a.input_velo
+    declare fn065.r.velo_address

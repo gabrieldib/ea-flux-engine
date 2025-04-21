@@ -1,182 +1,180 @@
 !Reverb_impulse_responses_titles
-Real Rooms:
-    Auditorium A  
-    Auditorium B  
-    Cathedral A  
-    Cathedral B  
-    Chamber A  
-    Chamber B  
-    Club A  
-    Club B  
-    Concert Hall A  
-    Concert Hall B  
-    Hard Wood Room A  
-    Hard Wood Room B  
-    Inversed Room  
-    Music Studio A  
-    Music Studio B   
-    Small Room A  
-    Small Room B  
+Real Rooms --------------------
+Auditorium A
+Auditorium B
+Cathedral A
+Cathedral B
+Chamber A
+Chamber B
+Club A
+Club B
+Club B
+Concert Hall A
+Concert Hall B
+Hard Wood Room A
+Hard Wood Room B
+Inversed Room
+Music Studio A
+Music Studio B 
+Small Room A
+Small Room B
 
-Digital Reverbs
-    BRT 7 - Ambience Long
-    BRT 7 - Ambience Medium 
-    BRT 7 - Ambience Small
-    BRT 7 - Chamber Snare
-    BRT 7 - Chamber Vintage
-    BRT 7 - Hall Concert
-    BRT 7 - Hall Gold
-    BRT 7 - Location Chapel B
-    BRT 7 - Location Stage
-    BRT 7 - Plate Dark
-    BRT 7 - Plate Percussion
-    BRT 7 - Plate Snare
-    BRT 7 - Plate Drum 
-    BRT 7 - Room Percussion
-    BRT 7 - Room Wood 
+Digital Reverbs --------------------
+BRT 7 Ambience Long
+BRT 7 Ambience Medium 
+BRT 7 Ambience Small
+BRT 7 Chamber Snare
+BRT 7 Chamber Vintage
+BRT 7 Hall Concert
+BRT 7 Hall Gold
+BRT 7 Location Chapel B
+BRT 7 Location Stage
+BRT 7 Plate Dark
+BRT 7 Plate Percussion
+BRT 7 Plate Snare
+BRT 7 Plate Drum
+BRT 7 Room Percussion
+BRT 7 Room Wood
 
-    L224 Ambience 1.15s
-    L224 Ambience 1.25s
-    L224 Hall 1 1.1s
-    L224 Hall 1 5.7s
-    L224 Hall 2 5.2s
-    L224 Hall 2 7.5s
-    L224 Orchestral 1.1s
-    L224 Orchestral 3.8s
-    L224 Orchestral 5.7s
-    L224 Orchestral 8.5s
-    L224 Plate 1 2.00s
-    L224 Plate 2 0.8s
-    L224 Plate 2 4.0s
-    L224 Plate 2 8.0s
+L224 Ambience 1.15s
+L224 Ambience 1.25s
+L224 Hall_1 1.1s
+L224 Hall_1 5.7s
+L224 Hall_2 5.2s
+L224 Hall_2 7.5s
+L224 Orchestral 1.1s
+L224 Orchestral 3.8s
+L224 Orchestral 5.7s
+L224 Orchestral 8.5s
+L224 Plate_1 2.00s
+L224 Plate_2 0.8s
+L224 Plate_2 4.0s
+L224 Plate 2 8.0s
 
-    L300 Acousticas 1.8s  
-    L300 Acousticas 2.8s  
-    L300 Acousticas 5.3s   
-    L300 Contem-Plate  
-    L300 Drum Cave  
-    L300 Large Chamber  
-    L300 Large Hall  
-    L300 Large Room   
-    L300 RT60 15.6s  
-    L300 RT60 2.1s   
-    L300 RT60 3.5s  
-    L300 RT60 31.8s   
-    L300 RT60 7.5s  
-    L300 Smooth Ambience  
-    L300 Space & Echoes  
+L300 Acousticas 1.8s
+L300 Acousticas 2.8s
+L300 Acousticas 5.3s
+L300 Contem-Plate
+L300 Drum Cave
+L300 Large Chamber
+L300 Large Hall
+L300 Large Room
+L300 RT60 15.6s
+L300 RT60 2.1s
+L300 RT60 3.5s
+L300 RT60 31.8s
+L300 RT60 7.5s
+L300 Smooth Ambience
+L300 Space & Echoes
+L480 Church 2.3s
+L480 Church 5.2s
+L480 Clear Ambience 1.1s
+L480 Clear Ambience 4.6s
+L480 Factory Jazz Hall A
+L480 Factory LG Wood Room A
+L480 Hall 2.9s
+L480 Hall 7.1s
+L480 Plate 1.1s
+L480 Plate 3.6s
+L480 Plate 5.0s
+L480 Plate 7.1s
+L480 Stereo Maker Cluster x 0.5
+L480 Stereo Maker Cluster x 1.0
+L480 Stereo Maker Cluster x 2.0
+L96 Chamber Large B
+L96 Chamber Small A
+L96 Hall Large B
+L96 Hall Percussion
+L96 Hall Wide
+L96 Plate Large A
+L96 Plate Small B
+L96 Room Clear A
+L96 Room Drum A
+L96 Room Small B
 
-    L480 Church 2.3s   
-    L480 Church 5.2s  
-    L480 Clear Ambience 1.1s  
-    L480 Clear Ambience 4.6s  
-    L480 Factory Jazz Hall A  
-    L480 Factory LG Wood Room A  
-    L480 Hall 2.9s   
-    L480 Hall 7.1s  
-    L480 Plate 1.1s   
-    L480 Plate 3.6s  
-    L480 Plate 5.0s  
-    L480 Plate 7.1s  
-    L480 Stereo Maker Cluster x 0.5  
-    L480 Stereo Maker Cluster x 1.0  
-    L480 Stereo Maker Cluster x 2.0  
+Real Plate Reverbs --------------------
+E250 0.6s
+E250 1.5s
+E250 2.2s
+E250 2.8s
+E250 3.3s
+E250 4.0s
+E252 0.6s
+E252 1.0s
+E252 1.8s
+E252 2.2s
+E252 2.8s
+E252 3.6s
+E252 4.5s
 
-    L96 Chamber Large B   
-    L96 Chamber Small A  
-    L96 Hall Large B  
-    L96 Hall Percussion  
-    L96 Hall Wide   
-    L96 Plate Large A  
-    L96 Plate Small B  
-    L96 Room Clear A  
-    L96 Room Drum A  
-    L96 Room Small B  
+Drum Reverbs --------------------
+The Ambience Kit
+Small Drumspace
+Ring Snareverb
+SMALL BOOTH 1
+Flutter Echo
+05 grain verb
+19 sn short
+Gated Ambience Big
+Nonlinear#1
+Steam Machine
+Wide Room
+Drum Flutters
+12 drum reverb
+wood room
+Zizzle Echo
+Drum Chamber
+HIGH END SPRING
+Drum Filter
+Vibra Pan
 
-Real Plate Reverbs
-    E250 0.6s  
-    E250 1.5s  
-    E250 2.2s  
-    E250 2.8s  
-    E250 3.3s  
-    E250 4.0s
+Drum Filters --------------------
+Shards of Aquamarine
+Banishing
+Brick Red
+Eggshell
+Electrostatic Separation
+Her Green Djembe
+Rust
+Who Said Ghosts Can Sing
+Myeerrrrk
+Crippling
+Glas
+Indecipherable
+Retrovirus
+Metaphysical
+Electrode Clasp
+Man Eating Mosquito
+No Hablo
+PLASTIC TUBES 1
+Drizzling Outdoors
 
-    E252 0.6s  
-    E252 1.0s  
-    E252 1.8s  
-    E252 2.2s  
-    E252 2.8s  
-    E252 3.6s  
-    E252 4.5s
+Reverse Reverbs --------------------
+12 drum reverb
+CLASS-BND
+ISO BOOTH 1
+New Air
+Deadline Flyby
+Pantry
+Reverse Nonlinear
+ReverseTetra
+slap room
 
-Drum Reverbs
-    0.1s Ambience Kit Orven   
-    0.2s Small Drum Space Orven   
-    0.4s Ring Snare Verb Orven  
-    0.4s Small Booth  
-    0.5s Flutter Echo Orven  
-    0.5s Grain Drum 6TC  
-    0.5s Short Snare 6TC  
-    0.6s Gated Ambience Big Orven  
-    0.6s Nonlinear Orven  
-    0.6s Steam Machine Orven  
-    0.6s Wide Room Orven  
-    0.7s Drum Flat Orven  
-    0.8s Drum Rev 6TC  
-    0.9s Wood Room 960  
-    0.9s Zizzle Echo Orven  
-    1.1s Drum Chamber Orven 
-    2.2s Spring Drum  
-    2.6s Drum Filter Orven  
-    2.9s Vibra Pan Orven
-
-Drum Filters
-    0.1s Aquamarine  
-    0.1s Banishing  
-    0.1s Brick Red  
-    0.1s Eggshell  
-    0.1s Electrostatic  
-    0.1s Green Djembe  
-    0.1s Rust  
-    0.1s Water Blipy  
-    0.2s Singing Ghost  
-    0.3s Myeerrrk  
-    0.3s Reflex  
-    0.6s Glass  
-    0.6s Indecipherable  
-    0.7s Baja 500  
-    0.7s Retro Virus  
-    0.9s Metaphysical  
-    1.2s Electrode Clasp  
-    1.2s Mosquito  
-    1.2s No Hablo  
-    1.3s Vincents Favorite  
-    1.4s Plastic Tubes  
-    1.6s Drizzling Outdoors
-
-Reverse Reverbs
-    0.1s Rev Iso Booth  
-    0.2s Rev New Air  
-    0.5s Rev Slap  
-    0.5s Rev Tetra Orven  
-    0.6s Rev Deadline Flyby  
-    0.8s Rev Nonlinear Orven
-
-Plate Reverbs
-    0.4s Short Plate 960  
-    0.9s Bright Plate 1 960  
-    1.1s Bright Plate 2 960  
-    1.2s EMT Style Plate Orven  
-    1.4s Reverb A2 Orven  
-    1.6s Golden Plate 6TC  
-    1.7s Flying Plate 960  
-    1.7s Middle Large Plate  
-    2.3s Chorus Plate Orven  
-    2.3s Groomy Plate 960  
-    2.5s Usual Plate  
-    2.6s Windy Plate 960  
-    2.8s Metallic Plate Orven  
-    3.2s Sizzler Plate Orven  
-    3.4s Chorus Plate Orven  
-    4.1s Densely Plate  
-    5.2s Usual Plate Long
+Plate Reverbs --------------------
+17 golden plate
+bright plate
+Chorus & Plate
+DENSELY PLATE 1
+EMT-style Plate
+Metallic Plate
+MIDDLE LARGE PLATE 1
+plate bright mit ER
+plate fliegend
+plate short
+Reverb A2
+Sizzler Plate
+spez plate ER
+St.Plate+Chorus
+USUAL_PLATE_2s
+USUAL_PLATE_4s
+windy plate

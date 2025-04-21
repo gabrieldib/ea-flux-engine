@@ -4,10 +4,15 @@ define HMZ_DIVISOR := 10000//28571 { 1000000 / 35 ( milliseconds )}
 
 define VOLUME_CURVE_SLOPE := 0.35
 
+{{ PLAY ENGINE }}
+define __ROUND_ROBIN_MAX := 4
+define __VELO_SLOPE      := 2.5
+
 {{ SOURCES }}
 define __SOURCE_COUNT         := 5  { example v0.16 }
 define __MAX_SOURCES_PER_PAGE := 18 { not in use }
 define __MAX_SOURCE_PAGES     := __SOURCE_COUNT/__MAX_SOURCES_PER_PAGE { not in use }
 
 {{ FX REVERB}}
-define IR_FILES_COUNT := 180
+define IR_FILES_COUNT := 178
+define REV_MAX_LEVEL  := 0.65
