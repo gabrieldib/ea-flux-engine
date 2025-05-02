@@ -1,3 +1,11 @@
 on controller
-
+    if CC_NUM = __MOD_WHEEL and switch_crossfade = __ON
+        for uicb_counter := __LEFT to __RIGHT
+            fn036.a.control_value := abs( 1000000 * abs(1-uicb_counter) - CC[__MOD_WHEEL] * 7874 )
+            UIID_controls [ __MAIN.FX.LAYER.VOLUME + uicb_counter * __MAIN.FX.RIGHT.OFFSET ] -> value := fn036.a.control_value
+            fn036.a.side          := uicb_counter
+            fn036.a.target        := __MAIN.FX.LAYER.VOLUME + uicb_counter * __MAIN.FX.RIGHT.OFFSET
+            call fn036_set_control_param_slider()
+        end for
+    end if
 end on

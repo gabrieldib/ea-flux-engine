@@ -39,5 +39,5 @@ on persistence_changed
 
     message("ea-flux-engine loaded successfully")
     message(f'PCCB end.')
-
+    message(f'  -0.37 ^ 2.0 <pow(0.37, 1.8) >')
 end on

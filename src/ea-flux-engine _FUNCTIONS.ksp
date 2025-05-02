@@ -110,8 +110,6 @@ function pccb_init_instrument
     // call fn055_recall_source_buttons_page
 
     call draw_key_ranges
-    __INSTRUMENT_INIT := __NO
-    LFO_play_state := __OFF
 
     call draw_seq
     SEQ.showing_target [ __LEFT  ] := SEQ_TARGET_VELO
@@ -173,9 +171,11 @@ function pccb_init_instrument
                 UIID_MAIN.seq.target_selectors  [ pccb_counter ] -> value := __OFF
             end if
         end if
-
     end for
     
+    __INSTRUMENT_INIT := __NO
+    LFO_play_state := __OFF
+
     message(f'PCCB INIT ____________________________________')
     message(f'    panel_MAIN.2SEQ.RIGHT.controls hide state = <panel_MAIN.2SEQ.RIGHT.controls -> hide >')
 end function
@@ -592,11 +592,11 @@ function fn001_get_seq_step_index
         ) 
 
         fn001.l.xy_x.normalized := fn001.l.xy_x - 0.25 * float(fn001.a.block_index)
-
         fn001.r.step_index := int(( fn001.l.xy_x.normalized )/ SEQ.DUAL.step_width [ fn001.a.side, fn001.a.block_index ]) + ...
             8 * fn001.a.block_index
+        message(f'    FN001 X: <fn001.l.xy_x.normalized > | step: <fn001.r.step_index>')
 
-        if fn001.r.step_index = 32
+        if fn001.r.step_index = 32 {and fn001.l.xy_x.normalized <= 0.5}
             fn001.r.step_index := 31
         end if
     else
@@ -604,6 +604,12 @@ function fn001_get_seq_step_index
         fn001.l.xy_x.normalized := fn001.l.xy_x - 0.125 * float(fn001.a.block_index)
         fn001.r.step_index := int(( fn001.l.xy_x.normalized )/ SEQ.JOIN.step_width [ fn001.a.block_index ]) + ...
             8 * fn001.a.block_index
+        message(f'        FN001 X: <fn001.l.xy_x> | Norm: <fn001.l.xy_x.normalized > | step: <fn001.r.step_index> | width:<SEQ.JOIN.step_width [ fn001.a.block_index ]> | block: <fn001.a.block_index>')
+
+        if fn001.r.step_index = 32 and fn001.a.block_index = 3
+            fn001.r.step_index := 31
+        end if
+
         if fn001.r.step_index = 64
             fn001.r.step_index := 63
         end if
@@ -748,6 +754,7 @@ function fn004_get_current_seq_block
             if  fn004.a.x_coord >= SEQ_JOIN_XY_BLOCK_START_END [ fn004.l.block_counter, __START ] and ...
                 fn004.a.x_coord <= SEQ_JOIN_XY_BLOCK_START_END [ fn004.l.block_counter, __END ]
                 fn004.r.block_index := fn004.l.block_counter
+                message(f'FN004 current block is <fn004.r.block_index >')
             end if
         end for 
     end if 
@@ -1716,21 +1723,14 @@ function fn036_set_control_param_slider
     fn038.a.link          := fn037.a.link
     call fn038_LFO_store_LFO_mod_data
 
-    if fn039.a.target mod 16 = 0 { only run if it is volume }
-        fn036.a.control_value := int( float(fn036.a.control_value)*0.63)
-    end if
-    if fn039.a.target mod 16 = 15 { only run if it is reverb wet level }
-        fn036.a.control_value := int( float(fn036.a.control_value)*REV_MAX_LEVEL)
-        message(f'adjusted the rev wet control to <fn036.a.control_value >')
-    end if
-
     fn039.a.side          := fn036.a.side
     fn039.a.target        := fn036.a.target
     fn039.a.control_value := fn036.a.control_value
+    // message(f'FN36 calling FN39 with value arg: <fn039.a.control_value >')
     fn039.a.link          := fn037.a.link
     call fn039_set_FX_engine_par
 
-    if fn039.a.target mod 16 = 0 { only run if it is volume }
+    if fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME { only run if it is volume }
         fn040.a.side := fn036.a.side
         call fn040_set_MATRIX_slider_ps
     end if
@@ -1738,23 +1738,27 @@ function fn036_set_control_param_slider
     // UI update for the ui control param only 
     if UIID_MAIN.FX.links [ ...
         UIID_FX.parameter_to_module [ fn036.a.target ] ...
-      ] -> value = 1
+      ] -> value = __ON or switch_crossfade = __ON and fn036.a.target mod 16 = __MAIN.FX.LAYER.VOLUME
 
-        // there are 16 elements on the each side 
-        if fn036.a.target < 16 // left side 
-            MAIN.FX.aux_flip_link := 16 // add 16 to get to right side 
-        else                                                    // right side 
-            MAIN.FX.aux_flip_link := -16 // subtract 16 to get to left side 
-        end if
-
-        if fn039.a.target mod 16 = 0 { only run if it is volume }
+        if fn036.a.target mod 16 = __MAIN.FX.LAYER.VOLUME { only run if it is volume }
             fn040.a.side := abs(1-fn040.a.side) 
             call fn040_set_MATRIX_slider_ps
         end if 
 
+        if fn036.a.target < 16 { left side }
+            MAIN.FX.aux_flip_side := 16 { add 16 to get to right side }
+        else                                                    { right side }
+            MAIN.FX.aux_flip_side := -16 { subtract 16 to get to left side }
+        end if
+
         // UI control update on the other side 
-        // message(f'FN36 setting the other side knob to <fn036.a.control_value >')
-        UIID_controls [ fn036.a.target + MAIN.FX.aux_flip_link ] -> value := UIID_controls [ fn036.a.target ] -> value
+        if fn036.a.target mod 16 = __MAIN.FX.LAYER.VOLUME and switch_crossfade = __ON 
+            UIID_controls [ fn036.a.target + MAIN.FX.aux_flip_side ] -> value := 1000000 - UIID_controls [ fn036.a.target ] -> value
+        else
+            // message(f'__MAIN.FX.LAYER.VOLUME + MAIN.FX.aux_flip_side = <__MAIN.FX.LAYER.VOLUME + MAIN.FX.aux_flip_side >')
+            // message(f'fn036.a.target = <fn036.a.target >')
+            UIID_controls [ fn036.a.target + MAIN.FX.aux_flip_side ] -> value := UIID_controls [ fn036.a.target ] -> value
+        end if
     end if
 end function
 
@@ -2107,6 +2111,7 @@ function fn063_populate_opposite_layer_panel_control_values
     message(f'    fn063.a.control_index: <fn063.a.control_index >')
     message(f'    side: <fn063.a.side >')
     message(f'    opposite side index <fn063.a.control_index + abs(1-fn063.a.side) * __MAIN.FX.RIGHT.OFFSET>')
+
     UIID_controls     [ fn063.a.control_index + abs(1-fn063.a.side) * __MAIN.FX.RIGHT.OFFSET] -> value := ...
         UIID_controls [ fn063.a.control_index + fn063.a.side * __MAIN.FX.RIGHT.OFFSET] -> value
 
@@ -2121,7 +2126,8 @@ function fn063_populate_opposite_layer_panel_control_values
 
     fn036.a.side          := abs(1-fn063.a.side)
     fn036.a.target        := fn063.a.control_index
-    fn036.a.control_value := UIID_controls [ fn063.a.control_index + fn063.a.side * __MAIN.FX.RIGHT.OFFSET] -> value
+    fn036.a.control_value := UIID_controls [ fn063.a.control_index + fn063.a.side * __MAIN.FX.RIGHT.OFFSET ] -> value
+    message(f'    control value: <fn036.a.control_value >')
     call fn036_set_control_param_slider()
 end function
 
@@ -2195,6 +2201,23 @@ function fn064_update_sequencer_power_state
         end if
 
     end if
+end function
+
+function fn066_get_reverb_ir_path
+    select(fn066.a.value)
+        case __REAL_ROOMS_START       to __DIGITAL_REVERB_END
+            @fn066.r.reverb.dynamic.path := @reverb.path
+        case __DRUM_REVERBS_START     to __DRUM_REVERBS_END     
+            @fn066.r.reverb.dynamic.path := @reverb.path.new.IRs & "05 Drum Reverbs/IR Samples/"
+        case __DRUM_FILTERS_START     to __DRUM_FILTERS_END     
+            @fn066.r.reverb.dynamic.path := @reverb.path.new.IRs & "06 Drum Filters/IR Samples/"
+
+        case __REVERSE_REVERBS_START  to __REVERSE_REVERBS_END  
+            @fn066.r.reverb.dynamic.path := @reverb.path.new.IRs & "12 Reverse Reverbs/IR Samples/"
+
+        case __PLATE_REVERBS_START    to __PLATE_REVERBS_END    
+            @fn066.r.reverb.dynamic.path := @reverb.path.new.IRs & "13 Plate Reverbs/IR Samples/"
+    end select
 end function
 
 {{ RANDOMIZER FUNCTIONS }}
@@ -2614,7 +2637,7 @@ end function
 
 {{ LFO Functions }}
 function fn037_LFO.update_intensity_ring()
-    // message("CALL fn037 ___/ntrol_value = " & fn037.a.control_value)
+    // message("CALL fn037 control_value = " & fn037.a.control_value)
 
     if fn037.a.target < 32 and fn037.a.target mod 16 = __MAIN.FX.LAYER.WIDTH
         fn037.l.picture_state_start := ...
@@ -2645,6 +2668,20 @@ function fn037_LFO.update_intensity_ring()
                     ) * 255.0 ...
             )
 
+        fn037.l.picture_state_start_inv := ... 
+            int ( ...
+                    ( ...
+                        float ( 1000000- fn037.a.control_value ) / 1000000.0 ...
+                        - ...
+                        float   ( get_control_par( ... 
+                                    UIID_controls_LFO_amount[ fn037.a.target  ], ...
+                                    CONTROL_PAR_VALUE ...
+                                ) / 2 ...
+                        ) / 1000000.0 ...
+                    ) * 255.0 ...
+            )
+            
+
         fn037.l.picture_state_end := ... 
             int ( ...
                     ( ...
@@ -2657,7 +2694,21 @@ function fn037_LFO.update_intensity_ring()
                         ) / 1000000.0 ...
                     ) * 255.0 ...
             )
+
+        fn037.l.picture_state_end_inv := ... 
+            int ( ...
+                    ( ...
+                        (1.0 - float( 1000000 - fn037.a.control_value ) / 1000000.0 ) ...
+                        - ...
+                        float ( get_control_par( ... 
+                                    UIID_controls_LFO_amount[ fn037.a.target ], ...
+                                    CONTROL_PAR_VALUE ...
+                                ) / 2 ...
+                        ) / 1000000.0 ...
+                    ) * 255.0 ...
+            )
     end if 
+
     set_control_par (                                   ...
         UIID_controls_LFO_mod_start [ fn037.a.target ], ...
         CONTROL_PAR_PICTURE_STATE,                      ...
@@ -2669,15 +2720,21 @@ function fn037_LFO.update_intensity_ring()
         CONTROL_PAR_PICTURE_STATE,                    ...
         fn037.l.picture_state_end                     ...
     )
-    // message(f'     fn037.l.picture_state_start:< fn037.l.picture_state_start >')
-    // message(f'     fn037.l.picture_state_end  :< fn037.l.picture_state_end >')
-    // message(f'fn037.a.target <fn037.a.target >')
-    if  UIID_MAIN.FX.links [ UIID_FX.parameter_to_module [ fn037.a.target ] ] -> value = __ON
-        // message("link is on - updating both blue rings masks")
+
+    if  UIID_MAIN.FX.links [ UIID_FX.parameter_to_module [ fn037.a.target ] ] -> value = __ON or ...
+        fn037.a.target mod 16 = __MAIN.FX.LAYER.VOLUME and switch_crossfade = __ON and fn073.a.LFO_a_control_call = __NO
+        // message(f'FN37 link value: <UIID_MAIN.FX.links [ UIID_FX.parameter_to_module [ fn037.a.target ] ] -> value >')
+        // message(f'    target: < fn037.a.target >')
+        // message(f'    switch_crossfade: <switch_crossfade >')
         if fn037.a.target < 16 { left side }
             MAIN.FX.aux_flip_side := 16 { add 16 to get to right side }
         else                                                    { right side }
             MAIN.FX.aux_flip_side := -16 { subtract 16 to get to left side }
+        end if
+
+        if switch_crossfade = __ON
+            fn037.l.picture_state_start := fn037.l.picture_state_start_inv
+            fn037.l.picture_state_end   := fn037.l.picture_state_end_inv
         end if
 
         set_control_par (...
@@ -2692,40 +2749,43 @@ function fn037_LFO.update_intensity_ring()
             fn037.l.picture_state_end ...
         )
     end if
-    // message(...
-    //     "fn037.l.picture_state_start  = " & fn037.l.picture_state_start & ...
-    //     " | fn037.l.picture_state_end  = " & fn037.l.picture_state_end ...
-    // )
+    fn073.a.LFO_a_control_call := __NO
 end function
 
 function fn038_LFO_store_LFO_mod_data()
     // message("CALLED FN038 store data for target "&fn038.a.target&" ________________________________________________ ")
     { using this loop to avoid writing this code twice because of the link }
 
-    // message(f'FN38 _________________________________')
     for fn038.l.side_counter := __LEFT to __RIGHT
-        if fn038.a.side = fn038.l.side_counter or fn038.a.link = __ON
-            // message(f'    target _________ <fn038.a.target >')
-            // message(f'    side   _________ <fn038.l.side_counter >')
-            // message(f'    control_value __ <fn038.a.control_value >')
-            // message(f'    LFO_amount _____ <fn038.a.LFO_amount  >')
-            LFO_amount_pct [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET ] := float( fn038.a.LFO_amount ) / 1000000.0
+        if fn038.a.side = fn038.l.side_counter or fn038.a.link = __ON or switch_crossfade = __ON
+            message(f'FN38: side <fn038.l.side_counter > | target <fn038.a.target > | control_value __ <fn038.a.control_value > | LFO_amount <fn038.a.LFO_amount  >')
 
-            LFO_mod_center  := float( fn038.a.control_value )
+            if switch_crossfade = __ON and fn038.l.side_counter = __RIGHT and fn038.a.target = 16
+                LFO_mod_center  := float(1000000 -  fn038.a.control_value )
+                message(f'    LFO mod center set to inverted | value: <LFO_mod_center>')
+            else
+                LFO_mod_center  := float( fn038.a.control_value )
+                message(f'    LFO mod center set to regular | value: <LFO_mod_center>')
+            end if
+
+            fn038.l.pct_divisor  := 1000000.0
+            fn038.l.pict_divisor := 3921.568627
 
             LFO_mod_amount  := float( LFO_control_value_max [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET ] ) * ...
                 LFO_amount_pct [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET ] 
 
+            LFO_amount_pct [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET ] := float( fn038.a.LFO_amount ) / 1000000.0
+
             LFO_mod_min     := LFO_mod_center - LFO_mod_amount
             LFO_mod_max     := LFO_mod_center + LFO_mod_amount
 
-            { for the rebel way on the mod ring animation | 3921 = 1000000/255 }
-            LFO_mod_ring_center := int(LFO_mod_center / 3921.568627)
-            LFO_mod_ring_min    := int(LFO_mod_min / 3921.568627)
-            LFO_mod_ring_max    := int(LFO_mod_max / 3921.568627)
+            { for the rebel way on the mod ring animation | 3921 = 1000000/255 or 630000 / 255}
+            LFO_mod_ring_center := int(LFO_mod_center / fn038.l.pict_divisor)
+            LFO_mod_ring_min    := int(LFO_mod_min / fn038.l.pict_divisor)
+            LFO_mod_ring_max    := int(LFO_mod_max / fn038.l.pict_divisor)
 
             LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE ]     := LFO_mod_center
-            LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE_PCT ] := LFO_mod_center / 1000000.0
+            LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE_PCT ] := LFO_mod_center / fn038.l.pct_divisor
             LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]                  := LFO_mod_min
             LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]                  := LFO_mod_max
 
@@ -2737,6 +2797,21 @@ function fn038_LFO_store_LFO_mod_data()
 end function
 
 function fn039_set_FX_engine_par()
+    // message(f'FN39 set engine par')
+    fn039.l.original_cv := fn039.a.control_value
+    if fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME { only run if it is volume }
+        if switch_crossfade = __ON
+            fn039.l.cv_real := pow(  (float(fn039.l.original_cv) * 0.000001) - 1.0, __CROSSFADE_FACTOR_OPPOSITE) + 1.0
+            // message(f'    fn039.l.cv_real LEFT = <fn039.l.cv_real >')
+            fn039.a.control_value :=  int( fn039.l.cv_real * 630000.0)
+        else
+            fn039.a.control_value := int( float(fn039.a.control_value)*0.63)
+        end if
+    end if
+    if fn039.a.target mod 16 = __MAIN.FX.REVERB.DRYWET { only run if it is reverb wet level }
+        fn039.a.control_value := int( float(fn039.a.control_value)*REV_MAX_LEVEL)
+    end if
+    // message(f'        fn039.a.control_value = <fn039.a.control_value >')
     set_engine_par(...
         LFO_targets_engine_pars [ fn039.a.target mod 16 ],         ...
         fn039.a.control_value,                                     ...
@@ -2744,8 +2819,15 @@ function fn039_set_FX_engine_par()
         LFO_targets_SLOT  [ fn039.a.target mod 16 ],               ...
         LFO_targets_BUS   [ fn039.a.target mod 16 ] + fn039.a.side ...
     )
-    if fn039.a.link = 1
+    if fn039.a.link = 1 or fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME and switch_crossfade = __ON
         fn039.a.side := abs( 1 - fn039.a.side) { flip to get the other side }
+        if fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME and switch_crossfade = __ON
+            fn039.l.cv_real := -pow( float(fn039.l.original_cv)*0.000001, __CROSSFADE_FACTOR_AGENT) + 1.0
+            // message(f'    fn039.l.cv_real RIGHT = <fn039.l.cv_real >')
+            fn039.a.control_value := int( fn039.l.cv_real * 630000.0 )
+        end if
+
+        // message(f'        fn039.a.control_value = <fn039.a.control_value >')
         set_engine_par(...
             LFO_targets_engine_pars [ fn039.a.target  mod 16 ],        ...
             fn039.a.control_value,                                     ...
@@ -2758,15 +2840,26 @@ function fn039_set_FX_engine_par()
 end function
 
 function fn040_set_MATRIX_slider_ps // picture state
-    message(f'FN40 CALLED')
-    if fn040.a.side = __LEFT
-        label_MAIN.matrix.centerLR -> picture_state := 255 - int( float(slider_MAIN.FX.LEFT.layer.volume) * 0.000001 * 255.0)
-        label_MAIN.matrix.left     -> picture_state := int( float(slider_MAIN.FX.LEFT.layer.volume) * 0.000001 * 255.0)
-        // label_MATRIX.matrix.centerLR -> picture_state := 255 - (slider_MAIN.FX.LEFT.layer.volume / 3921)
+    if  UIID_MAIN.FX.links [ UIID_FX.parameter_to_module [ fn036.a.target ] ] -> value = __OFF or switch_crossfade = __OFF
+        if fn040.a.side = __LEFT
+            label_MAIN.matrix.centerLR -> picture_state := 255 - int( float(slider_MAIN.FX.LEFT.layer.volume) * 0.000001 * 255.0)
+            label_MAIN.matrix.left     -> picture_state := int( float(slider_MAIN.FX.LEFT.layer.volume) * 0.000001 * 255.0)
+        else
+            label_MAIN.matrix.centerRL -> picture_state := int( float(slider_MAIN.FX.RIGHT.layer.volume) * 0.000001 * 255.0)
+            label_MAIN.matrix.right    -> picture_state := int( float(slider_MAIN.FX.RIGHT.layer.volume) * 0.000001 * 255.0)
+        end if
     else
-        label_MAIN.matrix.centerRL -> picture_state := int( float(slider_MAIN.FX.RIGHT.layer.volume) * 0.000001 * 255.0)
-        label_MAIN.matrix.right    -> picture_state := int( float(slider_MAIN.FX.RIGHT.layer.volume) * 0.000001 * 255.0)
-        // label_MATRIX.matrix.centerRL -> picture_state := slider_MAIN.FX.RIGHT.layer.volume / 3921
+        if  switch_crossfade = __ON
+            fn040.l.l1.vol := float(slider_MAIN.FX.LEFT.layer.volume ) * 0.000001
+            fn040.l.l2.vol := float(slider_MAIN.FX.RIGHT.layer.volume) * 0.000001
+            if fn040.a.side = __LEFT
+                label_MAIN.matrix.centerLR -> picture_state := 255 - int( fn040.l.l1.vol * 255.0 )
+                label_MAIN.matrix.left     -> picture_state := int( fn040.l.l1.vol * 255.0) { side asset left }
+            else
+                label_MAIN.matrix.centerRL -> picture_state := int( fn040.l.l2.vol * 255.0)
+                label_MAIN.matrix.right    -> picture_state := int( fn040.l.l2.vol * 255.0) { side asset right }
+            end if
+        end if
     end if
 end function
 
@@ -2786,7 +2879,6 @@ function fn041_LFO_off_restore_buffer_value()
         CONTROL_PAR_PICTURE_STATE,                      ...
         0                                               ...
     )
-
 end function
 
 function fn044_LFO_calculate_engine_value()
@@ -2803,10 +2895,14 @@ function fn044_LFO_calculate_engine_value()
     LFO_engine_max := LFO_modulation_data [ fn044.a.target, __LFO_MOD_MAX ]
     LFO_depth_offset := (LFO_engine_max-LFO_engine_min)*(1.0-GLOBAL_LFO.depth_float_pct)
 
-    { PENDING, review as our LFO values now go from -1 to 1  }
+    if lcb_ms_counter mod 333 = 0 and fn044.a.target = 0
+        // message(f'FN44 | LFO_engine_min <LFO_engine_min> | LFO_engine_max <LFO_engine_max>')
+        // message(f'    center <LFO_modulation_data [ fn044.a.target, __LFO_TARGET_CONTROL_VALUE ] >')
+    end if
+
     { rebel way, that goes over the max and min }
     fn044.l.calc := ...
-        ( LFO_engine_max - LFO_engine_min ) * fn044.a.sine_value * GLOBAL_LFO.depth_float_pct +  ...
+        ( LFO_engine_max - LFO_engine_min ) * fn044.a.lfo_value * GLOBAL_LFO.depth_float_pct +  ...
         (LFO_depth_offset / 2.0) + LFO_engine_min
 
     { debug }
@@ -2830,6 +2926,7 @@ function fn044_LFO_calculate_engine_value()
 
     { almost sure it is only needed on the rebel way }
     fn044.r.engine_value := int(fn044.l.calc)
+
     if fn044.l.calc < 0.0 
         fn044.r.engine_value := 0
     end if
@@ -2837,6 +2934,17 @@ function fn044_LFO_calculate_engine_value()
         fn044.r.engine_value := 1000000
     end if
 
+    if fn044.a.target = 16 and switch_crossfade = __ON
+        o.i := fn044.r.engine_value
+        fn044.r.engine_value := 1000000 - fn044.r.engine_value
+    end if
+    if lcb_ms_counter mod 200 = 0 and fn044.a.target mod 16 = 0 and 1 = 0
+        if fn044.a.target = 0
+            message(f'    <fn044.a.target> | engine_value = <fn044.r.engine_value >')
+        else
+            message(f'        <fn044.a.target> | engine_value = <fn044.r.engine_value > | ov: <o.i>')
+        end if
+    end if
 end function
 
 function fn046_set_lfo_depth_globally
@@ -2871,10 +2979,10 @@ function fn046_set_lfo_depth_globally
 end function
 
 function fn047_update_all_lfo_controls_data_and_ui
-    for fn047.l.counter := 0 to 31
+    for fn047.l.counter := 0 to 15
         for fn047.l.side_counter := __LEFT to __RIGHT
             fn037.a.side          := fn047.l.side_counter
-            fn037.a.target        := fn047.l.counter
+            fn037.a.target        := fn047.l.counter + 16 * fn047.l.side_counter
             fn037.a.control_value := UIID_controls [ fn037.a.target ] -> value
             fn037.a.LFO_amount    := UIID_controls_LFO_amount [ fn047.l.counter ] -> value
             call fn037_LFO.update_intensity_ring
@@ -3753,7 +3861,6 @@ function PLAY_NOTE_NCB
         change_vol( layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ], -200000, 0)
     else
         { adjust velocity level }
-        message(f'Played FS velocity: <int(pow(float(pn_ncb.a.velo)/127.0, __VELO_SLOPE) * 1000000.0) >')
         set_event_par_arr(                                                  ...
             layers.note_events [ pn_ncb.a.side, pn_ncb.a.note ],            ...
             EVENT_PAR_MOD_VALUE_ID,                                         ...
@@ -3873,7 +3980,6 @@ function fn027_play_lcb_core
             __ON,                                                            ...
             selected_source [ fn027.a.side ] + fn027.a.side * __SOURCE_COUNT ...
         )
-        message(f'Played FS velocity SEQ <int(pow(float(SEQ.step_velocity)/127.0, __VELO_SLOPE) * 1000000.0) >')
         { adjust velocity level }
         set_event_par_arr(                                                      ...
             layers.note_events [ fn027.a.side, fn027.a.note ],                  ...

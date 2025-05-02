@@ -1,4 +1,4 @@
-{ Compiled on Mon Apr 21 14:19:07 2025 }
+{ Compiled on Fri May  2 09:35:43 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -26,7 +26,7 @@ on init
   169, 204, 239, 730, 765, 800, 436, 550, 19, 958, -1, 86, 173, -1, 86, 173, 266, 482, 51, 51, 51, 124, 124, 124, 713, 786, 823, 823, 823, 783, 783, 783, 710, 710, 752, 825, 752, 825, 752, 825, ...
   726, 799, 726, 799, 744, 744, 708, 708, 708, 708, 781, 781, 781, 781, 770, 698, 812, 797, 125, 32, 32, 32, 32, 32, 32, 139, 139, 139, 139, 139, 139, 111, 111, 111, 184, 184, 184, 264, 154, 154, ...
   154, 191, 193, 193, 193, 266, 266, 224, 224, 224, 151, 151, 151, 250, 250, 177, 177, 220, 220, 268, 268, 268, 268, 195, 195, 195, 195, 202, 275, 188, 173, 124, 32, 32, 32, 32, 32, 32, 139, 139, ...
-  139, 139, 139, 139, 678, 711, 744, 777, 810, 843, 876, 909, 67, 100, 133, 166, 199, 232, 265, 298, 254, 727, 485, 712, 745, 778, 811, 844, 877, 910, 101, 134, 167, 200, 233, 266, 299, 679, 79, 136, ...
+  139, 139, 139, 139, 678, 711, 744, 777, 810, 843, 876, 909, 67, 100, 133, 166, 199, 232, 265, 298, 254, 727, 483, 712, 745, 778, 811, 844, 877, 910, 101, 134, 167, 200, 233, 266, 299, 679, 79, 136, ...
   99, 61, 175, 137, 213, 200, 951, 13, 767, 752, 235, 220, 10, 949, 13, 952, 410, 81, 810, 342, 342, 342, 342, 281, 660, 342, 61, 98, 395, 755, 566, 65, 66, 158, 250, 342, 67, 78, 89, 100, ...
   111, 122, 133, 144, 159, 170, 181, 192, 203, 214, 225, 236, 251, 262, 273, 284, 295, 306, 317, 328, 343, 354, 365, 376, 387, 398, 409, 420, 569, 570, 662, 754, 846, 571, 582, 593, 604, 615, 626, 637, ...
   648, 663, 674, 685, 696, 707, 718, 729, 740, 755, 766, 777, 788, 799, 810, 821, 832, 847, 858, 869, 880, 891, 902, 913, 924, 593, 90, 25, 963, 448, 443, 21, 959, 61, 565, 12, 950, 0, 600, 137, ...
@@ -62,7 +62,7 @@ on init
   29, 29, 33, 29, 29, 33, 13, 13, 22, 22, 88, 88, 88, 88, 88, 88, 10, 35, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 35, 23, 23, 23, 23, 23, 23, 23, 23, 23, ...
   23, 23, 23, 23, 35, 35, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 15, 15, 10, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 88, 23, 23, 23, 23, 23, 23, 23, 23, 23, ...
   23, 23, 35, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 35, 35, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 15, 15, 10, 88, 88, 88, 88, 88, 88, 88, 88, ...
-  88, 88, 88, 88, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 21, 21, 28, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 35, 35, ...
+  88, 88, 88, 88, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 21, 21, 32, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 35, 35, ...
   34, 34, 34, 34, 34, 25, 35, 35, 15, 15, 15, 15, 51, 51, 35, 35, 184, 110, 110, 316, 316, 316, 316, 59, 60, 316, 878, 146, 39, 155, 39, 366, 88, 88, 88, 88, 9, 9, 9, 9, ...
   9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 366, 88, 88, 88, 88, 9, 9, 9, 9, 9, 9, 9, ...
   9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 320, 320, 12, 12, 104, 114, 20, 20, 372, 372, 38, 38, 748, 266, 46, ...
@@ -2920,6 +2920,9 @@ on init
   declare !Reverb_IR_files[200]
   declare @reverb__path
   @reverb__path := get_folder($GET_FOLDER_FACTORY_DIR) & "presets/effects/convolution/<<<K4IR.nkx>>>/K4 IR Samples/"
+  declare @reverb__path__new__IRs
+  @reverb__path__new__IRs := get_folder($GET_FOLDER_FACTORY_DIR) & "presets/effects/convolution/"
+  declare @reverb__dynamic__path
   declare const $__SEQ_STATE_DUAL := 0
   declare const $__SEQ_STATE_JOIN := 1
   declare const $__FLUX_SIDED_STATE := 2
@@ -3258,8 +3261,6 @@ on init
   read_persistent_var($LFO_rate)
   declare $invert_lfo_rate_knob_value
   declare %LFO_control_value_max[45] := (500000)
-  %LFO_control_value_max[2] := 500000
-  %LFO_control_value_max[18] := 500000
   declare ?LFO_amount_pct[45]
   make_persistent(?LFO_amount_pct)
   read_persistent_var(?LFO_amount_pct)
@@ -3638,10 +3639,13 @@ on init
   declare $fn037__a__control_value
   declare $fn037__a__LFO_amount
   declare $fn037__a__link
+  declare $fn073__a__LFO_a_control_call
   declare $fn037__l__counter
   declare $fn037__l__target
   declare $fn037__l__picture_state_start
   declare $fn037__l__picture_state_end
+  declare $fn037__l__picture_state_start_inv
+  declare $fn037__l__picture_state_end_inv
   declare $fn038__a__side
   declare $fn038__a__target
   declare $fn038__a__control_value
@@ -3650,11 +3654,17 @@ on init
   declare $fn038__a__control_type
   declare $fn038__l__target
   declare $fn038__l__side_counter
+  declare ~fn038__l__pct_divisor
+  declare ~fn038__l__pict_divisor
   declare $fn039__a__side
   declare $fn039__a__target
   declare $fn039__a__control_value
   declare $fn039__a__link
+  declare $fn039__l__original_cv
+  declare ~fn039__l__cv_real
   declare $fn040__a__side
+  declare ~fn040__l__l1__vol
+  declare ~fn040__l__l2__vol
   declare $fn041__a__target
   declare $fn041__a__side
   declare $fn041__l__target
@@ -3667,7 +3677,7 @@ on init
   declare $fn043__a__side
   declare $fn043__l__panel
   declare $fn044__a__target
-  declare ~fn044__a__sine_value
+  declare ~fn044__a__lfo_value
   declare $fn044__a__left_or_right
   declare ~fn044__l__calc
   declare $fn044__l__target
@@ -3733,6 +3743,8 @@ on init
   declare $fn064__l__target_counter
   declare $fn065__a__input_velo
   declare $fn065__r__velo_address
+  declare $fn066__a__value
+  declare @fn066__r__reverb__dynamic__path
   declare const $ARP__REC_TIME_TRANSPORT_RUNNING := 10
   declare const $ARP__REC_TIME_TRANSPORT_STOPPED := 30
   declare const $ARP__LATCH_TIME := 300
@@ -4047,7 +4059,7 @@ on init
   set_control_par(get_ui_id($panel_MAIN__FX__RIGHT__reverb),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__FX__LEFT__reverb),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par(get_ui_id($panel_MAIN__matrix__controls),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
-  set_control_par(get_ui_id($switch_crossfade),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($switch_crossfade),$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
   set_control_par(get_ui_id($panel_dev),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   set_control_par_str(get_ui_id($label_dev__monitor),$CONTROL_PAR_TEXT,"")
   set_engine_par($ENGINE_PAR_INSERT_EFFECT_OUTPUT_GAIN,395000,-1,2,$NI_BUS_OFFSET)
@@ -4057,12 +4069,11 @@ on init
   load_array(!Reverb_impulse_responses_titles,1)
   load_array(!Reverb_IR_files,1)
   $i__i := 0
-  while ($i__i<178)
+  while ($i__i<=178)
     add_menu_item($menu_MAIN__FX__LEFT__reverb__menu,!Reverb_impulse_responses_titles[$i__i],$i__i)
     add_menu_item($menu_MAIN__FX__RIGHT__reverb__menu,!Reverb_impulse_responses_titles[$i__i],$i__i)
     inc($i__i)
   end while
-  watch_var($LFO_play_state)
   message("ON INIT CB end.")
 end on
 
@@ -4205,35 +4216,51 @@ function fn037_LFO__update_intensity_ring
     $fn037__l__picture_state_end := $fn037__l__picture_state_start
   else
     $fn037__l__picture_state_start := real_to_int((int_to_real($fn037__a__control_value)/1000000.0-(int_to_real(get_control_par(%UIID_controls_LFO_amount[$fn037__a__target],$CONTROL_PAR_VALUE)/2)/1000000.0))*255.0)
+    $fn037__l__picture_state_start_inv := real_to_int((int_to_real(1000000-$fn037__a__control_value)/1000000.0-(int_to_real(get_control_par(%UIID_controls_LFO_amount[$fn037__a__target],$CONTROL_PAR_VALUE)/2)/1000000.0))*255.0)
     $fn037__l__picture_state_end := real_to_int((1.0-(int_to_real($fn037__a__control_value)/1000000.0)-(int_to_real(get_control_par(%UIID_controls_LFO_amount[$fn037__a__target],$CONTROL_PAR_VALUE)/2)/1000000.0))*255.0)
+    $fn037__l__picture_state_end_inv := real_to_int((1.0-(int_to_real(1000000-$fn037__a__control_value)/1000000.0)-(int_to_real(get_control_par(%UIID_controls_LFO_amount[$fn037__a__target],$CONTROL_PAR_VALUE)/2)/1000000.0))*255.0)
   end if
   set_control_par(%UIID_controls_LFO_mod_start[$fn037__a__target],$CONTROL_PAR_PICTURE_STATE,$fn037__l__picture_state_start)
   set_control_par(%UIID_controls_LFO_mod_end[$fn037__a__target],$CONTROL_PAR_PICTURE_STATE,$fn037__l__picture_state_end)
-  if (get_control_par(%UIID_MAIN__FX__links[%UIID_FX__parameter_to_module[$fn037__a__target]],$CONTROL_PAR_VALUE)=1)
+  if (get_control_par(%UIID_MAIN__FX__links[%UIID_FX__parameter_to_module[$fn037__a__target]],$CONTROL_PAR_VALUE)=1 or ($fn037__a__target mod 16=0 and ($switch_crossfade=1) and ($fn073__a__LFO_a_control_call=0)))
     if ($fn037__a__target<16)
       $MAIN__FX__aux_flip_side := 16
     else
       $MAIN__FX__aux_flip_side := -16
     end if
+    if ($switch_crossfade=1)
+      $fn037__l__picture_state_start := $fn037__l__picture_state_start_inv
+      $fn037__l__picture_state_end := $fn037__l__picture_state_end_inv
+    end if
     set_control_par(%UIID_controls_LFO_mod_start[$fn037__a__target+$MAIN__FX__aux_flip_side],$CONTROL_PAR_PICTURE_STATE,$fn037__l__picture_state_start)
     set_control_par(%UIID_controls_LFO_mod_end[$fn037__a__target+$MAIN__FX__aux_flip_side],$CONTROL_PAR_PICTURE_STATE,$fn037__l__picture_state_end)
   end if
+  $fn073__a__LFO_a_control_call := 0
 end function
 
 function fn038_LFO_store_LFO_mod_data
   $fn038__l__side_counter := 0
   while ($fn038__l__side_counter<=1)
-    if ($fn038__a__side=$fn038__l__side_counter or ($fn038__a__link=1))
-      ?LFO_amount_pct[$fn038__a__target mod 16+($fn038__l__side_counter*16)] := int_to_real($fn038__a__LFO_amount)/1000000.0
-      ~LFO_mod_center := int_to_real($fn038__a__control_value)
+    if ($fn038__a__side=$fn038__l__side_counter or ($fn038__a__link=1) or ($switch_crossfade=1))
+      message("FN38: side " & $fn038__l__side_counter & " | target " & $fn038__a__target & " | control_value __ " & $fn038__a__control_value & " | LFO_amount " & $fn038__a__LFO_amount & "")
+      if ($switch_crossfade=1 and ($fn038__l__side_counter=1) and ($fn038__a__target=16))
+        ~LFO_mod_center := int_to_real(1000000-$fn038__a__control_value)
+        message("    LFO mod center set to inverted | value: " & ~LFO_mod_center & "")
+      else
+        ~LFO_mod_center := int_to_real($fn038__a__control_value)
+        message("    LFO mod center set to regular | value: " & ~LFO_mod_center & "")
+      end if
+      ~fn038__l__pct_divisor := 1000000.0
+      ~fn038__l__pict_divisor := 3921.568627
       ~LFO_mod_amount := int_to_real(%LFO_control_value_max[$fn038__a__target mod 16+($fn038__l__side_counter*16)])*?LFO_amount_pct[$fn038__a__target mod 16+($fn038__l__side_counter*16)]
+      ?LFO_amount_pct[$fn038__a__target mod 16+($fn038__l__side_counter*16)] := int_to_real($fn038__a__LFO_amount)/1000000.0
       ~LFO_mod_min := ~LFO_mod_center-~LFO_mod_amount
       ~LFO_mod_max := ~LFO_mod_center+~LFO_mod_amount
-      $LFO_mod_ring_center := real_to_int(~LFO_mod_center/3921.568627)
-      $LFO_mod_ring_min := real_to_int(~LFO_mod_min/3921.568627)
-      $LFO_mod_ring_max := real_to_int(~LFO_mod_max/3921.568627)
+      $LFO_mod_ring_center := real_to_int(~LFO_mod_center/~fn038__l__pict_divisor)
+      $LFO_mod_ring_min := real_to_int(~LFO_mod_min/~fn038__l__pict_divisor)
+      $LFO_mod_ring_max := real_to_int(~LFO_mod_max/~fn038__l__pict_divisor)
       ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+0] := ~LFO_mod_center
-      ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+1] := ~LFO_mod_center/1000000.0
+      ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+1] := ~LFO_mod_center/~fn038__l__pct_divisor
       ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+2] := ~LFO_mod_min
       ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+3] := ~LFO_mod_max
       %_LFO_modulation_ring_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+0] := $LFO_mod_ring_center
@@ -4246,11 +4273,11 @@ end function
 
 function fn047_update_all_lfo_controls_data_and_ui
   $fn047__l__counter := 0
-  while ($fn047__l__counter<=31)
+  while ($fn047__l__counter<=15)
     $fn047__l__side_counter := 0
     while ($fn047__l__side_counter<=1)
       $fn037__a__side := $fn047__l__side_counter
-      $fn037__a__target := $fn047__l__counter
+      $fn037__a__target := $fn047__l__counter+(16*$fn047__l__side_counter)
       $fn037__a__control_value := get_control_par(%UIID_controls[$fn037__a__target],$CONTROL_PAR_VALUE)
       $fn037__a__LFO_amount := get_control_par(%UIID_controls_LFO_amount[$fn047__l__counter],$CONTROL_PAR_VALUE)
       call fn037_LFO__update_intensity_ring
@@ -4657,7 +4684,6 @@ function PLAY_NOTE_NCB
   if ($pn_ncb__a__mute_note=1)
     change_vol(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],-200000,0)
   else
-    message("Played FS velocity: " & real_to_int(pow(int_to_real($pn_ncb__a__velo)/127.0,2.5)*1000000.0) & "")
     set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(pow(int_to_real($pn_ncb__a__velo)/127.0,2.5)*1000000.0),11+$pn_ncb__a__side)
     set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(?_sample_starts[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note]*1000000.0),1+$pn_ncb__a__side)
     change_tune(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],real_to_int(?_sample_tuning[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$last_played_note]*100000.0),0)
@@ -4898,8 +4924,6 @@ function pccb_init_instrument
   %source_page[0] := %selected_source[0]/18
   %source_page[1] := %selected_source[1]/18
   call draw_key_ranges
-  $__INSTRUMENT_INIT := 0
-  $LFO_play_state := 0
   call draw_seq
   %SEQ__showing_target[0] := 0
   %SEQ__showing_target[1] := 0
@@ -4953,6 +4977,8 @@ function pccb_init_instrument
     end if
     inc($pccb_counter)
   end while
+  $__INSTRUMENT_INIT := 0
+  $LFO_play_state := 0
   message("PCCB INIT ____________________________________")
   message("    panel_MAIN.2SEQ.RIGHT.controls hide state = " & get_control_par(get_ui_id($panel_MAIN__2SEQ__RIGHT__controls),$CONTROL_PAR_HIDE) & "")
 end function
@@ -5202,21 +5228,50 @@ function fn058_clamp_value
 end function
 
 function fn039_set_FX_engine_par
+  $fn039__l__original_cv := $fn039__a__control_value
+  if ($fn039__a__target mod 16=0)
+    if ($switch_crossfade=1)
+      ~fn039__l__cv_real := pow(int_to_real($fn039__l__original_cv)*0.000001-1.0,3.0)+1.0
+      $fn039__a__control_value := real_to_int(~fn039__l__cv_real*630000.0)
+    else
+      $fn039__a__control_value := real_to_int(int_to_real($fn039__a__control_value)*0.63)
+    end if
+  end if
+  if ($fn039__a__target mod 16=15)
+    $fn039__a__control_value := real_to_int(int_to_real($fn039__a__control_value)*0.6)
+  end if
   set_engine_par(%LFO_targets_engine_pars[$fn039__a__target mod 16],$fn039__a__control_value,%_LFO_targets_GROUP[16*$fn039__a__side+($fn039__a__target mod 16)],%LFO_targets_SLOT[$fn039__a__target mod 16],%LFO_targets_BUS[$fn039__a__target mod 16]+$fn039__a__side)
-  if ($fn039__a__link=1)
+  if ($fn039__a__link=1 or ($fn039__a__target mod 16=0 and ($switch_crossfade=1)))
     $fn039__a__side := abs(1-$fn039__a__side)
+    if ($fn039__a__target mod 16=0 and ($switch_crossfade=1))
+      ~fn039__l__cv_real := -pow(int_to_real($fn039__l__original_cv)*0.000001,3.0)+1.0
+      $fn039__a__control_value := real_to_int(~fn039__l__cv_real*630000.0)
+    end if
     set_engine_par(%LFO_targets_engine_pars[$fn039__a__target mod 16],$fn039__a__control_value,%_LFO_targets_GROUP[16*$fn039__a__side+($fn039__a__target mod 16)],%LFO_targets_SLOT[$fn039__a__target mod 16],%LFO_targets_BUS[$fn039__a__target mod 16]+$fn039__a__side)
   end if
 end function
 
 function fn040_set_MATRIX_slider_ps
-  message("FN40 CALLED")
-  if ($fn040__a__side=0)
-    set_control_par(get_ui_id($label_MAIN__matrix__centerLR),$CONTROL_PAR_PICTURE_STATE,255-real_to_int(int_to_real($slider_MAIN__FX__LEFT__layer__volume)*0.000001*255.0))
-    set_control_par(get_ui_id($label_MAIN__matrix__left),$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($slider_MAIN__FX__LEFT__layer__volume)*0.000001*255.0))
+  if (get_control_par(%UIID_MAIN__FX__links[%UIID_FX__parameter_to_module[$fn036__a__target]],$CONTROL_PAR_VALUE)=0 or ($switch_crossfade=0))
+    if ($fn040__a__side=0)
+      set_control_par(get_ui_id($label_MAIN__matrix__centerLR),$CONTROL_PAR_PICTURE_STATE,255-real_to_int(int_to_real($slider_MAIN__FX__LEFT__layer__volume)*0.000001*255.0))
+      set_control_par(get_ui_id($label_MAIN__matrix__left),$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($slider_MAIN__FX__LEFT__layer__volume)*0.000001*255.0))
+    else
+      set_control_par(get_ui_id($label_MAIN__matrix__centerRL),$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($slider_MAIN__FX__RIGHT__layer__volume)*0.000001*255.0))
+      set_control_par(get_ui_id($label_MAIN__matrix__right),$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($slider_MAIN__FX__RIGHT__layer__volume)*0.000001*255.0))
+    end if
   else
-    set_control_par(get_ui_id($label_MAIN__matrix__centerRL),$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($slider_MAIN__FX__RIGHT__layer__volume)*0.000001*255.0))
-    set_control_par(get_ui_id($label_MAIN__matrix__right),$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real($slider_MAIN__FX__RIGHT__layer__volume)*0.000001*255.0))
+    if ($switch_crossfade=1)
+      ~fn040__l__l1__vol := int_to_real($slider_MAIN__FX__LEFT__layer__volume)*0.000001
+      ~fn040__l__l2__vol := int_to_real($slider_MAIN__FX__RIGHT__layer__volume)*0.000001
+      if ($fn040__a__side=0)
+        set_control_par(get_ui_id($label_MAIN__matrix__centerLR),$CONTROL_PAR_PICTURE_STATE,255-real_to_int(~fn040__l__l1__vol*255.0))
+        set_control_par(get_ui_id($label_MAIN__matrix__left),$CONTROL_PAR_PICTURE_STATE,real_to_int(~fn040__l__l1__vol*255.0))
+      else
+        set_control_par(get_ui_id($label_MAIN__matrix__centerRL),$CONTROL_PAR_PICTURE_STATE,real_to_int(~fn040__l__l2__vol*255.0))
+        set_control_par(get_ui_id($label_MAIN__matrix__right),$CONTROL_PAR_PICTURE_STATE,real_to_int(~fn040__l__l2__vol*255.0))
+      end if
+    end if
   end if
 end function
 
@@ -5233,13 +5288,6 @@ function fn036_set_control_param_slider
   $fn038__a__LFO_amount := $fn037__a__LFO_amount
   $fn038__a__link := $fn037__a__link
   call fn038_LFO_store_LFO_mod_data
-  if ($fn039__a__target mod 16=0)
-    $fn036__a__control_value := real_to_int(int_to_real($fn036__a__control_value)*0.63)
-  end if
-  if ($fn039__a__target mod 16=15)
-    $fn036__a__control_value := real_to_int(int_to_real($fn036__a__control_value)*0.65)
-    message("adjusted the rev wet control to " & $fn036__a__control_value & "")
-  end if
   $fn039__a__side := $fn036__a__side
   $fn039__a__target := $fn036__a__target
   $fn039__a__control_value := $fn036__a__control_value
@@ -5249,17 +5297,21 @@ function fn036_set_control_param_slider
     $fn040__a__side := $fn036__a__side
     call fn040_set_MATRIX_slider_ps
   end if
-  if (get_control_par(%UIID_MAIN__FX__links[%UIID_FX__parameter_to_module[$fn036__a__target]],$CONTROL_PAR_VALUE)=1)
-    if ($fn036__a__target<16)
-      $MAIN__FX__aux_flip_link := 16
-    else
-      $MAIN__FX__aux_flip_link := -16
-    end if
-    if ($fn039__a__target mod 16=0)
+  if (get_control_par(%UIID_MAIN__FX__links[%UIID_FX__parameter_to_module[$fn036__a__target]],$CONTROL_PAR_VALUE)=1 or ($switch_crossfade=1 and ($fn036__a__target mod 16=0)))
+    if ($fn036__a__target mod 16=0)
       $fn040__a__side := abs(1-$fn040__a__side)
       call fn040_set_MATRIX_slider_ps
     end if
-    set_control_par(%UIID_controls[$fn036__a__target+$MAIN__FX__aux_flip_link],$CONTROL_PAR_VALUE,get_control_par(%UIID_controls[$fn036__a__target],$CONTROL_PAR_VALUE))
+    if ($fn036__a__target<16)
+      $MAIN__FX__aux_flip_side := 16
+    else
+      $MAIN__FX__aux_flip_side := -16
+    end if
+    if ($fn036__a__target mod 16=0 and ($switch_crossfade=1))
+      set_control_par(%UIID_controls[$fn036__a__target+$MAIN__FX__aux_flip_side],$CONTROL_PAR_VALUE,1000000-get_control_par(%UIID_controls[$fn036__a__target],$CONTROL_PAR_VALUE))
+    else
+      set_control_par(%UIID_controls[$fn036__a__target+$MAIN__FX__aux_flip_side],$CONTROL_PAR_VALUE,get_control_par(%UIID_controls[$fn036__a__target],$CONTROL_PAR_VALUE))
+    end if
   end if
 end function
 
@@ -5585,6 +5637,21 @@ function fn032_set_seq_step_value_and_ui_via_dyn_slider
   end while
 end function
 
+function fn066_get_reverb_ir_path
+  select ($fn066__a__value)
+    case 1 to 106
+      @fn066__r__reverb__dynamic__path := @reverb__path
+    case 109 to 127
+      @fn066__r__reverb__dynamic__path := @reverb__path__new__IRs & "05 Drum Reverbs/IR Samples/"
+    case 130 to 148
+      @fn066__r__reverb__dynamic__path := @reverb__path__new__IRs & "06 Drum Filters/IR Samples/"
+    case 151 to 159
+      @fn066__r__reverb__dynamic__path := @reverb__path__new__IRs & "12 Reverse Reverbs/IR Samples/"
+    case 162 to 178
+      @fn066__r__reverb__dynamic__path := @reverb__path__new__IRs & "13 Plate Reverbs/IR Samples/"
+  end select
+end function
+
 function UICBS_MAIN__FX__modules__links
   if ($uicbs_custom_id-212<8)
     $MAIN__FX__aux_flip_link := 8
@@ -5606,6 +5673,7 @@ function fn063_populate_opposite_layer_panel_control_values
   $fn036__a__side := abs(1-$fn063__a__side)
   $fn036__a__target := $fn063__a__control_index
   $fn036__a__control_value := get_control_par(%UIID_controls[$fn063__a__control_index+($fn063__a__side*16)],$CONTROL_PAR_VALUE)
+  message("    control value: " & $fn036__a__control_value & "")
   call fn036_set_control_param_slider
 end function
 
@@ -5658,6 +5726,7 @@ function fn004_get_current_seq_block
     while ($fn004__l__block_counter<=7)
       if (~fn004__a__x_coord>=?_SEQ_JOIN_XY_BLOCK_START_END[2*$fn004__l__block_counter+$__START] and (~fn004__a__x_coord<=?_SEQ_JOIN_XY_BLOCK_START_END[2*$fn004__l__block_counter+$__END]))
         $fn004__r__block_index := $fn004__l__block_counter
+        message("FN004 current block is " & $fn004__r__block_index & "")
       end if
       inc($fn004__l__block_counter)
     end while
@@ -5669,6 +5738,7 @@ function fn001_get_seq_step_index
     ~fn001__l__xy_x := get_control_par_real_arr(%UIID_MAIN__SEQ__xypads[$fn001__a__side],$CONTROL_PAR_VALUE,0)
     ~fn001__l__xy_x__normalized := ~fn001__l__xy_x-(0.25*int_to_real($fn001__a__block_index))
     $fn001__r__step_index := real_to_int(~fn001__l__xy_x__normalized/?_SEQ__DUAL__step_width[4*$fn001__a__side+$fn001__a__block_index])+(8*$fn001__a__block_index)
+    message("    FN001 X: " & ~fn001__l__xy_x__normalized & " | step: " & $fn001__r__step_index & "")
     if ($fn001__r__step_index=32)
       $fn001__r__step_index := 31
     end if
@@ -5676,6 +5746,10 @@ function fn001_get_seq_step_index
     ~fn001__l__xy_x := ?xypad_MAIN__SEQ__join[0]
     ~fn001__l__xy_x__normalized := ~fn001__l__xy_x-(0.125*int_to_real($fn001__a__block_index))
     $fn001__r__step_index := real_to_int(~fn001__l__xy_x__normalized/?SEQ__JOIN__step_width[$fn001__a__block_index])+(8*$fn001__a__block_index)
+    message("        FN001 X: " & ~fn001__l__xy_x & " | Norm: " & ~fn001__l__xy_x__normalized & " | step: " & $fn001__r__step_index & " | width:" & ?SEQ__JOIN__step_width[$fn001__a__block_index] & " | block: " & $fn001__a__block_index & "")
+    if ($fn001__r__step_index=32 and ($fn001__a__block_index=3))
+      $fn001__r__step_index := 31
+    end if
     if ($fn001__r__step_index=64)
       $fn001__r__step_index := 63
     end if
@@ -6424,7 +6498,6 @@ function fn027_play_lcb_core
     end if
     set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_ALLOW_GROUP,0,$ALL_GROUPS)
     set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_ALLOW_GROUP,1,%selected_source[$fn027__a__side]+($fn027__a__side*5))
-    message("Played FS velocity SEQ " & real_to_int(pow(int_to_real($SEQ__step_velocity)/127.0,2.5)*1000000.0) & "")
     set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(pow(int_to_real($SEQ__step_velocity)/127.0,2.5)*1000000.0),11+$fn027__a__side)
     set_event_par_arr(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(?_sample_starts[128*2*%selected_source[$fn027__a__side]+(128*$fn027__a__side)+$fn027__a__note]*1000000.0),1+($pn_ncb__a__side*1))
     change_tune(%_layers__note_events[128*$fn027__a__side+$fn027__a__note],real_to_int(?_sample_tuning[128*2*%selected_source[$fn027__a__side]+(128*$fn027__a__side)+$fn027__a__note]*100000.0)+($SEQ__step_pitch*100000),0)
@@ -6764,13 +6837,26 @@ function fn044_LFO_calculate_engine_value
   ~LFO_engine_min := ?_LFO_modulation_data[4*$fn044__a__target+2]
   ~LFO_engine_max := ?_LFO_modulation_data[4*$fn044__a__target+3]
   ~LFO_depth_offset := (~LFO_engine_max-~LFO_engine_min)*(1.0-~GLOBAL_LFO__depth_float_pct)
-  ~fn044__l__calc := (~LFO_engine_max-~LFO_engine_min)*~fn044__a__sine_value*~GLOBAL_LFO__depth_float_pct+(~LFO_depth_offset/2.0)+~LFO_engine_min
+  if ($lcb_ms_counter mod 333=0 and ($fn044__a__target=0))
+  end if
+  ~fn044__l__calc := (~LFO_engine_max-~LFO_engine_min)*~fn044__a__lfo_value*~GLOBAL_LFO__depth_float_pct+(~LFO_depth_offset/2.0)+~LFO_engine_min
   $fn044__r__engine_value := real_to_int(~fn044__l__calc)
   if (~fn044__l__calc<0.0)
     $fn044__r__engine_value := 0
   end if
   if (~fn044__l__calc>1000000.0)
     $fn044__r__engine_value := 1000000
+  end if
+  if ($fn044__a__target=16 and ($switch_crossfade=1))
+    $o__i := $fn044__r__engine_value
+    $fn044__r__engine_value := 1000000-$fn044__r__engine_value
+  end if
+  if ($lcb_ms_counter mod 200=0 and ($fn044__a__target mod 16=0) and (1=0))
+    if ($fn044__a__target=0)
+      message("    " & $fn044__a__target & " | engine_value = " & $fn044__r__engine_value & "")
+    else
+      message("        " & $fn044__a__target & " | engine_value = " & $fn044__r__engine_value & " | ov: " & $o__i & "")
+    end if
   end if
 end function
 
@@ -8246,8 +8332,8 @@ on persistence_changed
   ?_SEQ_JOIN_XY_BLOCK_START_END[2*2+$__START] := 0.248648649
   ?_SEQ_JOIN_XY_BLOCK_START_END[2*2+$__END] := 0.37027027
   ?_SEQ_JOIN_XY_BLOCK_START_END[2*3+$__START] := 0.372972973
-  ?_SEQ_JOIN_XY_BLOCK_START_END[2*3+$__END] := 0.494594595
-  ?_SEQ_JOIN_XY_BLOCK_START_END[2*4+$__START] := 0.505405405
+  ?_SEQ_JOIN_XY_BLOCK_START_END[2*3+$__END] := 0.499999999
+  ?_SEQ_JOIN_XY_BLOCK_START_END[2*4+$__START] := 0.5
   ?_SEQ_JOIN_XY_BLOCK_START_END[2*4+$__END] := 0.627027027
   ?_SEQ_JOIN_XY_BLOCK_START_END[2*5+$__START] := 0.62972973
   ?_SEQ_JOIN_XY_BLOCK_START_END[2*5+$__END] := 0.751351351
@@ -8434,11 +8520,26 @@ on persistence_changed
   set_control_par(get_ui_id($menu_MAIN__FX__RIGHT__reverb__menu),$CONTROL_PAR_PARENT_PANEL,get_ui_id($panel_MAIN__FX__RIGHT__reverb))
   message("ea-flux-engine loaded successfully")
   message("PCCB end.")
+  message("  -0.37 ^ 2.0 " & pow(0.37,1.8) & "")
 end on
 
 on async_complete
   if ($NI_ASYNC_ID=0)
     message("If statements can't be empty, so I exist.")
+  end if
+end on
+
+on controller
+  if ($CC_NUM=1 and ($switch_crossfade=1))
+    $uicb_counter := 0
+    while ($uicb_counter<=1)
+      $fn036__a__control_value := abs(1000000*abs(1-$uicb_counter)-(%CC[1]*7874))
+      set_control_par(%UIID_controls[0+($uicb_counter*16)],$CONTROL_PAR_VALUE,$fn036__a__control_value)
+      $fn036__a__side := $uicb_counter
+      $fn036__a__target := 0+($uicb_counter*16)
+      call fn036_set_control_param_slider
+      inc($uicb_counter)
+    end while
   end if
 end on
 
@@ -9573,10 +9674,12 @@ on ui_controls
     end if
     $uics_op_side := abs(1-$uics_seq_side)
     $uics_value := get_control_par(%UIID_MAIN__reverb_menu[$uics_seq_side],$CONTROL_PAR_VALUE)
-    load_ir_sample(@reverb__path & !Reverb_IR_files[$uics_value],6,$NI_BUS_OFFSET+$uics_seq_side)
+    $fn066__a__value := $uics_value
+    call fn066_get_reverb_ir_path
+    load_ir_sample(@fn066__r__reverb__dynamic__path & !Reverb_IR_files[$uics_value],6,$NI_BUS_OFFSET+$uics_seq_side)
     if (get_control_par(%UIID_MAIN__FX__links[7+(8*$uics_op_side)],$CONTROL_PAR_VALUE)=1)
       set_control_par(%UIID_MAIN__reverb_menu[$uics_op_side],$CONTROL_PAR_VALUE,get_control_par(%UIID_MAIN__reverb_menu[$uics_seq_side],$CONTROL_PAR_VALUE))
-      load_ir_sample(@reverb__path & !Reverb_IR_files[$uics_value],6,$NI_BUS_OFFSET+$uics_op_side)
+      load_ir_sample(@fn066__r__reverb__dynamic__path & !Reverb_IR_files[$uics_value],6,$NI_BUS_OFFSET+$uics_op_side)
     end if
   end if
   if ($NI_UI_ID=%UIID_MAIN__reverb_menu_prev_btn[0] or ($NI_UI_ID=%UIID_MAIN__reverb_menu_prev_btn[1]))
@@ -9596,7 +9699,10 @@ on ui_controls
         dec($uics_value)
       end if
       set_control_par(%UIID_MAIN__reverb_menu[$uics_seq_side],$CONTROL_PAR_VALUE,$uics_value)
-      load_ir_sample(@reverb__path & !Reverb_IR_files[$uics_value],6,$NI_BUS_OFFSET+$uics_seq_side)
+      $fn066__a__value := $uics_value
+      call fn066_get_reverb_ir_path
+      message(" IR menu value " & $uics_value & "")
+      load_ir_sample(@fn066__r__reverb__dynamic__path & !Reverb_IR_files[$uics_value],6,$NI_BUS_OFFSET+$uics_seq_side)
     end if
   end if
   if ($NI_UI_ID=%UIID_MAIN__reverb_menu_next_btn[0] or ($NI_UI_ID=%UIID_MAIN__reverb_menu_next_btn[1]))
@@ -9608,7 +9714,6 @@ on ui_controls
     $uics_value := get_control_par(%UIID_MAIN__reverb_menu[$uics_seq_side],$CONTROL_PAR_VALUE)
     if ($uics_value<178)
       $uics_value := get_control_par(%UIID_MAIN__reverb_menu[$uics_seq_side],$CONTROL_PAR_VALUE)+1
-      set_control_par(%UIID_MAIN__reverb_menu[$uics_seq_side],$CONTROL_PAR_VALUE,$uics_value)
       if ($uics_value=19 or ($uics_value=36) or ($uics_value=51) or ($uics_value=92) or ($uics_value=107) or ($uics_value=128) or ($uics_value=149) or ($uics_value=159))
         inc($uics_value)
       end if
@@ -9616,17 +9721,23 @@ on ui_controls
         inc($uics_value)
       end if
       set_control_par(%UIID_MAIN__reverb_menu[$uics_seq_side],$CONTROL_PAR_VALUE,$uics_value)
-      load_ir_sample(@reverb__path & !Reverb_IR_files[$uics_value],6,$NI_BUS_OFFSET+$uics_seq_side)
+      $fn066__a__value := $uics_value
+      call fn066_get_reverb_ir_path
+      message(" IR menu value " & $uics_value & "")
+      load_ir_sample(@fn066__r__reverb__dynamic__path & !Reverb_IR_files[$uics_value],6,$NI_BUS_OFFSET+$uics_seq_side)
     end if
   end if
   $uicbs_custom_id := get_control_par($NI_UI_ID,$CONTROL_PAR_CUSTOM_ID)
   $uicbs_control_par_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
   if (in_range($uicbs_custom_id,0,227))
-    message("called in_range(uicbs_custom_id, 0, 227) uicbs_custom_id: " & $uicbs_custom_id & "")
     select ($uicbs_custom_id)
       case $__CUUID_FX_UIC_MIN to $__CUUID_FX_UIC_MIN+15
         $uics_seq_side := 0
       case $__CUUID_FX_UIC_MIN+16 to $__CUUID_FX_UIC_MIN+31
+        $uics_seq_side := 1
+      case $__CUUID_LFO_A_MIN to $__CUUID_LFO_A_MIN+15
+        $uics_seq_side := 0
+      case $__CUUID_LFO_A_MIN+16 to $__CUUID_LFO_A_MIN+31
         $uics_seq_side := 1
     end select
     select ($uicbs_custom_id)
@@ -9642,6 +9753,7 @@ on ui_controls
           $fn037__a__target := $uicbs_custom_id-45
           $fn037__a__control_value := get_control_par(%UIID_controls[$fn037__a__target],$CONTROL_PAR_VALUE)
           $fn037__a__LFO_amount := $uicbs_control_par_value
+          $fn073__a__LFO_a_control_call := 1
           call fn037_LFO__update_intensity_ring
           $fn038__a__side := $uics_seq_side
           $fn038__a__target := $uicbs_custom_id-45
@@ -9659,9 +9771,14 @@ on ui_controls
             end if
             set_control_par(%UIID_controls_LFO_amount[$uicbs_custom_id-45+$MAIN__FX__aux_flip_link],$CONTROL_PAR_VALUE,$uicbs_control_par_value)
             $fn037__a__target := $uicbs_custom_id-45+$MAIN__FX__aux_flip_link
+            message("    calling fn37 and fn38 on target " & $fn037__a__target & "")
+            $fn037__a__control_value := get_control_par(%UIID_controls[$fn037__a__target],$CONTROL_PAR_VALUE)
+            $fn037__a__LFO_amount := get_control_par(%UIID_controls_LFO_amount[$fn037__a__target],$CONTROL_PAR_VALUE)
             call fn037_LFO__update_intensity_ring
             $fn038__a__target := $fn037__a__target
             $fn038__a__side := $MAIN__FX__aux_flip_bus
+            $fn038__a__LFO_amount := $fn037__a__LFO_amount
+            $fn038__a__control_value := $fn037__a__control_value
             call fn038_LFO_store_LFO_mod_data
           end if
         else
@@ -9701,6 +9818,7 @@ on ui_controls
     if ($uicbs_custom_id>=220)
       $uics_seq_side := 1
     end if
+    $switch_crossfade := 0
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
     if ($uics_value=1)
       select (($uicbs_custom_id-212) mod 8)
@@ -10081,7 +10199,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_VOLUME=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Volume")
@@ -10104,7 +10222,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_PAN=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Pan")
@@ -10127,7 +10245,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_STEREO=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Width")
@@ -10150,7 +10268,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_SHAPE=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Saturation")
@@ -10173,7 +10291,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_DAMPING=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Damping")
@@ -10196,7 +10314,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_DRIVE=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Drive")
@@ -10219,7 +10337,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_BITS=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Bits")
@@ -10242,7 +10360,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_FREQUENCY=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Sample Rate")
@@ -10265,7 +10383,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_NOISELEVEL=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Noise")
@@ -10288,7 +10406,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_TP_GAIN=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Gain")
@@ -10311,7 +10429,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_TP_WARMTH=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Warmth")
@@ -10334,7 +10452,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_CHORAL_MIX=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Wet")
@@ -10357,7 +10475,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_CHORAL_AMOUNT=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Depth")
@@ -10380,7 +10498,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_CHORAL_RATE=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Speed")
@@ -10403,7 +10521,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_CHORAL_FEEDBACK=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Phase")
@@ -10426,7 +10544,7 @@ on ui_controls
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
       end if
       if ($ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
-        $uics_value := real_to_int(int_to_real($uics_value)*0.65)
+        $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Dry | Wet")
@@ -10527,12 +10645,16 @@ on ui_control($switch_MAIN__SEQ__combine)
     %DUAL_SEQ__hmz__link_buffer[1] := $switch_MAIN__RIGHT__HMZ__link
     $switch_MAIN__LEFT__HMZ__link := 0
     $switch_MAIN__RIGHT__HMZ__link := 0
+    set_control_par(%_UIID_MAIN__seq__target_activators[5*0+0],$CONTROL_PAR_VALUE,1)
+    set_control_par(%_UIID_MAIN__seq__target_power[5*0+0],$CONTROL_PAR_VALUE,1)
+    set_control_par(%_UIID_MAIN__seq__target_power[5*1+0],$CONTROL_PAR_VALUE,1)
   else
     $switch_MAIN__SEQ__LEFT__link := %DUAL_SEQ__link_buffer[0]
     $switch_MAIN__SEQ__RIGHT__link := %DUAL_SEQ__link_buffer[1]
     $switch_MAIN__LEFT__HMZ__link := %DUAL_SEQ__hmz__link_buffer[0]
     $switch_MAIN__RIGHT__HMZ__link := %DUAL_SEQ__hmz__link_buffer[1]
   end if
+  call clear_all_leds
   call draw_seq
   $fn003__a__mode := $switch_MAIN__SEQ__combine
   $uicb_combine_counter := 0
@@ -10617,9 +10739,20 @@ on ui_control($switch_MAIN__RIGHT__HMZ__link)
   $switch_MAIN__LEFT__HMZ__link := $switch_MAIN__RIGHT__HMZ__link
 end on
 
+on ui_control($switch_crossfade)
+  $fn036__a__control_value := get_control_par(%UIID_controls[0],$CONTROL_PAR_VALUE)
+  $fn036__a__side := 0
+  $fn036__a__target := 0
+  call fn036_set_control_param_slider
+  if ($switch_crossfade=1)
+    set_control_par(%UIID_MAIN__FX__links[%UIID_FX__parameter_to_module[0]],$CONTROL_PAR_VALUE,0)
+    set_control_par(%UIID_MAIN__FX__links[%UIID_FX__parameter_to_module[0+16]],$CONTROL_PAR_VALUE,0)
+  end if
+end on
+
 on ui_control(?xypad_MAIN__SEQ__join)
   $uicb_jxy_side := 0
-  if (?xypad_MAIN__SEQ__join[0]>0.5)
+  if (?xypad_MAIN__SEQ__join[0]>=0.5)
     $uicb_jxy_side := 1
   end if
   if ($NI_MOUSE_EVENT_TYPE=$NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN)
@@ -10645,6 +10778,7 @@ on ui_control(?xypad_MAIN__SEQ__join)
   if ($NI_MOUSE_EVENT_TYPE=$NI_MOUSE_EVENT_TYPE_DRAG)
     if (get_control_par(%UIID_MAIN__controls__draw[0],$CONTROL_PAR_VALUE)=1)
       call get_seq_step_index
+      message("    Step Index: " & $fn001__r__step_index & " | X: " & get_control_par_real_arr(get_ui_id(?xypad_MAIN__SEQ__join),$CONTROL_PAR_VALUE,0) & "")
     end if
     if ($uics_alt_key=1 or ($uics_control_key=1))
       ~uics_r_value := ~seq_xy_alt_y_coord
@@ -11006,8 +11140,14 @@ on listener
               ~LFO_lcb_ind_min := int_to_real(%_LFO_modulation_ring_data[4*$lcb_control_counter+2])
               ~LFO_lcb_ind_max := int_to_real(%_LFO_modulation_ring_data[4*$lcb_control_counter+3])
               ~LFO_lcb_depth_offset := (~LFO_lcb_ind_max-~LFO_lcb_ind_min)*(1.0-~GLOBAL_LFO__depth_float_pct)
+              if ($lcb_control_counter=16 and ($switch_crossfade=1))
+                ~LFO_emitted_value_phase_checked := 1.0-~LFO_emitted_value_phase_checked
+              end if
               ~LFO_lcb_cursor_calc := (~LFO_lcb_ind_max-~LFO_lcb_ind_min)*~LFO_emitted_value_phase_checked*~GLOBAL_LFO__depth_float_pct+(~LFO_lcb_depth_offset/2.0)+~LFO_lcb_ind_min
               set_control_par(%UIID_controls_LFO_mod_cursor[$lcb_control_counter],$CONTROL_PAR_PICTURE_STATE,real_to_int(~LFO_lcb_cursor_calc))
+              if ($lcb_control_counter=16 and ($switch_crossfade=1))
+                ~LFO_emitted_value_phase_checked := 1.0-~LFO_emitted_value_phase_checked
+              end if
               ~LFO_lcb_cursor_calc_clamped := ~LFO_lcb_cursor_calc
               if (~LFO_lcb_cursor_calc_clamped>255.0)
                 ~LFO_lcb_cursor_calc_clamped := 255.0
@@ -11028,7 +11168,7 @@ on listener
             end if
           end if
           $fn044__a__target := $lcb_control_counter
-          ~fn044__a__sine_value := ~LFO_emitted_value_phase_checked
+          ~fn044__a__lfo_value := ~LFO_emitted_value_phase_checked
           call fn044_LFO_calculate_engine_value
           select ($lcb_control_counter)
             case 0 to 15

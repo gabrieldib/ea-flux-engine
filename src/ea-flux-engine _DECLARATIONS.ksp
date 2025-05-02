@@ -19,6 +19,8 @@
     define __CHORUS     := 6
     define __REVERB     := 7
 
+    define __MOD_WHEEL := 1
+
     define LFO_RATE_MODE       := 0
     define LFO_RATE            := 1
     define LFO_DEPTH           := 2
@@ -153,6 +155,17 @@
     define __FS_SNG_SHT_HP_RESO   := 6
     define __FS_SNG_SHT_FILTER_LAYER_OFFSET := 4 { layer 2 cutoff and reso will be respectively 5 and 6 }
     define __FS_VELOCITY := 11 { left, + 1 for right side }
+
+    define __REAL_ROOMS_START      := 1
+    define __DIGITAL_REVERB_END    := 106
+    define __DRUM_REVERBS_START    := 109
+    define __DRUM_REVERBS_END      := 127
+    define __DRUM_FILTERS_START    := 130
+    define __DRUM_FILTERS_END      := 148
+    define __REVERSE_REVERBS_START := 151
+    define __REVERSE_REVERBS_END   := 159
+    define __PLATE_REVERBS_START   := 162
+    define __PLATE_REVERBS_END     := 178
 
 { CONSTANTS _____________________________________________________________________________________ }
     {{ generic }}
@@ -637,6 +650,8 @@
     declare !Reverb_IR_files [ 200 ]
 
     declare @reverb.path := get_folder($GET_FOLDER_FACTORY_DIR) & "presets/effects/convolution/<<<K4IR.nkx>>>/K4 IR Samples/"
+    declare @reverb.path.new.IRs := get_folder($GET_FOLDER_FACTORY_DIR) & "presets/effects/convolution/"
+    declare @reverb.dynamic.path
 
     {{ FLUX }}
     declare const __SEQ_STATE_DUAL    := 0 { bit : 1 }
@@ -882,8 +897,6 @@
 
         { this exists in case certain targets will have a different max than 10^6 }
         declare LFO_control_value_max [45]  := (500000)
-            LFO_control_value_max [2]   := (500000) // width
-            LFO_control_value_max [18]  := (500000) // width
 
         { store the LFO amount value in the range 0 - 1.0 }
         declare read ?LFO_amount_pct [ 45 ] // value per control 
@@ -1364,10 +1377,13 @@
     declare fn037.a.control_value
     declare fn037.a.LFO_amount
     declare fn037.a.link
+    declare fn073.a.LFO_a_control_call
     declare fn037.l.counter
     declare fn037.l.target
     declare fn037.l.picture_state_start
     declare fn037.l.picture_state_end
+    declare fn037.l.picture_state_start_inv
+    declare fn037.l.picture_state_end_inv
 
     //fn038_LFO_store_LFO_mod_data
     declare fn038.a.side
@@ -1378,15 +1394,21 @@
     declare fn038.a.control_type
     declare fn038.l.target
     declare fn038.l.side_counter
+    declare ~fn038.l.pct_divisor
+    declare ~fn038.l.pict_divisor
 
     //fn039_set_FX_engine_par
     declare fn039.a.side
     declare fn039.a.target
     declare fn039.a.control_value
     declare fn039.a.link
+    declare fn039.l.original_cv
+    declare ~fn039.l.cv_real
 
     //fn040_set_MATRIX_slider_ps
-    declare fn040.a.side
+    declare  fn040.a.side
+    declare ~fn040.l.l1.vol
+    declare ~fn040.l.l2.vol
 
     //fn041_LFO_off_restore_buffer_value
     declare fn041.a.target { uses the LFO control values target constants }
@@ -1407,7 +1429,7 @@
 
     //fn044_LFO_calculate_engine_value
     declare  fn044.a.target { uses the LFO control values target constants }
-    declare ~fn044.a.sine_value { uses the LFO control values target constants }
+    declare ~fn044.a.lfo_value { uses the LFO control values target constants }
     declare  fn044.a.left_or_right
     declare ~fn044.l.calc  { for clarity  }
     declare  fn044.l.target
@@ -1515,3 +1537,7 @@
     //fn065_get_sample_address
     declare fn065.a.input_velo
     declare fn065.r.velo_address
+
+    //fn066_get_reverb_ir_path
+    declare fn066.a.value
+    declare @fn066.r.reverb.dynamic.path

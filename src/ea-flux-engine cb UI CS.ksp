@@ -1710,8 +1710,11 @@ on ui_controls
         uics_op_side := abs(1-uics_seq_side)
         uics_value   := UIID_MAIN.reverb_menu [ uics_seq_side ] -> value
 
+        fn066.a.value := uics_value
+        call fn066_get_reverb_ir_path
+
         load_ir_sample( ...
-            @reverb.path & Reverb_IR_files [ uics_value ], ...
+            @fn066.r.reverb.dynamic.path & Reverb_IR_files [ uics_value ], ...
             __SLOT_B_REVERB, ...
             NI_BUS_OFFSET + uics_seq_side ...
         )
@@ -1719,7 +1722,7 @@ on ui_controls
         if  UIID_MAIN.FX.links [ __REVERB + 8 * uics_op_side ] -> value = __ON { linked }
             UIID_MAIN.reverb_menu [ uics_op_side ] -> value := UIID_MAIN.reverb_menu [ uics_seq_side ] -> value
             load_ir_sample( ...
-                @reverb.path & Reverb_IR_files [ uics_value ], ...
+                @fn066.r.reverb.dynamic.path & Reverb_IR_files [ uics_value ], ...
                 __SLOT_B_REVERB, ...
                 NI_BUS_OFFSET + uics_op_side ...
             )
@@ -1751,10 +1754,14 @@ on ui_controls
                 uics_value = 107 or uics_value = 128 or uics_value = 149 or uics_value = 159
                 dec(uics_value)
             end if
+
             UIID_MAIN.reverb_menu [ uics_seq_side ] -> value := uics_value
 
+            fn066.a.value := uics_value
+            call fn066_get_reverb_ir_path
+            message(f' IR menu value <uics_value >')
             load_ir_sample( ...
-                @reverb.path & Reverb_IR_files [ uics_value ], ...
+                @fn066.r.reverb.dynamic.path & Reverb_IR_files [ uics_value ], ...
                 __SLOT_B_REVERB, ...
                 NI_BUS_OFFSET + uics_seq_side ...
             )
@@ -1773,7 +1780,6 @@ on ui_controls
 
         if uics_value < IR_FILES_COUNT { last IR }
             uics_value   := UIID_MAIN.reverb_menu [ uics_seq_side ] -> value + 1
-            UIID_MAIN.reverb_menu [ uics_seq_side ] -> value := uics_value
 
             { Empty lines }
             if  uics_value =  19 or uics_value =  36 or uics_value =  51 or uics_value =  92 or ...
@@ -1787,8 +1793,13 @@ on ui_controls
             end if
             UIID_MAIN.reverb_menu [ uics_seq_side ] -> value := uics_value
 
+            fn066.a.value := uics_value
+            call fn066_get_reverb_ir_path
+
+            message(f' IR menu value <uics_value >')
+
             load_ir_sample( ...
-                @reverb.path & Reverb_IR_files [ uics_value ], ...
+                @fn066.r.reverb.dynamic.path & Reverb_IR_files [ uics_value ], ...
                 __SLOT_B_REVERB, ...
                 NI_BUS_OFFSET + uics_seq_side ...
             )
@@ -1802,11 +1813,15 @@ on ui_controls
     // message("UI CONTROLS ____ param index: " & uicbs_custom_id & " | value = " & uicbs_control_par_value)
 
     if in_range(uicbs_custom_id, 0, 227)
-        message(f'called in_range(uicbs_custom_id, 0, 227) uicbs_custom_id: <uicbs_custom_id>')
+        // message(f'called in_range(uicbs_custom_id, 0, 227) uicbs_custom_id: <uicbs_custom_id>')
         select(uicbs_custom_id)
             case __CUUID_FX_UIC_MIN to __CUUID_FX_UIC_MIN+15
                 uics_seq_side := __LEFT
             case __CUUID_FX_UIC_MIN+16 to __CUUID_FX_UIC_MIN+31
+                uics_seq_side := __RIGHT
+            case __CUUID_LFO_A_MIN to __CUUID_LFO_A_MIN+15
+                uics_seq_side := __LEFT
+            case __CUUID_LFO_A_MIN+16 to __CUUID_LFO_A_MIN+31
                 uics_seq_side := __RIGHT
         end select
 
@@ -1822,10 +1837,11 @@ on ui_controls
                     LFO_global_local_recall [ uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET ] := uicbs_control_par_value
 
                     { update the LFO ring masks on the UI }
-                    fn037.a.side          := uics_seq_side
-                    fn037.a.target        := uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET
-                    fn037.a.control_value := UIID_controls [ fn037.a.target ] -> value
-                    fn037.a.LFO_amount    := uicbs_control_par_value  { LFO amount value }
+                    fn037.a.side               := uics_seq_side
+                    fn037.a.target             := uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET
+                    fn037.a.control_value      := UIID_controls [ fn037.a.target ] -> value
+                    fn037.a.LFO_amount         := uicbs_control_par_value  { LFO amount value }
+                    fn073.a.LFO_a_control_call := __YES
                     call fn037_LFO.update_intensity_ring
 
                     { updates the LFO data for this control }
@@ -1843,13 +1859,14 @@ on ui_controls
                       ] -> value = __ON
                         { there are 16 elements on the each side }
                         if uics_seq_side = __LEFT
-                            MAIN.FX.aux_flip_link := 16 { add 8 to get to right side }
+                            MAIN.FX.aux_flip_link := 16 { add 16 to get to right side }
                             MAIN.FX.aux_flip_bus  := 1
                         else                                                    { right side }
-                            MAIN.FX.aux_flip_link := -16 { subtract 8 to get to left side }
+                            MAIN.FX.aux_flip_link := -16 { subtract 16 to get to left side }
                             MAIN.FX.aux_flip_bus  := 0
                         end if
-
+                        // message(f'UICBS | side: <uics_seq_side > uicbs_custom_id = <uicbs_custom_id> | MAIN.FX.aux_flip_link = <MAIN.FX.aux_flip_link>')
+                        // message(f'    Updating value of control on opposite side ID: <uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET + MAIN.FX.aux_flip_link > | value: <uicbs_control_par_value>')
                         { UI control update on the other side }
                         set_control_par( ...
                             UIID_controls_LFO_amount [ ...
@@ -1861,18 +1878,18 @@ on ui_controls
 
                         { actually these functions are not needed here, they could have a 
                           link argument that will be processed inside them }
-
                         fn037.a.target := uicbs_custom_id - UICTRL_LFO_AMOUNT_OFFSET + MAIN.FX.aux_flip_link
+                        message(f'    calling fn37 and fn38 on target <fn037.a.target >')
                         { we can keep the values from above since it is mirroring the other layer }
-                        // fn037.a.control_value := UIID_controls [ fn037.a.target ] -> value
-                        // fn037.a.LFO_amount    := UIID_controls_LFO_amount [ fn000.a.target ] -> value
+                        fn037.a.control_value := UIID_controls [ fn037.a.target ] -> value
+                        fn037.a.LFO_amount    := UIID_controls_LFO_amount [ fn037.a.target ] -> value
                         call fn037_LFO.update_intensity_ring
 
                         fn038.a.target := fn037.a.target
                         fn038.a.side   := MAIN.FX.aux_flip_bus
                         { we can keep the values from above since it is mirroring the other layer }
-                        // fn002.a.LFO_amount    := fn000.a.LFO_amount
-                        // fn002.a.control_value := fn000.a.control_value { FX parameter value }
+                        fn038.a.LFO_amount    := fn037.a.LFO_amount
+                        fn038.a.control_value := fn037.a.control_value { FX parameter value }
                         call fn038_LFO_store_LFO_mod_data
                     end if
                 else
@@ -1948,6 +1965,8 @@ on ui_controls
             uics_seq_side := __RIGHT
         end if
 
+        switch_crossfade := __OFF
+
         uics_value := NI_UI_ID -> value
 
         if uics_value = __ON
@@ -1959,10 +1978,11 @@ on ui_controls
                     if uics_value = __ON
                         message(f'    LINK ON')
                         for uics_counter := 0 to 2
-                            fn063.a.side          := uics_seq_side
-                            fn063.a.control_index := uics_counter
+                            fn063.a.side          := uics_seq_side 
+                            fn063.a.control_index := uics_counter 
                             call fn063_populate_opposite_layer_panel_control_values
                         end for
+
                     end if
 
                 case __SATURATION
@@ -2165,6 +2185,12 @@ on ui_controls
             fn043.a.side  := abs(1-uics_seq_side)
             fn043.a.panel := (uicbs_custom_id - 212) mod 8
             call fn043_show_hide_fx_panels
+
+        // else
+        //     if (uicbs_custom_id - 212) mod 8 = __LAYER
+        //         switch_crossfade -> picture := 'switch_crossfade_inactive'
+        //         switch_crossfade := __OFF
+        //     end if
         end if
     end if
 
@@ -2644,7 +2670,7 @@ on ui_controls
                     uics_value := int(float(uics_value)*0.63)
                 end if
                 if #engine_par# = ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN
-                    uics_value := int(float(uics_value)*REV_MAX_LEVEL)
+                    uics_value := int(float(uics_value) * REV_MAX_LEVEL)
                 end if
                 // set_engine_par(#engine_par#, uics_value, __GROUP_NONE, #target_slot#, #target_bus#)
             end if

@@ -1,5 +1,25 @@
-TO DO:
-- recalling of step values/picture states needs to be according to DYN and or FLUX
 
-BUGS:
-- sometimes Flux off, Arp On, we will get sustained notes along with the arpeggiated notes
+
+67 : {
+
+    DUAL:
+        one of the sides is single shot, or both 
+            if the left side is a single shot,
+            when we go to JOIN SEQ, we need to:
+                - turn on the seq on left side 
+
+    When changing to SEQ JOIN:
+        - turn on the seq on left side 
+        - if no target is ON, update the label to show that
+
+
+}
+
+1) update the off label for targets when going to the SEQ JOIN
+2) update the off label for targets when going to the SEQ DUAL ( currently wrong )
+
+
+DONE:
+
+LFO amount on volume while in crossfade mode
+is changing the amount of both sides, it shouldn't

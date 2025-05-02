@@ -103,6 +103,11 @@
             DUAL_SEQ.hmz.link_buffer [ __RIGHT ] := switch_MAIN.RIGHT.HMZ.link
             switch_MAIN.LEFT.HMZ.link  := __OFF
             switch_MAIN.RIGHT.HMZ.link := __OFF
+
+            { turn on the velocity }
+            UIID_MAIN.seq.target_activators [ __LEFT,  SEQ_TARGET_VELO ] -> value := __ON
+            UIID_MAIN.seq.target_power      [ __LEFT,  SEQ_TARGET_VELO ] -> value := __ON
+            UIID_MAIN.seq.target_power      [ __RIGHT, SEQ_TARGET_VELO ] -> value := __ON
         else
             switch_MAIN.SEQ.LEFT.link  := DUAL_SEQ.link_buffer [ __LEFT  ]
             switch_MAIN.SEQ.RIGHT.link := DUAL_SEQ.link_buffer [ __RIGHT ]
@@ -110,6 +115,7 @@
             switch_MAIN.LEFT.HMZ.link  := DUAL_SEQ.hmz.link_buffer [ __LEFT  ]
             switch_MAIN.RIGHT.HMZ.link := DUAL_SEQ.hmz.link_buffer [ __RIGHT ]
         end if
+        call clear_all_leds
 
         call draw_seq
         // call clear_all_leds
@@ -216,22 +222,31 @@
         switch_MAIN.LEFT.HMZ.link := switch_MAIN.RIGHT.HMZ.link
     end on
     
+    on ui_control (switch_crossfade)
+        fn036.a.control_value := UIID_controls [ __MAIN.FX.LAYER.VOLUME ] -> value
+        fn036.a.side          := __LEFT
+        fn036.a.target        := __MAIN.FX.LAYER.VOLUME
+        call fn036_set_control_param_slider()
+        if switch_crossfade = __ON
+            UIID_MAIN.FX.links [ UIID_FX.parameter_to_module [ __MAIN.FX.LAYER.VOLUME ] ] -> value := __OFF
+            UIID_MAIN.FX.links [ UIID_FX.parameter_to_module [ __MAIN.FX.LAYER.VOLUME + __MAIN.FX.RIGHT.OFFSET ] ] -> value := __OFF
+        end if
+    end on
+    
 
 {{ SEQ }}
     on ui_control (xypad_MAIN.SEQ.join)
         uicb_jxy_side := __LEFT
-        if xypad_MAIN.SEQ.join [ __X_AXIS ] > 0.5
+        if xypad_MAIN.SEQ.join [ __X_AXIS ] >= 0.5
             uicb_jxy_side := __RIGHT
         end if
         if NI_MOUSE_EVENT_TYPE = NI_MOUSE_EVENT_TYPE_LEFT_BUTTON_DOWN
             { capture the step index on click }
             call get_seq_step_index
-
             { make the mouse movement slower in case SHIFT is pressed }
             if get_control_par(xypad_MAIN.SEQ.join, CONTROL_PAR_KEY_SHIFT) = __ON
                 xypad_MAIN.SEQ.join -> mouse_behaviour_y := 100
             end if
-
 
             uics_r_value := ...
                 get_control_par_real_arr( ...
@@ -264,6 +279,7 @@
                 if it is on, we update the step_index }
             if UIID_MAIN.controls.draw [ __LEFT ] -> value = __ON { we are using the LEFT draw button on JOIN mode }
                 call get_seq_step_index
+                message(f'    Step Index: <fn001.r.step_index > | X: <get_control_par_real_arr(xypad_MAIN.SEQ.join, CONTROL_PAR_VALUE, __X_AXIS)>')
             end if
             if uics_alt_key = __ON or uics_control_key = __ON
                 uics_r_value := seq_xy_alt_y_coord
@@ -287,15 +303,6 @@
         fn018.a.step_index := fn001.r.step_index mod 32
         fn018.a.value      := uics_r_value
         call fn018_set_seq_step_picture_state
-
-        // if xypad_MAIN.SEQ.join [ __X_AXIS ] < 0.5
-        //     fn010.l.side := __LEFT
-        // else
-        //     fn010.l.side := __RIGHT
-        // end if
-        // fn010.a.step_index := fn009.r.step_index
-        // fn010.a.value      := xypad_MAIN.SEQ.join [ __Y_AXIS ]
-        // call fn010_set_seq_step_value
     end on
 
     on ui_control (switch_MAIN.SEQ.LEFT.randomize)
