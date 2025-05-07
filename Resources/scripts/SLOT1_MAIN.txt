@@ -1,4 +1,4 @@
-{ Compiled on Wed May  7 12:17:58 2025 }
+{ Compiled on Wed May  7 12:28:09 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -4097,6 +4097,7 @@ on init
     add_menu_item($menu_MAIN__FX__RIGHT__reverb__menu,!Reverb_impulse_responses_titles[$i__i],$i__i)
     inc($i__i)
   end while
+  set_control_par(get_ui_id($label_MAIN__title),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
   message("ON INIT CB end.")
 end on
 
