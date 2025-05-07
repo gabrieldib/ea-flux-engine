@@ -59,7 +59,7 @@
             l.i := 0
             h.i := 0
             for n.i := 0 to 127
-                e.i := play_note(n.i, 64, 0, 100000)
+                e.i := play_note(n.i, 1, 0, 100000)
                 set_event_par_arr(e.i, EVENT_PAR_ALLOW_GROUP, 0, ALL_GROUPS)
                 set_event_par_arr(e.i, EVENT_PAR_ALLOW_GROUP, 1, g.i)
                 change_vol(e.i, -200000, 0)
@@ -88,6 +88,15 @@
         call update_sources_names
     end on
 
+    on ui_control (valueedit_rr)
+        __ROUND_ROBIN_MAX := valueedit_rr
+    end on
+    
+    on ui_control (valueedit_velo)
+        __VELOCITIES_COUNT := valueedit_velo
+    end on
+    
+
 
 {{ MAIN }}
     on ui_control (switch_MAIN.SEQ.combine)
@@ -109,12 +118,15 @@
             UIID_MAIN.seq.target_power      [ __LEFT,  SEQ_TARGET_VELO ] -> value := __ON
             UIID_MAIN.seq.target_power      [ __RIGHT, SEQ_TARGET_VELO ] -> value := __ON
         else
+            UIID_MAIN.seq.power [ __LEFT  ] -> value := __ON
+            UIID_MAIN.seq.power [ __RIGHT ] -> value := __ON
             switch_MAIN.SEQ.LEFT.link  := DUAL_SEQ.link_buffer [ __LEFT  ]
             switch_MAIN.SEQ.RIGHT.link := DUAL_SEQ.link_buffer [ __RIGHT ]
 
             switch_MAIN.LEFT.HMZ.link  := DUAL_SEQ.hmz.link_buffer [ __LEFT  ]
             switch_MAIN.RIGHT.HMZ.link := DUAL_SEQ.hmz.link_buffer [ __RIGHT ]
         end if
+
         call clear_all_leds
 
         call draw_seq
@@ -157,7 +169,11 @@
             fn051.a.side := uicb_combine_counter
             call fn051_set_layer_panels_state
             
+            fn060.a.seq_power_state := fn020.a.seq_power_state
+            fn060.a.side            := uicb_combine_counter
+            call fn060_set_filters_bypass_state
         end for
+
         panel_MAIN.2SEQ.LEFT.fluxxArp  -> UI_SHOW
         panel_MAIN.2SEQ.RIGHT.fluxxArp -> UI_SHOW
     end on

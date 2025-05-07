@@ -727,6 +727,11 @@
         declare ~x.r
         declare ~y.r
         declare ~z.r
+    {{ SETUP }}
+    declare read __ROUND_ROBIN_MAX 
+    declare read __VELOCITIES_COUNT
+
+
     {{ GENERAL }}
         declare note_held_count
         declare read SHOWING_PANEL

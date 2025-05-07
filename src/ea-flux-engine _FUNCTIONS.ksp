@@ -67,6 +67,8 @@ function pccb_init_instrument
 
         UIID_MAIN.show_rates [ i.i ] -> text := ...
             beat_rates_display [ (UIID_MAIN.SEQ.rate_sliders [ i.i ] -> value) / __BEAT_RATE_DIVISOR ]
+
+        
     end for
 
     { change text alignment on target selectors according to SEQ DUAL/JOIN state }
@@ -171,13 +173,25 @@ function pccb_init_instrument
                 UIID_MAIN.seq.target_selectors  [ pccb_counter ] -> value := __OFF
             end if
         end if
+        if UIID_MAIN.seq.power [ pccb_counter ] -> value = __ON
+            UIID_MAIN.seq.step_lock [ pccb_counter ] -> UI_SHOW
+            message(f'showing lock for side <pccb_counter >')
+        else
+            UIID_MAIN.seq.step_lock [ pccb_counter ] -> UI_HIDE
+            message(f'hiding lock for side <pccb_counter >')
+        end if
     end for
     
+    UIID_MAIN.display_title -> text := "-"
+    UIID_MAIN.display_value -> text := "-"
+
+
     __INSTRUMENT_INIT := __NO
     LFO_play_state := __OFF
 
+
+
     message(f'PCCB INIT ____________________________________')
-    message(f'    panel_MAIN.2SEQ.RIGHT.controls hide state = <panel_MAIN.2SEQ.RIGHT.controls -> hide >')
 end function
 
 {{ general }}
@@ -1856,6 +1870,7 @@ function fn051_set_layer_panels_state
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
         if fn051.a.side = __LEFT
             panel_MAIN.2SEQ.LEFT.controls  -> UI_HIDE
+            panel_MAIN.2SEQ.LEFT.fluxxArp  -> UI_HIDE
             slider_MAIN.2SEQ.LEFT.off      -> UI_HIDE
             label_MAIN.2SEQ.LEFT.off       -> UI_HIDE
         else
@@ -1864,6 +1879,9 @@ function fn051_set_layer_panels_state
             slider_MAIN.2SEQ.RIGHT.off     -> UI_HIDE
             label_MAIN.2SEQ.RIGHT.off      -> UI_HIDE
         end if
+    else
+        panel_MAIN.2SEQ.LEFT.fluxxArp  -> UI_SHOW
+        panel_MAIN.2SEQ.RIGHT.fluxxArp -> UI_SHOW
     end if
 
     if UIID_MAIN.layer.power [ fn051.a.side ] -> value = __ON    { layer on ? }
@@ -1907,23 +1925,20 @@ function fn051_set_layer_panels_state
 
         end if
     else
-        message(f'Layer state off!')
         if switch_MAIN.SEQ.combine = __SEQ_DUAL
             UIID_MAIN.seq.off_label      [ fn051.a.side ] -> UI_SHOW
             UIID_MAIN.seq.off_label_text [ fn051.a.side ] -> UI_SHOW
             UIID_MAIN.seq.off_label_text [ fn051.a.side ] -> text := 'LAYER OFF'
             UIID_MAIN.seq.flux_panels    [ fn051.a.side  ] -> UI_HIDE
         else
-            UIID_MAIN.seq.flux_panels  [ __LEFT  ] -> UI_SHOW
-            UIID_MAIN.seq.flux_panels  [ __RIGHT ] -> UI_SHOW
-            label_MAIN.2SEQ.LEFT.off  -> UI_SHOW
-            label_MAIN.2SEQ.RIGHT.off -> UI_SHOW
+            if UIID_MAIN.layer.power [ 1-fn051.a.side ] -> value = __OFF
+                label_MAIN.SEQjoin.off -> UI_SHOW
+                label_MAIN.SEQjoin.off -> text := 'BOTH LAYERS ARE OFF'
+                message(f'label_MAIN.SEQjoin.off TEXT = <label_MAIN.SEQjoin.off -> text >')
+
+            end if
         end if
     end if
-    message(f'FN 51 ____________________________________')
-    message(f'    panel_MAIN.2SEQ.RIGHT.fluxxArp hide state = <panel_MAIN.2SEQ.RIGHT.fluxxArp -> hide >')
-    message(f'    panel_MAIN.2SEQ.RIGHT.fluxxArp id = <get_ui_id(panel_MAIN.2SEQ.RIGHT.fluxxArp)>')
-    message(f'    switch_MAIN.FLUXX.RIGHT.block.1 p.id = <switch_MAIN.FLUXX.RIGHT.block.1 -> parent_panel>')
 end function
 
 function fn052_set_wf_cursor_and_overlay
@@ -2135,72 +2150,74 @@ function fn064_update_sequencer_power_state
     fn051.a.side        := fn064.a.side
     call fn051_set_layer_panels_state
 
-    if UIID_MAIN.layer.power [ fn064.a.side ] -> value = __ON
-        if switch_MAIN.SEQ.combine = __SEQ_DUAL
-            { adjust group filters and bus filters bypass state according to sequencer power state }
-            fn060.a.seq_power_state := fn064.a.value
-            fn060.a.side            := fn064.a.side
-            call fn060_set_filters_bypass_state
 
-            if UIID_MAIN.seq.power [ fn064.a.side ] -> value = __ON
-                { restore all target control states}
-                for fn064.l.target_counter := 0 to 4
-                    { recall power controls }
-                    UIID_MAIN.seq.target_power [ fn064.a.side, fn064.l.target_counter ] -> value := ...
-                        targets_power_state [ fn064.a.side, fn064.l.target_counter ]
+    if switch_MAIN.SEQ.combine = __SEQ_DUAL
+        { adjust group filters and bus filters bypass state according to sequencer power state }
+        fn060.a.seq_power_state := fn064.a.value
+        fn060.a.side            := fn064.a.side
+        call fn060_set_filters_bypass_state
 
-                    { set activator based on the target selector }
-                    if  UIID_MAIN.seq.target_selectors [ fn064.l.target_counter ] -> value = __ON
+        if UIID_MAIN.seq.power [ fn064.a.side ] -> value = __ON
+            UIID_MAIN.seq.step_lock [ fn064.a.side ] -> UI_SHOW
+            { restore all target control states}
+            for fn064.l.target_counter := 0 to 4
+                { recall power controls }
+                UIID_MAIN.seq.target_power [ fn064.a.side, fn064.l.target_counter ] -> value := ...
+                    targets_power_state [ fn064.a.side, fn064.l.target_counter ]
 
-                        UIID_MAIN.seq.target_activators [ fn064.a.side, fn064.l.target_counter ] -> value := __ON
-                    else
-                        if  UIID_MAIN.seq.power [ abs(1-fn064.a.side) ] -> value = __OFF
-                            UIID_MAIN.seq.target_activators [ fn064.a.side, SEQ_TARGET_VELO ] -> value := __ON
-                            UIID_MAIN.seq.target_selectors [ SEQ_TARGET_VELO ]                 -> value := __ON
-                        end if
+                { set activator based on the target selector }
+                if  UIID_MAIN.seq.target_selectors [ fn064.l.target_counter ] -> value = __ON
+
+                    UIID_MAIN.seq.target_activators [ fn064.a.side, fn064.l.target_counter ] -> value := __ON
+                else
+                    if  UIID_MAIN.seq.power [ abs(1-fn064.a.side) ] -> value = __OFF
+                        UIID_MAIN.seq.target_activators [ fn064.a.side, SEQ_TARGET_VELO ] -> value := __ON
+                        UIID_MAIN.seq.target_selectors [ SEQ_TARGET_VELO ]                 -> value := __ON
                     end if
+                end if
 
-                    if  UIID_MAIN.seq.target_activators [ __LEFT,  fn064.l.target_counter ] -> value = __ON and ...
-                        UIID_MAIN.seq.target_activators [ __RIGHT, fn064.l.target_counter ] -> value = __ON
+                if  UIID_MAIN.seq.target_activators [ __LEFT,  fn064.l.target_counter ] -> value = __ON and ...
+                    UIID_MAIN.seq.target_activators [ __RIGHT, fn064.l.target_counter ] -> value = __ON
 
-                        UIID_MAIN.seq.target_selectors [ fn064.l.target_counter ] -> value := __ON
-                    else
-                        UIID_MAIN.seq.target_selectors [ fn064.l.target_counter ] -> value := __OFF
-                    end if
-                end for
+                    UIID_MAIN.seq.target_selectors [ fn064.l.target_counter ] -> value := __ON
+                else
+                    UIID_MAIN.seq.target_selectors [ fn064.l.target_counter ] -> value := __OFF
+                end if
+            end for
 
-                fn021.a.side := fn064.a.side
-                call fn21_get_seq_target_active_activator
+            fn021.a.side := fn064.a.side
+            call fn21_get_seq_target_active_activator
 
-                fn020.a.seq_power_state   := NI_UI_ID -> value
-                fn020.a.side              := fn064.a.side
-                fn020.a.target_index      := fn021.r.active_index
-                fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ fn064.a.side, fn021.r.active_index ]
-                call fn020_update_seq_target_state
+            fn020.a.seq_power_state   := NI_UI_ID -> value
+            fn020.a.side              := fn064.a.side
+            fn020.a.target_index      := fn021.r.active_index
+            fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ fn064.a.side, fn021.r.active_index ]
+            call fn020_update_seq_target_state
 
-                { with seq on, we will use filters on bus level }
+            { with seq on, we will use filters on bus level }
 
-            else
-                { turn off target activators, power and selectors as they have no effect on single shots }
-                for fn064.l.target_counter := 0 to 4
-                    UIID_MAIN.seq.target_activators [ fn064.a.side, fn064.l.target_counter ] -> value := __OFF
-                    UIID_MAIN.seq.target_power      [ fn064.a.side, fn064.l.target_counter ] -> value := __OFF
-                    if UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
-                        UIID_MAIN.seq.target_selectors [ fn064.l.target_counter ] -> value := __OFF
-                    end if
-                end for 
+        else
+            UIID_MAIN.seq.step_lock [ fn064.a.side ] -> UI_HIDE
+            { turn off target activators, power and selectors as they have no effect on single shots }
+            for fn064.l.target_counter := 0 to 4
+                UIID_MAIN.seq.target_activators [ fn064.a.side, fn064.l.target_counter ] -> value := __OFF
+                UIID_MAIN.seq.target_power      [ fn064.a.side, fn064.l.target_counter ] -> value := __OFF
+                if UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
+                    UIID_MAIN.seq.target_selectors [ fn064.l.target_counter ] -> value := __OFF
+                end if
+            end for 
 
-            end if
-
-        else { SEQ Join }
-            if switch_MAIN.SEQ.combine = __SEQ_JOIN
-                label_MAIN.SEQjoin.off -> hide := HIDE_WHOLE_CONTROL * fn064.a.value
-
-            end if
-            
         end if
 
+    else { SEQ Join }
+        if switch_MAIN.SEQ.combine = __SEQ_JOIN
+            label_MAIN.SEQjoin.off -> hide := HIDE_WHOLE_CONTROL * fn064.a.value
+
+        end if
+        
     end if
+
+
 end function
 
 function fn066_get_reverb_ir_path
@@ -3189,7 +3206,7 @@ function fn007_update_block_and_steps_ts
         call fn025_update_flux_on_all_block_steps
 
     else { JOIN sequencer }
-        if UIID_MAIN.layer.power [ fn007.a.side ] -> value = __ON
+        if UIID_MAIN.layer.power [ __LEFT ] -> value = __ON or UIID_MAIN.layer.power [ __RIGHT ] -> value = __ON
         // message(f'    Processing JOIN blocks ')
             if  seq_join.direction_status = SEQ_DIRECTION_FORWARD
 
@@ -3839,7 +3856,10 @@ end function
 
 function PLAY_NOTE_NCB
     { play }
-    pn_ncb.l.sample_address := ncb_round_robin [ pn_ncb.a.side, pn_ncb.a.note ] * 10 + 1
+    pn_ncb.l.sample_address := ...
+        ncb_round_robin [ pn_ncb.a.side, pn_ncb.a.note ] * 10 + 1 + ... { round robin part }
+        (layers.note_velo [ pn_ncb.a.side,  pn_ncb.a.note ] / ((127 / __VELOCITIES_COUNT)+1))
+
     layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ] := play_note(pn_ncb.a.note, pn_ncb.l.sample_address, -1, -1)
     inc (ncb_round_robin [ pn_ncb.a.side, pn_ncb.a.note ])
     if  ncb_round_robin [ pn_ncb.a.side, pn_ncb.a.note ] >= __ROUND_ROBIN_MAX
@@ -3957,7 +3977,10 @@ function fn027_play_lcb_core
             fn027.l.step_duration := SEQ.JOIN.step_duration * SEQ.step_length
         end if
         {{ PLAY note }}
-        fn027.l.sample_address := ncb_round_robin [ fn027.a.side, fn027.a.note ] * 10 + 1
+        fn027.l.sample_address := ...
+            ncb_round_robin [ fn027.a.side, fn027.a.note ] * 10 + 1 + ... { round robin part }
+            (layers.note_velo [ fn027.a.side,  fn027.a.note ] / ((127 / __VELOCITIES_COUNT)+1))
+
         layers.note_events [ fn027.a.side, fn027.a.note ] := ...
             play_note(                  ...
                 fn027.a.note,           ...
@@ -4054,6 +4077,7 @@ function PLAY_LCB
                 p_lcb.l.ts_counter := ...
                     SEQ.DUAL.step_count [ p_lcb.a.side, SEQ.DUAL.current_block [ p_lcb.a.side ] ] - SEQ.ts_counter
         end select
+        
     else { SEQ JOIN }
         select(seq_join.direction_status)
             case SEQ_DIRECTION_FORWARD  
@@ -4324,9 +4348,6 @@ function PLAY_LCB
                     for play_layer_count := __LEFT to __RIGHT
                         // message(f'Playing layer < play_layer_count >')
                         if UIID_MAIN.layer.power [ play_layer_count ] -> value = __ON
-                            // if layers.note_events [ play_layer_count, SEQ.key_count ] > 0
-                            //     fade_out( layers.note_events [ play_layer_count, SEQ.key_count ], 2000, 1)
-                            // end if
 
                             if  SEQ.flux_rand_power_state [ __LEFT, SEQ.showing_target [ __LEFT ] ] = __ON and ...
                                 SEQ.flux_rand_block_state [ play_layer_count, SEQ.JOIN.current_block mod 4, SEQ.showing_target [ play_layer_count ]  ] = __ON
@@ -4383,32 +4404,28 @@ function PLAY_LCB
                 end if
 
                 for play_layer_count := __LEFT to __RIGHT
-                    fn026.a.side             := SEQ.JOIN.current_block / 4
-                    fn026.a.key_note         := ARP.played_note [ __LEFT ]
-                    fn026.a.step_counter     := SEQ.ts_counter
-                    fn026.a.block_step_index := SEQ.JOIN.current_block mod 4
-                    call fn026_get_seq_target_data
+                    if UIID_MAIN.layer.power [ play_layer_count ] -> value = __ON
+                        fn026.a.side             := SEQ.JOIN.current_block / 4
+                        fn026.a.key_note         := ARP.played_note [ __LEFT ]
+                        fn026.a.step_counter     := SEQ.ts_counter
+                        fn026.a.block_step_index := SEQ.JOIN.current_block mod 4
+                        call fn026_get_seq_target_data
 
-                    { return values from fn026_get_seq_target_data() }
-                    SEQ.step_velocity  := fn026.r.velocity
-                    SEQ.step_pitch     := fn026.r.pitch
-                    SEQ.step_length    := fn026.r.length
-                    SEQ.step_pan       := fn026.r.pan
-                    SEQ.step_filter    := fn026.r.filter_value
-                    SEQ.step_lp_filter := fn026.r.lp_filter_value
-                    SEQ.step_hp_filter := fn026.r.hp_filter_value
+                        { return values from fn026_get_seq_target_data() }
+                        SEQ.step_velocity  := fn026.r.velocity
+                        SEQ.step_pitch     := fn026.r.pitch
+                        SEQ.step_length    := fn026.r.length
+                        SEQ.step_pan       := fn026.r.pan
+                        SEQ.step_filter    := fn026.r.filter_value
+                        SEQ.step_lp_filter := fn026.r.lp_filter_value
+                        SEQ.step_hp_filter := fn026.r.hp_filter_value
 
-                    // message(f'    SEQ.step_pan: <SEQ.step_pan>')
-
-                    // if layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ] > 0
-                    //     fade_out( layers.note_events [ play_layer_count, ARP.played_note [ __LEFT ] ], 2000, 1)
-                    // end if
-
-                    if (in_range(ARP.played_note [ __LEFT ], 0, 127))
-                        fn027.a.side         := play_layer_count
-                        fn027.a.note         := ARP.played_note [ __LEFT ]
-                        fn027.a.step_counter := SEQ.ts_counter
-                        call fn027_play_lcb_core
+                        if (in_range(ARP.played_note [ __LEFT ], 0, 127))
+                            fn027.a.side         := play_layer_count
+                            fn027.a.note         := ARP.played_note [ __LEFT ]
+                            fn027.a.step_counter := SEQ.ts_counter
+                            call fn027_play_lcb_core
+                        end if
                     end if
                 end for
 

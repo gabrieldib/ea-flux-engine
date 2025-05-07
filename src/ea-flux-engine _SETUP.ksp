@@ -5,8 +5,7 @@ define HMZ_DIVISOR := 10000//28571 { 1000000 / 35 ( milliseconds )}
 define VOLUME_CURVE_SLOPE := 0.35
 
 {{ PLAY ENGINE }}
-define __ROUND_ROBIN_MAX := 4
-define __VELO_SLOPE      := 2.5
+define __VELO_SLOPE       := 2.5
 
 {{ LAYER VOLUME CROSSFADE }}
 define __CROSSFADE_FACTOR_AGENT    := 3.0

@@ -54,6 +54,9 @@ on ui_controls
         fn051.a.side        := uics_seq_side
         call fn051_set_layer_panels_state
 
+        UIID_MAIN.display_title -> text := MAIN_lfp_power_txt [ 0 ] { layer }
+        UIID_MAIN.display_value -> text := !FX_switch_state [ uics_value ]
+
         call draw_key_ranges
     end if
 
@@ -2591,6 +2594,8 @@ on ui_controls
 
         if uics_uiid_index = 0
             UIID_MAIN.layer.power [ uics_seq_side ] -> value := uics_value
+            fn051.a.side        := uics_seq_side
+            call fn051_set_layer_panels_state
         end if
 
         if uics_uiid_index < 3 and uics_uiid_index > 0 { saturation and distortion }

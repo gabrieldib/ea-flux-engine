@@ -103,7 +103,6 @@ on listener
                     fn007.a.side := __LEFT
                     call fn007_update_block_and_steps_ts
                 end if
-
                 if SEQ.JOIN.current_block > -1 and note_held_count > 0
 
                     if  seq_join.direction_status = SEQ_DIRECTION_FORWARD  
