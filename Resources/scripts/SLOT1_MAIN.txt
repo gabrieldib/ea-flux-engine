@@ -1,4 +1,4 @@
-{ Compiled on Wed May  7 09:51:02 2025 }
+{ Compiled on Wed May  7 12:17:58 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -6521,7 +6521,7 @@ function fn027_play_lcb_core
     else
       $fn027__l__step_duration := $SEQ__JOIN__step_duration*$SEQ__step_length
     end if
-    $fn027__l__sample_address := %_ncb_round_robin[128*$fn027__a__side+$fn027__a__note]*10+1+(%_layers__note_velo[128*$fn027__a__side+$fn027__a__note]/(127/$__VELOCITIES_COUNT+1))
+    $fn027__l__sample_address := %_ncb_round_robin[128*$fn027__a__side+$fn027__a__note]*10+1+($SEQ__step_velocity/(127/$__VELOCITIES_COUNT+1))
     %_layers__note_events[128*$fn027__a__side+$fn027__a__note] := play_note($fn027__a__note,$fn027__l__sample_address,-1,$fn027__l__step_duration)
     inc(%_ncb_round_robin[128*$fn027__a__side+$fn027__a__note])
     if (%_ncb_round_robin[128*$fn027__a__side+$fn027__a__note]>=$__ROUND_ROBIN_MAX)

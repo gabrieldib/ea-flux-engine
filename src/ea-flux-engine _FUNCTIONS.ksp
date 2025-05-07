@@ -67,8 +67,6 @@ function pccb_init_instrument
 
         UIID_MAIN.show_rates [ i.i ] -> text := ...
             beat_rates_display [ (UIID_MAIN.SEQ.rate_sliders [ i.i ] -> value) / __BEAT_RATE_DIVISOR ]
-
-        
     end for
 
     { change text alignment on target selectors according to SEQ DUAL/JOIN state }
@@ -3979,7 +3977,7 @@ function fn027_play_lcb_core
         {{ PLAY note }}
         fn027.l.sample_address := ...
             ncb_round_robin [ fn027.a.side, fn027.a.note ] * 10 + 1 + ... { round robin part }
-            (layers.note_velo [ fn027.a.side,  fn027.a.note ] / ((127 / __VELOCITIES_COUNT)+1))
+            (SEQ.step_velocity / ((127 / __VELOCITIES_COUNT)+1))
 
         layers.note_events [ fn027.a.side, fn027.a.note ] := ...
             play_note(                  ...
