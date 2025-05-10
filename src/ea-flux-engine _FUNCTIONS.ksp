@@ -1367,15 +1367,14 @@ function fn022_get_flux_values
                 end if
                 fn022.l.flux_filter_seed := int(1000000.0 * (float(fn022.l.flux_intensity )/150.0) )
                 fn022.l.flux_filter      := random( -1 * fn022.l.flux_filter_seed, fn022.l.flux_filter_seed)
-                message(f'fn022.l.flux_filter <fn022.l.flux_filter >')
                 fn022.r.step_filter := fn022.a.step_filter + fn022.l.flux_filter
-                if fn022.r.step_filter > 850000
-                    fn022.r.step_filter := 850000
+                if fn022.r.step_filter > 1000000
+                    fn022.r.step_filter := 1000000
                 end if
-                if fn022.r.step_filter < 150000
-                    fn022.r.step_filter := 150000
+                if fn022.r.step_filter < 0
+                    fn022.r.step_filter := 0
                 end if
-                message(f'clamped flux filter <fn022.r.step_filter >')
+
                 if fn022.r.step_filter > 500000 { high pass }
                     fn022.r.step_lp_filter := 1000000
                     fn022.r.step_hp_filter := ( fn022.r.step_filter - 500000 ) * 2
@@ -1394,11 +1393,11 @@ function fn022_get_flux_values
 
                 { return value without any flux processing }
                 fn022.r.step_filter    := fn022.a.step_filter
-                if fn022.r.step_filter > 850000
-                    fn022.r.step_filter := 850000
+                if fn022.r.step_filter > 1000000
+                    fn022.r.step_filter := 1000000
                 end if
-                if fn022.r.step_filter < 150000
-                    fn022.r.step_filter := 150000
+                if fn022.r.step_filter < 0
+                    fn022.r.step_filter := 0
                 end if
                 fn022.r.step_lp_filter := 1000000
                 fn022.r.step_hp_filter := 0

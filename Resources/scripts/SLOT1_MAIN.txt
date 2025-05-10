@@ -1,4 +1,4 @@
-{ Compiled on Sat May 10 08:04:11 2025 }
+{ Compiled on Sat May 10 09:28:08 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -6051,15 +6051,13 @@ function fn022_get_flux_values
       end if
       $fn022__l__flux_filter_seed := real_to_int(1000000.0*(int_to_real($fn022__l__flux_intensity)/150.0))
       $fn022__l__flux_filter := random(-1*$fn022__l__flux_filter_seed,$fn022__l__flux_filter_seed)
-      message("fn022.l.flux_filter " & $fn022__l__flux_filter & "")
       $fn022__r__step_filter := $fn022__a__step_filter+$fn022__l__flux_filter
-      if ($fn022__r__step_filter>850000)
-        $fn022__r__step_filter := 850000
+      if ($fn022__r__step_filter>1000000)
+        $fn022__r__step_filter := 1000000
       end if
-      if ($fn022__r__step_filter<150000)
-        $fn022__r__step_filter := 150000
+      if ($fn022__r__step_filter<0)
+        $fn022__r__step_filter := 0
       end if
-      message("clamped flux filter " & $fn022__r__step_filter & "")
       if ($fn022__r__step_filter>500000)
         $fn022__r__step_lp_filter := 1000000
         $fn022__r__step_hp_filter := ($fn022__r__step_filter-500000)*2
@@ -6071,11 +6069,11 @@ function fn022_get_flux_values
   else
     if ($fn061__r__combined_states .and. $__FLUX_POWER_OFF_DUAL=0 or ($fn061__r__combined_states .and. $__FLUX_BLOCK_OFF_DUAL=0) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_LEFT_STATE=0)) or ($fn061__r__combined_states .and. $__SEQ_STATE_JOIN=$__SEQ_STATE_JOIN and ($fn061__r__combined_states .and. $__FLUX_BLOCK_STATE=0)))
       $fn022__r__step_filter := $fn022__a__step_filter
-      if ($fn022__r__step_filter>850000)
-        $fn022__r__step_filter := 850000
+      if ($fn022__r__step_filter>1000000)
+        $fn022__r__step_filter := 1000000
       end if
-      if ($fn022__r__step_filter<150000)
-        $fn022__r__step_filter := 150000
+      if ($fn022__r__step_filter<0)
+        $fn022__r__step_filter := 0
       end if
       $fn022__r__step_lp_filter := 1000000
       $fn022__r__step_hp_filter := 0
@@ -10576,6 +10574,7 @@ end on
 
 on ui_control($button_dev__exit)
   set_control_par(get_ui_id($panel_dev),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
+  set_control_par(get_ui_id($panel_dev),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
 end on
 
 on ui_control($menu_MAIN__LEFT__soundSource)
@@ -10615,10 +10614,6 @@ on ui_control($button_dev__mode)
     message("dev mode!")
     set_control_par(get_ui_id($panel_dev),$CONTROL_PAR_HIDE,$HIDE_PART_NOTHING)
   end if
-end on
-
-on ui_control($button_dev__exit)
-  set_control_par(get_ui_id($panel_dev),$CONTROL_PAR_HIDE,$HIDE_WHOLE_CONTROL)
 end on
 
 on ui_control($button_dev__rescan__sources)
@@ -11237,11 +11232,5 @@ on listener
     end if
     inc($lcb_ms_counter)
   end if
-end on
-
-on poly_at
-end on
-
-on pgs_changed
 end on
 
