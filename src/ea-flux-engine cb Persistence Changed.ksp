@@ -38,6 +38,4 @@ on persistence_changed
     menu_MAIN.FX.RIGHT.reverb.menu -> parent_panel := get_ui_id(panel_MAIN.FX.RIGHT.reverb)
 
     message("ea-flux-engine loaded successfully")
-    message(f'PCCB end.')
-    message(f'  -0.37 ^ 2.0 <pow(0.37, 1.8) >')
 end on

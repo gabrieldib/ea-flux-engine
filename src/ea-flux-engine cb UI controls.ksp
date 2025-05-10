@@ -95,6 +95,10 @@
     on ui_control (valueedit_velo)
         __VELOCITIES_COUNT := valueedit_velo
     end on
+
+    on ui_control(valueedit_sources)
+        __SOURCE_COUNT := valueedit_sources
+    end on
     
 
 

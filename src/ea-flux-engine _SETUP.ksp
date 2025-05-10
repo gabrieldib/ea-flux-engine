@@ -12,7 +12,7 @@ define __CROSSFADE_FACTOR_AGENT    := 3.0
 define __CROSSFADE_FACTOR_OPPOSITE := 3.0
 
 {{ SOURCES }}
-define __SOURCE_COUNT         := 5  { example v0.16 }
+
 define __MAX_SOURCES_PER_PAGE := 18 { not in use }
 define __MAX_SOURCE_PAGES     := __SOURCE_COUNT/__MAX_SOURCES_PER_PAGE { not in use }
 

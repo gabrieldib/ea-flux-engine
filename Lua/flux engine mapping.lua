@@ -3,7 +3,11 @@ fs = Filesystem
 
 INSTRUMENT_IDX = 0
 
-local SAMPLES_PATH = fs.preferred("E:/Dropbox/emergence audio - gabriel/From Emergence Audio/Flux Test Samples/Flux Mapping Test Samples")
+-- desktop path
+-- local SAMPLES_PATH = fs.preferred("E:/Dropbox/emergence audio - gabriel/From Emergence Audio/Flux Test Samples/Flux Mapping Test Samples")
+--laptop
+local SAMPLES_PATH = fs.preferred("C:/Users/Gabriel Dib/Dropbox/emergence audio - gabriel/From Emergence Audio/Flux Test Samples/Flux Mapping Test Samples")
+
 
 for i=0, 50 do
     print("\n")
@@ -48,27 +52,30 @@ end
 
 function read_sample_files_data()
     -- capture all files in the given directory and group names
-    for _, p in fs.directory(SAMPLES_PATH) do
-        table.insert(samples_to_map, {
-            ["path"] = fs.parent_path(p),
-            ["filename"] = fs.filename(p),
-            ["full_path"] = p,
-            ["mapped"] = false
-        })
-        local tokens     = filename_tokens_into_table(fs.filename(p))
-        local group_name = tokens[ZONE_GROUP]
-    
-        -- only insert if not already present
-        local exists = false
-        for _, name in ipairs(group_names) do
-            if name == group_name then
-                exists = true
-                break
+    for _, p in fs.recursive_directory(SAMPLES_PATH) do
+        local is_wav, _ = string.find(p, ".wav")
+        if is_wav ~= nil then
+            table.insert(samples_to_map, {
+                ["path"] = fs.parent_path(p),
+                ["filename"] = fs.filename(p),
+                ["full_path"] = p,
+                ["mapped"] = false
+            })
+            local tokens     = filename_tokens_into_table(fs.filename(p))
+            local group_name = tokens[ZONE_GROUP]
+        
+            -- only insert if not already present
+            local exists = false
+            for _, name in ipairs(group_names) do
+                if name == group_name then
+                    exists = true
+                    break
+                end
             end
-        end
-    
-        if not exists then
-            table.insert(group_names, group_name)
+        
+            if not exists then
+                table.insert(group_names, group_name)
+            end
         end
     end
 end
@@ -176,9 +183,9 @@ function rename_groups()
     for g = 0, group_count - 1 do
         local current_group_name = kt.get_group_name(INSTRUMENT_IDX, g)
         if g < group_count // 2 then
-            kt.set_group_name(INSTRUMENT_IDX, g, "LEFT  | " .. current_group_name)
+            kt.set_group_name(INSTRUMENT_IDX, g, current_group_name)
         else
-            kt.set_group_name(INSTRUMENT_IDX, g, "RIGHT | " .. current_group_name)
+            kt.set_group_name(INSTRUMENT_IDX, g, current_group_name)
         end
     end
 end

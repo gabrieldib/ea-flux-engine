@@ -730,22 +730,24 @@
     {{ SETUP }}
     declare read __ROUND_ROBIN_MAX 
     declare read __VELOCITIES_COUNT
+    declare read  __SOURCE_COUNT
 
 
     {{ GENERAL }}
         declare note_held_count
         declare read SHOWING_PANEL
         declare MATRIX.matrix.center.mouseON [2] // 0 is the state, 1 is the quadrant start index
-        declare read play_range [ 2, __SOURCE_COUNT, 2 ] // side, source, low and hi
+        declare read play_range [ 2, 1000, 2 ] // side, source, low and hi
         declare __INSTRUMENT_INIT := __YES
 
     {{ SOURCES }}
+
         declare read selected_source      [ 2 ]
         declare read source_page          [ 2 ]
-        declare read sources_range_offset [ 2, __SOURCE_COUNT ]
-        declare read sources_range_data   [ __SOURCE_COUNT, 128 ] // each key of the range 
-        declare read sources_range        [ __SOURCE_COUNT, 2 ]   // lowest / highest keys for each range
-        declare read sources_range_length [ __SOURCE_COUNT ]      // range length
+        declare read sources_range_offset [ 2, 1000 ]
+        declare read sources_range_data   [ 1000, 128 ] // each key of the range 
+        declare read sources_range        [ 1000, 2 ]   // lowest / highest keys for each range
+        declare read sources_range_length [ 1000 ]      // range length
         declare const __RANGE_LOW  := 0
         declare const __RANGE_HIGH := 1
         declare read key_range_colors [ 128 ]
@@ -860,12 +862,12 @@
         declare last_played_note_ts           // for the LFO engine on off
         declare __SINGLE_SHOT_LFO_CHECK
 
-        declare read ?sample_starts     [ __SOURCE_COUNT, 2, 128 ]
-        declare read ?sample_tuning     [ __SOURCE_COUNT, 2, 128 ]
-        declare read sample_low_cutoff  [ __SOURCE_COUNT, 2, 128 ] := (0)
-        declare read sample_low_reso    [ __SOURCE_COUNT, 2, 128 ]
-        declare read sample_high_cutoff [ __SOURCE_COUNT, 2, 128 ]
-        declare read sample_high_reso   [ __SOURCE_COUNT, 2, 128 ]
+        declare read ?sample_starts     [ 1000, 2, 128 ]
+        declare read ?sample_tuning     [ 1000, 2, 128 ]
+        declare read sample_low_cutoff  [ 1000, 2, 128 ] := (0)
+        declare read sample_low_reso    [ 1000, 2, 128 ]
+        declare read sample_high_cutoff [ 1000, 2, 128 ]
+        declare read sample_high_reso   [ 1000, 2, 128 ]
 
         declare      ncb_round_robin  [ 2, 128 ]
 

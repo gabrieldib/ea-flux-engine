@@ -105,8 +105,8 @@ function pccb_init_instrument
     label_MAIN.matrix.left       -> picture_state := slider_MAIN.FX.LEFT.layer.volume / 3921
     label_MAIN.matrix.right      -> picture_state := slider_MAIN.FX.RIGHT.layer.volume / 3921
 
-    source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
-    source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
+    // source_page [ __LEFT ] := selected_source [ __LEFT ] / __MAX_SOURCES_PER_PAGE
+    // source_page [ __RIGHT ] := selected_source [ __RIGHT ] / __MAX_SOURCES_PER_PAGE
     // call fn055_recall_source_buttons_page
 
     call draw_key_ranges
@@ -173,10 +173,8 @@ function pccb_init_instrument
         end if
         if UIID_MAIN.seq.power [ pccb_counter ] -> value = __ON
             UIID_MAIN.seq.step_lock [ pccb_counter ] -> UI_SHOW
-            message(f'showing lock for side <pccb_counter >')
         else
             UIID_MAIN.seq.step_lock [ pccb_counter ] -> UI_HIDE
-            message(f'hiding lock for side <pccb_counter >')
         end if
     end for
     
@@ -880,7 +878,6 @@ function fn005_set_seq_target_selector
         UIID_MAIN.seq.target_selectors [ i.i ] -> value := __OFF
     end for
     if in_range(fn005.a.selector_index, 0, 4)
-        message(f'target selector activated: <fn005.a.selector_index >')
         UIID_MAIN.seq.target_selectors [ fn005.a.selector_index ] -> value := __ON
     end if
 end function
@@ -1114,26 +1111,26 @@ end function
 
 {{ 20 }}
 function fn020_update_seq_target_state
-    message(f'FN020 CALL ()')
+    // message(f'FN020 CALL ()')
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
-        message(f'    SEQ DUAL')
+        // message(f'    SEQ DUAL')
         if fn020.a.seq_power_state = __ON
-            message(f'        SEQ power ON')
+            // message(f'        SEQ power ON')
             if  fn020.a.target_power_uiid -> value = __OFF
-                message(f'          Target Off on side  <fn020.a.side >')
+                // message(f'          Target Off on side  <fn020.a.side >')
                 UIID_MAIN.seq.off_label      [ fn020.a.side ] -> picture := "label_FX.off"
                 UIID_MAIN.seq.off_label      [ fn020.a.side ] -> UI_SHOW
                 UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> UI_SHOW
                 UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> text := "TARGET " & SEQ.target_names [ fn020.a.target_index ] & " IS OFF"
             else
-                message(f'          Target On on side  <fn020.a.side >')
+                // message(f'          Target On on side  <fn020.a.side >')
                 UIID_MAIN.seq.off_label      [ fn020.a.side ] -> UI_HIDE
                 UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> UI_HIDE
-                message(f'          text label hide state: <UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> hide >')
+                // message(f'          text label hide state: <UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> hide >')
             end if
         else
-            message(f'          Seq off on side  <fn020.a.side >')
-            message(f'        SEQ power OFF')
+            // message(f'          Seq off on side  <fn020.a.side >')
+            // message(f'        SEQ power OFF')
             UIID_MAIN.seq.off_label      [ fn020.a.side ] -> UI_HIDE
             UIID_MAIN.seq.off_label_text [ fn020.a.side ] -> UI_HIDE
             UIID_MAIN.seq.off_label      [ fn020.a.side ] -> picture := "label_seq_steps_bg"
@@ -1141,20 +1138,20 @@ function fn020_update_seq_target_state
         end if
 
     else
-        message(f'    SEQ JOIN')
+        // message(f'    SEQ JOIN')
         if UIID_MAIN.seq.power [ __LEFT ] -> value = __ON
-            message(f'        SEQ power ON')
+            // message(f'        SEQ power ON')
             if  fn020.a.target_power_uiid -> value = __OFF
-                message(f'              Target OFF')
+                // message(f'              Target OFF')
                 label_MAIN.SEQjoin.off -> picture := "label_MAIN.SEQjoin.off"
                 label_MAIN.SEQjoin.off -> UI_SHOW
                 label_MAIN.SEQjoin.off -> text := "TARGET " & SEQ.target_names [ fn020.a.target_index ] & " IS OFF"
             else
-                message(f'              Target ON')
+                // message(f'              Target ON')
                 label_MAIN.SEQjoin.off -> UI_HIDE
             end if
         else
-            message(f'        SEQ power OFF')
+            // message(f'        SEQ power OFF')
             label_MAIN.SEQjoin.off -> UI_SHOW
             label_MAIN.SEQjoin.off -> picture := "label_seq_join_steps_bg"
             label_MAIN.SEQjoin.off -> text    := ""
@@ -2773,14 +2770,14 @@ function fn038_LFO_store_LFO_mod_data()
 
     for fn038.l.side_counter := __LEFT to __RIGHT
         if fn038.a.side = fn038.l.side_counter or fn038.a.link = __ON or switch_crossfade = __ON
-            message(f'FN38: side <fn038.l.side_counter > | target <fn038.a.target > | control_value __ <fn038.a.control_value > | LFO_amount <fn038.a.LFO_amount  >')
+            // message(f'FN38: side <fn038.l.side_counter > | target <fn038.a.target > | control_value __ <fn038.a.control_value > | LFO_amount <fn038.a.LFO_amount  >')
 
             if switch_crossfade = __ON and fn038.l.side_counter = __RIGHT and fn038.a.target = 16
                 LFO_mod_center  := float(1000000 -  fn038.a.control_value )
-                message(f'    LFO mod center set to inverted | value: <LFO_mod_center>')
+                // message(f'    LFO mod center set to inverted | value: <LFO_mod_center>')
             else
                 LFO_mod_center  := float( fn038.a.control_value )
-                message(f'    LFO mod center set to regular | value: <LFO_mod_center>')
+                // message(f'    LFO mod center set to regular | value: <LFO_mod_center>')
             end if
 
             fn038.l.pct_divisor  := 1000000.0
@@ -3853,11 +3850,12 @@ end function
 
 
 function PLAY_NOTE_NCB
+    message("CALL PLAY_NOTE_NCB()")
     { play }
     pn_ncb.l.sample_address := ...
         ncb_round_robin [ pn_ncb.a.side, pn_ncb.a.note ] * 10 + 1 + ... { round robin part }
         (layers.note_velo [ pn_ncb.a.side,  pn_ncb.a.note ] / ((127 / __VELOCITIES_COUNT)+1))
-
+    message(f'    playing sample address <pn_ncb.l.sample_address>')
     layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ] := play_note(pn_ncb.a.note, pn_ncb.l.sample_address, -1, -1)
     inc (ncb_round_robin [ pn_ncb.a.side, pn_ncb.a.note ])
     if  ncb_round_robin [ pn_ncb.a.side, pn_ncb.a.note ] >= __ROUND_ROBIN_MAX
@@ -3873,7 +3871,7 @@ function PLAY_NOTE_NCB
         __ON,                                                              ...
         selected_source [ pn_ncb.a.side ] + pn_ncb.a.side * __SOURCE_COUNT ...
     )
-
+    message(f'    selected source group <selected_source [ pn_ncb.a.side ] + pn_ncb.a.side * __SOURCE_COUNT>')
     { only to load the waveform but not playing anything }
     if pn_ncb.a.mute_note = __YES
         change_vol( layers.note_events [ pn_ncb.a.side,  pn_ncb.a.note ], -200000, 0)
