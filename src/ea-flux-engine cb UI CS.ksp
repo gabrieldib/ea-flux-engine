@@ -2670,6 +2670,7 @@ on ui_controls
                 for s.i := 0 to ((NUM_GROUPS-1)/2)
                     set_engine_par(#engine_par#, uics_value, s.i + uics_seq_side * __SOURCE_COUNT, #target_slot#, #target_bus#)
                 end for
+                UIID_MAIN.display_value -> text := get_engine_par_disp(#engine_par#, uics_seq_side * __SOURCE_COUNT, #target_slot#, #target_bus#) & #data_type#
             else
                 if #engine_par# = ENGINE_PAR_VOLUME
                     uics_value := int(float(uics_value)*0.63)
@@ -2678,10 +2679,10 @@ on ui_controls
                     uics_value := int(float(uics_value) * REV_MAX_LEVEL)
                 end if
                 // set_engine_par(#engine_par#, uics_value, __GROUP_NONE, #target_slot#, #target_bus#)
+                UIID_MAIN.display_value -> text := get_engine_par_disp(#engine_par#, #target_group#, #target_slot#, #target_bus#) & #data_type#
             end if
 
             UIID_MAIN.display_title -> text := #title#
-            UIID_MAIN.display_value -> text := get_engine_par_disp(#engine_par#, #target_group#, #target_slot#, #target_bus#) & #data_type#
 
         end if
     end macro

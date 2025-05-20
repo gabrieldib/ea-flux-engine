@@ -1,5 +1,4 @@
 on release
-    // import "ARP/__ARP 06 release cb.ksp"
     if get_event_par(EVENT_ID, EVENT_PAR_0) = 1
         dec(note_held_count)
         layers.note_events [ __LEFT,  EVENT_NOTE ] := 0
@@ -84,7 +83,6 @@ on release
                     end if
                     fn033.a.step_value := rcb_step_data
                     call fn033_transform_step_value_into_dynamic
-                
 
                     fn018.a.side       := rcb_counter_side
                     fn018.a.step_index := rcb_counter_block * 8 + rcb_counter_step

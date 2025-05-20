@@ -1,5 +1,4 @@
 on note
-    // import "ARP/__ARP 05 note cb.ksp"
     ignore_event(EVENT_ID)
     set_event_par(EVENT_ID, EVENT_PAR_0, 1)
     inc(note_held_count)
@@ -17,9 +16,6 @@ on note
     end if
 
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
-            { first note - with sequencer on or not it always play because
-              seq counter is zeroed and it will play immeditely }
-
         if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
             ( switch_MAIN.SEQ.LEFT.power       = __OFF ) 
             pn_ncb.a.side      := __LEFT
@@ -46,34 +42,10 @@ on note
         inc( ARP.cursor [ __LEFT  ])
         inc( ARP.cursor [ __RIGHT ])
         if ( ARP.cursor [ __LEFT ] < 2 and ARP.seq_running = 0)
-            message("Starting the ARP")
             call ARP.StartSeq()
         end if
 
     else { sequencer is in JOIN mode }
-
-        { in this case the sequencer power check uses the LEFT power for both layers }
-        {{ Layer 1 }}
-        // if  switch_MAIN.SoundSource.LEFT.power = __ON  and ...
-        //     ( ( switch_MAIN.SEQ.LEFT.power     = __ON  and note_held_count = 1) or ...
-        //     ( switch_MAIN.SEQ.LEFT.power       = __OFF ) )
-
-        //     pn_ncb.a.side := __LEFT
-        //     pn_ncb.a.note := EVENT_NOTE
-        //     pn_ncb.a.velo := EVENT_VELOCITY
-        //     call PLAY_NOTE_NCB
-        // end if
-
-        // {{ Layer 2 }}
-        // if  switch_MAIN.SoundSource.RIGHT.power = __ON  and ...
-        //     ( ( switch_MAIN.SEQ.LEFT.power      = __ON  and note_held_count = 1) or ...
-        //     ( switch_MAIN.SEQ.LEFT.power        = __OFF ) )
-
-        //     pn_ncb.a.side := __RIGHT
-        //     pn_ncb.a.note := EVENT_NOTE
-        //     pn_ncb.a.velo := EVENT_VELOCITY
-        //     call PLAY_NOTE_NCB
-        // end if
 
         {{ ARP }}
         ARP.note_buffer_LEFT  [ ARP.cursor [ __LEFT  ] ] := EVENT_NOTE

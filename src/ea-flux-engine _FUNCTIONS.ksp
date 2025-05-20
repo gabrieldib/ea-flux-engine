@@ -628,7 +628,6 @@ end function
 
 {{ 18 }}
 function fn018_set_seq_step_picture_state
-    // message(f'    ps = <int(float(SEQ_XY_H-1) * fn018.a.value)> | value <fn018.a.value>')
     UIID_MAIN.seq.step [ fn018.a.side, fn018.a.step_index ] -> picture_state := ...
         int(float(SEQ_XY_H-1) * fn018.a.value)
 end function
@@ -1005,19 +1004,12 @@ function fn017_get_seq_target_data
                     SEQ_TARGET_VELO,                                    ...
                     fn017.a.step_counter + fn017.a.block_step_index * 8 ...
                 ]
-        // message(f'FN17 step: <fn017.a.step_counter + fn017.a.block_step_index * 8 >')
         if fn017.a.transform_value = __YES
             fn034.a.target_index := SEQ_TARGET_VELO
             fn034.a.value        := fn017.l.seq_data
             call fn034_transform_data_according_to_seq_target
             fn017.r.velocity := fn034.r.transf_value.i
-            // message(f'    FN17 returning velocity transformed by FN34: <fn017.r.velocity >')
         else
-            // message(f'    FN17 returning velocity: <fn017.r.velocity >')
-            // message(f'    fn017.a.step_counter <fn017.a.step_counter >')
-            // message(f'    fn017.a.block_step_index <fn017.a.block_step_index   >')
-            // message(f'    side: <fn017.a.side >')
-            // message(f' ___________________________________________________')
             fn017.r.velocity := fn017.l.seq_data
         end if
     else { if target velocity is off, use the played velocity }
@@ -1171,8 +1163,6 @@ end function
 
 {{ 22 this will be called when a block is about to start }}
 function fn022_get_flux_values
-        // message(f'fn22 ______________ side: < fn022.a.side >')
-    
         if switch_MAIN.SEQ.combine = __SEQ_DUAL
             fn022.l.seq_mode_side := fn022.a.side
         else
@@ -2279,38 +2269,49 @@ function randomize_step_values
     for uics_counter := 0 to 3
         for uics_counter2 := 0 to 7
             uics_current_value.r := ...
-                SEQ.data.f [                              ...
+                SEQ.data.f [                                  ...
                     uics_side_counter,                        ...
                     SEQ.showing_target [ uics_side_counter ], ...
-                    uics_counter * 8 + uics_counter2      ...
+                    uics_counter * 8 + uics_counter2          ...
                 ]
 
             uics_random_delta.r := (float(random(-10000,10000))/10000.0) * uics_r_value
 
-            SEQ.data.f [                                  ...
+            SEQ.data.f [                                      ...
                     uics_side_counter,                        ...
                     SEQ.showing_target [ uics_side_counter ], ...
-                    uics_counter * 8 + uics_counter2      ...
+                    uics_counter * 8 + uics_counter2          ...
                 ] := uics_current_value.r + uics_random_delta.r
 
             { clamping values out of range }
             if uics_current_value.r + uics_random_delta.r > 1.0
-                SEQ.data.f [                              ...
+                SEQ.data.f [                                  ...
                     uics_side_counter,                        ...
                     SEQ.showing_target [ uics_side_counter ], ...
-                    uics_counter * 8 + uics_counter2      ...
+                    uics_counter * 8 + uics_counter2          ...
                 ] := 1.0
 
             else
                 if uics_current_value.r + uics_random_delta.r < 0.0
-                    SEQ.data.f [                              ...
+                    SEQ.data.f [                                  ...
                         uics_side_counter,                        ...
                         SEQ.showing_target [ uics_side_counter ], ...
-                        uics_counter * 8 + uics_counter2      ...
+                        uics_counter * 8 + uics_counter2          ...
                     ] := 0.0
                 end if
 
             end if
+            { also populate the integer side }
+            SEQ.data.i [                                  ...
+                uics_side_counter,                        ...
+                SEQ.showing_target [ uics_side_counter ], ...
+                uics_counter * 8 + uics_counter2          ...
+            ] :=    int(SEQ.data.f [                              ...
+                        uics_side_counter,                        ...
+                        SEQ.showing_target [ uics_side_counter ], ...
+                        uics_counter * 8 + uics_counter2          ...
+                    ] * 1000000.0                                 ...
+                )
 
             fn018.a.side       := uics_side_counter
             fn018.a.step_index := uics_counter * 8 + uics_counter2
@@ -3136,9 +3137,7 @@ end function
 {{ play engine ____________________________________________________________________ }}
 {{ 7 }}
 function fn007_update_block_and_steps_ts
-    // message(f'FN007 side: <fn007.a.side> | layer power  <UIID_MAIN.layer.power [ fn007.a.side ] -> value >')
     if switch_MAIN.SEQ.combine = __SEQ_DUAL and UIID_MAIN.layer.power [ fn007.a.side ] -> value = __ON
-        // message(f'    Processing DUAL blocks ')
         { update current block index, current block step duration and 
           each step's timestamp }
         if  seq.direction_status [ fn007.a.side ] = SEQ_DIRECTION_FORWARD
@@ -3195,13 +3194,11 @@ function fn007_update_block_and_steps_ts
         end if
 
         {{ UPDATES WHOLE BLOCK FLUX DATA and UI STEPS ACCORDING TO FLUX RANDOMIZER INFLUENCE }}
-        // message(f'Calling fn25, side: <fn007.a.side>')
         fn025.a.side := fn007.a.side
         call fn025_update_flux_on_all_block_steps
 
     else { JOIN sequencer }
         if UIID_MAIN.layer.power [ __LEFT ] -> value = __ON or UIID_MAIN.layer.power [ __RIGHT ] -> value = __ON
-        // message(f'    Processing JOIN blocks ')
             if  seq_join.direction_status = SEQ_DIRECTION_FORWARD
 
                 inc(SEQ.JOIN.current_block )
@@ -3221,9 +3218,6 @@ function fn007_update_block_and_steps_ts
                     SEQ.rate [ __LEFT ] / ( SEQ.JOIN.step_count [ SEQ.JOIN.current_block ] + 1 )
 
                 for s.i := 0 to SEQ.JOIN.step_count [ SEQ.JOIN.current_block ]
-                    // SEQ.JOIN.steps_timestamps [ SEQ.JOIN.current_block, s.i ] := ...
-                    //     ENGINE_UPTIME + s.i * SEQ.JOIN.step_duration
-
                     if s.i > 0
                         SEQ.JOIN.steps_timestamps [ SEQ.JOIN.current_block, s.i ] := ...
                             ENGINE_UPTIME + s.i * SEQ.JOIN.step_duration + ...
@@ -3419,7 +3413,6 @@ function fn025_update_flux_on_all_block_steps
                     call fn017_get_seq_target_data
                     { return values from fn017_get_seq_target_data() used below }
 
-
                     fn022.a.side             := fn025.a.side
                     fn022.a.step_counter     := fn025.l.counter
                     fn022.a.block_step_index := fn025.l.counter2
@@ -3429,16 +3422,6 @@ function fn025_update_flux_on_all_block_steps
                     fn022.a.step_pan         := fn017.r.pan          // value returned from fn017
                     fn022.a.step_filter      := fn017.r.filter_value // value returned from fn017
                     call fn022_get_flux_values
-
-                    {{ LOG }}
-                        // message(f'OG  : <fn025.l.counter2> | <fn025.l.counter> | fn017.r.velocity      : <fn017.r.velocity >')
-                        // message(f'FLUX: <fn025.l.counter2> | <fn025.l.counter> | fn022.a.step_velocity : <fn022.a.step_velocity >')
-                        // message(f'<fn025.l.counter2> | <fn025.l.counter> | fn024.a.step_pitch    : <fn024.a.step_pitch    >')
-                        // message(f'<fn025.l.counter2> | <fn025.l.counter> | fn024.a.step_length   : <fn024.a.step_length   >')
-                        // message(f'<fn025.l.counter2> | <fn025.l.counter> | fn024.a.step_pan      : <fn024.a.step_pan      >')
-                        // message(f'<fn025.l.counter2> | <fn025.l.counter> | fn024.a.step_filter   : <fn024.a.step_filter   >')
-                        // message(f'<fn025.l.counter2> | <fn025.l.counter> | fn024.a.step_lp_filter: <fn024.a.step_lp_filter>')
-                        // message(f'<fn025.l.counter2> | <fn025.l.counter> | fn024.a.step_hp_filter: <fn024.a.step_hp_filter>')
 
                     fn024.a.step_velocity    := fn022.r.step_velocity
                     fn024.a.step_pitch       := fn022.r.step_pitch
@@ -3464,9 +3447,6 @@ function fn025_update_flux_on_all_block_steps
                         fn025.l.counter2 * 8 + fn025.l.counter ...
                     ] := fn033.r.transf_value.r
 
-                    // message(f'DYN : <fn025.l.counter2> | <fn025.l.counter> | fn033.r.transf_value.i : <fn033.r.transf_value.i >')
-                    // message(f'    <fn025.l.counter2> | <fn025.l.counter> | fn024.a.step_velocity : <fn024.a.step_velocity >')
-                    // message(f'    <fn025.l.counter2> | <fn025.l.counter> | fn024.a.step_pitch : <fn024.a.step_pitch >')
                 end for
 
             end for
@@ -3597,6 +3577,7 @@ function fn026_get_seq_target_data
         fn026.r.pitch := 0
     end if
 
+
     if  UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_LENGTH ] -> value = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
         UIID_MAIN.seq.target_power [ __LEFT, SEQ_TARGET_LENGTH ] -> value = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
 
@@ -3630,6 +3611,7 @@ function fn026_get_seq_target_data
         fn026.r.length := 0
     end if
 
+
     if  UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_PAN ] -> value = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
         UIID_MAIN.seq.target_power [ __LEFT, SEQ_TARGET_PAN ] -> value = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
         // message(f'retrieving Flux PAN')
@@ -3661,6 +3643,7 @@ function fn026_get_seq_target_data
     else
         fn026.r.pan := 0
     end if
+
 
     if  UIID_MAIN.seq.target_power [ fn026.a.side, SEQ_TARGET_FILTER ] -> value = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL or ...
         UIID_MAIN.seq.target_power [ __LEFT, SEQ_TARGET_FILTER ] -> value = __ON and switch_MAIN.SEQ.combine = __SEQ_JOIN
@@ -4124,15 +4107,6 @@ function PLAY_LCB
                     call fn026_get_seq_target_data
                     { return values from fn026_get_seq_target_data() }
 
-                    { LOG }
-                        // message(f'PLAY_LCB, | fn026.r.velocity: <fn026.r.velocity> ')
-                        // message(f'PLAY_LCB, | fn026.r.pitch:    <fn026.r.pitch>')
-                        // message(f'PLAY_LCB, | fn026.r.length: <fn026.r.length> ')
-                        // message(f'PLAY_LCB, | fn026.r.pan: <fn026.r.pan> ')
-                        // message(f'PLAY_LCB, | fn026.r.filter_value:    <fn026.r.filter_value>')
-                        // message(f'PLAY_LCB, | fn026.r.lp_filter_value:    <fn026.r.lp_filter_value>')
-                        // message(f'PLAY_LCB, | fn026.r.hp_filter_value:    <fn026.r.hp_filter_value>')
-
                     SEQ.step_velocity  := fn026.r.velocity
                     SEQ.step_pitch     := fn026.r.pitch
                     SEQ.step_length    := fn026.r.length
@@ -4140,14 +4114,6 @@ function PLAY_LCB
                     SEQ.step_lp_filter := fn026.r.lp_filter_value
                     SEQ.step_hp_filter := fn026.r.hp_filter_value
                     SEQ.step_filter    := fn026.r.filter_value
-
-                    // message(f'    PLAY FN SEQ.step_velocity  <SEQ.step_velocity >')
-                    // message(f'    PLAY FN SEQ.step_pitch     <SEQ.step_pitch >')
-                    // message(f'    PLAY FN SEQ.step_length    <SEQ.step_length >')
-                    // message(f'    PLAY FN SEQ.step_pan       <SEQ.step_pan >')
-                    // message(f'    PLAY FN SEQ.step_lp_filter <SEQ.step_lp_filter >')
-                    // message(f'    PLAY FN SEQ.step_hp_filter <SEQ.step_hp_filter >')
-
 
                     fn027.a.side         := p_lcb.a.side
                     fn027.a.note         := SEQ.key_count

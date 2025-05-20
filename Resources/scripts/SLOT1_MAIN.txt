@@ -1,4 +1,4 @@
-{ Compiled on Sat May 10 09:28:08 2025 }
+{ Compiled on Tue May 20 14:38:53 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -81,8 +81,8 @@ on init
   19, 20, 19, 20, 21, 21, 19, 19, 19, 19, 20, 20, 20, 20, 20, 19, 15, 15, 10, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 20, 20, 20, 19, 19, 19, 19, 19, 19, ...
   19, 20, 21, 20, 20, 19, 19, 19, 19, 19, 20, 20, 20, 19, 19, 20, 20, 21, 21, 19, 19, 19, 19, 20, 20, 20, 20, 20, 19, 15, 15, 10, 21, 21, 21, 21, 21, 21, 21, 21, ...
   21, 21, 21, 21, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 15, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 31, 21, ...
-  28, 28, 28, 28, 28, 25, 31, 31, 15, 15, 15, 14, 14, 14, 110, 110, 45, 14, 14, 184, 184, 184, 184, 184, 184, 184, 207, 48, 18, 47, 18, 99, 6, 6, 6, 6, 95, 95, 95, 95, ...
-  95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 99, 6, 6, 6, 6, 95, 95, 95, 95, 95, 95, 95, ...
+  28, 28, 28, 28, 28, 25, 31, 31, 15, 15, 15, 14, 14, 14, 110, 110, 45, 14, 14, 184, 184, 184, 184, 184, 184, 184, 207, 48, 18, 47, 18, 99, 7, 7, 7, 7, 95, 95, 95, 95, ...
+  95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 99, 7, 7, 7, 7, 95, 95, 95, 95, 95, 95, 95, ...
   95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 13, 13, 133, 133, 12, 23, 15, 15, 15, 15, 15, 15, 207, 50, 25, ...
   25, 14, 153, 13, 127, 127, 13, 127, 127, 15, 15, 140, 36, 36, 36, 36, 36, 36, 34, 34, 34, 140, 18, 18, 18, 36, 36, 34, 140, 36, 36, 36, 36, 34, 34, 18, 18, 140, 36, 36, ...
   36, 36, 36, 36, 34, 34, 34, 140, 36, 36, 36, 36, 34, 34, 140, 16, 16, 140, 36, 36, 36, 36, 36, 36, 36, 36, 34, 34, 34, 34, 140, 36, 36, 34, 140, 140, 36, 36, 36, 36, ...
@@ -5210,6 +5210,7 @@ function randomize_step_values
           ?_SEQ__data__f[32*5*$uics_side_counter+(32*%SEQ__showing_target[$uics_side_counter])+$uics_counter*8+$uics_counter2] := 0.0
         end if
       end if
+      %_SEQ__data__i[32*5*$uics_side_counter+(32*%SEQ__showing_target[$uics_side_counter])+$uics_counter*8+$uics_counter2] := real_to_int(?_SEQ__data__f[32*5*$uics_side_counter+(32*%SEQ__showing_target[$uics_side_counter])+$uics_counter*8+$uics_counter2]*1000000.0)
       $fn018__a__side := $uics_side_counter
       $fn018__a__step_index := $uics_counter*8+$uics_counter2
       ~fn018__a__value := ?_SEQ__data__f[32*5*$uics_side_counter+(32*%SEQ__showing_target[$uics_side_counter])+$uics_counter*8+$uics_counter2]
@@ -10214,6 +10215,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_VOLUME,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),-1,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_VOLUME,$uics_seq_side*$__SOURCE_COUNT,-1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     else
       if ($ENGINE_PAR_VOLUME=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10221,9 +10223,9 @@ on ui_controls
       if ($ENGINE_PAR_VOLUME=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_VOLUME,-1,-1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Volume")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_VOLUME,-1,-1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
   end if
   if ($NI_UI_ID=%UIID_controls[1] or ($NI_UI_ID=%UIID_controls[1+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10237,6 +10239,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_PAN,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),-1,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_PAN,$uics_seq_side*$__SOURCE_COUNT,-1,$NI_BUS_OFFSET+$uics_seq_side) & "")
     else
       if ($ENGINE_PAR_PAN=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10244,9 +10247,9 @@ on ui_controls
       if ($ENGINE_PAR_PAN=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_PAN,-1,-1,$NI_BUS_OFFSET+$uics_seq_side) & "")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Pan")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_PAN,-1,-1,$NI_BUS_OFFSET+$uics_seq_side) & "")
   end if
   if ($NI_UI_ID=%UIID_controls[2] or ($NI_UI_ID=%UIID_controls[2+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10260,6 +10263,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_STEREO,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),7,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_STEREO,$uics_seq_side*$__SOURCE_COUNT,7,$NI_BUS_OFFSET+$uics_seq_side) & "%")
     else
       if ($ENGINE_PAR_STEREO=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10267,9 +10271,9 @@ on ui_controls
       if ($ENGINE_PAR_STEREO=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_STEREO,-1,7,$NI_BUS_OFFSET+$uics_seq_side) & "%")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Width")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_STEREO,-1,7,$NI_BUS_OFFSET+$uics_seq_side) & "%")
   end if
   if ($NI_UI_ID=%UIID_controls[3] or ($NI_UI_ID=%UIID_controls[3+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10283,6 +10287,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_SHAPE,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),0,-1)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_SHAPE,$uics_seq_side*$__SOURCE_COUNT,0,-1) & "%")
     else
       if ($ENGINE_PAR_SHAPE=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10290,9 +10295,9 @@ on ui_controls
       if ($ENGINE_PAR_SHAPE=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_SHAPE,-20,0,-1) & "%")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Saturation")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_SHAPE,-20,0,-1) & "%")
   end if
   if ($NI_UI_ID=%UIID_controls[4] or ($NI_UI_ID=%UIID_controls[4+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10306,6 +10311,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_DAMPING,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),1,-1)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_DAMPING,$uics_seq_side*$__SOURCE_COUNT,1,-1) & "%")
     else
       if ($ENGINE_PAR_DAMPING=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10313,9 +10319,9 @@ on ui_controls
       if ($ENGINE_PAR_DAMPING=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_DAMPING,-20,1,-1) & "%")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Damping")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_DAMPING,-20,1,-1) & "%")
   end if
   if ($NI_UI_ID=%UIID_controls[5] or ($NI_UI_ID=%UIID_controls[5+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10329,6 +10335,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_DRIVE,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),1,-1)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_DRIVE,$uics_seq_side*$__SOURCE_COUNT,1,-1) & "%")
     else
       if ($ENGINE_PAR_DRIVE=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10336,9 +10343,9 @@ on ui_controls
       if ($ENGINE_PAR_DRIVE=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_DRIVE,-20,1,-1) & "%")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Drive")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_DRIVE,-20,1,-1) & "%")
   end if
   if ($NI_UI_ID=%UIID_controls[6] or ($NI_UI_ID=%UIID_controls[6+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10352,6 +10359,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_BITS,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),0,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_BITS,$uics_seq_side*$__SOURCE_COUNT,0,$NI_BUS_OFFSET+$uics_seq_side) & "")
     else
       if ($ENGINE_PAR_BITS=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10359,9 +10367,9 @@ on ui_controls
       if ($ENGINE_PAR_BITS=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_BITS,-1,0,$NI_BUS_OFFSET+$uics_seq_side) & "")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Bits")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_BITS,-1,0,$NI_BUS_OFFSET+$uics_seq_side) & "")
   end if
   if ($NI_UI_ID=%UIID_controls[7] or ($NI_UI_ID=%UIID_controls[7+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10375,6 +10383,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_FREQUENCY,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),0,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_FREQUENCY,$uics_seq_side*$__SOURCE_COUNT,0,$NI_BUS_OFFSET+$uics_seq_side) & "")
     else
       if ($ENGINE_PAR_FREQUENCY=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10382,9 +10391,9 @@ on ui_controls
       if ($ENGINE_PAR_FREQUENCY=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_FREQUENCY,-1,0,$NI_BUS_OFFSET+$uics_seq_side) & "")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Sample Rate")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_FREQUENCY,-1,0,$NI_BUS_OFFSET+$uics_seq_side) & "")
   end if
   if ($NI_UI_ID=%UIID_controls[8] or ($NI_UI_ID=%UIID_controls[8+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10398,6 +10407,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_NOISELEVEL,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),0,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_NOISELEVEL,$uics_seq_side*$__SOURCE_COUNT,0,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     else
       if ($ENGINE_PAR_NOISELEVEL=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10405,9 +10415,9 @@ on ui_controls
       if ($ENGINE_PAR_NOISELEVEL=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_NOISELEVEL,-1,0,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Noise")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_NOISELEVEL,-1,0,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
   end if
   if ($NI_UI_ID=%UIID_controls[9] or ($NI_UI_ID=%UIID_controls[9+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10421,6 +10431,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_TP_GAIN,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),1,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_TP_GAIN,$uics_seq_side*$__SOURCE_COUNT,1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     else
       if ($ENGINE_PAR_TP_GAIN=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10428,9 +10439,9 @@ on ui_controls
       if ($ENGINE_PAR_TP_GAIN=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_TP_GAIN,-1,1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Gain")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_TP_GAIN,-1,1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
   end if
   if ($NI_UI_ID=%UIID_controls[10] or ($NI_UI_ID=%UIID_controls[10+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10444,6 +10455,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_TP_WARMTH,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),1,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_TP_WARMTH,$uics_seq_side*$__SOURCE_COUNT,1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     else
       if ($ENGINE_PAR_TP_WARMTH=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10451,9 +10463,9 @@ on ui_controls
       if ($ENGINE_PAR_TP_WARMTH=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_TP_WARMTH,-1,1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Warmth")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_TP_WARMTH,-1,1,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
   end if
   if ($NI_UI_ID=%UIID_controls[11] or ($NI_UI_ID=%UIID_controls[11+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10467,6 +10479,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_CHORAL_MIX,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),5,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_MIX,$uics_seq_side*$__SOURCE_COUNT,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
     else
       if ($ENGINE_PAR_CHORAL_MIX=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10474,9 +10487,9 @@ on ui_controls
       if ($ENGINE_PAR_CHORAL_MIX=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_MIX,-1,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Wet")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_MIX,-1,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
   end if
   if ($NI_UI_ID=%UIID_controls[12] or ($NI_UI_ID=%UIID_controls[12+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10490,6 +10503,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_CHORAL_AMOUNT,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),5,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_AMOUNT,$uics_seq_side*$__SOURCE_COUNT,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
     else
       if ($ENGINE_PAR_CHORAL_AMOUNT=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10497,9 +10511,9 @@ on ui_controls
       if ($ENGINE_PAR_CHORAL_AMOUNT=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_AMOUNT,-1,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Depth")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_AMOUNT,-1,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
   end if
   if ($NI_UI_ID=%UIID_controls[13] or ($NI_UI_ID=%UIID_controls[13+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10513,6 +10527,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_CHORAL_RATE,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),5,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_RATE,$uics_seq_side*$__SOURCE_COUNT,5,$NI_BUS_OFFSET+$uics_seq_side) & "hz")
     else
       if ($ENGINE_PAR_CHORAL_RATE=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10520,9 +10535,9 @@ on ui_controls
       if ($ENGINE_PAR_CHORAL_RATE=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_RATE,-1,5,$NI_BUS_OFFSET+$uics_seq_side) & "hz")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Speed")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_RATE,-1,5,$NI_BUS_OFFSET+$uics_seq_side) & "hz")
   end if
   if ($NI_UI_ID=%UIID_controls[14] or ($NI_UI_ID=%UIID_controls[14+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10536,6 +10551,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_CHORAL_FEEDBACK,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),5,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_FEEDBACK,$uics_seq_side*$__SOURCE_COUNT,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
     else
       if ($ENGINE_PAR_CHORAL_FEEDBACK=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10543,9 +10559,9 @@ on ui_controls
       if ($ENGINE_PAR_CHORAL_FEEDBACK=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_FEEDBACK,-1,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Phase")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_CHORAL_FEEDBACK,-1,5,$NI_BUS_OFFSET+$uics_seq_side) & "%")
   end if
   if ($NI_UI_ID=%UIID_controls[15] or ($NI_UI_ID=%UIID_controls[15+16]))
     $uics_value := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
@@ -10559,6 +10575,7 @@ on ui_controls
         set_engine_par($ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN,$uics_value,$s__i+($uics_seq_side*$__SOURCE_COUNT),6,$NI_BUS_OFFSET+$uics_seq_side)
         inc($s__i)
       end while
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN,$uics_seq_side*$__SOURCE_COUNT,6,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     else
       if ($ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN=$ENGINE_PAR_VOLUME)
         $uics_value := real_to_int(int_to_real($uics_value)*0.63)
@@ -10566,9 +10583,9 @@ on ui_controls
       if ($ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN=$ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN)
         $uics_value := real_to_int(int_to_real($uics_value)*0.6)
       end if
+      set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN,-1,6,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
     end if
     set_control_par_str($UIID_MAIN__display_title,$CONTROL_PAR_TEXT,"Dry | Wet")
-    set_control_par_str($UIID_MAIN__display_value,$CONTROL_PAR_TEXT,get_engine_par_disp($ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN,-1,6,$NI_BUS_OFFSET+$uics_seq_side) & "dB")
   end if
 end on
 
@@ -10944,7 +10961,6 @@ on note
     inc(%ARP__cursor[0])
     inc(%ARP__cursor[1])
     if (%ARP__cursor[0]<2 and ($ARP__seq_running=0))
-      message("Starting the ARP")
       call ARP__StartSeq
     end if
   else
