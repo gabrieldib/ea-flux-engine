@@ -855,6 +855,8 @@
         declare read DUAL_SEQ.link_buffer [ 2 ]
         declare read DUAL_SEQ.hmz.link_buffer [ 2 ]
 
+        declare read DUAL_target_activators [ 2 ] { one per side }
+
     {{ PLAY ENGINE }}
         declare layers.note_events [ 2, 128 ]
         declare layers.note_velo   [ 2, 128 ] // stores played velocities

@@ -1103,7 +1103,7 @@ end function
 
 {{ 20 }}
 function fn020_update_seq_target_state
-    // message(f'FN020 CALL ()')
+    message(f'FN020 CALL ()')
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
         // message(f'    SEQ DUAL')
         if fn020.a.seq_power_state = __ON
@@ -1175,11 +1175,11 @@ function fn022_get_flux_values
             switch_MAIN.SEQ.combine,                                                               ...
             SEQ.flux_rand_power_state [ fn022.a.side, SEQ_TARGET_VELO ],                           ...
             SEQ.flux_rand_block_state [ fn022.a.side, fn022.a.block_step_index, SEQ_TARGET_VELO ], ...
-            SEQ.flux_rand_power_state    [ __LEFT, SEQ_TARGET_VELO ]                               ...
+            SEQ.flux_rand_power_state [ __LEFT, SEQ_TARGET_VELO ]                                  ...
         )
+
         if  fn061.r.combined_states .and. __FLUX_SIDED_BLOCK_DUAL = __FLUX_SIDED_BLOCK_DUAL or ...
             fn061.r.combined_states .and. __FLUX_LEFT_BLOCK_JOIN  = __FLUX_LEFT_BLOCK_JOIN
-
             if  UIID_MAIN.seq.target_power [ fn022.l.seq_mode_side, SEQ_TARGET_VELO ] -> value = __ON
                 if switch_MAIN.SEQ.combine = __SEQ_DUAL
                     fn022.l.flux_intensity := SEQ.flux_rand_intensity [ fn022.l.seq_mode_side, SEQ_TARGET_VELO ]
@@ -1205,6 +1205,7 @@ function fn022_get_flux_values
                 end if
             end if
         else
+
             if  fn061.r.combined_states .and. __SEQ_STATE_DUAL   = __SEQ_STATE_DUAL and ...
                 fn061.r.combined_states .and. __FLUX_SIDED_STATE = __OFF or ...
                 fn061.r.combined_states .and. __SEQ_STATE_DUAL   = __SEQ_STATE_DUAL and ...
@@ -2022,11 +2023,18 @@ end function
 
 {{ 61 COMBINE }}
 function fn061_get_combined_states(combine, sided_power, block_state, left_power)
-    fn061.r.combined_states := ...
-        combine + ...
-        sh_left(sided_power, 1) + ...
-        sh_left(block_state, 2)  + ...
-        sh_left(left_power, 3)
+    if combine = __OFF
+        fn061.r.combined_states := ...
+            combine + ...
+            sh_left(sided_power, 1) + ...
+            sh_left(block_state, 2)  + ...
+            sh_left(left_power, 3)
+    else
+        fn061.r.combined_states := ...
+            combine + ... { flux side power is irrelevant on this case }
+            sh_left(block_state, 2)  + ...
+            sh_left(left_power, 3)
+    end if
 end function
 
 function reset_key_colors
@@ -2131,9 +2139,9 @@ function fn063_populate_opposite_layer_panel_control_values
 end function
 
 function fn064_update_sequencer_power_state
+    message(f'CALL fn064_update_sequencer_power_state()')
     fn051.a.side        := fn064.a.side
     call fn051_set_layer_panels_state
-
 
     if switch_MAIN.SEQ.combine = __SEQ_DUAL
         { adjust group filters and bus filters bypass state according to sequencer power state }
@@ -2156,10 +2164,11 @@ function fn064_update_sequencer_power_state
                 else
                     if  UIID_MAIN.seq.power [ abs(1-fn064.a.side) ] -> value = __OFF
                         UIID_MAIN.seq.target_activators [ fn064.a.side, SEQ_TARGET_VELO ] -> value := __ON
-                        UIID_MAIN.seq.target_selectors [ SEQ_TARGET_VELO ]                 -> value := __ON
+                        UIID_MAIN.seq.target_selectors  [ SEQ_TARGET_VELO ]               -> value := __ON
                     end if
                 end if
 
+                { when both activators are for the same target, selector turns on, otherwise off }
                 if  UIID_MAIN.seq.target_activators [ __LEFT,  fn064.l.target_counter ] -> value = __ON and ...
                     UIID_MAIN.seq.target_activators [ __RIGHT, fn064.l.target_counter ] -> value = __ON
 
@@ -2171,10 +2180,13 @@ function fn064_update_sequencer_power_state
 
             fn021.a.side := fn064.a.side
             call fn21_get_seq_target_active_activator
+            message(f'    SEQ.showing_target [ <fn021.a.side> ] = <SEQ.showing_target [ fn021.a.side ] > | side: <fn021.a.side>')
+            { recalling the target activator state for last index }
+            UIID_MAIN.seq.target_activators [ fn021.a.side, SEQ.showing_target [ fn021.a.side ] ] -> value := __ON
 
             fn020.a.seq_power_state   := NI_UI_ID -> value
             fn020.a.side              := fn064.a.side
-            fn020.a.target_index      := fn021.r.active_index
+            fn020.a.target_index      := SEQ.showing_target [ fn021.a.side ]
             fn020.a.target_power_uiid := UIID_MAIN.seq.target_power [ fn064.a.side, fn021.r.active_index ]
             call fn020_update_seq_target_state
 
@@ -2200,8 +2212,6 @@ function fn064_update_sequencer_power_state
         end if
         
     end if
-
-
 end function
 
 function fn066_get_reverb_ir_path

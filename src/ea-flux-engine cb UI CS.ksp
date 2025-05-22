@@ -99,8 +99,6 @@ on ui_controls
         uics_op_side := abs(1-uics_seq_side)
 
         if UIID_MAIN.seq_links [ uics_seq_side ] -> value = __ON
-            message(f'Opposite side <uics_op_side >')
-            message(f'    index: <uics_uiid_index >')
             UIID_MAIN.seq.block_steps [ uics_op_side, uics_uiid_index mod 4 ] -> value := ...
                 UIID_MAIN.seq.block_steps [ uics_seq_side, uics_uiid_index mod 4 ] -> value
         end if
@@ -109,11 +107,16 @@ on ui_controls
             if  uics_side_counter = uics_seq_side and switch_MAIN.SEQ.LEFT.link = __OFF or ...
                 switch_MAIN.SEQ.LEFT.link = __ON and switch_MAIN.SEQ.combine = __SEQ_DUAL
 
-                message(f'processing side: <uics_side_counter >')
                 { this code could be optimized / simplified, maybe }
                 if uics_alt_key = __NOT_PRESSED
                     SEQ.DUAL.step_count [ uics_side_counter, uics_uiid_index mod 4 ] := uics_value
-                    SEQ.JOIN.step_count [ uics_uiid_index ]                          := uics_value
+
+                    if switch_MAIN.SEQ.LEFT.link = __ON
+                        SEQ.JOIN.step_count [ (uics_uiid_index mod 4)     ] := uics_value
+                        SEQ.JOIN.step_count [ (uics_uiid_index mod 4) + 4 ] := uics_value
+                    else
+                        SEQ.JOIN.step_count [ uics_uiid_index ] := uics_value
+                    end if 
 
                     fn003.a.side        := uics_side_counter
                     fn003.a.mode        := switch_MAIN.SEQ.combine

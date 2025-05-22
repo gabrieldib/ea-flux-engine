@@ -1,4 +1,4 @@
-{ Compiled on Tue May 20 14:38:53 2025 }
+{ Compiled on Thu May 22 11:07:21 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -3213,6 +3213,9 @@ on init
   declare %DUAL_SEQ__hmz__link_buffer[2]
   make_persistent(%DUAL_SEQ__hmz__link_buffer)
   read_persistent_var(%DUAL_SEQ__hmz__link_buffer)
+  declare %DUAL_target_activators[2]
+  make_persistent(%DUAL_target_activators)
+  read_persistent_var(%DUAL_target_activators)
   declare %_layers__note_events[2*128]
   declare const $layers__note_events__SIZE_D1 := 2
   declare const $layers__note_events__SIZE_D2 := 128
@@ -4845,6 +4848,7 @@ function fn051_set_layer_panels_state
 end function
 
 function fn020_update_seq_target_state
+  message("FN020 CALL ()")
   if ($switch_MAIN__SEQ__combine=0)
     if ($fn020__a__seq_power_state=1)
       if (get_control_par($fn020__a__target_power_uiid,$CONTROL_PAR_VALUE)=0)
@@ -5526,6 +5530,7 @@ function fn21_get_seq_target_active_activator
 end function
 
 function fn064_update_sequencer_power_state
+  message("CALL fn064_update_sequencer_power_state()")
   $fn051__a__side := $fn064__a__side
   call fn051_set_layer_panels_state
   if ($switch_MAIN__SEQ__combine=0)
@@ -5554,9 +5559,11 @@ function fn064_update_sequencer_power_state
       end while
       $fn021__a__side := $fn064__a__side
       call fn21_get_seq_target_active_activator
+      message("    SEQ.showing_target [ " & $fn021__a__side & " ] = " & %SEQ__showing_target[$fn021__a__side] & " | side: " & $fn021__a__side & "")
+      set_control_par(%_UIID_MAIN__seq__target_activators[5*$fn021__a__side+%SEQ__showing_target[$fn021__a__side]],$CONTROL_PAR_VALUE,1)
       $fn020__a__seq_power_state := get_control_par($NI_UI_ID,$CONTROL_PAR_VALUE)
       $fn020__a__side := $fn064__a__side
-      $fn020__a__target_index := $fn021__r__active_index
+      $fn020__a__target_index := %SEQ__showing_target[$fn021__a__side]
       $fn020__a__target_power_uiid := %_UIID_MAIN__seq__target_power[5*$fn064__a__side+$fn021__r__active_index]
       call fn020_update_seq_target_state
     else
@@ -5946,7 +5953,11 @@ function fn022_get_flux_values
   else
     $fn022__l__seq_mode_side := 0
   end if
-  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+0],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+0],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+0],3)
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+0],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+0],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+0],3)
+  else
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+0],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+0],3)
+  end if
   if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+0],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
@@ -5973,7 +5984,11 @@ function fn022_get_flux_values
       $fn022__r__step_velocity := $fn022__a__step_velocity
     end if
   end if
-  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+1],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+1],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+1],3)
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+1],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+1],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+1],3)
+  else
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+1],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+1],3)
+  end if
   if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+1],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
@@ -5996,7 +6011,11 @@ function fn022_get_flux_values
       $fn022__r__step_pitch := $fn022__a__step_pitch
     end if
   end if
-  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+2],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+2],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+2],3)
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+2],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+2],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+2],3)
+  else
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+2],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+2],3)
+  end if
   if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+2],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
@@ -6019,7 +6038,11 @@ function fn022_get_flux_values
       $fn022__r__step_length := $fn022__a__step_length
     end if
   end if
-  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+3],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+3],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+3],3)
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+3],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+3],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+3],3)
+  else
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+3],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+3],3)
+  end if
   if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+3],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
@@ -6042,7 +6065,11 @@ function fn022_get_flux_values
       $fn022__r__step_pan := $fn022__a__step_pan
     end if
   end if
-  $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+4],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+4],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+4],3)
+  if ($switch_MAIN__SEQ__combine=0)
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_power_state[5*$fn022__a__side+4],1)+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+4],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+4],3)
+  else
+    $fn061__r__combined_states := $switch_MAIN__SEQ__combine+sh_left(%_SEQ__flux_rand_block_state[5*4*$fn022__a__side+(5*$fn022__a__block_step_index)+4],2)+sh_left(%_SEQ__flux_rand_power_state[5*0+4],3)
+  end if
   if ($fn061__r__combined_states .and. $__FLUX_SIDED_BLOCK_DUAL=$__FLUX_SIDED_BLOCK_DUAL or ($fn061__r__combined_states .and. $__FLUX_LEFT_BLOCK_JOIN=$__FLUX_LEFT_BLOCK_JOIN))
     if (get_control_par(%_UIID_MAIN__seq__target_power[5*$fn022__l__seq_mode_side+4],$CONTROL_PAR_VALUE)=1)
       if ($switch_MAIN__SEQ__combine=0)
@@ -8629,17 +8656,19 @@ on ui_controls
     $uics_value := get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE)
     $uics_op_side := abs(1-$uics_seq_side)
     if (get_control_par(%UIID_MAIN__seq_links[$uics_seq_side],$CONTROL_PAR_VALUE)=1)
-      message("Opposite side " & $uics_op_side & "")
-      message("    index: " & $uics_uiid_index & "")
       set_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_op_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE,get_control_par(%_UIID_MAIN__seq__block_steps[4*$uics_seq_side+($uics_uiid_index mod 4)],$CONTROL_PAR_VALUE))
     end if
     $uics_side_counter := 0
     while ($uics_side_counter<=1)
       if ($uics_side_counter=$uics_seq_side and ($switch_MAIN__SEQ__LEFT__link=0) or ($switch_MAIN__SEQ__LEFT__link=1 and ($switch_MAIN__SEQ__combine=0)))
-        message("processing side: " & $uics_side_counter & "")
         if ($uics_alt_key=0)
           %_SEQ__DUAL__step_count[4*$uics_side_counter+($uics_uiid_index mod 4)] := $uics_value
-          %SEQ__JOIN__step_count[$uics_uiid_index] := $uics_value
+          if ($switch_MAIN__SEQ__LEFT__link=1)
+            %SEQ__JOIN__step_count[$uics_uiid_index mod 4] := $uics_value
+            %SEQ__JOIN__step_count[$uics_uiid_index mod 4+4] := $uics_value
+          else
+            %SEQ__JOIN__step_count[$uics_uiid_index] := $uics_value
+          end if
           $fn003__a__side := $uics_side_counter
           $fn003__a__mode := $switch_MAIN__SEQ__combine
           $fn003__a__block_index := $uics_uiid_index mod 4
