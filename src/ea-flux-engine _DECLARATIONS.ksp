@@ -866,7 +866,7 @@
 
         declare read ?sample_starts     [ 1000, 2, 128 ]
         declare read ?sample_tuning     [ 1000, 2, 128 ]
-        declare read sample_low_cutoff  [ 1000, 2, 128 ] := (0)
+        declare read sample_low_cutoff  [ 1000, 2, 128 ]
         declare read sample_low_reso    [ 1000, 2, 128 ]
         declare read sample_high_cutoff [ 1000, 2, 128 ]
         declare read sample_high_reso   [ 1000, 2, 128 ]
