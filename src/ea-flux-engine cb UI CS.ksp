@@ -1818,6 +1818,7 @@ on ui_controls
     uicbs_control_par_value := get_control_par($NI_UI_ID, $CONTROL_PAR_VALUE)
     // message("UI CONTROLS ____ param index: " & uicbs_custom_id & " | value = " & uicbs_control_par_value)
 
+
     if in_range(uicbs_custom_id, 0, 227)
         // message(f'called in_range(uicbs_custom_id, 0, 227) uicbs_custom_id: <uicbs_custom_id>')
         select(uicbs_custom_id)
@@ -1833,6 +1834,8 @@ on ui_controls
 
         select(uicbs_custom_id)
             case __CUUID_FX_UIC_MIN  to __CUUID_FX_UIC_MAX { FX ui controls }
+                // message(f'Clicked on FX control for target <uicbs_custom_id>')
+
                 fn036.a.side          := uics_seq_side
                 fn036.a.target        := uicbs_custom_id
                 fn036.a.control_value := uicbs_control_par_value

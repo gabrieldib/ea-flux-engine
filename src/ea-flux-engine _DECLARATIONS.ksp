@@ -918,6 +918,8 @@
         declare ~LFO_lcb_ind_max
         declare ~LFO_lcb_cursor_calc
         declare ~LFO_lcb_cursor_calc_clamped
+        declare ~LFO_lcb_orbs_cursor_calc_clamped
+        declare ~LFO_lcb_sides_cursor_calc_clamped
         declare read ~LFO_rate_pct  // the LFO rate squished into 0 : 1 range
         declare ~tau_hz_ms_rate_divisor
         declare ~LFO_ms_rate_label_disp_value

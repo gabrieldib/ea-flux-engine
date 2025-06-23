@@ -1706,7 +1706,7 @@ function fn035_update_random_labels
 end function
 
 function fn036_set_control_param_slider
-    // message(f'FN036 called, calling fn 37, 38, 39, 40 | value : <fn036.a.control_value> | target: <fn036.a.target>')
+    // message(f'FN036 set_control_param_slider, calling fn 37, 38, 39, 40 | value : <fn036.a.control_value> | target: <fn036.a.target>')
     fn037.a.side          := fn036.a.side
     fn037.a.target        := fn036.a.target
     fn037.a.control_value := fn036.a.control_value
@@ -2660,7 +2660,7 @@ end function
 
 {{ LFO Functions }}
 function fn037_LFO.update_intensity_ring()
-    // message("CALL fn037 control_value = " & fn037.a.control_value)
+    // message(f'FN037() control_value = <fn037.a.control_value> | target = <fn037.a.target>' )
 
     if fn037.a.target < 32 and fn037.a.target mod 16 = __MAIN.FX.LAYER.WIDTH
         fn037.l.picture_state_start := ...
@@ -2776,19 +2776,21 @@ function fn037_LFO.update_intensity_ring()
 end function
 
 function fn038_LFO_store_LFO_mod_data()
-    // message("CALLED FN038 store data for target "&fn038.a.target&" ________________________________________________ ")
+    // message(f'FN038() store data for target = <fn038.a.target> ')
     { using this loop to avoid writing this code twice because of the link }
 
     for fn038.l.side_counter := __LEFT to __RIGHT
+        { we should only process both sides when link is ON or on XFade mode }
         if fn038.a.side = fn038.l.side_counter or fn038.a.link = __ON or switch_crossfade = __ON
             // message(f'FN38: side <fn038.l.side_counter > | target <fn038.a.target > | control_value __ <fn038.a.control_value > | LFO_amount <fn038.a.LFO_amount  >')
 
-            if switch_crossfade = __ON and fn038.l.side_counter = __RIGHT and fn038.a.target = 16
+            LFO_mod_center  := float( fn038.a.control_value )
+
+            if switch_crossfade = __ON and fn038.l.side_counter = abs(1-fn038.a.side) //fn038.l.side_counter = __RIGHT and fn038.a.target = 16 { I think t 16 is the culprit }
                 LFO_mod_center  := float(1000000 -  fn038.a.control_value )
-                // message(f'    LFO mod center set to inverted | value: <LFO_mod_center>')
-            else
-                LFO_mod_center  := float( fn038.a.control_value )
-                // message(f'    LFO mod center set to regular | value: <LFO_mod_center>')
+                // message(f'    <fn038.l.side_counter> | LFO mod center set to Xfade mode (inverted) | value: <LFO_mod_center>')
+            // else
+            //     message(f'    <fn038.l.side_counter> | LFO mod center set to regular | value: <LFO_mod_center>')
             end if
 
             fn038.l.pct_divisor  := 1000000.0
@@ -2807,7 +2809,9 @@ function fn038_LFO_store_LFO_mod_data()
             LFO_mod_ring_min    := int(LFO_mod_min / fn038.l.pict_divisor)
             LFO_mod_ring_max    := int(LFO_mod_max / fn038.l.pict_divisor)
 
-            LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE ]     := LFO_mod_center
+            // message(f'        (t:<fn038.a.target> mod 16) + s:<fn038.l.side_counter> * o:<__MAIN.FX.RIGHT.OFFSET> = <(fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET>')
+
+            LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE ]     := LFO_mod_center * 0.63
             LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE_PCT ] := LFO_mod_center / fn038.l.pct_divisor
             LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]                  := LFO_mod_min
             LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]                  := LFO_mod_max
@@ -2815,13 +2819,22 @@ function fn038_LFO_store_LFO_mod_data()
             LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE ] := LFO_mod_ring_center
             LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]              := LFO_mod_ring_min   
             LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]              := LFO_mod_ring_max   
+
+            // message(f'        LFO mod  min: <LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]>')
+            // message(f'        LFO mod  max: <LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]>')
+            // message(f'        LFO ring min <LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]>')
+            // message(f'        LFO ring max <LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]>')
+            // if fn038.a.target mod 16 = 0
+            //     message(f'        <abs(1-fn038.l.side_counter)>  | mod data target control value <LFO_modulation_data [ (fn038.a.target mod 16) + abs(1-fn038.l.side_counter) * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE ]>')
+            // end if
         end if
     end for
 end function
 
 function fn039_set_FX_engine_par()
-    // message(f'FN39 set engine par')
+    // message(f'FN039() set FX engine par | control value <fn039.a.control_value>')
     fn039.l.original_cv := fn039.a.control_value
+
     if fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME { only run if it is volume }
         if switch_crossfade = __ON
             fn039.l.cv_real := pow(  (float(fn039.l.original_cv) * 0.000001) - 1.0, __CROSSFADE_FACTOR_OPPOSITE) + 1.0
@@ -2831,10 +2844,11 @@ function fn039_set_FX_engine_par()
             fn039.a.control_value := int( float(fn039.a.control_value)*0.63)
         end if
     end if
+
     if fn039.a.target mod 16 = __MAIN.FX.REVERB.DRYWET { only run if it is reverb wet level }
         fn039.a.control_value := int( float(fn039.a.control_value)*REV_MAX_LEVEL)
     end if
-    // message(f'        fn039.a.control_value = <fn039.a.control_value >')
+    // message(f'        fn039.a.control_value = <fn039.a.control_value > passed to engine (scaled by 0.63)')
     set_engine_par(...
         LFO_targets_engine_pars [ fn039.a.target mod 16 ],         ...
         fn039.a.control_value,                                     ...
@@ -2842,6 +2856,7 @@ function fn039_set_FX_engine_par()
         LFO_targets_SLOT  [ fn039.a.target mod 16 ],               ...
         LFO_targets_BUS   [ fn039.a.target mod 16 ] + fn039.a.side ...
     )
+
     if fn039.a.link = 1 or fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME and switch_crossfade = __ON
         fn039.a.side := abs( 1 - fn039.a.side) { flip to get the other side }
         if fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME and switch_crossfade = __ON
@@ -2906,22 +2921,10 @@ end function
 
 function fn044_LFO_calculate_engine_value()
     // message("CALLED FN044 - Target: " & fn044.a.target)
-    // if lcb_ms_counter mod 250 = 0
-        // message(f'FN44 _________________________')
-        // message(f'    fn044.a.target <fn044.a.target >')
-        // message(f'fn044.r.engine_value <fn044.r.engine_value >')
-        // message(f'    LFO_engine_min < LFO_engine_min >')
-        // message(f'    LFO_engine_max < LFO_engine_max >')
-    // end if
     { for cleanliness }
     LFO_engine_min := LFO_modulation_data [ fn044.a.target, __LFO_MOD_MIN ]
     LFO_engine_max := LFO_modulation_data [ fn044.a.target, __LFO_MOD_MAX ]
     LFO_depth_offset := (LFO_engine_max-LFO_engine_min)*(1.0-GLOBAL_LFO.depth_float_pct)
-
-    if lcb_ms_counter mod 333 = 0 and fn044.a.target = 0
-        // message(f'FN44 | LFO_engine_min <LFO_engine_min> | LFO_engine_max <LFO_engine_max>')
-        // message(f'    center <LFO_modulation_data [ fn044.a.target, __LFO_TARGET_CONTROL_VALUE ] >')
-    end if
 
     { rebel way, that goes over the max and min }
     fn044.l.calc := ...
@@ -2953,21 +2956,25 @@ function fn044_LFO_calculate_engine_value()
     if fn044.l.calc < 0.0 
         fn044.r.engine_value := 0
     end if
-    if fn044.l.calc > 1000000.0 
-        fn044.r.engine_value := 1000000
-    end if
 
-    if fn044.a.target = 16 and switch_crossfade = __ON
-        o.i := fn044.r.engine_value
-        fn044.r.engine_value := 1000000 - fn044.r.engine_value
-    end if
-    if lcb_ms_counter mod 200 = 0 and fn044.a.target mod 16 = 0 and 1 = 0
-        if fn044.a.target = 0
-            message(f'    <fn044.a.target> | engine_value = <fn044.r.engine_value >')
-        else
-            message(f'        <fn044.a.target> | engine_value = <fn044.r.engine_value > | ov: <o.i>')
+    if fn044.a.target mod 16 = 0
+        if fn044.l.calc > 630000.0 
+            fn044.r.engine_value := 630000
+        end if
+    else
+        if fn044.l.calc > 1000000.0 
+            fn044.r.engine_value := 1000000
         end if
     end if
+
+    // if fn044.a.target = 16 and switch_crossfade = __ON
+    //     fn044.r.engine_value := 630000 - fn044.r.engine_value
+    // end if
+
+    // if lcb_ms_counter mod 100 = 0 and fn044.a.target mod 16 = 0
+    //     message(f'    FN044() LFO t: <fn044.a.target> | LFO_e_min <LFO_engine_min> | LFO_e_max <LFO_engine_max> | center <LFO_modulation_data [ fn044.a.target, __LFO_TARGET_CONTROL_VALUE ] > | calc: <int(fn044.l.calc)> | engine v = <fn044.r.engine_value>')
+    // end if
+
 end function
 
 function fn046_set_lfo_depth_globally

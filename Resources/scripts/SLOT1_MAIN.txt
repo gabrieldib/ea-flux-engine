@@ -1,4 +1,4 @@
-{ Compiled on Fri Jun 13 11:45:20 2025 }
+{ Compiled on Mon Jun 23 16:40:29 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -3311,6 +3311,8 @@ on init
   declare ~LFO_lcb_ind_max
   declare ~LFO_lcb_cursor_calc
   declare ~LFO_lcb_cursor_calc_clamped
+  declare ~LFO_lcb_orbs_cursor_calc_clamped
+  declare ~LFO_lcb_sides_cursor_calc_clamped
   declare ~LFO_rate_pct
   make_persistent(~LFO_rate_pct)
   read_persistent_var(~LFO_rate_pct)
@@ -4273,10 +4275,9 @@ function fn038_LFO_store_LFO_mod_data
   $fn038__l__side_counter := 0
   while ($fn038__l__side_counter<=1)
     if ($fn038__a__side=$fn038__l__side_counter or ($fn038__a__link=1) or ($switch_crossfade=1))
-      if ($switch_crossfade=1 and ($fn038__l__side_counter=1) and ($fn038__a__target=16))
+      ~LFO_mod_center := int_to_real($fn038__a__control_value)
+      if ($switch_crossfade=1 and ($fn038__l__side_counter=abs(1-$fn038__a__side)))
         ~LFO_mod_center := int_to_real(1000000-$fn038__a__control_value)
-      else
-        ~LFO_mod_center := int_to_real($fn038__a__control_value)
       end if
       ~fn038__l__pct_divisor := 1000000.0
       ~fn038__l__pict_divisor := 3921.568627
@@ -4287,7 +4288,7 @@ function fn038_LFO_store_LFO_mod_data
       $LFO_mod_ring_center := real_to_int(~LFO_mod_center/~fn038__l__pict_divisor)
       $LFO_mod_ring_min := real_to_int(~LFO_mod_min/~fn038__l__pict_divisor)
       $LFO_mod_ring_max := real_to_int(~LFO_mod_max/~fn038__l__pict_divisor)
-      ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+0] := ~LFO_mod_center
+      ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+0] := ~LFO_mod_center*0.63
       ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+1] := ~LFO_mod_center/~fn038__l__pct_divisor
       ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+2] := ~LFO_mod_min
       ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+3] := ~LFO_mod_max
@@ -6888,25 +6889,18 @@ function fn044_LFO_calculate_engine_value
   ~LFO_engine_min := ?_LFO_modulation_data[4*$fn044__a__target+2]
   ~LFO_engine_max := ?_LFO_modulation_data[4*$fn044__a__target+3]
   ~LFO_depth_offset := (~LFO_engine_max-~LFO_engine_min)*(1.0-~GLOBAL_LFO__depth_float_pct)
-  if ($lcb_ms_counter mod 333=0 and ($fn044__a__target=0))
-  end if
   ~fn044__l__calc := (~LFO_engine_max-~LFO_engine_min)*~fn044__a__lfo_value*~GLOBAL_LFO__depth_float_pct+(~LFO_depth_offset/2.0)+~LFO_engine_min
   $fn044__r__engine_value := real_to_int(~fn044__l__calc)
   if (~fn044__l__calc<0.0)
     $fn044__r__engine_value := 0
   end if
-  if (~fn044__l__calc>1000000.0)
-    $fn044__r__engine_value := 1000000
-  end if
-  if ($fn044__a__target=16 and ($switch_crossfade=1))
-    $o__i := $fn044__r__engine_value
-    $fn044__r__engine_value := 1000000-$fn044__r__engine_value
-  end if
-  if ($lcb_ms_counter mod 200=0 and ($fn044__a__target mod 16=0) and (1=0))
-    if ($fn044__a__target=0)
-      message("    " & $fn044__a__target & " | engine_value = " & $fn044__r__engine_value & "")
-    else
-      message("        " & $fn044__a__target & " | engine_value = " & $fn044__r__engine_value & " | ov: " & $o__i & "")
+  if ($fn044__a__target mod 16=0)
+    if (~fn044__l__calc>630000.0)
+      $fn044__r__engine_value := 630000
+    end if
+  else
+    if (~fn044__l__calc>1000000.0)
+      $fn044__r__engine_value := 1000000
     end if
   end if
 end function
@@ -11213,10 +11207,6 @@ on listener
                 ~LFO_emitted_value_phase_checked := 1.0-~LFO_emitted_value_phase_checked
               end if
               ~LFO_lcb_cursor_calc := (~LFO_lcb_ind_max-~LFO_lcb_ind_min)*~LFO_emitted_value_phase_checked*~GLOBAL_LFO__depth_float_pct+(~LFO_lcb_depth_offset/2.0)+~LFO_lcb_ind_min
-              set_control_par(%UIID_controls_LFO_mod_cursor[$lcb_control_counter],$CONTROL_PAR_PICTURE_STATE,real_to_int(~LFO_lcb_cursor_calc))
-              if ($lcb_control_counter=16 and ($switch_crossfade=1))
-                ~LFO_emitted_value_phase_checked := 1.0-~LFO_emitted_value_phase_checked
-              end if
               ~LFO_lcb_cursor_calc_clamped := ~LFO_lcb_cursor_calc
               if (~LFO_lcb_cursor_calc_clamped>255.0)
                 ~LFO_lcb_cursor_calc_clamped := 255.0
@@ -11225,13 +11215,15 @@ on listener
                 ~LFO_lcb_cursor_calc_clamped := 0.0
               end if
               if ($lcb_control_counter mod 16=0)
-                set_control_par(%UIID_MAIN__matrix_sides[$lcb_control_counter/16],$CONTROL_PAR_PICTURE_STATE,real_to_int(~LFO_lcb_cursor_calc_clamped))
+                ~LFO_lcb_sides_cursor_calc_clamped := ~LFO_lcb_cursor_calc_clamped
+                ~LFO_lcb_orbs_cursor_calc_clamped := ~LFO_lcb_cursor_calc_clamped
                 if ($lcb_control_counter/16=0)
-                  set_control_par(%UIID_MAIN__matrix_LFO_orbs[$lcb_control_counter/16],$CONTROL_PAR_PICTURE_STATE,255-real_to_int(~LFO_lcb_cursor_calc_clamped))
-                else
-                  set_control_par(%UIID_MAIN__matrix_LFO_orbs[$lcb_control_counter/16],$CONTROL_PAR_PICTURE_STATE,real_to_int(~LFO_lcb_cursor_calc_clamped))
+                  ~LFO_lcb_orbs_cursor_calc_clamped := 255.0-~LFO_lcb_cursor_calc_clamped
                 end if
               end if
+              set_control_par(%UIID_MAIN__matrix_sides[$lcb_control_counter/16],$CONTROL_PAR_PICTURE_STATE,real_to_int(~LFO_lcb_sides_cursor_calc_clamped))
+              set_control_par(%UIID_MAIN__matrix_LFO_orbs[$lcb_control_counter/16],$CONTROL_PAR_PICTURE_STATE,real_to_int(~LFO_lcb_orbs_cursor_calc_clamped))
+              set_control_par(%UIID_controls_LFO_mod_cursor[$lcb_control_counter],$CONTROL_PAR_PICTURE_STATE,real_to_int(~LFO_lcb_cursor_calc))
             else
               set_control_par(%UIID_controls_LFO_mod_cursor[$lcb_control_counter],$CONTROL_PAR_PICTURE_STATE,real_to_int(int_to_real(%_LFO_modulation_ring_data[4*$lcb_control_counter+0])/255.0*?LFO_amount_pct[$lcb_control_counter]*255.0*~LFO_emitted_value_phase_checked*~GLOBAL_LFO__depth_float_pct))
             end if

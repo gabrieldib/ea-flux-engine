@@ -194,27 +194,21 @@ on listener
                             LFO_lcb_ind_min      := float(LFO_modulation_ring_data [ lcb_control_counter, __LFO_MOD_MIN ])
                             LFO_lcb_ind_max      := float(LFO_modulation_ring_data [ lcb_control_counter, __LFO_MOD_MAX ])
                             LFO_lcb_depth_offset := (LFO_lcb_ind_max - LFO_lcb_ind_min)*(1.0-GLOBAL_LFO.depth_float_pct)
-                            
+
                             { in the crossfade mode, we invert the LFO value }
-                            if lcb_control_counter = 16 and switch_crossfade = __ON
-                                LFO_emitted_value_phase_checked := 1.0 - LFO_emitted_value_phase_checked
-                            end if
+                        if lcb_control_counter = 16 and switch_crossfade = __ON
+                            LFO_emitted_value_phase_checked := 1.0 - LFO_emitted_value_phase_checked
+                        end if
 
                             LFO_lcb_cursor_calc := ...
                                 (( LFO_lcb_ind_max - LFO_lcb_ind_min ) * ... 
                                 LFO_emitted_value_phase_checked * GLOBAL_LFO.depth_float_pct) + ...
                                 (LFO_lcb_depth_offset/2.0) + LFO_lcb_ind_min...
 
-
-                            set_control_par( ...
-                                UIID_controls_LFO_mod_cursor[ lcb_control_counter ], ...
-                                CONTROL_PAR_PICTURE_STATE, ...
-                                int(LFO_lcb_cursor_calc) ...
-                            )
                             { revert back for the blue orbs and engine par }
-                            if lcb_control_counter = 16 and switch_crossfade = __ON
-                                LFO_emitted_value_phase_checked := 1.0 - LFO_emitted_value_phase_checked
-                            end if
+                            // if lcb_control_counter = 16 and switch_crossfade = __ON
+                            //     LFO_emitted_value_phase_checked := 1.0 - LFO_emitted_value_phase_checked
+                            // end if
 
                             {{ UPDATE MOD MATRIX ORBS }}
                             LFO_lcb_cursor_calc_clamped := LFO_lcb_cursor_calc
@@ -226,21 +220,53 @@ on listener
                             end if
 
                             if lcb_control_counter mod 16 = 0
-                                UIID_MAIN.matrix_sides    [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc_clamped)
+                                LFO_lcb_sides_cursor_calc_clamped := LFO_lcb_cursor_calc_clamped
+                                LFO_lcb_orbs_cursor_calc_clamped  := LFO_lcb_cursor_calc_clamped
+                                
                                 if lcb_control_counter / 16 = __LEFT
-                                    UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := 255 - int(LFO_lcb_cursor_calc_clamped)
-                                else
-                                    // if switch_crossfade = __OFF
-                                        UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_cursor_calc_clamped)
-                                    // else
-                                    //     UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := 255 - int(LFO_lcb_cursor_calc_clamped)
+                                    LFO_lcb_orbs_cursor_calc_clamped  := 255.0 - LFO_lcb_cursor_calc_clamped
+                                { DELETE: waiting confirmation that we don't need this anymore }
+                                // else
+                                    // if switch_crossfade = __ON
+                                    //     LFO_lcb_sides_cursor_calc_clamped := 255.0 - LFO_lcb_cursor_calc_clamped
+                                    //     LFO_lcb_orbs_cursor_calc_clamped  := 255.0 - LFO_lcb_cursor_calc_clamped
+                                    //     LFO_lcb_cursor_calc := 255.0 - LFO_lcb_cursor_calc
                                     // end if
                                 end if
                             end if
 
+                            { log }
+                                // if lcb_ms_counter mod 333 = 0 
+                                //     if lcb_control_counter mod 16 = 0
+                                        
+                                //         if lcb_control_counter / 16 = __LEFT
+                                //             message(f'Left counter being processed <ENGINE_UPTIME/1000>')
+                                //         else
+                                //             if switch_crossfade = __ON
+                                //                 message(f'Right counter being processed <ENGINE_UPTIME/1000> | Xfade ON')
+                                //             else
+                                //                 message(f'Right counter being processed <ENGINE_UPTIME/1000> | Xfade OFF')
+                                //             end if
+                                //         end if
+                                        // message(f'    sides  p: <int(LFO_lcb_sides_cursor_calc_clamped)>')
+                                        // message(f'    orbs   p: <int(LFO_lcb_orbs_cursor_calc_clamped)>')
+                                        // message(f'    cursor p: <int(LFO_lcb_cursor_calc)>')
+                                //     end if
+                                // end if
+
+                            { set matrix sides, orbs and parameter LFO cursor animation }
+                            UIID_MAIN.matrix_sides    [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_sides_cursor_calc_clamped)
+                            UIID_MAIN.matrix_LFO_orbs [ lcb_control_counter / 16 ] -> picture_state := int(LFO_lcb_orbs_cursor_calc_clamped)
+                            set_control_par( ...
+                                UIID_controls_LFO_mod_cursor[ lcb_control_counter ], ...
+                                CONTROL_PAR_PICTURE_STATE, ...
+                                int(LFO_lcb_cursor_calc) ...
+                            )
+
                             { debug }
-                                // if lcb_ms_counter mod 447 = 0
-                                //     message(f'LFO_emitted_value: <LFO_emitted_value>')
+                                // if lcb_ms_counter mod 447 = 0 and (lcb_control_counter = 0 or lcb_control_counter = 16)
+                                //     message(f'lcb_control_counter = <lcb_control_counter>')
+                                //     message(f'    LFO_emitted_value: <LFO_emitted_value>')
                                 //     message(f'    phase_checked: <LFO_emitted_value_phase_checked>')
                                 //     message(f'    LFO_rate: <LFO_rate>')
                                 //     message(f'    LFO_lcb_cursor_calc: <int(LFO_lcb_cursor_calc)>')
@@ -283,12 +309,12 @@ on listener
                         //         LFO_amount_pct [ __MAIN.FX.SATURATION ]) * 255.0 ...
                         //     )
 
-
                     { calculated value to be set into the engine}
                     fn044.a.target    := lcb_control_counter
                     fn044.a.lfo_value := LFO_emitted_value_phase_checked
                     call fn044_LFO_calculate_engine_value
 
+                    { I could probably use mod 16 here for both bus and control | later... }
                     select (lcb_control_counter)
                         case  0 to 15
                             LFO_bus_adjustment := __LEFT
@@ -297,6 +323,11 @@ on listener
                             LFO_bus_adjustment := __RIGHT
                             lcb_control_counter_adjusted := lcb_control_counter - 16 { lands on volume layer B }
                     end select
+
+                    { log }
+                    // if lcb_ms_counter mod 100 = 0 and (lcb_control_counter = 0 or lcb_control_counter = 16)
+                    //     message(f'LCB | <lcb_control_counter> | ()44.r = <fn044.r.engine_value>')
+                    // end if
 
                     if  in_range(lcb_control_counter mod 16, __MAIN.FX.SATURATION, __MAIN.FX.DISTORTION.DRIVE)
                         for lcb_lfo_group_counter := __LEFT to __RIGHT
@@ -310,6 +341,9 @@ on listener
                         end for
 
                     else { FX in the bus level}
+                        // if lcb_ms_counter mod 100 = 0 and (lcb_control_counter = 0 or lcb_control_counter = 16)
+                        //     message(f'LCB: setting engine par for volume target: <lcb_control_counter>')
+                        // end if
                         set_engine_par(...
                             LFO_targets_engine_pars [ lcb_control_counter_adjusted ],               ...
                             fn044.r.engine_value,                                                   ...
@@ -334,7 +368,7 @@ on listener
                     __SINGLE_SHOT_LFO_CHECK := __ON
             end if
 
-            { turning the LFO off when theres no samples playing }
+            { turning the LFO off when there's no samples playing }
             if  __SINGLE_SHOT_LFO_CHECK = __ON
                 message(f'Turning off the LFO')
                 LFO_play_state := __OFF
