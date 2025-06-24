@@ -2820,13 +2820,14 @@ function fn038_LFO_store_LFO_mod_data()
             LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]              := LFO_mod_ring_min   
             LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]              := LFO_mod_ring_max   
 
-            // message(f'        LFO mod  min: <LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]>')
-            // message(f'        LFO mod  max: <LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]>')
-            // message(f'        LFO ring min <LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]>')
-            // message(f'        LFO ring max <LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]>')
-            // if fn038.a.target mod 16 = 0
-            //     message(f'        <abs(1-fn038.l.side_counter)>  | mod data target control value <LFO_modulation_data [ (fn038.a.target mod 16) + abs(1-fn038.l.side_counter) * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE ]>')
-            // end if
+            if fn038.a.target mod 16 = 0
+                message(f'FN38: side <fn038.l.side_counter > | target <fn038.a.target > | control_value __ <fn038.a.control_value > | LFO_amount <fn038.a.LFO_amount  >')
+                message(f'        LFO mod  min: <LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]>')
+                message(f'        LFO mod  max: <LFO_modulation_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]>')
+                message(f'        LFO ring min <LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MIN ]>')
+                message(f'        LFO ring max <LFO_modulation_ring_data [ (fn038.a.target mod 16) + fn038.l.side_counter * __MAIN.FX.RIGHT.OFFSET, __LFO_MOD_MAX ]>')
+                message(f'        <abs(1-fn038.l.side_counter)>  | mod data target control value <LFO_modulation_data [ (fn038.a.target mod 16) + abs(1-fn038.l.side_counter) * __MAIN.FX.RIGHT.OFFSET, __LFO_TARGET_CONTROL_VALUE ]>')
+            end if
         end if
     end for
 end function
@@ -2874,7 +2875,6 @@ function fn039_set_FX_engine_par()
             LFO_targets_BUS   [ fn039.a.target mod 16 ] + fn039.a.side ...
         )
     end if
-
 end function
 
 function fn040_set_MATRIX_slider_ps // picture state
@@ -2974,7 +2974,6 @@ function fn044_LFO_calculate_engine_value()
     // if lcb_ms_counter mod 100 = 0 and fn044.a.target mod 16 = 0
     //     message(f'    FN044() LFO t: <fn044.a.target> | LFO_e_min <LFO_engine_min> | LFO_e_max <LFO_engine_max> | center <LFO_modulation_data [ fn044.a.target, __LFO_TARGET_CONTROL_VALUE ] > | calc: <int(fn044.l.calc)> | engine v = <fn044.r.engine_value>')
     // end if
-
 end function
 
 function fn046_set_lfo_depth_globally
@@ -2986,7 +2985,6 @@ function fn046_set_lfo_depth_globally
         message(f'FN46, GLOBAL value: <slider_MAIN.LFO.depth>')
         fn046.l.global_value := slider_MAIN.LFO.depth
     end if
-    message(f'    Target: < fn046.a.target >')
     for LFO.depth.lock_mode_counter := 0 to 31
         UIID_controls_LFO_amount [ LFO.depth.lock_mode_counter ] -> value := fn046.l.global_value
         fn037.a.target        := LFO.depth.lock_mode_counter
@@ -2995,9 +2993,15 @@ function fn046_set_lfo_depth_globally
         call fn037_LFO.update_intensity_ring
         
         fn038.a.target        := fn037.a.target
-        fn038.a.side          := fn037.a.side
+        fn038.a.side          := LFO.depth.lock_mode_counter / 16
         fn038.a.LFO_amount    := fn037.a.LFO_amount
         fn038.a.control_value := fn037.a.control_value { FX parameter value }
+        if LFO.depth.lock_mode_counter mod 16 = 0
+            message(f'    fn038.a.target = <fn038.a.target>')
+            message(f'    fn038.a.side = <fn038.a.side>')
+            message(f'    fn038.a.LFO_amount = <fn038.a.LFO_amount>')
+            message(f'    fn038.a.control_value = <fn038.a.control_value>')
+        end if
         call fn038_LFO_store_LFO_mod_data
     end for
     label_MAIN.LFO.visualRate  -> picture_state := ...

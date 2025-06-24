@@ -205,6 +205,17 @@ on listener
                                 LFO_emitted_value_phase_checked * GLOBAL_LFO.depth_float_pct) + ...
                                 (LFO_lcb_depth_offset/2.0) + LFO_lcb_ind_min...
 
+                            { log }
+                            if lcb_ms_counter mod 1000 = 0
+                                message(f'target: <lcb_control_counter>')
+                                message(f'    GLOBAL_LFO.depth_float_pct = <GLOBAL_LFO.depth_float_pct>')
+                                message(f'    LFO_lcb_cursor_calc = <int(LFO_lcb_cursor_calc)>')
+                                message(f'    LFO_lcb_ind_min = <LFO_lcb_ind_min>')
+                                message(f'    LFO_lcb_ind_max = <LFO_lcb_ind_max>')
+                                message(f'    LFO_lcb_depth_offset = <LFO_lcb_depth_offset>')
+                                message(f'    LFO_emitted_value_phase_checked = <LFO_emitted_value_phase_checked>')
+                            end if
+
                             { revert back for the blue orbs and engine par }
                             // if lcb_control_counter = 16 and switch_crossfade = __ON
                             //     LFO_emitted_value_phase_checked := 1.0 - LFO_emitted_value_phase_checked
@@ -324,11 +335,6 @@ on listener
                             lcb_control_counter_adjusted := lcb_control_counter - 16 { lands on volume layer B }
                     end select
 
-                    { log }
-                    // if lcb_ms_counter mod 100 = 0 and (lcb_control_counter = 0 or lcb_control_counter = 16)
-                    //     message(f'LCB | <lcb_control_counter> | ()44.r = <fn044.r.engine_value>')
-                    // end if
-
                     if  in_range(lcb_control_counter mod 16, __MAIN.FX.SATURATION, __MAIN.FX.DISTORTION.DRIVE)
                         for lcb_lfo_group_counter := __LEFT to __RIGHT
                             set_engine_par(...
@@ -341,9 +347,6 @@ on listener
                         end for
 
                     else { FX in the bus level}
-                        // if lcb_ms_counter mod 100 = 0 and (lcb_control_counter = 0 or lcb_control_counter = 16)
-                        //     message(f'LCB: setting engine par for volume target: <lcb_control_counter>')
-                        // end if
                         set_engine_par(...
                             LFO_targets_engine_pars [ lcb_control_counter_adjusted ],               ...
                             fn044.r.engine_value,                                                   ...

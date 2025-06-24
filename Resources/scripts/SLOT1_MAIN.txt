@@ -1,4 +1,4 @@
-{ Compiled on Mon Jun 23 16:40:29 2025 }
+{ Compiled on Tue Jun 24 11:26:11 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -4295,6 +4295,14 @@ function fn038_LFO_store_LFO_mod_data
       %_LFO_modulation_ring_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+0] := $LFO_mod_ring_center
       %_LFO_modulation_ring_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+2] := $LFO_mod_ring_min
       %_LFO_modulation_ring_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+3] := $LFO_mod_ring_max
+      if ($fn038__a__target mod 16=0)
+        message("FN38: side " & $fn038__l__side_counter & " | target " & $fn038__a__target & " | control_value __ " & $fn038__a__control_value & " | LFO_amount " & $fn038__a__LFO_amount & "")
+        message("        LFO mod  min: " & ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+2] & "")
+        message("        LFO mod  max: " & ?_LFO_modulation_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+3] & "")
+        message("        LFO ring min " & %_LFO_modulation_ring_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+2] & "")
+        message("        LFO ring max " & %_LFO_modulation_ring_data[4*($fn038__a__target mod 16+($fn038__l__side_counter*16))+3] & "")
+        message("        " & abs(1-$fn038__l__side_counter) & "  | mod data target control value " & ?_LFO_modulation_data[4*($fn038__a__target mod 16+(abs(1-$fn038__l__side_counter)*16))+0] & "")
+      end if
     end if
     inc($fn038__l__side_counter)
   end while
@@ -4330,7 +4338,6 @@ function fn046_set_lfo_depth_globally
     message("FN46, GLOBAL value: " & $slider_MAIN__LFO__depth & "")
     $fn046__l__global_value := $slider_MAIN__LFO__depth
   end if
-  message("    Target: " & $fn046__a__target & "")
   $LFO__depth__lock_mode_counter := 0
   while ($LFO__depth__lock_mode_counter<=31)
     set_control_par(%UIID_controls_LFO_amount[$LFO__depth__lock_mode_counter],$CONTROL_PAR_VALUE,$fn046__l__global_value)
@@ -4339,9 +4346,15 @@ function fn046_set_lfo_depth_globally
     $fn037__a__LFO_amount := $fn046__l__global_value
     call fn037_LFO__update_intensity_ring
     $fn038__a__target := $fn037__a__target
-    $fn038__a__side := $fn037__a__side
+    $fn038__a__side := $LFO__depth__lock_mode_counter/16
     $fn038__a__LFO_amount := $fn037__a__LFO_amount
     $fn038__a__control_value := $fn037__a__control_value
+    if ($LFO__depth__lock_mode_counter mod 16=0)
+      message("    fn038.a.target = " & $fn038__a__target & "")
+      message("    fn038.a.side = " & $fn038__a__side & "")
+      message("    fn038.a.LFO_amount = " & $fn038__a__LFO_amount & "")
+      message("    fn038.a.control_value = " & $fn038__a__control_value & "")
+    end if
     call fn038_LFO_store_LFO_mod_data
     inc($LFO__depth__lock_mode_counter)
   end while
@@ -11207,6 +11220,15 @@ on listener
                 ~LFO_emitted_value_phase_checked := 1.0-~LFO_emitted_value_phase_checked
               end if
               ~LFO_lcb_cursor_calc := (~LFO_lcb_ind_max-~LFO_lcb_ind_min)*~LFO_emitted_value_phase_checked*~GLOBAL_LFO__depth_float_pct+(~LFO_lcb_depth_offset/2.0)+~LFO_lcb_ind_min
+              if ($lcb_ms_counter mod 1000=0)
+                message("target: " & $lcb_control_counter & "")
+                message("    GLOBAL_LFO.depth_float_pct = " & ~GLOBAL_LFO__depth_float_pct & "")
+                message("    LFO_lcb_cursor_calc = " & real_to_int(~LFO_lcb_cursor_calc) & "")
+                message("    LFO_lcb_ind_min = " & ~LFO_lcb_ind_min & "")
+                message("    LFO_lcb_ind_max = " & ~LFO_lcb_ind_max & "")
+                message("    LFO_lcb_depth_offset = " & ~LFO_lcb_depth_offset & "")
+                message("    LFO_emitted_value_phase_checked = " & ~LFO_emitted_value_phase_checked & "")
+              end if
               ~LFO_lcb_cursor_calc_clamped := ~LFO_lcb_cursor_calc
               if (~LFO_lcb_cursor_calc_clamped>255.0)
                 ~LFO_lcb_cursor_calc_clamped := 255.0

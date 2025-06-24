@@ -361,9 +361,6 @@
         label_MAIN.LFO.visualRate  -> picture_state := ...
         (slider_MAIN.LFO.depth/31250) * 64 + int(float(slider_MAIN.LFO.rate)/2.539682)
 
-        // label_MAIN.LFO.visualDepth  -> picture_state := ...
-        // (slider_MAIN.LFO.depth/31250) * 64 + (slider_MAIN.LFO.rate/15873)
-
         ~GLOBAL_LFO.depth_float_pct := float(slider_MAIN.LFO.depth)/1000000.0
         
         label_MAIN.LFO.depth -> text := slider_MAIN.LFO.depth / 10000 & "%"
