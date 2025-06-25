@@ -16,6 +16,9 @@ define __CROSSFADE_FACTOR_OPPOSITE := 3.0
 define __MAX_SOURCES_PER_PAGE := 18 { not in use }
 define __MAX_SOURCE_PAGES     := __SOURCE_COUNT/__MAX_SOURCES_PER_PAGE { not in use }
 
+{{ FX LOFI }}
+define LOFI_SRATE_CURVE := 5.0
+
 {{ FX REVERB}}
 define IR_FILES_COUNT := 178
 define REV_MAX_LEVEL  := 0.60

@@ -2846,6 +2846,10 @@ function fn039_set_FX_engine_par()
         end if
     end if
 
+    if fn039.a.target mod 16 = __MAIN.FX.LOFI.SRATE { only run if it is lofi sample rate }
+        fn039.a.control_value := int( pow(float(fn039.a.control_value) * 0.000001, LOFI_SRATE_CURVE ) * 1000000.0 ) 
+    end if
+
     if fn039.a.target mod 16 = __MAIN.FX.REVERB.DRYWET { only run if it is reverb wet level }
         fn039.a.control_value := int( float(fn039.a.control_value)*REV_MAX_LEVEL)
     end if
@@ -2859,6 +2863,7 @@ function fn039_set_FX_engine_par()
     )
 
     if fn039.a.link = 1 or fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME and switch_crossfade = __ON
+        
         fn039.a.side := abs( 1 - fn039.a.side) { flip to get the other side }
         if fn039.a.target mod 16 = __MAIN.FX.LAYER.VOLUME and switch_crossfade = __ON
             fn039.l.cv_real := -pow( float(fn039.l.original_cv)*0.000001, __CROSSFADE_FACTOR_AGENT) + 1.0

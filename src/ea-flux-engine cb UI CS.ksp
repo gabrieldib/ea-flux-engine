@@ -2684,8 +2684,12 @@ on ui_controls
                 if #engine_par# = ENGINE_PAR_SEND_EFFECT_OUTPUT_GAIN
                     uics_value := int(float(uics_value) * REV_MAX_LEVEL)
                 end if
+                if #engine_par# = ENGINE_PAR_FREQUENCY
+                    uics_value := int( pow(float(uics_value)*0.000001, LOFI_SRATE_CURVE )) * 1000000
+                end if
                 // set_engine_par(#engine_par#, uics_value, __GROUP_NONE, #target_slot#, #target_bus#)
                 UIID_MAIN.display_value -> text := get_engine_par_disp(#engine_par#, #target_group#, #target_slot#, #target_bus#) & #data_type#
+
             end if
 
             UIID_MAIN.display_title -> text := #title#

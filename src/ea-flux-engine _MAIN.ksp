@@ -50,7 +50,9 @@ on init
 
     load_array(Reverb_impulse_responses_titles, 1)
     load_array(Reverb_IR_files, 1)
-    
+
+    set_snapshot_type(0)
+
     for i.i := 0 to IR_FILES_COUNT
         add_menu_item(menu_MAIN.FX.LEFT.reverb.menu,  !Reverb_impulse_responses_titles[i.i], i.i)
         add_menu_item(menu_MAIN.FX.RIGHT.reverb.menu, !Reverb_impulse_responses_titles[i.i], i.i)

@@ -347,6 +347,9 @@ on listener
                         end for
 
                     else { FX in the bus level}
+                        if lcb_control_counter_adjusted mod 16 = __MAIN.FX.LOFI.SRATE { only run if it is lofi sample rate }
+                            fn044.r.engine_value := int( pow(float(fn044.r.engine_value) * 0.000001, LOFI_SRATE_CURVE ) * 1000000.0 ) 
+                        end if
                         set_engine_par(...
                             LFO_targets_engine_pars [ lcb_control_counter_adjusted ],               ...
                             fn044.r.engine_value,                                                   ...
