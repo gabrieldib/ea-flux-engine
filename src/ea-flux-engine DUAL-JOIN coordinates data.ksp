@@ -19,8 +19,8 @@ SEQ.common_elements_data [  3, PANEL_DUAL_SEQ_X_COORD     ] := 12
 SEQ.common_elements_data [  3, PANEL_DUAL_SEQ_Y_COORD     ] := 539
 { label_MAIN.LEFT.octave.icon }
 SEQ.common_elements_data [  4, ELEMENT_UIID               ] := get_ui_id(label_MAIN.LEFT.octave.icon)
-SEQ.common_elements_data [  4, PANEL_DUAL_SEQ_X_COORD     ] := 287
-SEQ.common_elements_data [  4, PANEL_DUAL_SEQ_Y_COORD     ] := 47
+SEQ.common_elements_data [  4, PANEL_DUAL_SEQ_X_COORD     ] := 285
+SEQ.common_elements_data [  4, PANEL_DUAL_SEQ_Y_COORD     ] := 49
 { label_MAIN.LEFT.seq.step.0 }
 SEQ.common_elements_data [  5, ELEMENT_UIID               ] := get_ui_id(label_MAIN.LEFT.seq.step.0)
 SEQ.common_elements_data [  5, PANEL_DUAL_SEQ_X_COORD     ] := 67
@@ -319,8 +319,8 @@ SEQ.common_elements_data [ 78, PANEL_DUAL_SEQ_X_COORD     ] := 443
 SEQ.common_elements_data [ 78, PANEL_DUAL_SEQ_Y_COORD     ] := 236
 { menu_MAIN.LEFT.octave.input }
 SEQ.common_elements_data [ 79, ELEMENT_UIID               ] := get_ui_id(menu_MAIN.LEFT.octave.input)
-SEQ.common_elements_data [ 79, PANEL_DUAL_SEQ_X_COORD     ] := 287
-SEQ.common_elements_data [ 79, PANEL_DUAL_SEQ_Y_COORD     ] := 47
+SEQ.common_elements_data [ 79, PANEL_DUAL_SEQ_X_COORD     ] := 280
+SEQ.common_elements_data [ 79, PANEL_DUAL_SEQ_Y_COORD     ] := 48
 { slider_MAIN.LEFT.hmz }
 SEQ.common_elements_data [ 80, ELEMENT_UIID               ] := get_ui_id(slider_MAIN.LEFT.hmz)
 SEQ.common_elements_data [ 80, PANEL_DUAL_SEQ_X_COORD     ] := 25
@@ -491,7 +491,7 @@ SEQ.common_elements_data [ 120, PANEL_DUAL_SEQ_Y_COORD     ] := 66
 { button_MAIN.LEFT.controls.draw }
 SEQ.common_elements_data [  0, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [  0, PANEL_JOIN_SEQ_X_COORD     ] := 160
-SEQ.common_elements_data [  0, PANEL_JOIN_SEQ_Y_COORD     ] := 41
+SEQ.common_elements_data [  0, PANEL_JOIN_SEQ_Y_COORD     ] := 42
 { label_MAIN.2SEQ.LEFT.dyn }
 SEQ.common_elements_data [  1, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [  1, PANEL_JOIN_SEQ_X_COORD     ] := 61
@@ -506,8 +506,8 @@ SEQ.common_elements_data [  3, PANEL_JOIN_SEQ_X_COORD     ] := 13
 SEQ.common_elements_data [  3, PANEL_JOIN_SEQ_Y_COORD     ] := 215
 { label_MAIN.LEFT.octave.icon }
 SEQ.common_elements_data [  4, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
-SEQ.common_elements_data [  4, PANEL_JOIN_SEQ_X_COORD     ] := 312
-SEQ.common_elements_data [  4, PANEL_JOIN_SEQ_Y_COORD     ] := 47
+SEQ.common_elements_data [  4, PANEL_JOIN_SEQ_X_COORD     ] := 316
+SEQ.common_elements_data [  4, PANEL_JOIN_SEQ_Y_COORD     ] := 49
 { label_MAIN.LEFT.seq.step.0 }
 SEQ.common_elements_data [  5, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [  5, PANEL_JOIN_SEQ_X_COORD     ] := 132
@@ -806,8 +806,8 @@ SEQ.common_elements_data [ 78, PANEL_JOIN_SEQ_X_COORD     ] := 443
 SEQ.common_elements_data [ 78, PANEL_JOIN_SEQ_Y_COORD     ] := 236
 { menu_MAIN.LEFT.octave.input }
 SEQ.common_elements_data [ 79, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
-SEQ.common_elements_data [ 79, PANEL_JOIN_SEQ_X_COORD     ] := 312
-SEQ.common_elements_data [ 79, PANEL_JOIN_SEQ_Y_COORD     ] := 47
+SEQ.common_elements_data [ 79, PANEL_JOIN_SEQ_X_COORD     ] := 311
+SEQ.common_elements_data [ 79, PANEL_JOIN_SEQ_Y_COORD     ] := 48
 { slider_MAIN.LEFT.hmz }
 SEQ.common_elements_data [ 80, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 80, PANEL_JOIN_SEQ_X_COORD     ] := 26
@@ -895,15 +895,15 @@ SEQ.common_elements_data [ 100, PANEL_JOIN_SEQ_Y_COORD     ] := 218
 { switch_MAIN.SEQ.LEFT.fwbw }
 SEQ.common_elements_data [ 101, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 101, PANEL_JOIN_SEQ_X_COORD     ] := 268
-SEQ.common_elements_data [ 101, PANEL_JOIN_SEQ_Y_COORD     ] := 46
+SEQ.common_elements_data [ 101, PANEL_JOIN_SEQ_Y_COORD     ] := 47
 { switch_MAIN.SEQ.LEFT.mode.backwards }
 SEQ.common_elements_data [ 102, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 102, PANEL_JOIN_SEQ_X_COORD     ] := 233
-SEQ.common_elements_data [ 102, PANEL_JOIN_SEQ_Y_COORD     ] := 46
+SEQ.common_elements_data [ 102, PANEL_JOIN_SEQ_Y_COORD     ] := 47
 { switch_MAIN.SEQ.LEFT.mode.forwards }
 SEQ.common_elements_data [ 103, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 103, PANEL_JOIN_SEQ_X_COORD     ] := 198
-SEQ.common_elements_data [ 103, PANEL_JOIN_SEQ_Y_COORD     ] := 46
+SEQ.common_elements_data [ 103, PANEL_JOIN_SEQ_Y_COORD     ] := 47
 { switch_MAIN.SEQ.LEFT.power.lphp }
 SEQ.common_elements_data [ 104, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 104, PANEL_JOIN_SEQ_X_COORD     ] := 894
@@ -927,7 +927,7 @@ SEQ.common_elements_data [ 108, PANEL_JOIN_SEQ_Y_COORD     ] := 88
 { switch_MAIN.SEQ.LEFT.randomize }
 SEQ.common_elements_data [ 109, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 109, PANEL_JOIN_SEQ_X_COORD     ] := 129
-SEQ.common_elements_data [ 109, PANEL_JOIN_SEQ_Y_COORD     ] := 42
+SEQ.common_elements_data [ 109, PANEL_JOIN_SEQ_Y_COORD     ] := 43
 { switch_MAIN.SEQ.LEFT.select.lphp }
 SEQ.common_elements_data [ 110, PANEL_JOIN_SEQ_PARENT_UIID ] := UIID_SEQ_JOIN_PANEL
 SEQ.common_elements_data [ 110, PANEL_JOIN_SEQ_X_COORD     ] := 880
