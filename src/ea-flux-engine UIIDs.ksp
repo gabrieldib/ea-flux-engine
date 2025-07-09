@@ -5,6 +5,7 @@ declare UIID_MAIN.seq.leds                   [ 2, 4 ]
 declare UIID_MAIN.seq.block_steps            [ 2, 4 ]
 declare UIID_MAIN.SEQ.xypads                    [ 2 ]
 declare UIID_MAIN.controls.draw                 [ 2 ]
+declare UIID_MAIN.octave.controls               [ 2 ]
 declare UIID_MAIN.ADSR_controls              [ 2, 4 ]
 declare UIID_MAIN.SEQ.rate_sliders              [ 2 ]
 declare UIID_MAIN.display_title

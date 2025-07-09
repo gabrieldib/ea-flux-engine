@@ -219,7 +219,8 @@ on ui_controls
 
             uics_control_key := __OFF
             if get_control_par(UIID_MAIN.SEQ.xypads [ uics_seq_side ], CONTROL_PAR_KEY_CONTROL ) = __ON
-                uics_control_key := __ON
+                uics_control_key   := __ON
+                uics_r_value       := 0.5
                 seq_xy_alt_y_coord := 0.5
             end if
 
@@ -280,7 +281,7 @@ on ui_controls
                     __Y_AXIS                                  ...
                 ) 
             end if
-            message(f'Step seq side <uics_seq_side> writing <int(uics_r_value*1000000.0)> on step <fn001.r.step_index>')
+            // message(f'Step seq side <uics_seq_side> writing <int(uics_r_value*1000000.0)> on step <fn001.r.step_index>')
 
             for uics_link_counter := 0 to 1
                 if uics_link_counter = uics_seq_side or switch_MAIN.SEQ.LEFT.link = __ON
@@ -290,6 +291,7 @@ on ui_controls
                     fn002.a.table_to_update := __SEQ_BOTH_TABLES
                     fn002.a.step_index      := fn001.r.step_index
                     call fn002_set_seq_step_value
+                    message(f' Setting value uics_r_value = <uics_r_value>')
 
                     fn018.a.side       := uics_link_counter
                     fn018.a.step_index := fn001.r.step_index
@@ -514,7 +516,7 @@ on ui_controls
                 end if
             end for
 
-            slider_MAIN.FLRNDjoin.amount := SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]
+            slider_MAIN.FLRNDjoin.amount   := SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]
 
         else
             NI_UI_ID -> value := __OFF
@@ -578,7 +580,9 @@ on ui_controls
             end if
         end for
 
-        slider_MAIN.FLRNDjoin.amount := SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]
+        slider_MAIN.FLRNDjoin.amount   := SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]
+
+        label_SEQjoin.fluxxRand.amount -> text := NI_UI_ID -> value & "%"
 
         if  UIID_MAIN.seq.power [ __LEFT ] -> value = __OFF and UIID_MAIN.seq.power [ __RIGHT ] -> value = __OFF
             NI_UI_ID -> value := __OFF
@@ -742,8 +746,9 @@ on ui_controls
         SEQ.join.flux_rand_intensity [ SEQ.showing_target [ __LEFT ] ]         := NI_UI_ID -> value
         { update UI }
         UIID_MAIN.seq.flux_rand_intensity [ __LEFT ] -> value := NI_UI_ID -> value
-        UIID_MAIN.display_title -> text := "Flux Randomizer"
-        UIID_MAIN.display_value -> text := NI_UI_ID -> value & "%"
+        UIID_MAIN.display_title        -> text := "Flux Randomizer"
+        UIID_MAIN.display_value        -> text := NI_UI_ID -> value & "%"
+        label_SEQjoin.fluxxRand.amount -> text := NI_UI_ID -> value & "%"
     end if
 
     {{ SEQ MAIN FLUX RAND BUTTONS }}

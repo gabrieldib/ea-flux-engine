@@ -310,6 +310,13 @@
 
         declare const ~WF_OVERLAY_WIDTH := 364.0
 
+        declare octave_map [ 5 ]
+            octave_map [ 0 ] := 24
+            octave_map [ 1 ] := 12
+            octave_map [ 2 ] := 0
+            octave_map [ 3 ] := -12
+            octave_map [ 4 ] := -24
+
     {{ LFO }}
         declare const __RATE_ELEMENTS_COUNT := 22
         declare const __LFO_RATE_FRAME := 1000000 / (__RATE_ELEMENTS_COUNT-1)

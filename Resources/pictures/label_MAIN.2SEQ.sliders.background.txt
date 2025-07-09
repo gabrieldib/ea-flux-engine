@@ -1,5 +1,5 @@
 Has Alpha Channel: yes
-Number of Animations: 2
+Number of Animations: 1
 Horizontal Animation: no
 Vertical Resizable: no
 Horizontal Resizable: no

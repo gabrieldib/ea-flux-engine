@@ -72,7 +72,7 @@ function pccb_init_instrument
     { change text alignment on target selectors according to SEQ DUAL/JOIN state }
     call set_seq_target_selectors_text_alignment
 
-    label_MAIN.LFO.sync -> text := rate_mode_sync_hz.text [ switch_MAIN.LFO.sync ]
+    label_MAIN.LFO.sync  -> text := rate_mode_sync_hz.text [ switch_MAIN.LFO.sync ]
     label_MAIN.LFO.depth -> text := slider_MAIN.LFO.depth / 10000 & "%"
     
     call update_lfo_aux_data
@@ -91,7 +91,8 @@ function pccb_init_instrument
     UIID_MAIN.seq.arp_menu [ __RIGHT ] -> text := arp_menu_items_text [ arp_mode [ __RIGHT ] ]
     switch_MAIN.ARP.LEFT.modeMenu      -> text := arp_menu_items_text [ arp_mode [ __LEFT ] ]
     label_SEQjoin.arp.rate             -> text := beat_rates_display [ slider_MAIN.ARPjoin.amount / __BEAT_RATE_DIVISOR ]
-    
+    label_SEQjoin.fluxxRand.amount -> text := slider_MAIN.FLRNDjoin.amount & "%"
+
     if switch_MAIN.LFO.power = __OFF
         label_MAIN.matrix.center.mod.LR -> UI_HIDE
         label_MAIN.matrix.center.mod.RL -> UI_HIDE
@@ -350,6 +351,14 @@ function show_hide_according_to_combine_state
         label_MAIN.SEQjoin.off                     -> UI_HIDE
         panel_MAIN.2JOIN.arpModes                  -> UI_HIDE
         label_SEQjoin.arp.background               -> UI_HIDE
+
+        label_SEQjoin.flux.data.title              -> UI_HIDE
+
+        label_MAIN.2SEQ.LEFT.sliders.background  -> UI_SHOW
+        label_MAIN.2SEQ.RIGHT.sliders.background -> UI_SHOW
+        menu_MAIN.RIGHT.octave.input             -> UI_SHOW
+        label_MAIN.RIGHT.octave.icon             -> UI_SHOW
+
     else  { SEQ JOIN }
         waveform_MAIN.2SEQ.RIGHT.display           -> UI_HIDE
         switch_MAIN.SEQ.RIGHT.link                 -> UI_HIDE
@@ -430,6 +439,13 @@ function show_hide_according_to_combine_state
         label_MAIN.SEQjoin.off                     -> UI_SHOW
 
         label_SEQjoin.arp.background               -> UI_SHOW
+        label_SEQjoin.flux.data.title              -> UI_SHOW
+
+        label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
+        label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
+
+        menu_MAIN.RIGHT.octave.input             -> UI_HIDE
+        label_MAIN.RIGHT.octave.icon             -> UI_HIDE
     end if
     panel_MAIN.2SEQ.LEFT.fluxxArp  -> UI_SHOW
     panel_MAIN.2SEQ.RIGHT.fluxxArp -> UI_SHOW
@@ -4067,6 +4083,7 @@ function fn027_play_lcb_core
             ] * 100000.0) + SEQ.step_pitch * 100000,           ...
             0                                                  ...
         )
+        message(f'Changing pitch to <SEQ.step_pitch>')
 
         change_pan( ...
             layers.note_events [ fn027.a.side, fn027.a.note ], ...
@@ -4164,7 +4181,7 @@ function PLAY_LCB
                     { return values from fn026_get_seq_target_data() }
 
                     SEQ.step_velocity  := fn026.r.velocity
-                    SEQ.step_pitch     := fn026.r.pitch
+                    SEQ.step_pitch     := fn026.r.pitch + octave_map[UIID_MAIN.octave.controls [ fn026.a.side ] -> value]
                     SEQ.step_length    := fn026.r.length
                     SEQ.step_pan       := fn026.r.pan
                     SEQ.step_lp_filter := fn026.r.lp_filter_value
@@ -4208,7 +4225,7 @@ function PLAY_LCB
 
                 { return values from fn026_get_seq_target_data() }
                 SEQ.step_velocity  := fn026.r.velocity
-                SEQ.step_pitch     := fn026.r.pitch
+                SEQ.step_pitch     := fn026.r.pitch + octave_map[UIID_MAIN.octave.controls [ fn026.a.side ] -> value]
                 SEQ.step_length    := fn026.r.length
                 SEQ.step_pan       := fn026.r.pan
                 SEQ.step_filter    := fn026.r.filter_value
@@ -4255,7 +4272,7 @@ function PLAY_LCB
                     { return values from fn026_get_seq_target_data() }
 
                     SEQ.step_velocity  := fn026.r.velocity
-                    SEQ.step_pitch     := fn026.r.pitch
+                    SEQ.step_pitch     := fn026.r.pitch + octave_map[UIID_MAIN.octave.controls [ fn026.a.side ] -> value]
                     SEQ.step_length    := fn026.r.length
                     SEQ.step_pan       := fn026.r.pan
                     SEQ.step_filter    := fn026.r.filter_value
@@ -4380,7 +4397,7 @@ function PLAY_LCB
                             call fn026_get_seq_target_data
 
                             SEQ.step_velocity  := fn026.r.velocity
-                            SEQ.step_pitch     := fn026.r.pitch
+                            SEQ.step_pitch     := fn026.r.pitch + octave_map[UIID_MAIN.octave.controls [ __LEFT ] -> value]
                             SEQ.step_length    := fn026.r.length
                             SEQ.step_pan       := fn026.r.pan
                             SEQ.step_filter    := fn026.r.filter_value
@@ -4430,7 +4447,7 @@ function PLAY_LCB
 
                         { return values from fn026_get_seq_target_data() }
                         SEQ.step_velocity  := fn026.r.velocity
-                        SEQ.step_pitch     := fn026.r.pitch
+                        SEQ.step_pitch     := fn026.r.pitch + octave_map[UIID_MAIN.octave.controls [ __LEFT ] -> value]
                         SEQ.step_length    := fn026.r.length
                         SEQ.step_pan       := fn026.r.pan
                         SEQ.step_filter    := fn026.r.filter_value
@@ -4476,7 +4493,7 @@ function PLAY_LCB
                         { return values from fn026_get_seq_target_data() }
 
                         SEQ.step_velocity  := fn026.r.velocity
-                        SEQ.step_pitch     := fn026.r.pitch
+                        SEQ.step_pitch     := fn026.r.pitch + octave_map[UIID_MAIN.octave.controls [ __LEFT ] -> value]
                         SEQ.step_length    := fn026.r.length
                         SEQ.step_pan       := fn026.r.pan
                         SEQ.step_filter    := fn026.r.filter_value

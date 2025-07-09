@@ -38,3 +38,16 @@ declare MAIN.FX_SELECTOR.FONT_ON_H  := get_font_id("font_Roboto Regular Size 11 
 
 declare GLOBAL.SOURCE.BTN_FONT   := get_font_id("font_Roboto Regular Size 10 #FFCBAE 100p")
 declare GLOBAL.SOURCE.BTN_FONT_H := get_font_id("font_Roboto Regular Size 10 #FFE3D3 100p")
+
+add_menu_item(menu_MAIN.LEFT.octave.input, "+2", 0)
+add_menu_item(menu_MAIN.LEFT.octave.input, "+1", 1)
+add_menu_item(menu_MAIN.LEFT.octave.input, " 0", 2)
+add_menu_item(menu_MAIN.LEFT.octave.input, "-1", 3)
+add_menu_item(menu_MAIN.LEFT.octave.input, "-2", 4)
+
+add_menu_item(menu_MAIN.RIGHT.octave.input, "+2", 0)
+add_menu_item(menu_MAIN.RIGHT.octave.input, "+1", 1)
+add_menu_item(menu_MAIN.RIGHT.octave.input, " 0", 2)
+add_menu_item(menu_MAIN.RIGHT.octave.input, "-1", 3)
+add_menu_item(menu_MAIN.RIGHT.octave.input, "-2", 4)
+

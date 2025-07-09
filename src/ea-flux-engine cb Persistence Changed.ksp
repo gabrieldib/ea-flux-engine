@@ -22,10 +22,6 @@ on persistence_changed
         label_MAIN.FX.LEFT.linked         -> UI_HIDE
         label_MAIN.FX.RIGHT.linked        -> UI_HIDE
 
-        { I may use this in the combined SEQ }
-        label_MAIN.2SEQ.LEFT.sliders.background  -> UI_HIDE
-        label_MAIN.2SEQ.RIGHT.sliders.background -> UI_HIDE
-
     // END development --------------------------------------------------------------------------- 
 
     // switch_MAIN.SEQ.combine -> UI_HIDE
@@ -38,6 +34,6 @@ on persistence_changed
     menu_MAIN.FX.RIGHT.reverb.menu -> parent_panel := get_ui_id(panel_MAIN.FX.RIGHT.reverb)
 
     message("ea-flux-engine loaded successfully")
-    message(f' --<label_MAIN.LFO.rate.title -> text>--')
-    message(f' --<label_MAIN.LFO.rate.title -> text_alignment>--')
+    message(f'label_MAIN.2SEQ.LEFT.sliders.background -> hide = <label_MAIN.2SEQ.LEFT.sliders.background -> hide >')
+
 end on

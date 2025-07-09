@@ -296,7 +296,8 @@ for i.i := 1 to 3
     UIID_FLUX_RAND_RIGHT [ i.i ] := UIID_FLUX_RAND_RIGHT [ 0 ] + i.i
 end for
 
-
+UIID_MAIN.octave.controls [ __LEFT  ] := get_ui_id(menu_MAIN.LEFT.octave.input)
+UIID_MAIN.octave.controls [ __RIGHT ] := get_ui_id(menu_MAIN.RIGHT.octave.input)
 
 {{ SETTING FONTS }}
     switch_MAIN.ARP.LEFT.modeMenu -> font_type             := MAIN.SEQ.ARP.MODE_BTNS.FONT_ON  
