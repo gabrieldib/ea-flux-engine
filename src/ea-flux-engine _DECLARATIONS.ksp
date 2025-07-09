@@ -1067,6 +1067,7 @@
     declare pn_ncb.a.velo
     declare pn_ncb.a.mute_note
     declare pn_ncb.l.sample_address
+    declare pn_ncb.l.tune
 
     //PLAY_LCB
     declare p_lcb.a.side

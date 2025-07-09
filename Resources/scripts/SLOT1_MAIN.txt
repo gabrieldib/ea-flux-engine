@@ -1,4 +1,4 @@
-{ Compiled on Tue Jul  8 17:28:15 2025 }
+{ Compiled on Tue Jul  8 18:17:42 2025 }
 on init
   declare $sksp_dummy
   declare $concat_it
@@ -3464,6 +3464,7 @@ on init
   declare $pn_ncb__a__velo
   declare $pn_ncb__a__mute_note
   declare $pn_ncb__l__sample_address
+  declare $pn_ncb__l__tune
   declare $p_lcb__a__side
   declare $p_lcb__l__ts_counter
   declare $ds__counter
@@ -4777,7 +4778,8 @@ function PLAY_NOTE_NCB
   else
     set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(pow(int_to_real($pn_ncb__a__velo)/127.0,2.5)*1000000.0),11+$pn_ncb__a__side)
     set_event_par_arr(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$EVENT_PAR_MOD_VALUE_ID,real_to_int(?_sample_starts[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note]*1000000.0),1+$pn_ncb__a__side)
-    change_tune(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],real_to_int(?_sample_tuning[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$last_played_note]*100000.0),0)
+    $pn_ncb__l__tune := real_to_int((int_to_real(%octave_map[get_control_par(%UIID_MAIN__octave__controls[$fn026__a__side],$CONTROL_PAR_VALUE)])+?_sample_tuning[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$last_played_note])*100000.0)
+    change_tune(%_layers__note_events[128*$pn_ncb__a__side+$pn_ncb__a__note],$pn_ncb__l__tune,0)
     set_control_par(%_UIID_MAIN__single_shot_controls[6*$pn_ncb__a__side+2],$CONTROL_PAR_VALUE,%_sample_low_cutoff[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note])
     set_control_par(%_UIID_MAIN__single_shot_controls[6*$pn_ncb__a__side+3],$CONTROL_PAR_VALUE,%_sample_low_reso[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note])
     set_control_par(%_UIID_MAIN__single_shot_controls[6*$pn_ncb__a__side+4],$CONTROL_PAR_VALUE,%_sample_high_cutoff[128*2*%selected_source[$pn_ncb__a__side]+(128*$pn_ncb__a__side)+$pn_ncb__a__note])
